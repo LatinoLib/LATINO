@@ -5,11 +5,10 @@
  *  File:          CosineSimilarity.cs
  *  Version:       1.0
  *  Desc:		   Similarity implementation
- *  Authors:       Miha Grcar
- *                 Matjaz Jursic
+ *  Authors:       Miha Grcar, Matjaz Jursic
  *  Created on:    Dec-2008
  *  Last modified: May-2009
- *  Revision:      May-2009
+ *  Revision:      Oct-2009
  *
  ***************************************************************************/
 
@@ -28,10 +27,13 @@ namespace Latino.Model
         public CosineSimilarity()
         {
         }
+
         public CosineSimilarity(BinarySerializer reader)
         {
         }
+
         // *** ISimilarity<SparseVector<double>.ReadOnly> interface implementation ***
+
         public double GetSimilarity(SparseVector<double>.ReadOnly a, SparseVector<double>.ReadOnly b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
@@ -75,7 +77,9 @@ namespace Latino.Model
             double len_mult = len_a * len_b;
             return dot_prod / len_mult;
         }
+
         // *** ISerializable interface implementation ***
+
         public void Save(BinarySerializer writer)
         {
         }

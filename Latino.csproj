@@ -54,6 +54,11 @@
     <Compile Include="IBinaryOperator.cs" />
     <Compile Include="ICloneable.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Model\IClustering.cs" />
+    <Compile Include="Model\IDataset.cs" />
+    <Compile Include="Model\IExampleCollection.cs" />
+    <Compile Include="Model\IModel.cs" />
+    <Compile Include="Model\ISimilarity.cs" />
     <Compile Include="Model\MaxEnt.cs" />
     <Compile Include="Model\BatchUpdateCentroidClassifier.cs" />
     <Compile Include="BinarySerializer.cs" />
@@ -82,7 +87,6 @@
     <Compile Include="Model\LSqrDotNet.cs" />
     <Compile Include="Model\LSqrModel.cs" />
     <Compile Include="Model\MaximumEntropyClassifier.cs" />
-    <Compile Include="Model\ModelInterfaces.cs" />
     <Compile Include="Model\ModelUtils.cs" />
     <Compile Include="Model\DotProductSimilarity.cs" />
     <Compile Include="Network.cs" />

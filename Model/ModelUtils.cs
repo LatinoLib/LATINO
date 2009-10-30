@@ -7,8 +7,8 @@
  *  Desc:		   Fundamental ML-related utilities
  *  Author:        Miha Grcar
  *  Created on:    Aug-2008
- *  Last modified: Jan-2009
- *  Revision:      Jan-2009
+ *  Last modified: Oct-2009
+ *  Revision:      Oct-2009
  *
  ***************************************************************************/
 
@@ -186,8 +186,9 @@ namespace Latino.Model
             ClassifierResult<LblT> aggr_result = new ClassifierResult<LblT>();
             foreach (KeyValuePair<LblT, double> item in tmp)
             {
-                aggr_result.Add(new KeyDat<double, LblT>(item.Value, item.Key));
+                aggr_result.Items.Add(new KeyDat<double, LblT>(item.Value, item.Key));
             }
+            aggr_result.Items.Sort(new DescSort<KeyDat<double, LblT>>());
             return aggr_result;
         }
 
@@ -228,7 +229,7 @@ namespace Latino.Model
             return true;
         }
 
-        // *** DEPRECATED
+#if DEPRECATED
         public static SparseVector<double> ComputeCentroidNrmL2(IEnumerable<SparseVector<double>.ReadOnly> vec_list)
         {
             Dictionary<int, double> tmp = new Dictionary<int, double>();
@@ -257,7 +258,6 @@ namespace Latino.Model
             return centroid;
         }
 
-        // *** DEPRECATED
         public static SparseVector<double> ComputeWgtCentroidNrmL2(IEnumerable<Pair<double, SparseVector<double>.ReadOnly>> wgt_vec_list)
         {
             Dictionary<int, double> tmp = new Dictionary<int, double>();
@@ -286,7 +286,6 @@ namespace Latino.Model
             return centroid;
         }
 
-        // *** DEPRECATED
         public static SparseVector<double> ComputeCentroidAvg(IEnumerable<SparseVector<double>.ReadOnly> vec_list)
         {
             Dictionary<int, double> tmp = new Dictionary<int, double>();
@@ -316,7 +315,6 @@ namespace Latino.Model
             return centroid;
         }
 
-        // *** DEPRECATED
         public static SparseVector<double> ComputeWgtCentroidAvg(IEnumerable<Pair<double, SparseVector<double>.ReadOnly>> wgt_vec_list)
         {            
             int vec_count = 0;
@@ -351,7 +349,6 @@ namespace Latino.Model
             return centroid;
         }
 
-        // *** DEPRECATED
         public static SparseVector<double> ComputeCentroidSum(IEnumerable<SparseVector<double>.ReadOnly> vec_list) 
         {
             Dictionary<int, double> tmp = new Dictionary<int, double>();
@@ -378,6 +375,7 @@ namespace Latino.Model
             centroid.Sort();
             return centroid;
         }
+#endif
 
         public static SparseVector<double> ComputeCentroid(IEnumerable<SparseVector<double>.ReadOnly> vec_list, CentroidType type)
         {

@@ -8,7 +8,7 @@
  *  Author:        Miha Grcar
  *  Created on:    Jan-2009
  *  Last modified: Jan-2009
- *  Revision:      Jan-2009
+ *  Revision:      Oct-2009
  *
  ***************************************************************************/
 
@@ -26,32 +26,39 @@ namespace Latino.Model
     {
         private LblT m_lbl;
         private ExT m_ex;
+
         public LabeledExample(BinarySerializer reader)
         {
             m_lbl = default(LblT);
             m_ex = default(ExT);
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
+
         public LabeledExample(LblT lbl, ExT ex)
         {
             m_lbl = lbl;
             m_ex = ex;
         }
+
         public LblT Label
         {
             get { return m_lbl; }
             set { m_lbl = value; }
         }
+
         public ExT Example
         {
             get { return m_ex; }
             set { m_ex = value; }
         }
+
         public override string ToString()
         {
             return string.Format("( {0}, {1} )", m_lbl, m_ex);
         }
+
         // *** ISerializable interface implementation ***
+
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
@@ -59,6 +66,7 @@ namespace Latino.Model
             writer.WriteValueOrObject<LblT>(m_lbl);
             writer.WriteValueOrObject<ExT>(m_ex);
         }
+
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);

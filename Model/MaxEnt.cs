@@ -214,7 +214,7 @@ namespace Latino.Model
             {
                 aux[i++] = row;
             }
-            int chunk_sz = (int)Math.Round((double)lambda_row_count / (double)num_threads);
+            int chunk_sz = (int)Math.Round((double)lambda_row_count / (double)num_threads); // *** this load balancing is not so good; should I count values instead of rows?
             Thread[] threads = new Thread[num_threads];
             RefInt[] progress_info = new RefInt[num_threads];
             int start_idx = 0;            
@@ -413,7 +413,6 @@ namespace Latino.Model
             return lambda;
         }
 
-        // TODO: optimize this
         public static ClassifierResult<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly bin_vec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idx_to_lbl)
         {
             DotProductSimilarity dot_prod = new DotProductSimilarity();
@@ -425,6 +424,44 @@ namespace Latino.Model
                 scores.Add(new KeyDat<double, LblT>(score, idx_to_lbl[row.Idx]));
             }
             return new ClassifierResult<LblT>(scores);
+            // *** for some reason, the code below is slower than the one currently in use
+            /*ClassifierResult<LblT> classifier_result = new ClassifierResult<LblT>();
+            foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambdas)
+            {
+                int i = 0, j = 0;
+                int a_count = bin_vec.Count;
+                int b_count = row.Dat.Count;
+                double dot_prod = 0;
+                List<int> a_idx = bin_vec.Inner.Inner;
+                ArrayList<int> b_idx = row.Dat.Inner.InnerIdx;
+                ArrayList<double> b_dat = row.Dat.Inner.InnerDat;
+                int a_idx_i = a_idx[0];
+                int b_idx_j = b_idx[0];
+                while (true)
+                {
+                    if (a_idx_i < b_idx_j)
+                    {
+                        if (++i == a_count) { break; }
+                        a_idx_i = a_idx[i];
+                    }
+                    else if (a_idx_i > b_idx_j)
+                    {
+                        if (++j == b_count) { break; }
+                        b_idx_j = b_idx[j];
+                    }
+                    else
+                    {
+                        dot_prod += b_dat[j];
+                        if (++i == a_count || ++j == b_count) { break; }
+                        a_idx_i = a_idx[i];
+                        b_idx_j = b_idx[j];
+                    }
+                }
+                double score = Math.Exp(dot_prod);
+                classifier_result.Inner.Add(new KeyDat<double, LblT>(score, idx_to_lbl[row.Idx]));
+            }
+            classifier_result.Inner.Sort(new DescSort<KeyDat<double, LblT>>());
+            return classifier_result;*/
         }
     }
 }

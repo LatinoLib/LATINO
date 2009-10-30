@@ -4,11 +4,11 @@
  *
  *  File:          Centroid.cs
  *  Version:       1.0
- *  Desc:		   Centroid vector (used for speed optimizations)
+ *  Desc:		   Centroid vector structure (used for speed optimizations)
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
  *  Last modified: Aug-2009
- *  Revision:      Aug-2009
+ *  Revision:      Oct-2009
  * 
  ***************************************************************************/
 
@@ -34,11 +34,13 @@ namespace Latino.Model
         private double m_div
             = 1;
         private double[] m_vec;
+
         public Centroid(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset, int vec_len)
         {
             m_vec = new double[vec_len];
             m_dataset = dataset;
         }
+
         public Centroid(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             int max_idx = -1;
@@ -50,14 +52,17 @@ namespace Latino.Model
             m_vec = new double[max_idx + 1];
             m_dataset = dataset;
         }
+
         public Set<int> Items
         {
             get { return m_items; }
         }
+
         public int VecLen
         {
             get { return m_vec.Length; }
         }
+
         public void Update()
         { 
             Set<int> add_idx = Set<int>.Difference(m_items, m_items_current);
@@ -92,6 +97,7 @@ namespace Latino.Model
             m_items_current = m_items;
             m_items = new Set<int>();
         }
+
         public void NormalizeL2()
         {
             if (m_div == 1)
@@ -109,6 +115,7 @@ namespace Latino.Model
                 m_div = len;
             }
         }
+
         public void ResetNrmL2()
         {
             if (m_div != 1)
@@ -120,6 +127,7 @@ namespace Latino.Model
                 m_div = 1;
             }
         }
+
         public void Clear()
         {
             foreach (int idx in m_non_zero_idx)
@@ -128,6 +136,7 @@ namespace Latino.Model
             }
             m_non_zero_idx.Clear();            
         }
+
         public SparseVector<double> GetSparseVector()
         {
             SparseVector<double> vec = new SparseVector<double>();
@@ -138,6 +147,7 @@ namespace Latino.Model
             }
             return vec;
         }
+
         public double GetDotProduct(SparseVector<double>.ReadOnly vec)
         {
             double dot_prod = 0;

@@ -8,7 +8,7 @@
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
  *  Last modified: Aug-2009
- *  Revision:      Aug-2009
+ *  Revision:      Oct-2009
  * 
  ***************************************************************************/
 
@@ -27,11 +27,13 @@ namespace Latino.Model
             = 0.0005;
         private int m_trials
             = 1;
+
         public KMeansFast(int k)
         {
             Utils.ThrowException(k < 2 ? new ArgumentOutOfRangeException("k") : null);
             m_k = k;
         }
+
         public Random Random
         {
             get { return m_rnd; }
@@ -41,6 +43,7 @@ namespace Latino.Model
                 m_rnd = value;
             }
         }
+
         public double Eps
         {
             get { return m_eps; }
@@ -50,6 +53,7 @@ namespace Latino.Model
                 m_eps = value;
             }
         }
+
         public int Trials
         {
             get { return m_trials; }
@@ -59,11 +63,14 @@ namespace Latino.Model
                 m_trials = value;
             }
         }
+
         // *** IClustering<LblT, SparseVector<double>.ReadOnly> interface implementation ***
+
         public Type RequiredExampleType
         {
             get { return typeof(SparseVector<double>.ReadOnly); }
         }
+
         public ClusteringResult Cluster(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
@@ -191,6 +198,7 @@ namespace Latino.Model
             }
             return clustering;
         }
+
         ClusteringResult IClustering<LblT>.Cluster(IExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);

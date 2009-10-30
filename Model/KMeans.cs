@@ -8,7 +8,7 @@
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
  *  Last modified: Aug-2009
- *  Revision:      Aug-2009
+ *  Revision:      Oct-2009
  * 
  ***************************************************************************/
 
@@ -17,8 +17,7 @@ using System;
 namespace Latino.Model
 {
     public class KMeans<LblT> : IClustering<LblT, SparseVector<double>.ReadOnly> 
-    {
-        
+    {        
         private ISimilarity<SparseVector<double>.ReadOnly> m_similarity
             = new CosineSimilarity();
         private Random m_rnd
@@ -30,11 +29,13 @@ namespace Latino.Model
         private int m_trials
             = 1;
         private int m_k;
+
         public KMeans(int k)
         {
             Utils.ThrowException(k < 2 ? new ArgumentOutOfRangeException("k") : null);
             m_k = k;
         }
+
         public Random Random
         {
             get { return m_rnd; }
@@ -44,6 +45,7 @@ namespace Latino.Model
                 m_rnd = value;
             }
         }
+
         public ISimilarity<SparseVector<double>.ReadOnly> Similarity
         {
             get { return m_similarity; }
@@ -53,11 +55,13 @@ namespace Latino.Model
                 m_similarity = value;
             }
         }
+
         public CentroidType CentroidType
         {
             get { return m_centroid_type; }
             set { m_centroid_type = value; }
         }
+
         public double Eps
         {
             get { return m_eps; }
@@ -67,6 +71,7 @@ namespace Latino.Model
                 m_eps = value;
             }
         }
+
         public int Trials
         {
             get { return m_trials; }
@@ -76,11 +81,14 @@ namespace Latino.Model
                 m_trials = value;
             }
         }
+
         // *** IClustering<LblT, SparseVector<double>.ReadOnly> interface implementation ***
+
         public Type RequiredExampleType
         {
             get { return typeof(SparseVector<double>.ReadOnly); }
         }
+
         public ClusteringResult Cluster(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
@@ -189,6 +197,7 @@ namespace Latino.Model
             }
             return best_clustering;
         }
+
         ClusteringResult IClustering<LblT>.Cluster(IExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);

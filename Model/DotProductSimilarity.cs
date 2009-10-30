@@ -5,11 +5,10 @@
  *  File:          DotProductSimilarity.cs
  *  Version:       1.0
  *  Desc:		   Similarity implementation
- *  Authors:       Miha Grcar
- *                 Matjaz Jursic
+ *  Authors:       Miha Grcar, Matjaz Jursic
  *  Created on:    Dec-2008
  *  Last modified: May-2009
- *  Revision:      May-2009
+ *  Revision:      Oct-2009
  *
  ***************************************************************************/
 
@@ -28,10 +27,13 @@ namespace Latino.Model
         public DotProductSimilarity()
         {
         }
+
         public DotProductSimilarity(BinarySerializer reader)
         {
         }
+
         // *** ISimilarity<SparseVector<double>.ReadOnly> interface implementation ***
+
         public double GetSimilarity(SparseVector<double>.ReadOnly a, SparseVector<double>.ReadOnly b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
@@ -69,7 +71,9 @@ namespace Latino.Model
             }
             return dot_prod;
         }
+
         // *** ISerializable interface implementation ***
+
         public void Save(BinarySerializer writer)
         {
         }

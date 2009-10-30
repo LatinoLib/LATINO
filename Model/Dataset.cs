@@ -7,8 +7,8 @@
  *  Desc:		   Dataset for training ML models
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Jan-2009
- *  Revision:      Jan-2009
+ *  Last modified: Oct-2009
+ *  Revision:      Oct-2009
  *
  ***************************************************************************/
 
@@ -28,35 +28,43 @@ namespace Latino.Model
     {
         private ArrayList<LabeledExample<LblT, ExT>> m_items
             = new ArrayList<LabeledExample<LblT, ExT>>();
+
         public Dataset()
         {
         }
+
         public Dataset(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
+
         public void Add(LblT label, ExT example)
         {
             Utils.ThrowException(label == null ? new ArgumentNullException("label") : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);            
             m_items.Add(new LabeledExample<LblT, ExT>(label, example));
         }
+
         public void RemoveAt(int index)
         {
             m_items.RemoveAt(index); // throws ArgumentOutOfRangeException
         }
+
         public void Clear()
         {
             m_items.Clear();
         }
+
         public void Shuffle()
         {
             m_items.Shuffle();
         }
+
         public void Shuffle(Random rnd)
         {
             m_items.Shuffle(rnd); // throws ArgumentNullException
         }
+
         public void SplitForCrossValidation(int num_folds, int fold, ref Dataset<LblT, ExT> train_set, ref Dataset<LblT, ExT> test_set)
         {
             Utils.ThrowException(m_items.Count < 2 ? new InvalidOperationException() : null);
@@ -85,15 +93,19 @@ namespace Latino.Model
                 }
             }
         }
+
         // *** IDataset<LblT, ExT> interface implementation ***
+
         public Type ExampleType
         {
             get { return typeof(ExT); }
         }
+
         public int Count
         {
             get { return m_items.Count; }
         }
+
         public LabeledExample<LblT, ExT> this[int index]
         {
             get
@@ -102,29 +114,34 @@ namespace Latino.Model
                 return m_items[index];
             }
         }
+
         object IEnumerableList.this[int index]
         {
             get { return this[index]; } // throws ArgumentOutOfRangeException
         }
+
         public IEnumerator<LabeledExample<LblT, ExT>> GetEnumerator()
         {
             return new ListEnum<LabeledExample<LblT, ExT>>(this);
         }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return new ListEnum(this);
         }
+
         public IDataset<LblT, NewExT> ConvertDataset<NewExT>(bool move)
         {
             return (IDataset<LblT, NewExT>)ConvertDataset(typeof(NewExT), move); // throws ArgumentNotSupportedException
         }
+
         public IDataset<LblT> ConvertDataset(Type new_ex_type, bool move)
         {
             Utils.ThrowException(new_ex_type == null ? new ArgumentNullException("new_ex_type") : null);
             if (new_ex_type == typeof(SparseVector<double>))
             {
-                Dataset<LblT, SparseVector<double>> new_dataset = new Dataset<LblT, SparseVector<double>>();                
-                for (int i = 0; i < m_items.Count; i++) 
+                Dataset<LblT, SparseVector<double>> new_dataset = new Dataset<LblT, SparseVector<double>>();
+                for (int i = 0; i < m_items.Count; i++)
                 {
                     LabeledExample<LblT, ExT> example = m_items[i];
                     new_dataset.Add(example.Label, ModelUtils.ConvertExample<SparseVector<double>>(example.Example));
@@ -135,8 +152,8 @@ namespace Latino.Model
             }
             else if (new_ex_type == typeof(SparseVector<double>.ReadOnly))
             {
-                Dataset<LblT, SparseVector<double>.ReadOnly> new_dataset = new Dataset<LblT, SparseVector<double>.ReadOnly>();                
-                for (int i = 0; i < m_items.Count; i++) 
+                Dataset<LblT, SparseVector<double>.ReadOnly> new_dataset = new Dataset<LblT, SparseVector<double>.ReadOnly>();
+                for (int i = 0; i < m_items.Count; i++)
                 {
                     LabeledExample<LblT, ExT> example = m_items[i];
                     new_dataset.Add(example.Label, ModelUtils.ConvertExample<SparseVector<double>.ReadOnly>(example.Example));
@@ -145,13 +162,25 @@ namespace Latino.Model
                 if (move) { m_items.Clear(); }
                 return new_dataset;
             }
-            else if (new_ex_type == typeof(ArrayList<int>.ReadOnly))
+            else if (new_ex_type == typeof(BinaryVector<int>))
             {
-                Dataset<LblT, ArrayList<int>.ReadOnly> new_dataset = new Dataset<LblT, ArrayList<int>.ReadOnly>();
+                Dataset<LblT, BinaryVector<int>> new_dataset = new Dataset<LblT, BinaryVector<int>>();
                 for (int i = 0; i < m_items.Count; i++)
                 {
                     LabeledExample<LblT, ExT> example = m_items[i];
-                    new_dataset.Add(example.Label, ModelUtils.ConvertExample<ArrayList<int>.ReadOnly>(example.Example));
+                    new_dataset.Add(example.Label, ModelUtils.ConvertExample<BinaryVector<int>>(example.Example));
+                    if (move) { m_items[i] = new LabeledExample<LblT, ExT>(); }
+                }
+                if (move) { m_items.Clear(); }
+                return new_dataset;
+            }
+            else if (new_ex_type == typeof(BinaryVector<int>.ReadOnly))
+            {
+                Dataset<LblT, BinaryVector<int>.ReadOnly> new_dataset = new Dataset<LblT, BinaryVector<int>.ReadOnly>();
+                for (int i = 0; i < m_items.Count; i++)
+                {
+                    LabeledExample<LblT, ExT> example = m_items[i];
+                    new_dataset.Add(example.Label, ModelUtils.ConvertExample<BinaryVector<int>.ReadOnly>(example.Example));
                     if (move) { m_items[i] = new LabeledExample<LblT, ExT>(); }
                 }
                 if (move) { m_items.Clear(); }
@@ -174,12 +203,15 @@ namespace Latino.Model
                 throw new ArgumentNotSupportedException("new_ex_type");
             }
         }
+
         // *** ISerializable interface implementation ***
+
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             m_items.Save(writer); // throws serialization-related exceptions
         }
+
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);

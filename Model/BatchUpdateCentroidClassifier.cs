@@ -8,7 +8,7 @@
  *  Author:        Miha Grcar
  *  Created on:    May-2009
  *  Last modified: May-2009
- *  Revision:      May-2009
+ *  Revision:      Oct-2009
  *
  ***************************************************************************/
 
@@ -36,18 +36,22 @@ namespace Latino.Model
             = 0.8;
         private bool m_positive_values_only
             = false;
+
         public BatchUpdateCentroidClassifier()
         {
         }
+
         public BatchUpdateCentroidClassifier(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
+
         public IEqualityComparer<LblT> LabelEqualityComparer
         {
             get { return m_lbl_cmp; }
             set { m_lbl_cmp = value; }
         }
+
         public int Iterations
         {
             get { return m_iterations; }
@@ -57,6 +61,7 @@ namespace Latino.Model
                 m_iterations = value;
             }
         }
+
         public double Damping
         {
             get { return m_damping; }
@@ -66,20 +71,25 @@ namespace Latino.Model
                 m_damping = value;
             }
         }
+
         public bool PositiveValuesOnly
         {
             get { return m_positive_values_only; }
             set { m_positive_values_only = value; }
         }
+
         // *** IModel<LblT, SparseVector<double>.ReadOnly> interface implementation ***
+
         public Type RequiredExampleType
         {
             get { return typeof(SparseVector<double>.ReadOnly); }
         }
+
         public bool IsTrained
         {
             get { return m_centroids != null; }
         }
+
         public void Train(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
@@ -144,12 +154,14 @@ namespace Latino.Model
                 learn_rate *= m_damping;
             }
         }
+
         void IModel<LblT>.Train(IExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(!(dataset is IExampleCollection<LblT, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
             Train((IExampleCollection<LblT, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
         }
+
         public ClassifierResult<LblT> Classify(SparseVector<double>.ReadOnly example)
         {
             Utils.ThrowException(m_centroids == null ? new InvalidOperationException() : null);
@@ -158,18 +170,21 @@ namespace Latino.Model
             foreach (KeyValuePair<LblT, CentroidData> labeled_centroid in m_centroids)
             {
                 double sim = labeled_centroid.Value.GetSimilarity(example);
-                result.Inner.Add(new KeyDat<double, LblT>(sim, labeled_centroid.Key));
+                result.Items.Add(new KeyDat<double, LblT>(sim, labeled_centroid.Key));
             }
-            result.Inner.Sort(new DescSort<KeyDat<double, LblT>>());
+            result.Items.Sort(new DescSort<KeyDat<double, LblT>>());
             return result;
         }
+
         ClassifierResult<LblT> IModel<LblT>.Classify(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Utils.ThrowException(!(example is SparseVector<double>.ReadOnly) ? new ArgumentTypeException("example") : null);
             return Classify((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
         }
+
         // *** ISerializable interface implementation ***
+
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
@@ -183,6 +198,7 @@ namespace Latino.Model
             writer.WriteDouble(m_damping);
             writer.WriteBool(m_positive_values_only);
         }
+
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
@@ -192,12 +208,14 @@ namespace Latino.Model
             m_damping = reader.ReadDouble();
             m_positive_values_only = reader.ReadBool();
         }
+
         /* .-----------------------------------------------------------------------
            |
            |  Class CentroidData
            |
            '-----------------------------------------------------------------------
         */
+        // *** would it make sense to use Centroid<LblT> within CentroidData?
         private class CentroidData : ISerializable
         {
             public Dictionary<int, double> CentroidSum
@@ -206,13 +224,16 @@ namespace Latino.Model
                 = new Dictionary<int, double>();
             public double CentroidLen
                 = -1;
+
             public CentroidData()
             { 
             }
+
             public CentroidData(BinarySerializer reader)
             {
-                Load(reader); // throws ArgumentNullException, serialization-related exceptions
+                Load(reader); 
             }
+
             public void AddToSum(SparseVector<double>.ReadOnly vec)
             {
                 foreach (IdxDat<double> item in vec)
@@ -227,6 +248,7 @@ namespace Latino.Model
                     }
                 }
             }
+
             public void AddToDiff(double mult, SparseVector<double>.ReadOnly vec)
             {                
                 foreach (IdxDat<double> item in vec)
@@ -241,6 +263,7 @@ namespace Latino.Model
                     }
                 }
             }
+
             public void UpdateCentroid(bool positive_values_only)
             {
                 foreach (KeyValuePair<int, double> item in CentroidDiff)
@@ -268,6 +291,7 @@ namespace Latino.Model
                     CentroidSum = tmp;
                 }
             }
+
             public void UpdateCentroidLen()
             {
                 CentroidLen = 0;
@@ -278,6 +302,7 @@ namespace Latino.Model
                 //Utils.VerboseLine(CentroidLen); // *** CentroidLen overflow?
                 CentroidLen = Math.Sqrt(CentroidLen);
             }
+
             public double GetSimilarity(SparseVector<double>.ReadOnly vec)
             {
                 double result = 0;
@@ -290,18 +315,17 @@ namespace Latino.Model
                 }
                 return result / CentroidLen;
             }
+
             // *** ISerializable interface implementation ***
+
             public void Save(BinarySerializer writer)
             {
-                Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
-                // the following statements throw serialization-related exceptions
                 Utils.SaveDictionary(CentroidSum, writer);
                 writer.WriteDouble(CentroidLen);
             }
+
             public void Load(BinarySerializer reader)
             {
-                Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-                // the following statements throw serialization-related exceptions            
                 CentroidSum = Utils.LoadDictionary<int, double>(reader);
                 CentroidLen = reader.ReadDouble();
             }

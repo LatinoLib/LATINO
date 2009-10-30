@@ -8,7 +8,7 @@
  *  Author:        Miha Grcar
  *  Created on:    Nov-2007
  *  Last modified: Jul-2009
- *  Revision:      Jul-2009
+ *  Revision:      Oct-2009
  *
  ***************************************************************************/
 
@@ -28,17 +28,21 @@ namespace Latino.Model
             = null;
         private int m_num_iter
             = -1;
+
         public LSqrModel()
         {
         }
+
         public LSqrModel(int num_iter)
         {
             m_num_iter = num_iter;
         }
+
         public LSqrModel(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
+
         public ArrayList<double>.ReadOnly Solution
         {
             get
@@ -47,15 +51,19 @@ namespace Latino.Model
                 return m_sol;
             }
         }
+
         // *** IModel<double, SparseVector<double>.ReadOnly> interface implementation ***
+
         public Type RequiredExampleType
         {
             get { return typeof(SparseVector<double>.ReadOnly); }
         }
+
         public bool IsTrained
         {
             get { return m_sol != null; }
         }
+
         public void Train(IExampleCollection<double, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
@@ -91,12 +99,14 @@ namespace Latino.Model
             mat.Dispose();
             mat_t.Dispose();
         }
+
         void IModel<double>.Train(IExampleCollection<double> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(!(dataset is IExampleCollection<double, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
             Train((IExampleCollection<double, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
         }
+
         public ClassifierResult<double> Classify(SparseVector<double>.ReadOnly example)
         {
             Utils.ThrowException(m_sol == null ? new InvalidOperationException() : null);
@@ -108,13 +118,16 @@ namespace Latino.Model
             }
             return new ClassifierResult<double>(new KeyDat<double, double>[] { new KeyDat<double, double>(result, result) });
         }
+
         ClassifierResult<double> IModel<double>.Classify(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Utils.ThrowException(!(example is SparseVector<double>.ReadOnly) ? new ArgumentTypeException("example") : null);
             return Classify((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
         }
+
         // *** ISerializable interface implementation ***
+
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
@@ -122,6 +135,7 @@ namespace Latino.Model
             writer.WriteInt(m_num_iter);
             writer.WriteObject(m_sol);
         }
+
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
