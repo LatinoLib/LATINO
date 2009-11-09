@@ -2,26 +2,26 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          ISimilarity.cs
+ *  File:          IStemmer.cs
  *  Version:       1.0
- *  Desc:		   Interface definition
+ *  Desc:		   Word stemmer interface 
  *  Author:        Miha Grcar
- *  Created on:    Aug-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Created on:    Dec-2008
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
-namespace Latino.Model
+namespace Latino.TextMining
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Interface ISimilarity<T>
+       |  Interface IStemmer
        |
        '-----------------------------------------------------------------------
     */
-    public interface ISimilarity<T> : ISerializable
+    public interface IStemmer : ISerializable
     {
-        double GetSimilarity(T a, T b);
+        string GetStem(string word);
     }
 }

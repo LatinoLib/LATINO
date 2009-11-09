@@ -24,7 +24,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class Cluster : ICloneable<Cluster>, IDeeplyCloneable<Cluster>, ISerializable
+    public class Cluster : ISerializable
     {
         private Cluster m_parent
             = null;
@@ -166,34 +166,6 @@ namespace Latino.Model
             {
                 child.ToString(tab + "\t", str_builder, compact);
             }
-        }
-
-        // *** Cloneable<ClusteringResult> interface implementation ***
-
-        public Cluster Clone()
-        {
-            // *** quick and dirty
-            BinarySerializer mem_ser = new BinarySerializer();
-            Save(mem_ser);
-            mem_ser.Stream.Position = 0;
-            return new Cluster(mem_ser);
-        }
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
-        // *** IDeeplyCloneable<ClusteringResult> interface implementation ***
-
-        public Cluster DeepClone()
-        {
-            return Clone();
-        }
-
-        object IDeeplyCloneable.DeepClone()
-        {
-            return Clone();
         }
 
         // *** ISerializable interface implementation ***

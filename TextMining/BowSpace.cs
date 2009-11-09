@@ -1,19 +1,18 @@
 /*==========================================================================;
  *
- *  (c) 2008-09 JSI.  All rights reserved.
+ *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:          BowSpace.cs
  *  Version:       1.0
  *  Desc:		   Bag-of-words space
  *  Author:        Miha Grcar
  *  Created on:    Dec-2008
- *  Last modified: Apr-2009
- *  Revision:      Apr-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Latino.Model;
@@ -35,80 +34,6 @@ namespace Latino.TextMining
 
     /* .-----------------------------------------------------------------------
        |
-       |  Class Word
-       |
-       '-----------------------------------------------------------------------
-    */
-    public class Word : ISerializable, IEnumerable<KeyValuePair<string, int>>
-    {
-        internal int m_idx
-            = -1;
-        internal Dictionary<string, int> m_forms
-            = new Dictionary<string, int>();
-        internal string m_most_frequent_form;
-        internal int m_doc_freq
-            = 1;
-        internal int m_freq
-            = 1;
-        internal double m_idf
-            = -1;
-        internal Word(BinarySerializer reader)
-        {
-            Load(reader); 
-        }
-        internal Word(string word)
-        {
-            m_most_frequent_form = word;
-            m_forms.Add(word, 1);
-        }
-        public string MostFrequentForm
-        {
-            get { return m_most_frequent_form; }
-        }
-        public int DocFreq
-        {
-            get { return m_doc_freq; }
-        }
-        public int Freq
-        {
-            get { return m_freq; }
-        }
-        public double Idf
-        {
-            get { return m_idf; }
-        }
-        // *** IEnumerable<KeyValuePair<string, int>> interface implementation ***
-        public IEnumerator<KeyValuePair<string, int>> GetEnumerator()
-        {
-            return m_forms.GetEnumerator(); 
-        }
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return m_forms.GetEnumerator(); 
-        }
-        // *** ISerializable interface implementation ***
-        public void Save(BinarySerializer writer)
-        {
-            Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
-            // the following statements throw serialization-related exceptions
-            writer.WriteInt(m_idx);
-            writer.WriteString(m_most_frequent_form);
-            writer.WriteInt(m_doc_freq);
-            writer.WriteInt(m_freq);
-            writer.WriteDouble(m_idf);
-        }
-        internal void Load(BinarySerializer reader)
-        {
-            m_idx = reader.ReadInt();
-            m_most_frequent_form = reader.ReadString();
-            m_doc_freq = reader.ReadInt();
-            m_freq = reader.ReadInt();
-            m_idf = reader.ReadDouble();
-        }
-    }
-
-    /* .-----------------------------------------------------------------------
-       |
        |  Class BowSpace
        |
        '-----------------------------------------------------------------------
@@ -122,6 +47,7 @@ namespace Latino.TextMining
             public string Stem
                 = null;
         }
+
         private ITokenizer m_tokenizer
             = new UnicodeTokenizer();
         private Set<string>.ReadOnly m_stop_words
@@ -146,6 +72,7 @@ namespace Latino.TextMining
             = true;
         private bool m_keep_word_forms
             = false;
+
         public BowSpace()
         {
             // configure tokenizer
@@ -153,6 +80,7 @@ namespace Latino.TextMining
             tokenizer.Filter = TokenizerFilter.AlphanumLoose;
             tokenizer.MinTokenLen = 2;
         }
+
         public ITokenizer Tokenizer
         {
             get { return m_tokenizer; }
@@ -162,16 +90,19 @@ namespace Latino.TextMining
                 m_tokenizer = value; 
             }
         }
+
         public Set<string>.ReadOnly StopWords
         {
             get { return m_stop_words; }
             set { m_stop_words = value; }
         }
+
         public IStemmer Stemmer
         {
             get { return m_stemmer; }
             set { m_stemmer = value; }
         }
+
         public int MaxNGramLen
         {
             get { return m_max_n_gram_len; }
@@ -181,6 +112,7 @@ namespace Latino.TextMining
                 m_max_n_gram_len = value;
             }
         }
+
         public int MinWordFreq
         {
             get { return m_min_word_freq; }
@@ -190,11 +122,13 @@ namespace Latino.TextMining
                 m_min_word_freq = value;
             }
         }
+
         public WordWeightType WordWeightType
         {
             get { return m_word_weight_type; }
             set { m_word_weight_type = value; }
         }
+
         public double CutLowWeightsPerc
         {
             get { return m_cut_low_weights_perc; }
@@ -204,24 +138,29 @@ namespace Latino.TextMining
                 m_cut_low_weights_perc = value;
             }
         }
+
         public bool NormalizeVectors
         {
             get { return m_normalize_vectors; }
             set { m_normalize_vectors = value; }
         }
+
         public ArrayList<SparseVector<double>.ReadOnly>.ReadOnly BowVectors
         {
             get { return m_bow_vectors; }
         }
+
         public ArrayList<Word>.ReadOnly Words
         {
             get { return m_idx_info; }
         }
+
         public bool KeepWordForms
         {
             get { return m_keep_word_forms; }
             set { m_keep_word_forms = value; }
         }
+
         public void OutputStats(StreamWriter writer)
         {
             writer.WriteLine("Word\tStem\tF\tDF");
@@ -230,6 +169,7 @@ namespace Latino.TextMining
                 writer.WriteLine("{0}\t{1}\t{2}\t{3}", word_info.Value.m_most_frequent_form, word_info.Key, word_info.Value.m_freq, word_info.Value.m_doc_freq);
             }
         }
+
         private void CutLowWeights(ref SparseVector<double> vec)
         {
             if (m_cut_low_weights_perc > 0)
@@ -268,6 +208,7 @@ namespace Latino.TextMining
                 vec = new_vec;
             }
         }
+
         private void ProcessNGramsPass1(ArrayList<WordStem> n_grams, int start_idx, Set<string> doc_words)
         {
             string n_gram_stem = "";
@@ -304,6 +245,7 @@ namespace Latino.TextMining
                 n_gram_stem += " ";
             }
         }
+
         private void ProcessNGramsPass2(ArrayList<WordStem> n_grams, int start_idx, Dictionary<int, int> tf_vec)
         {
             string n_gram_stem = "";
@@ -335,10 +277,12 @@ namespace Latino.TextMining
                 n_gram_stem += " ";
             }
         }
+
         public void Initialize(IEnumerable<string> documents)
         {
             Initialize(documents, /*large_scale=*/false);
         }
+
         public void Initialize(IEnumerable<string> documents, bool large_scale)
         {
             Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);            
@@ -584,6 +528,7 @@ namespace Latino.TextMining
             }
             Utils.VerboseLine("");
         }
+
         private void ProcessDocumentNGrams(ArrayList<WordStem> n_grams, int start_idx, Dictionary<int, int> tf_vec)
         {
             string n_gram_stem = "";
@@ -608,6 +553,7 @@ namespace Latino.TextMining
                 n_gram_stem += " ";
             }
         }
+
         public SparseVector<double> ProcessDocument(string document)
         {
             Dictionary<int, int> tf_vec = new Dictionary<int, int>();
@@ -681,6 +627,7 @@ namespace Latino.TextMining
             if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(doc_vec); }
             return doc_vec;
         }
+
         public ArrayList<KeyDat<double, string>> GetKeywords(SparseVector<double>.ReadOnly bow_vec)
         {
             Utils.ThrowException(bow_vec == null ? new ArgumentNullException("bow_vec") : null);            
@@ -692,6 +639,7 @@ namespace Latino.TextMining
             keywords.Sort(new DescSort<KeyDat<double, string>>());
             return keywords;
         }
+
         public ArrayList<string> GetKeywords(SparseVector<double>.ReadOnly bow_vec, int n)
         {
             Utils.ThrowException(n <= 0 ? new ArgumentOutOfRangeException("n") : null);
@@ -704,47 +652,9 @@ namespace Latino.TextMining
             }
             return keyword_list;
         }
-        public ArrayList<KeyDat<double, string>> GetKeywordsAllForms(SparseVector<double>.ReadOnly bow_vec, bool distribute_weight)
-        {            
-            Utils.ThrowException(bow_vec == null ? new ArgumentNullException("bow_vec") : null);
-            if (!distribute_weight) // inherit weight from the most frequent word form
-            {
-                ArrayList<KeyDat<Pair<double, int>, string>> keywords = new ArrayList<KeyDat<Pair<double, int>, string>>(bow_vec.Count);
-                foreach (IdxDat<double> item in bow_vec)
-                {
-                    Word word = m_idx_info[item.Idx]; // throws ArgumentOutOfRangeException
-                    foreach (KeyValuePair<string, int> word_form_info in word.m_forms)
-                    {
-                        keywords.Add(new KeyDat<Pair<double, int>, string>(new Pair<double, int>(item.Dat, word_form_info.Value), word_form_info.Key));
-                    }
-                }
-                keywords.Sort(new DescSort<KeyDat<Pair<double, int>, string>>());
-                ArrayList<KeyDat<double, string>> keyword_list = new ArrayList<KeyDat<double, string>>(keywords.Count);
-                foreach (KeyDat<Pair<double, int>, string> item in keywords)
-                {
-                    keyword_list.Add(new KeyDat<double, string>(item.Key.First, item.Dat));
-                }
-                return keyword_list;
-            }
-            else
-            {
-                return null;
-                // !!!!!!!! TBD !!!!!!!!!!!!!
-            }
-        }
-        public ArrayList<string> GetKeywordsAllForms(SparseVector<double>.ReadOnly bow_vec, int n, bool distribute_weight)
-        {
-            Utils.ThrowException(n <= 0 ? new ArgumentOutOfRangeException("n") : null);
-            ArrayList<KeyDat<double, string>> keywords = GetKeywordsAllForms(bow_vec, distribute_weight); // throws ArgumentNullException, ArgumentOutOfRangeException            
-            int keyword_count = Math.Min(n, keywords.Count);
-            ArrayList<string> keyword_list = new ArrayList<string>(keyword_count);
-            for (int i = 0; i < keyword_count; i++)
-            {
-                keyword_list.Add(keywords[i].Dat);
-            }
-            return keyword_list;
-        }
+
         // *** ISerializable interface implementation ***
+
         public void SaveVocabulary(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
@@ -756,6 +666,7 @@ namespace Latino.TextMining
                 item.Value.Save(writer);
             }
         }
+
         public void LoadVocabulary(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
@@ -778,6 +689,7 @@ namespace Latino.TextMining
                 m_idx_info.Add(item.Dat);
             }
         }
+
         public void Save(BinarySerializer writer)
         {
             // the following statements throw serialization-related exceptions
@@ -792,6 +704,7 @@ namespace Latino.TextMining
             writer.WriteDouble(m_cut_low_weights_perc);
             writer.WriteBool(m_normalize_vectors);
         }
+
         public void Load(BinarySerializer reader)
         {
             // the following statements throw serialization-related exceptions

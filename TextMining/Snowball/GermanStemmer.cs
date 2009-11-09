@@ -23,7 +23,7 @@ namespace SF.Snowball.Ext
 {
 	
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
-	public class GermanStemmer : SnowballProgram
+    public class GermanStemmer : SnowballProgram, ISnowballStemmer
 	{
 		public GermanStemmer()
 		{

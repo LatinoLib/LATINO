@@ -7,7 +7,7 @@
  *  Desc:		   Least-squares linear regression model
  *  Author:        Miha Grcar
  *  Created on:    Nov-2007
- *  Last modified: Jul-2009
+ *  Last modified: Oct-2009
  *  Revision:      Oct-2009
  *
  ***************************************************************************/

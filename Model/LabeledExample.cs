@@ -7,7 +7,7 @@
  *  Desc:		   Labeled example data structure 
  *  Author:        Miha Grcar
  *  Created on:    Jan-2009
- *  Last modified: Jan-2009
+ *  Last modified: Oct-2009
  *  Revision:      Oct-2009
  *
  ***************************************************************************/

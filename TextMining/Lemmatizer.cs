@@ -2,83 +2,83 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Stemmer.cs
+ *  File:          Lemmatizer.cs
  *  Version:       1.0
- *  Desc:		   Snowball word stemmer (LATINO wrapper)
+ *  Desc:		   LemmaSharp word lemmatizer (LATINO wrapper)
  *  Author:        Miha Grcar
- *  Created on:    Dec-2008
+ *  Created on:    Jan-2009
  *  Last modified: Nov-2009
  *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
 using System;
-using SF.Snowball.Ext;
+using LemmaSharp;
 
 namespace Latino.TextMining
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class Stemmer
+       |  Class Lemmatizer
        |
        '-----------------------------------------------------------------------
     */
-    public class Stemmer : IStemmer, ISerializable
+    public class Lemmatizer : IStemmer, ISerializable
     {
         private Language m_language;
-        private ISnowballStemmer m_stemmer;
+        private LemmaSharp.Lemmatizer m_lemmatizer;
 
-        public Stemmer(Language language)
+        public Lemmatizer(Language language)
         {
             m_language = language;
-            bool success = CreateStemmer();
+            bool success = CreateLemmatizer();
             Utils.ThrowException(!success ? new ArgumentNotSupportedException("language") : null);
         }
 
-        public Stemmer(BinarySerializer reader)
+        public Lemmatizer(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        private bool CreateStemmer()
+        private bool CreateLemmatizer()
         {
             switch (m_language)
             {
-                case Language.English:
-                    m_stemmer = new EnglishStemmer();
+                case Language.Slovene:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.Slovene);
                     return true;
-                case Language.German:
-                    m_stemmer = new German2Stemmer();
+                case Language.Bulgarian:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.Bulgarian);
+                    return true;
+                case Language.Czech:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.Czech);
+                    return true;
+                case Language.Estonian:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.Estonian);
+                    return true;
+                case Language.Hungarian:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.Hungarian);
+                    return true;
+                case Language.Romanian:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.Romanian);
+                    return true;
+                case Language.Serbian:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.Serbian);
+                    return true;
+                case Language.English:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.English);
                     return true;
                 case Language.French:
-                    m_stemmer = new FrenchStemmer();
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.French);
                     return true;
-                case Language.Spanish:
-                    m_stemmer = new SpanishStemmer();
+                case Language.German:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.German);
                     return true;
                 case Language.Italian:
-                    m_stemmer = new ItalianStemmer();
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.Italian);
                     return true;
-                case Language.Portuguese:
-                    m_stemmer = new PortugueseStemmer();
-                    return true;
-                case Language.Danish:
-                    m_stemmer = new DanishStemmer();
-                    return true;
-                case Language.Dutch:
-                    m_stemmer = new DutchStemmer();
-                    return true;
-                case Language.Finnish:
-                    m_stemmer = new FinnishStemmer();
-                    return true;
-                case Language.Norwegian:
-                    m_stemmer = new NorwegianStemmer();
-                    return true;
-                case Language.Russian:
-                    m_stemmer = new RussianStemmer();
-                    return true;
-                case Language.Swedish:
-                    m_stemmer = new SwedishStemmer();
+                case Language.Spanish:
+                    m_lemmatizer = new LemmatizerPrebuiltCompressed(LanguagePrebuilt.Spanish);
                     return true;
                 default:
                     return false;
@@ -90,9 +90,7 @@ namespace Latino.TextMining
         public string GetStem(string word)
         {
             Utils.ThrowException(word == null ? new ArgumentNullException("word") : null);
-            m_stemmer.SetCurrent(word);
-            m_stemmer.Stem();
-            return m_stemmer.GetCurrent();
+            return m_lemmatizer.Lemmatize(word);
         }
 
         // *** ISerializable interface implementation ***
@@ -109,7 +107,7 @@ namespace Latino.TextMining
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions 
             m_language = (Language)reader.ReadInt();
-            CreateStemmer();
+            CreateLemmatizer();
         }
     }
 }

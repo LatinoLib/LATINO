@@ -23,7 +23,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class ClusteringResult : ICloneable<ClusteringResult>, IDeeplyCloneable<ClusteringResult>, ISerializable
+    public class ClusteringResult : ISerializable
     {
         private ArrayList<Cluster> m_roots
             = new ArrayList<Cluster>();
@@ -70,32 +70,6 @@ namespace Latino.Model
                 str_builder.AppendLine(root.ToString(format)); // throws ArgumentNotSupportedException
             }
             return str_builder.ToString().TrimEnd('\n', '\r');
-        }
-
-        // *** ICloneable<ClusteringResult> interface implementation ***
-
-        public ClusteringResult Clone()
-        {
-            ClusteringResult clone = new ClusteringResult();
-            clone.m_roots = m_roots.DeepClone();
-            return clone;
-        }
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
-        // *** IDeeplyCloneable<ClusteringResult> interface implementation ***
-
-        public ClusteringResult DeepClone()
-        {
-            return Clone();
-        }
-
-        object IDeeplyCloneable.DeepClone()
-        {
-            return Clone();
         }
 
         // *** ISerializable interface implementation ***

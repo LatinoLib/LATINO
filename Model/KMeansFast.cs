@@ -7,7 +7,7 @@
  *  Desc:		   K-means clustering algorithm (optimized for speed)
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
- *  Last modified: Aug-2009
+ *  Last modified: Oct-2009
  *  Revision:      Oct-2009
  * 
  ***************************************************************************/

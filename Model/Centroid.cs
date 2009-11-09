@@ -7,7 +7,7 @@
  *  Desc:		   Centroid vector structure (used for speed optimizations)
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
- *  Last modified: Aug-2009
+ *  Last modified: Oct-2009
  *  Revision:      Oct-2009
  * 
  ***************************************************************************/

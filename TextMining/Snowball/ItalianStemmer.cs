@@ -23,7 +23,7 @@ namespace SF.Snowball.Ext
 {
 	
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
-	public class ItalianStemmer : SnowballProgram
+    public class ItalianStemmer : SnowballProgram, ISnowballStemmer
 	{
 		public ItalianStemmer()
 		{
@@ -276,7 +276,8 @@ replab2_brk: ;
 			do 
 			{
 				// (, line 58
-				// or, line 60
+				// or, line 60
+
 lab2: 
 				do 
 				{
@@ -288,7 +289,8 @@ lab2:
 						{
 							goto lab2_brk;
 						}
-						// or, line 59
+						// or, line 59
+
 lab4: 
 						do 
 						{
@@ -1183,7 +1185,8 @@ lab2_brk: ;
 			
 			cursor = limit - v_3;
 			// do, line 185
-			v_4 = limit - cursor;			do 
+			v_4 = limit - cursor;
+			do 
 			{
 				// (, line 185
 				// or, line 185
