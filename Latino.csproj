@@ -54,6 +54,7 @@
     <Compile Include="IBinaryOperator.cs" />
     <Compile Include="ICloneable.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Model\IDistance.cs" />
     <Compile Include="Model\IClustering.cs" />
     <Compile Include="Model\IDataset.cs" />
     <Compile Include="Model\IExampleCollection.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Model\MaximumEntropyClassifier.cs" />
     <Compile Include="Model\ModelUtils.cs" />
     <Compile Include="Model\DotProductSimilarity.cs" />
+    <Compile Include="Model\SparseVectorDataset.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Pair.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -150,6 +152,7 @@
     <Compile Include="TextMining\StopWords\SpanishStopWords.cs" />
     <Compile Include="TextMining\Word.cs" />
     <Compile Include="Visualization\BoundingArea.cs" />
+    <Compile Include="Visualization\Vector2D.cs" />
     <Compile Include="Visualization\DrawableObjectEventArgs.cs" />
     <Compile Include="Visualization\DrawableObjectViewer.cs">
       <SubType>UserControl</SubType>
@@ -162,10 +165,12 @@
     <Compile Include="Visualization\Ellipse.cs" />
     <Compile Include="Visualization\FilledDrawnObject.cs" />
     <Compile Include="Visualization\DrawableGroup.cs" />
+    <Compile Include="Visualization\ILayoutAlgorithm.cs" />
     <Compile Include="Visualization\Line.cs" />
+    <Compile Include="Visualization\StressMajorization.cs" />
     <Compile Include="Visualization\VisualizationUtils.cs" />
     <Compile Include="Visualization\TransformParams.cs" />
-    <Compile Include="Visualization\Vector2D.cs" />
+    <Compile Include="Visualization\VectorF.cs" />
     <Compile Include="Visualization\VisualizationInterfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Set.cs" />

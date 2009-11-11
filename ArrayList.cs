@@ -94,14 +94,26 @@ namespace Latino
 
         public T First
         {
-            get { return this[0]; } // throws ArgumentOutOfRangeException
-            set { this[0] = value; } // throws ArgumentOutOfRangeException
+            get
+            {
+                return this[0]; // throws ArgumentOutOfRangeException
+            }
+            set
+            {
+                this[0] = value; // throws ArgumentOutOfRangeException
+            }
         }
 
         public T Last
         {
-            get { return this[Count - 1]; } // throws ArgumentOutOfRangeException
-            set { this[Count - 1] = value; } // throws ArgumentOutOfRangeException
+            get
+            {
+                return this[Count - 1]; // throws ArgumentOutOfRangeException
+            }
+            set
+            {
+                this[Count - 1] = value; // throws ArgumentOutOfRangeException
+            }
         }
 
         public NewT[] ToArray<NewT>()

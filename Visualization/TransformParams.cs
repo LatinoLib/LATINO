@@ -90,7 +90,7 @@ namespace Latino.Visualization
             rect.Y += m_translate_y;
             return rect;
         }
-        public Vector2D Transform(Vector2D vec)
+        public VectorF Transform(VectorF vec)
         {
             // scale
             vec.X *= m_scale_factor;

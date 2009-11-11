@@ -45,7 +45,7 @@ namespace Latino.Visualization
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
             x -= r_x;
             y -= r_y;
-            Vector2D center = tr.Transform(new Vector2D(x, y));
+            VectorF center = tr.Transform(new VectorF(x, y));
             float d_x = tr.Transform(2f * r_x);
             float d_y = tr.Transform(2f * r_y);
             lock (brush) { gfx.FillEllipse(brush, center.X, center.Y, d_x, d_y); }
@@ -62,13 +62,13 @@ namespace Latino.Visualization
         public static bool IsObjectAt(float pt_x, float pt_y, TransformParams tr, float c_x, float c_y, float r_x, float r_y)
         {
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
-            Vector2D center = tr.Transform(new Vector2D(c_x, c_y));
-            Vector2D pt = new Vector2D(pt_x, pt_y);
+            VectorF center = tr.Transform(new VectorF(c_x, c_y));
+            VectorF pt = new VectorF(pt_x, pt_y);
             if (pt == center) { return true; }
             float angle = (pt - center).GetAngle();
             float x = (float)Math.Cos(angle) * tr.Transform(r_x);
             float y = (float)Math.Sin(angle) * tr.Transform(r_y);
-            float r = new Vector2D(x, y).GetLength();
+            float r = new VectorF(x, y).GetLength();
             return (center - pt).GetLength() <= r;            
         }
         public float X

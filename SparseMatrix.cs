@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:          SparseMatrix.cs
- *  Version:       2.0
+ *  Version:       1.0
  *  Desc:		   Sparse matrix data structure 
  *  Author:        Miha Grcar
  *  Created on:    Apr-2007

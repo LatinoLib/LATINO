@@ -46,13 +46,13 @@ namespace Latino.Visualization
             Utils.ThrowException(gfx == null ? new ArgumentNullException("gfx") : null);
             Utils.ThrowException(pen == null ? new ArgumentNullException("pen") : null);
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
-            Vector2D pt1 = tr.Transform(new Vector2D(x1, y1));
-            Vector2D pt2 = tr.Transform(new Vector2D(x2, y2));
+            VectorF pt1 = tr.Transform(new VectorF(x1, y1));
+            VectorF pt2 = tr.Transform(new VectorF(x2, y2));
             gfx.DrawLine(pen, pt1, pt2);
         }
-        private static bool LineIntersectVertical(Vector2D pt1, Vector2D pt2, float x, ref float y)
+        private static bool LineIntersectVertical(VectorF pt1, VectorF pt2, float x, ref float y)
         {
-            if (pt1.X > pt2.X) { Vector2D tmp = pt1; pt1 = pt2; pt2 = tmp; } // swap points
+            if (pt1.X > pt2.X) { VectorF tmp = pt1; pt1 = pt2; pt2 = tmp; } // swap points
             if (pt1.X < x && pt2.X > x)
             {
                 float dY = pt2.Y - pt1.Y;
@@ -69,29 +69,29 @@ namespace Latino.Visualization
             }
             return false;
         }
-        private static bool LineIntersectHorizontal(Vector2D pt1, Vector2D pt2, float y, ref float x)
+        private static bool LineIntersectHorizontal(VectorF pt1, VectorF pt2, float y, ref float x)
         {
-            return LineIntersectVertical(new Vector2D(pt1.Y, pt1.X), new Vector2D(pt2.Y, pt2.X), y, ref x);
+            return LineIntersectVertical(new VectorF(pt1.Y, pt1.X), new VectorF(pt2.Y, pt2.X), y, ref x);
         }
-        private static bool LineIntersectRectangle(Vector2D pt1, Vector2D pt2, RectangleF rect, ref Vector2D isect_pt1, ref Vector2D isect_pt2)
+        private static bool LineIntersectRectangle(VectorF pt1, VectorF pt2, RectangleF rect, ref VectorF isect_pt1, ref VectorF isect_pt2)
         {
             float y = 0, x = 0;
-            ArrayList<Vector2D> points = new ArrayList<Vector2D>(2); 
+            ArrayList<VectorF> points = new ArrayList<VectorF>(2); 
             if (LineIntersectVertical(pt1, pt2, rect.X, ref y))
             {
-                if (y > rect.Y && y < rect.Y + rect.Height) { points.Add(new Vector2D(rect.X, y)); }
+                if (y > rect.Y && y < rect.Y + rect.Height) { points.Add(new VectorF(rect.X, y)); }
             }
             if (LineIntersectVertical(pt1, pt2, rect.X + rect.Width, ref y))
             {
-                if (y > rect.Y && y < rect.Y + rect.Height) { points.Add(new Vector2D(rect.X + rect.Width, y)); }
+                if (y > rect.Y && y < rect.Y + rect.Height) { points.Add(new VectorF(rect.X + rect.Width, y)); }
             }
             if (LineIntersectHorizontal(pt1, pt2, rect.Y, ref x))
             {
-                if (x > rect.X && x < rect.X + rect.Width) { points.Add(new Vector2D(x, rect.Y)); }
+                if (x > rect.X && x < rect.X + rect.Width) { points.Add(new VectorF(x, rect.Y)); }
             }
             if (LineIntersectHorizontal(pt1, pt2, rect.Y + rect.Height, ref x))
             {
-                if (x > rect.X && x < rect.X + rect.Width) { points.Add(new Vector2D(x, rect.Y + rect.Height)); }
+                if (x > rect.X && x < rect.X + rect.Width) { points.Add(new VectorF(x, rect.Y + rect.Height)); }
             }
             if (points.Count == 2)
             {
@@ -120,10 +120,10 @@ namespace Latino.Visualization
             Utils.ThrowException(pen == null ? new ArgumentNullException("pen") : null);
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
             Utils.ThrowException(bounding_area == null ? new ArgumentNullException("bounding_area") : null);
-            Vector2D pt1 = tr.Transform(new Vector2D(x1, y1));
-            Vector2D pt2 = tr.Transform(new Vector2D(x2, y2));
-            Vector2D isect_pt1 = new Vector2D();
-            Vector2D isect_pt2 = new Vector2D();
+            VectorF pt1 = tr.Transform(new VectorF(x1, y1));
+            VectorF pt2 = tr.Transform(new VectorF(x2, y2));
+            VectorF isect_pt1 = new VectorF();
+            VectorF isect_pt2 = new VectorF();
             BoundingArea inflated_area = bounding_area.GetWritableCopy();
             inflated_area.Inflate(pen.Width / 2f + 5f, pen.Width / 2f + 5f);
             ArrayList<KeyDat<float, PointInfo>> points = new ArrayList<KeyDat<float, PointInfo>>();
@@ -168,22 +168,22 @@ namespace Latino.Visualization
             if (x1 == x2 || y1 == y2) { return new BoundingArea(VisualizationUtils.CreateRectangle(x1, y1, x2, y2)); }
             float delta = Math.Abs((x2 - x1) / (y2 - y1));
             float step_max = (float)Math.Sqrt(m_max_box_area / delta + delta * m_max_box_area);
-            Vector2D line = new Vector2D(x1, y1, x2, y2);
+            VectorF line = new VectorF(x1, y1, x2, y2);
             float line_len = line.GetLength();
             if (step_max >= line_len) { return new BoundingArea(VisualizationUtils.CreateRectangle(x1, y1, x2, y2)); }
             BoundingArea bounding_area = new BoundingArea();
             int steps = (int)Math.Ceiling(line_len / step_max);
-            Vector2D step_vec = line;
+            VectorF step_vec = line;
             step_vec.SetLength(line_len / (float)steps);
-            Vector2D pt1 = new Vector2D(x1, y1);
-            Vector2D pt2;
+            VectorF pt1 = new VectorF(x1, y1);
+            VectorF pt2;
             for (int i = 0; i < steps - 1; i++)
             {
                 pt2 = pt1 + step_vec;
                 bounding_area.AddRectangles(VisualizationUtils.CreateRectangle(pt1.X, pt1.Y, pt2.X, pt2.Y));
                 pt1 = pt2;
             }
-            pt2 = new Vector2D(x2, y2);
+            pt2 = new VectorF(x2, y2);
             bounding_area.AddRectangles(VisualizationUtils.CreateRectangle(pt1.X, pt1.Y, pt2.X, pt2.Y));
             return bounding_area;
 #else
@@ -195,9 +195,9 @@ namespace Latino.Visualization
         public static bool IsObjectAt(float pt_x, float pt_y, TransformParams tr, float x1, float y1, float x2, float y2, ref float dist)
         {
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
-            Vector2D pt1 = tr.Transform(new Vector2D(x1, y1));
-            Vector2D pt2 = tr.Transform(new Vector2D(x2, y2));
-            return VisualizationUtils.TestLineHit(new Vector2D(pt_x, pt_y), pt1, pt2, m_hit_dist, ref dist);
+            VectorF pt1 = tr.Transform(new VectorF(x1, y1));
+            VectorF pt2 = tr.Transform(new VectorF(x2, y2));
+            return VisualizationUtils.TestLineHit(new VectorF(pt_x, pt_y), pt1, pt2, m_hit_dist, ref dist);
         }
         public float X
         {
@@ -277,9 +277,9 @@ namespace Latino.Visualization
         */
         private class PointInfo
         {
-            public Vector2D Point;
+            public VectorF Point;
             public bool IsStartPoint;
-            public PointInfo(Vector2D pt, bool is_start_pt)
+            public PointInfo(VectorF pt, bool is_start_pt)
             {
                 Point = pt;
                 IsStartPoint = is_start_pt;

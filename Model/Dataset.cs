@@ -7,8 +7,8 @@
  *  Desc:		   Dataset for training ML models
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -26,7 +26,7 @@ namespace Latino.Model
     */
     public class Dataset<LblT, ExT> : IDataset<LblT, ExT>
     {
-        private ArrayList<LabeledExample<LblT, ExT>> m_items
+        protected ArrayList<LabeledExample<LblT, ExT>> m_items
             = new ArrayList<LabeledExample<LblT, ExT>>();
 
         public Dataset()
@@ -40,8 +40,8 @@ namespace Latino.Model
 
         public void Add(LblT label, ExT example)
         {
-            Utils.ThrowException(label == null ? new ArgumentNullException("label") : null);
-            Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);            
+            Utils.ThrowException(label == null ? new ArgumentNullException("label") : null); // *** allow unlabeled examples?
+            Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             m_items.Add(new LabeledExample<LblT, ExT>(label, example));
         }
 
@@ -108,11 +108,7 @@ namespace Latino.Model
 
         public LabeledExample<LblT, ExT> this[int index]
         {
-            get
-            {
-                Utils.ThrowException((index < 0 || index >= m_items.Count) ? new ArgumentOutOfRangeException("index") : null);
-                return m_items[index];
-            }
+            get { return m_items[index]; } // throws ArgumentOutOfRangeException
         }
 
         object IEnumerableList.this[int index]

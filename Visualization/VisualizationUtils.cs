@@ -25,19 +25,19 @@ namespace Latino.Visualization
     */
     public static class VisualizationUtils
     {
-        public static bool TestLineHit(Vector2D test_pt, Vector2D line_tail, Vector2D line_head, float max_dist, ref float dist)
+        public static bool TestLineHit(VectorF test_pt, VectorF line_tail, VectorF line_head, float max_dist, ref float dist)
         {
             dist = float.MaxValue;
             if (line_tail != line_head)
             {
-                Vector2D edge = line_head - line_tail;                     
-                Vector2D edge_normal = edge.Normal();
+                VectorF edge = line_head - line_tail;                     
+                VectorF edge_normal = edge.Normal();
                 float intrsct_x = 0, intrsct_y = 0;
                 float pos_a = 0, pos_b = 0;
-                Vector2D.Intersect(test_pt, edge_normal, line_tail, edge, ref intrsct_x, ref intrsct_y, ref pos_a, ref pos_b);                
+                VectorF.Intersect(test_pt, edge_normal, line_tail, edge, ref intrsct_x, ref intrsct_y, ref pos_a, ref pos_b);                
                 if (pos_b >= 0f && pos_b <= 1f)
                 {
-                    Vector2D dist_vec = new Vector2D(intrsct_x, intrsct_y) - test_pt;
+                    VectorF dist_vec = new VectorF(intrsct_x, intrsct_y) - test_pt;
                     dist = dist_vec.GetLength();
                 }
                 dist = Math.Min((line_tail - test_pt).GetLength(), dist);

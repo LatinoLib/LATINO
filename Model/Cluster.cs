@@ -58,7 +58,7 @@ namespace Latino.Model
             get { return m_items; }
         }
 
-        public SparseVector<double>.ReadOnly ComputeCentroid<LblT>(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset, CentroidType type)
+        public SparseVector<double> ComputeCentroid<LblT>(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset, CentroidType type)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
