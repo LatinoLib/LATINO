@@ -7,8 +7,8 @@
  *  Desc:		   Labeled example data structure 
  *  Author:        Miha Grcar
  *  Created on:    Jan-2009
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -18,24 +18,24 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Struct LabeledExample<LblT, ExT>
+       |  Class LabeledExample<LblT, ExT>
        |
        '-----------------------------------------------------------------------
     */
-    public struct LabeledExample<LblT, ExT> : ISerializable
+    public class LabeledExample<LblT, ExT> : ISerializable
     {
         private LblT m_lbl;
         private ExT m_ex;
 
         public LabeledExample(BinarySerializer reader)
         {
-            m_lbl = default(LblT);
-            m_ex = default(ExT);
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
         public LabeledExample(LblT lbl, ExT ex)
         {
+            Utils.ThrowException(lbl == null ? new ArgumentNullException("Label") : null); // *** allow unlabeled examples?
+            Utils.ThrowException(ex == null ? new ArgumentNullException("Example") : null);
             m_lbl = lbl;
             m_ex = ex;
         }
@@ -43,13 +43,21 @@ namespace Latino.Model
         public LblT Label
         {
             get { return m_lbl; }
-            set { m_lbl = value; }
+            set 
+            {
+                Utils.ThrowException(value == null ? new ArgumentNullException("Label") : null); // *** allow unlabeled examples?
+                m_lbl = value; 
+            }
         }
 
         public ExT Example
         {
             get { return m_ex; }
-            set { m_ex = value; }
+            set 
+            {
+                Utils.ThrowException(value == null ? new ArgumentNullException("Example") : null);
+                m_ex = value; 
+            }
         }
 
         public override string ToString()

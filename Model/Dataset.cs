@@ -141,7 +141,7 @@ namespace Latino.Model
                 {
                     LabeledExample<LblT, ExT> example = m_items[i];
                     new_dataset.Add(example.Label, ModelUtils.ConvertExample<SparseVector<double>>(example.Example));
-                    if (move) { m_items[i] = new LabeledExample<LblT, ExT>(); }
+                    if (move) { m_items[i] = null; }
                 }
                 if (move) { m_items.Clear(); }
                 return new_dataset;
@@ -153,7 +153,7 @@ namespace Latino.Model
                 {
                     LabeledExample<LblT, ExT> example = m_items[i];
                     new_dataset.Add(example.Label, ModelUtils.ConvertExample<SparseVector<double>.ReadOnly>(example.Example));
-                    if (move) { m_items[i] = new LabeledExample<LblT, ExT>(); }
+                    if (move) { m_items[i] = null; } 
                 }
                 if (move) { m_items.Clear(); }
                 return new_dataset;
@@ -165,7 +165,7 @@ namespace Latino.Model
                 {
                     LabeledExample<LblT, ExT> example = m_items[i];
                     new_dataset.Add(example.Label, ModelUtils.ConvertExample<BinaryVector<int>>(example.Example));
-                    if (move) { m_items[i] = new LabeledExample<LblT, ExT>(); }
+                    if (move) { m_items[i] = null; }
                 }
                 if (move) { m_items.Clear(); }
                 return new_dataset;
@@ -177,7 +177,7 @@ namespace Latino.Model
                 {
                     LabeledExample<LblT, ExT> example = m_items[i];
                     new_dataset.Add(example.Label, ModelUtils.ConvertExample<BinaryVector<int>.ReadOnly>(example.Example));
-                    if (move) { m_items[i] = new LabeledExample<LblT, ExT>(); }
+                    if (move) { m_items[i] = null; }
                 }
                 if (move) { m_items.Clear(); }
                 return new_dataset;
@@ -189,7 +189,7 @@ namespace Latino.Model
             //    {
             //        LabeledExample<LblT, ExT> example = m_items[i];
             //        new_dataset.Add(example.Label, ModelUtils.ConvertVector<SvmFeatureVector>(example.Example));
-            //        if (move) { m_items[i] = new LabeledExample<LblT, ExT>(); }
+            //        if (move) { m_items[i] = null; }
             //    }
             //    if (move) { m_items.Clear(); }
             //    return new_dataset;

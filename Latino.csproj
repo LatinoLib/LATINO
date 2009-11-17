@@ -21,7 +21,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;THROW_EXCEPTIONS, VERBOSE, LATINO</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisRuleAssemblies>C:\Program Files (x86)\Microsoft Visual Studio 8\Team Tools\Static Analysis Tools\FxCop\\rules</CodeAnalysisRuleAssemblies>
@@ -54,6 +54,7 @@
     <Compile Include="IBinaryOperator.cs" />
     <Compile Include="ICloneable.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Model\FuzzyKMeans.cs" />
     <Compile Include="Model\IDistance.cs" />
     <Compile Include="Model\IClustering.cs" />
     <Compile Include="Model\IDataset.cs" />
@@ -100,6 +101,7 @@
     </Compile>
     <Compile Include="SetEqualityComparer.cs" />
     <Compile Include="SparseMatrix.cs" />
+    <Compile Include="TextMining\__IncrementalBowSpace__.cs" />
     <Compile Include="TextMining\Lemmatizer.cs" />
     <Compile Include="TextMining\IStemmer.cs" />
     <Compile Include="TextMining\Snowball\ISnowballStemmer.cs" />
