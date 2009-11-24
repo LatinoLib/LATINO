@@ -2,13 +2,13 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          ClassifierResult.cs
+ *  File:          Prediction.cs
  *  Version:       1.0
- *  Desc:		   Classifier result (output of ML models)
+ *  Desc:		   Prediction (output of ML models)
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -20,22 +20,22 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class ClassifierResult<LblT>
+       |  Class Prediction<LblT>
        |
        '-----------------------------------------------------------------------
     */
-    public class ClassifierResult<LblT> : IEnumerableList<KeyDat<double, LblT>>
+    public class Prediction<LblT> : IEnumerableList<KeyDat<double, LblT>>
     {
         private ArrayList<KeyDat<double, LblT>> m_class_scores
             = new ArrayList<KeyDat<double, LblT>>();
         private static DescSort<KeyDat<double, LblT>> m_desc_sort
             = new DescSort<KeyDat<double, LblT>>();
 
-        public ClassifierResult()
+        public Prediction()
         {
         }
 
-        public ClassifierResult(IEnumerable<KeyDat<double, LblT>> class_scores)
+        public Prediction(IEnumerable<KeyDat<double, LblT>> class_scores)
         {
             Utils.ThrowException(class_scores == null ? new ArgumentNullException("class_scores") : null);
             AddRange(class_scores);

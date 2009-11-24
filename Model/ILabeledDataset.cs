@@ -2,13 +2,13 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          IExampleCollection.cs
+ *  File:          ILabeledDataset.cs
  *  Version:       1.0
  *  Desc:		   Interface definition
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -18,22 +18,23 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Interface IExampleCollection<LblT>
+       |  Interface ILabeledDataset<LblT>
        |
        '-----------------------------------------------------------------------
     */
-    public interface IExampleCollection<LblT> : IEnumerableList
+    public interface ILabeledDataset<LblT> : ILabeledExampleCollection<LblT>, ISerializable
     {
-        Type ExampleType { get; }
+        ILabeledDataset<LblT> ConvertDataset(Type new_ex_type, bool move);
+        ILabeledDataset<LblT, ExT> ConvertDataset<ExT>(bool move);
     }
 
     /* .-----------------------------------------------------------------------
        |
-       |  Interface IExampleCollection<LblT, ExT>
+       |  Interface ILabeledDataset<LblT, ExT>
        |
        '-----------------------------------------------------------------------
     */
-    public interface IExampleCollection<LblT, ExT> : IExampleCollection<LblT>, IEnumerableList<LabeledExample<LblT, ExT>>
+    public interface ILabeledDataset<LblT, ExT> : ILabeledDataset<LblT>, ILabeledExampleCollection<LblT, ExT>
     {
     }
 }

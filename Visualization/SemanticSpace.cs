@@ -25,7 +25,7 @@ namespace Latino.Visualization
     */
     public class SemanticSpace<LblT> : ILayoutAlgorithm
     {
-        IExampleCollection<LblT, SparseVector<double>.ReadOnly> m_dataset;
+        ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> m_dataset;
         Random m_random
             = new Random(1);
         double m_k_means_eps
@@ -37,7 +37,7 @@ namespace Latino.Visualization
         int m_k_nn
             = 10;
 
-        public SemanticSpace(Dataset<LblT, SparseVector<double>.ReadOnly> dataset)
+        public SemanticSpace(LabeledDataset<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             m_dataset = dataset;

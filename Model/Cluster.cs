@@ -7,8 +7,8 @@
  *  Desc:		   Holds information about a cluster
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  * 
  ***************************************************************************/
 
@@ -58,7 +58,7 @@ namespace Latino.Model
             get { return m_items; }
         }
 
-        public SparseVector<double> ComputeCentroid<LblT>(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset, CentroidType type)
+        public SparseVector<double> ComputeCentroid<LblT>(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset, CentroidType type)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();

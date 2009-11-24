@@ -7,8 +7,8 @@
  *  Desc:		   Centroid vector structure (used for speed optimizations)
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  * 
  ***************************************************************************/
 
@@ -25,7 +25,7 @@ namespace Latino.Model
     */
     internal class Centroid<LblT>
     {
-        private IExampleCollection<LblT, SparseVector<double>.ReadOnly> m_dataset;
+        private ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> m_dataset;
         private Set<int> m_items_current
             = new Set<int>();
         private Set<int> m_items
@@ -36,13 +36,13 @@ namespace Latino.Model
             = 1;
         private double[] m_vec;
 
-        public Centroid(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset, int vec_len)
+        public Centroid(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset, int vec_len)
         {
             m_vec = new double[vec_len];
             m_dataset = dataset;
         }
 
-        public Centroid(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
+        public Centroid(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             int max_idx = -1;
             foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeled_example in dataset)
@@ -159,7 +159,7 @@ namespace Latino.Model
             return dot_prod;
         }
 
-        public void __Update__(int dequeue_n, IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset) // *** experimental
+        public void __Update__(int dequeue_n, ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset) // *** experimental
         { 
             // update m_dataset and m_items_current
             m_dataset = dataset;

@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 
 namespace Latino.Model
 {
@@ -22,10 +23,15 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class SparseVectorDataset<LblT> : Dataset<LblT, SparseVector<double>.ReadOnly>
+    public class SparseVectorDataset<LblT> : LabeledDataset<LblT, SparseVector<double>.ReadOnly>
     {
         public SparseVectorDataset()
         {
+        }
+
+        public SparseVectorDataset(IEnumerable<LabeledExample<LblT, SparseVector<double>.ReadOnly>> examples)
+        {
+            m_items.AddRange(examples); // throws ArgumentNullException
         }
 
         public SparseVectorDataset(BinarySerializer reader)

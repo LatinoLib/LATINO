@@ -7,8 +7,8 @@
  *  Desc:		   Centroid classifier
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -77,7 +77,7 @@ namespace Latino.Model
             get { return m_centroids != null; }
         }
 
-        public void Train(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
+        public void Train(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
@@ -101,18 +101,18 @@ namespace Latino.Model
             }
         }
 
-        void IModel<LblT>.Train(IExampleCollection<LblT> dataset)
+        void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is IExampleCollection<LblT, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            Train((IExampleCollection<LblT, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
         }
 
-        public ClassifierResult<LblT> Classify(SparseVector<double>.ReadOnly example)
+        public Prediction<LblT> Predict(SparseVector<double>.ReadOnly example)
         {
             Utils.ThrowException(m_centroids == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            ClassifierResult<LblT> result = new ClassifierResult<LblT>();
+            Prediction<LblT> result = new Prediction<LblT>();
             foreach (Pair<LblT, SparseVector<double>.ReadOnly> labeled_centroid in m_centroids)
             {
                 double sim = m_similarity.GetSimilarity(labeled_centroid.Second, example);
@@ -122,11 +122,11 @@ namespace Latino.Model
             return result;
         }
 
-        ClassifierResult<LblT> IModel<LblT>.Classify(object example)
+        Prediction<LblT> IModel<LblT>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Utils.ThrowException(!(example is SparseVector<double>.ReadOnly) ? new ArgumentTypeException("example") : null);
-            return Classify((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
+            return Predict((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
         }
 
         // *** ISerializable interface implementation ***

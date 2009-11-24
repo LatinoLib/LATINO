@@ -7,8 +7,8 @@
  *  Desc:		   Maximum entropy classifier (LATINO wrapper)
  *  Author:        Miha Grcar
  *  Created on:    Oct-2009
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -95,7 +95,7 @@ namespace Latino.Model
             get { return m_lambda != null; }
         }
 
-        public void Train(IExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset)
+        public void Train(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
@@ -103,25 +103,25 @@ namespace Latino.Model
             m_lambda = MaxEnt.Gis(dataset, m_cut_off, m_num_iter, m_move_data, /*mtx_file_name=*/null, ref m_idx_to_lbl, m_num_threads);
         }
 
-        void IModel<LblT>.Train(IExampleCollection<LblT> dataset)
+        void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is IExampleCollection<LblT, BinaryVector<int>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            Train((IExampleCollection<LblT, BinaryVector<int>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly>)dataset); // throws ArgumentValueException
         }
 
-        public ClassifierResult<LblT> Classify(BinaryVector<int>.ReadOnly example)
+        public Prediction<LblT> Predict(BinaryVector<int>.ReadOnly example)
         {
             Utils.ThrowException(m_lambda == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             return MaxEnt.Classify(example, m_lambda, m_idx_to_lbl);
         }
 
-        ClassifierResult<LblT> IModel<LblT>.Classify(object example)
+        Prediction<LblT> IModel<LblT>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Utils.ThrowException(!(example is BinaryVector<int>.ReadOnly) ? new ArgumentTypeException("example") : null);
-            return Classify((BinaryVector<int>.ReadOnly)example); // throws InvalidOperationException
+            return Predict((BinaryVector<int>.ReadOnly)example); // throws InvalidOperationException
         }
 
         // *** ISerializable interface implementation ***

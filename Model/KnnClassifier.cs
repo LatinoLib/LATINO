@@ -7,8 +7,8 @@
  *  Desc:		   K-nearest neighbors classifier 
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -90,21 +90,21 @@ namespace Latino.Model
             get { return m_examples != null; }
         }
 
-        public void Train(IExampleCollection<LblT, ExT> dataset)
+        public void Train(ILabeledExampleCollection<LblT, ExT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             m_examples = new ArrayList<LabeledExample<LblT, ExT>>(dataset);
         }
 
-        void IModel<LblT>.Train(IExampleCollection<LblT> dataset)
+        void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is IExampleCollection<LblT, ExT>) ? new ArgumentTypeException("dataset") : null);
-            Train((IExampleCollection<LblT, ExT>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, ExT>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, ExT>)dataset); // throws ArgumentValueException
         }
 
-        public ClassifierResult<LblT> Classify(ExT example)
+        public Prediction<LblT> Predict(ExT example)
         {
             Utils.ThrowException((m_examples == null || m_similarity == null) ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
@@ -148,7 +148,7 @@ namespace Latino.Model
                     }
                 }
             }
-            ClassifierResult<LblT> classifier_result = new ClassifierResult<LblT>();
+            Prediction<LblT> classifier_result = new Prediction<LblT>();
             foreach (KeyValuePair<LblT, double> item in voting)
             {
                 classifier_result.Items.Add(new KeyDat<double, LblT>(item.Value, item.Key));
@@ -157,11 +157,11 @@ namespace Latino.Model
             return classifier_result;
         }
 
-        ClassifierResult<LblT> IModel<LblT>.Classify(object example)
+        Prediction<LblT> IModel<LblT>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Utils.ThrowException(!(example is ExT) ? new ArgumentTypeException("example") : null);
-            return Classify((ExT)example); // throws InvalidOperationException
+            return Predict((ExT)example); // throws InvalidOperationException
         }
 
         // *** ISerializable interface implementation ***

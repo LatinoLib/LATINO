@@ -2,11 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          IClustering.cs
+ *  File:          IUnlabeledExampleCollection.cs
  *  Version:       1.0
  *  Desc:		   Interface definition
  *  Author:        Miha Grcar
- *  Created on:    Aug-2009
+ *  Created on:    Nov-2009
  *  Last modified: Nov-2009
  *  Revision:      Nov-2009
  *
@@ -18,24 +18,22 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Interface IClustering<LblT>
+       |  Interface IUnlabeledExampleCollection
        |
        '-----------------------------------------------------------------------
     */
-    public interface IClustering<LblT>
+    public interface IUnlabeledExampleCollection : IEnumerableList
     {
-        Type RequiredExampleType { get; }
-        ClusteringResult Cluster(ILabeledExampleCollection<LblT> dataset);
+        Type ExampleType { get; }
     }
 
     /* .-----------------------------------------------------------------------
        |
-       |  Interface IClustering<LblT, ExT>
+       |  Interface IUnlabeledExampleCollection<ExT>
        |
        '-----------------------------------------------------------------------
     */
-    public interface IClustering<LblT, ExT> : IClustering<LblT>
+    public interface IUnlabeledExampleCollection<ExT> : IUnlabeledExampleCollection, IEnumerableList<ExT>
     {
-        ClusteringResult Cluster(ILabeledExampleCollection<LblT, ExT> dataset);
     }
 }

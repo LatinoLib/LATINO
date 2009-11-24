@@ -7,8 +7,8 @@
  *  Desc:		   Interface definition
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -26,8 +26,8 @@ namespace Latino.Model
     {
         Type RequiredExampleType { get; }
         bool IsTrained { get; }
-        void Train(IExampleCollection<LblT> dataset);
-        ClassifierResult<LblT> Classify(object example);
+        void Train(ILabeledExampleCollection<LblT> dataset);
+        Prediction<LblT> Predict(object example);
     }
 
     /* .-----------------------------------------------------------------------
@@ -38,7 +38,7 @@ namespace Latino.Model
     */
     public interface IModel<LblT, ExT> : IModel<LblT>
     {
-        void Train(IExampleCollection<LblT, ExT> dataset);
-        ClassifierResult<LblT> Classify(ExT example);
+        void Train(ILabeledExampleCollection<LblT, ExT> dataset);
+        Prediction<LblT> Predict(ExT example);
     }
 }

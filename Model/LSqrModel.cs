@@ -7,8 +7,8 @@
  *  Desc:		   Least-squares linear regression model
  *  Author:        Miha Grcar
  *  Created on:    Nov-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -64,7 +64,7 @@ namespace Latino.Model
             get { return m_sol != null; }
         }
 
-        public void Train(IExampleCollection<double, SparseVector<double>.ReadOnly> dataset)
+        public void Train(ILabeledExampleCollection<double, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
@@ -100,14 +100,14 @@ namespace Latino.Model
             mat_t.Dispose();
         }
 
-        void IModel<double>.Train(IExampleCollection<double> dataset)
+        void IModel<double>.Train(ILabeledExampleCollection<double> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is IExampleCollection<double, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            Train((IExampleCollection<double, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<double, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<double, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
         }
 
-        public ClassifierResult<double> Classify(SparseVector<double>.ReadOnly example)
+        public Prediction<double> Predict(SparseVector<double>.ReadOnly example)
         {
             Utils.ThrowException(m_sol == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
@@ -116,14 +116,14 @@ namespace Latino.Model
             {
                 result += m_sol[item.Idx] * item.Dat;
             }
-            return new ClassifierResult<double>(new KeyDat<double, double>[] { new KeyDat<double, double>(result, result) });
+            return new Prediction<double>(new KeyDat<double, double>[] { new KeyDat<double, double>(result, result) });
         }
 
-        ClassifierResult<double> IModel<double>.Classify(object example)
+        Prediction<double> IModel<double>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Utils.ThrowException(!(example is SparseVector<double>.ReadOnly) ? new ArgumentTypeException("example") : null);
-            return Classify((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
+            return Predict((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
         }
 
         // *** ISerializable interface implementation ***

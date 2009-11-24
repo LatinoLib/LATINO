@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Dataset.cs
+ *  File:          LabeledDataset.cs
  *  Version:       1.0
  *  Desc:		   Dataset for training ML models
  *  Author:        Miha Grcar
@@ -20,20 +20,34 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class Dataset<LblT, ExT>
+       |  Class LabeledDataset<LblT, ExT>
        |
        '-----------------------------------------------------------------------
     */
-    public class Dataset<LblT, ExT> : IDataset<LblT, ExT>
+    public class LabeledDataset<LblT, ExT> : ILabeledDataset<LblT, ExT>
     {
         protected ArrayList<LabeledExample<LblT, ExT>> m_items
             = new ArrayList<LabeledExample<LblT, ExT>>();
 
-        public Dataset()
+        public LabeledDataset()
         {
         }
 
-        public Dataset(BinarySerializer reader)
+        public LabeledDataset(IEnumerable<LabeledExample<LblT, ExT>> examples)
+        {
+            m_items.AddRange(examples); // throws ArgumentNullException
+        }
+
+        public LabeledDataset(IEnumerable<LabeledExample<LblT, object>> examples)
+        {
+            Utils.ThrowException(examples == null ? new ArgumentNullException("examples") : null);
+            foreach (LabeledExample<LblT, object> labeled_example in examples)
+            {
+                m_items.Add(new LabeledExample<LblT, ExT>(labeled_example.Label, (ExT)labeled_example.Example));
+            }
+        }
+
+        public LabeledDataset(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
@@ -43,6 +57,18 @@ namespace Latino.Model
             Utils.ThrowException(label == null ? new ArgumentNullException("label") : null); // *** allow unlabeled examples?
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             m_items.Add(new LabeledExample<LblT, ExT>(label, example));
+        }
+
+        public void Add(LabeledExample<LblT, ExT> example)
+        {
+            Utils.ThrowException(example == null ? new ArgumentNullException("labeled_example") : null); 
+            m_items.Add(example);
+        }
+
+        public void AddRange(IEnumerable<LabeledExample<LblT, ExT>> examples)
+        {
+            Utils.ThrowException(examples == null ? new ArgumentNullException("examples") : null);
+            m_items.AddRange(examples);
         }
 
         public void RemoveAt(int index)
@@ -65,13 +91,13 @@ namespace Latino.Model
             m_items.Shuffle(rnd); // throws ArgumentNullException
         }
 
-        public void SplitForCrossValidation(int num_folds, int fold, ref Dataset<LblT, ExT> train_set, ref Dataset<LblT, ExT> test_set)
+        public void SplitForCrossValidation(int num_folds, int fold, ref LabeledDataset<LblT, ExT> train_set, ref LabeledDataset<LblT, ExT> test_set)
         {
             Utils.ThrowException(m_items.Count < 2 ? new InvalidOperationException() : null);
             Utils.ThrowException((num_folds < 2 || num_folds > m_items.Count) ? new ArgumentOutOfRangeException("num_folds") : null);
             Utils.ThrowException((fold < 1 || fold > num_folds) ? new ArgumentOutOfRangeException("fold") : null);
-            train_set = new Dataset<LblT, ExT>();
-            test_set = new Dataset<LblT, ExT>();
+            train_set = new LabeledDataset<LblT, ExT>();
+            test_set = new LabeledDataset<LblT, ExT>();
             double step = (double)m_items.Count / (double)num_folds;
             double d = 0;
             for (int i = 0; i < num_folds; i++, d += step)
@@ -94,7 +120,7 @@ namespace Latino.Model
             }
         }
 
-        // *** IDataset<LblT, ExT> interface implementation ***
+        // *** ILabeledDataset<LblT, ExT> interface implementation ***
 
         public Type ExampleType
         {
@@ -126,78 +152,43 @@ namespace Latino.Model
             return new ListEnum(this);
         }
 
-        public IDataset<LblT, NewExT> ConvertDataset<NewExT>(bool move)
+        public ILabeledDataset<LblT, NewExT> ConvertDataset<NewExT>(bool move)
         {
-            return (IDataset<LblT, NewExT>)ConvertDataset(typeof(NewExT), move); // throws ArgumentNotSupportedException
+            return (ILabeledDataset<LblT, NewExT>)ConvertDataset(typeof(NewExT), move); // throws ArgumentNotSupportedException
         }
 
-        public IDataset<LblT> ConvertDataset(Type new_ex_type, bool move)
+        public ILabeledDataset<LblT> ConvertDataset(Type new_ex_type, bool move)
         {
             Utils.ThrowException(new_ex_type == null ? new ArgumentNullException("new_ex_type") : null);
+            ILabeledDataset<LblT> new_dataset = null;
+            ArrayList<LabeledExample<LblT, object>> tmp = new ArrayList<LabeledExample<LblT, object>>(m_items.Count);
+            for (int i = 0; i < m_items.Count; i++)
+            {
+                tmp.Add(new LabeledExample<LblT, object>(m_items[i].Label, ModelUtils.ConvertExample(m_items[i].Example, new_ex_type))); // throws ArgumentValueException
+                if (move) { m_items[i] = null; }
+            }
+            if (move) { m_items.Clear(); }
             if (new_ex_type == typeof(SparseVector<double>))
             {
-                Dataset<LblT, SparseVector<double>> new_dataset = new Dataset<LblT, SparseVector<double>>();
-                for (int i = 0; i < m_items.Count; i++)
-                {
-                    LabeledExample<LblT, ExT> example = m_items[i];
-                    new_dataset.Add(example.Label, ModelUtils.ConvertExample<SparseVector<double>>(example.Example));
-                    if (move) { m_items[i] = null; }
-                }
-                if (move) { m_items.Clear(); }
-                return new_dataset;
+                new_dataset = new LabeledDataset<LblT, SparseVector<double>>(tmp);
             }
             else if (new_ex_type == typeof(SparseVector<double>.ReadOnly))
             {
-                Dataset<LblT, SparseVector<double>.ReadOnly> new_dataset = new Dataset<LblT, SparseVector<double>.ReadOnly>();
-                for (int i = 0; i < m_items.Count; i++)
-                {
-                    LabeledExample<LblT, ExT> example = m_items[i];
-                    new_dataset.Add(example.Label, ModelUtils.ConvertExample<SparseVector<double>.ReadOnly>(example.Example));
-                    if (move) { m_items[i] = null; } 
-                }
-                if (move) { m_items.Clear(); }
-                return new_dataset;
+                new_dataset = new LabeledDataset<LblT, SparseVector<double>.ReadOnly>(tmp);
             }
             else if (new_ex_type == typeof(BinaryVector<int>))
             {
-                Dataset<LblT, BinaryVector<int>> new_dataset = new Dataset<LblT, BinaryVector<int>>();
-                for (int i = 0; i < m_items.Count; i++)
-                {
-                    LabeledExample<LblT, ExT> example = m_items[i];
-                    new_dataset.Add(example.Label, ModelUtils.ConvertExample<BinaryVector<int>>(example.Example));
-                    if (move) { m_items[i] = null; }
-                }
-                if (move) { m_items.Clear(); }
-                return new_dataset;
+                new_dataset = new LabeledDataset<LblT, BinaryVector<int>>(tmp);
             }
             else if (new_ex_type == typeof(BinaryVector<int>.ReadOnly))
             {
-                Dataset<LblT, BinaryVector<int>.ReadOnly> new_dataset = new Dataset<LblT, BinaryVector<int>.ReadOnly>();
-                for (int i = 0; i < m_items.Count; i++)
-                {
-                    LabeledExample<LblT, ExT> example = m_items[i];
-                    new_dataset.Add(example.Label, ModelUtils.ConvertExample<BinaryVector<int>.ReadOnly>(example.Example));
-                    if (move) { m_items[i] = null; }
-                }
-                if (move) { m_items.Clear(); }
-                return new_dataset;
+                new_dataset = new LabeledDataset<LblT, BinaryVector<int>.ReadOnly>(tmp);
             }
             //else if (new_ex_type == typeof(SvmFeatureVector))
             //{
-            //    Dataset<LblT, SvmFeatureVector> new_dataset = new Dataset<LblT, SvmFeatureVector>();
-            //    for (int i = 0; i < m_items.Count; i++) 
-            //    {
-            //        LabeledExample<LblT, ExT> example = m_items[i];
-            //        new_dataset.Add(example.Label, ModelUtils.ConvertVector<SvmFeatureVector>(example.Example));
-            //        if (move) { m_items[i] = null; }
-            //    }
-            //    if (move) { m_items.Clear(); }
-            //    return new_dataset;
+            //    new_dataset = new Dataset<LblT, SvmFeatureVector>(tmp);
             //}
-            else
-            {
-                throw new ArgumentNotSupportedException("new_ex_type");
-            }
+            return new_dataset;
         }
 
         // *** ISerializable interface implementation ***

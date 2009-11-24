@@ -7,8 +7,8 @@
  *  Desc:		   Maximum entropy classifier 
  *  Author:        Jan Rupnik, Miha Grcar
  *  Created on:    Sep-2009
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -30,7 +30,7 @@ namespace Latino.Model
             }
         }
 
-        private static SparseMatrix<double> CreateObservationMatrix<LblT>(IExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idx_to_lbl)
+        private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idx_to_lbl)
         {
             SparseMatrix<double> mtx = new SparseMatrix<double>();
             ArrayList<LblT> tmp = new ArrayList<LblT>();
@@ -133,7 +133,7 @@ namespace Latino.Model
             }
         }
 
-        private static double GisFindMaxF<LblT>(IExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset)
+        private static double GisFindMaxF<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset)
         {
             double max_val = 0;
             foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> item in dataset)
@@ -334,7 +334,7 @@ namespace Latino.Model
             Utils.VerboseLine("");
         }
 
-        private static SparseMatrix<double> TransposeDataset<LblT>(IExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, bool clear_dataset)
+        private static SparseMatrix<double> TransposeDataset<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, bool clear_dataset)
         {
             SparseMatrix<double> aux = new SparseMatrix<double>();
             int i = 0;
@@ -356,7 +356,7 @@ namespace Latino.Model
             return aux.GetTransposedCopy();
         }
 
-        public static SparseMatrix<double> Gis<LblT>(IExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, int cut_off, int num_iter, bool clear_dataset, string mtx_file_name, ref LblT[] idx_to_lbl, int num_threads) 
+        public static SparseMatrix<double> Gis<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, int cut_off, int num_iter, bool clear_dataset, string mtx_file_name, ref LblT[] idx_to_lbl, int num_threads) 
         {
             Utils.VerboseLine("Creating observation matrix ...");
             SparseMatrix<double> observations = null;
@@ -413,7 +413,7 @@ namespace Latino.Model
             return lambda;
         }
 
-        public static ClassifierResult<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly bin_vec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idx_to_lbl)
+        public static Prediction<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly bin_vec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idx_to_lbl)
         {
             DotProductSimilarity dot_prod = new DotProductSimilarity();
             SparseVector<double> vec = ModelUtils.ConvertExample<SparseVector<double>>(bin_vec);
@@ -423,7 +423,7 @@ namespace Latino.Model
                 double score = Math.Exp(dot_prod.GetSimilarity(row.Dat, vec));
                 scores.Add(new KeyDat<double, LblT>(score, idx_to_lbl[row.Idx]));
             }
-            return new ClassifierResult<LblT>(scores);
+            return new Prediction<LblT>(scores);
             // *** for some reason, the code below is slower than the one currently in use
             /*ClassifierResult<LblT> classifier_result = new ClassifierResult<LblT>();
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambdas)

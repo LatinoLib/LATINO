@@ -7,8 +7,8 @@
  *  Desc:		   Fundamental ML-related utilities
  *  Author:        Miha Grcar
  *  Created on:    Aug-2008
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -132,22 +132,22 @@ namespace Latino.Model
             return (OutVecT)ConvertExample(in_vec, typeof(OutVecT)); // throws ArgumentNullException, ArgumentTypeException, ArgumentValueException
         }
 
-        public static ClassifierResult<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model)
+        public static Prediction<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model)
         {
             return ClassifyGroup<LblT, ExT>(examples, model, GroupClassifyMethod.Sum, /*lbl_cmp=*/null); // throws InvalidOperationException, ArgumentNullException
         }
 
-        public static ClassifierResult<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model, GroupClassifyMethod method)
+        public static Prediction<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model, GroupClassifyMethod method)
         {
             return ClassifyGroup<LblT, ExT>(examples, model, method, /*lbl_cmp=*/null); // throws InvalidOperationException, ArgumentNullException
         }
 
-        public static ClassifierResult<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model, GroupClassifyMethod method, IEqualityComparer<LblT> lbl_cmp)
+        public static Prediction<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model, GroupClassifyMethod method, IEqualityComparer<LblT> lbl_cmp)
         {
             Dictionary<LblT, double> tmp = new Dictionary<LblT, double>(lbl_cmp);
             foreach (ExT example in examples)
             {
-                ClassifierResult<LblT> result = model.Classify(example); // throws InvalidOperationException, ArgumentNullException
+                Prediction<LblT> result = model.Predict(example); // throws InvalidOperationException, ArgumentNullException
                 foreach (KeyDat<double, LblT> lbl_info in result)
                 {
                     if (method == GroupClassifyMethod.Vote)
@@ -183,7 +183,7 @@ namespace Latino.Model
                     }
                 }
             }
-            ClassifierResult<LblT> aggr_result = new ClassifierResult<LblT>();
+            Prediction<LblT> aggr_result = new Prediction<LblT>();
             foreach (KeyValuePair<LblT, double> item in tmp)
             {
                 aggr_result.Items.Add(new KeyDat<double, LblT>(item.Value, item.Key));

@@ -7,8 +7,8 @@
  *  Desc:		   Custering result (output of clustering algorithms)
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  * 
  ***************************************************************************/
 
@@ -42,10 +42,10 @@ namespace Latino.Model
             get { return m_roots; }
         }
 
-        public IDataset<Cluster, ExT> GetClusteringDataset<LblT, ExT>(IDataset<LblT, ExT> dataset)
+        public ILabeledDataset<Cluster, ExT> GetClusteringDataset<LblT, ExT>(ILabeledDataset<LblT, ExT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Dataset<Cluster, ExT> clustering_dataset = new Dataset<Cluster, ExT>();
+            LabeledDataset<Cluster, ExT> clustering_dataset = new LabeledDataset<Cluster, ExT>();
             foreach (Cluster cluster in m_roots)
             {
                 foreach (Pair<double, int> ex_info in cluster.Items)

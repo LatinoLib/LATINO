@@ -73,7 +73,7 @@ namespace Latino.Model
             get { return typeof(SparseVector<double>.ReadOnly); }
         }
 
-        public ClusteringResult Cluster(IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
+        public ClusteringResult Cluster(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count < m_k ? new ArgumentValueException("dataset") : null);
@@ -214,11 +214,11 @@ namespace Latino.Model
             // ...
         }
 
-        ClusteringResult IClustering<LblT>.Cluster(IExampleCollection<LblT> dataset)
+        ClusteringResult IClustering<LblT>.Cluster(ILabeledExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is IExampleCollection<LblT, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            return Cluster((IExampleCollection<LblT, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
+            return Cluster((ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
         }
     }
 }
