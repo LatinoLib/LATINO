@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          IncrementalBowSpace.cs
+ *  File:          __IncrementalBowSpace__.cs (experimental)
  *  Version:       1.0
  *  Desc:		   Incremental bag-of-words space 
  *  Author:        Miha Grcar
@@ -19,6 +19,33 @@ using Latino.Model;
 
 namespace Latino.TextMining
 {
+    /* .-----------------------------------------------------------------------
+       |
+       |  Class WordExt
+       |
+       '-----------------------------------------------------------------------
+    */
+    public class WordExt : Word
+    {
+        internal string m_stem;
+
+        public WordExt(string n_gram, string stem) : base(n_gram)
+        {
+            m_stem = stem;
+        }
+
+        public WordExt(BinarySerializer reader) : base(reader)
+        {
+            // TODO: implementation
+            throw new NotImplementedException();
+        }
+
+        public new double Idf(int doc_count)
+        {
+            return Math.Log((double)doc_count / (double)m_doc_freq);
+        }
+    }
+
     /* .-----------------------------------------------------------------------
        |
        |  Class IncrementalBowSpace
@@ -41,12 +68,12 @@ namespace Latino.TextMining
             = null;
         private IStemmer m_stemmer
             = null;
-        private Dictionary<string, Word> m_word_info
-            = new Dictionary<string, Word>();
-        private ArrayList<Word> m_idx_info
-            = new ArrayList<Word>();
-        private ArrayList<SparseVector<double>.ReadOnly> m_tf_vectors
-            = new ArrayList<SparseVector<double>.ReadOnly>();
+        private Dictionary<string, WordExt> m_word_info
+            = new Dictionary<string, WordExt>();
+        private ArrayList<WordExt> m_idx_info
+            = new ArrayList<WordExt>();
+        private ArrayList<SparseVector<double>> m_tf_vectors
+            = new ArrayList<SparseVector<double>>();
         private int m_max_n_gram_len
             = 2;
         private int m_min_word_freq
@@ -57,8 +84,12 @@ namespace Latino.TextMining
             = 0.2;
         private bool m_normalize_vectors
             = true;
-        private bool m_keep_word_forms
-            = false;
+        private ArrayList<int> m_free_idx
+            = new ArrayList<int>();
+        private int m_word_form_update_init // TODO: expose to the user
+            = 500;
+        private int m_word_form_update
+            = 500;
 
         public IncrementalBowSpace()
         {
@@ -132,21 +163,15 @@ namespace Latino.TextMining
             set { m_normalize_vectors = value; }
         }
 
-        public ArrayList<Word>.ReadOnly Words
+        public ArrayList<WordExt>.ReadOnly Words
         {
             get { return m_idx_info; }
-        }
-
-        public bool KeepWordForms
-        {
-            get { return m_keep_word_forms; }
-            set { m_keep_word_forms = value; }
         }
 
         public void OutputStats(StreamWriter writer)
         {
             writer.WriteLine("Word\tStem\tF\tDF");
-            foreach (KeyValuePair<string, Word> word_info in m_word_info)
+            foreach (KeyValuePair<string, WordExt> word_info in m_word_info)
             {
                 writer.WriteLine("{0}\t{1}\t{2}\t{3}", word_info.Value.m_most_frequent_form, word_info.Key, word_info.Value.m_freq, word_info.Value.m_doc_freq);
             }
@@ -201,13 +226,13 @@ namespace Latino.TextMining
                 n_gram_stem += n_grams[i].Stem;
                 if (!m_word_info.ContainsKey(n_gram_stem))
                 {
-                    Word n_gram_info = new Word(n_gram);
+                    WordExt n_gram_info = new WordExt(n_gram, n_gram_stem);
                     m_word_info.Add(n_gram_stem, n_gram_info);
                     doc_words.Add(n_gram_stem);
                 }
                 else
                 {
-                    Word n_gram_info = m_word_info[n_gram_stem];
+                    WordExt n_gram_info = m_word_info[n_gram_stem];
                     if (!doc_words.Contains(n_gram_stem))
                     {
                         doc_words.Add(n_gram_stem);
@@ -234,14 +259,24 @@ namespace Latino.TextMining
             for (int i = start_idx; i < n_grams.Count; i++)
             {
                 n_gram_stem += n_grams[i].Stem;
-                if (m_word_info.ContainsKey(n_gram_stem) && m_word_info[n_gram_stem].m_freq >= m_min_word_freq)
+                if (m_word_info.ContainsKey(n_gram_stem))
                 {
-                    Word word_info = m_word_info[n_gram_stem];
+                    WordExt word_info = m_word_info[n_gram_stem];
                     if (word_info.m_idx == -1)
                     {
-                        word_info.m_idx = m_idx_info.Count;
+                        if (m_free_idx.Count > 0)
+                        {
+                            word_info.m_idx = m_free_idx.Last;
+                            m_idx_info[word_info.m_idx] = word_info;
+                            m_free_idx.RemoveAt(m_free_idx.Count - 1);
+                        }
+                        else
+                        {
+                            word_info.m_idx = m_idx_info.Count;
+                            m_idx_info.Add(word_info);                        
+                        }
                         tf_vec.Add(word_info.m_idx, 1);
-                        m_idx_info.Add(word_info);
+                        
                     }
                     else if (!tf_vec.ContainsKey(word_info.m_idx))
                     {
@@ -308,13 +343,8 @@ namespace Latino.TextMining
                 }
             }
             Utils.VerboseLine("");
-            // precompute IDF      
-            foreach (KeyValuePair<string, Word> word_info in m_word_info)
-            {
-                word_info.Value.m_idf = Math.Log((double)doc_count / (double)word_info.Value.m_doc_freq);
-            }
             // determine most frequent word and n-gram forms
-            foreach (Word word_info in m_word_info.Values)
+            foreach (WordExt word_info in m_word_info.Values)
             { 
                 int max = 0;
                 foreach (KeyValuePair<string, int> word_form in word_info.m_forms)
@@ -325,7 +355,6 @@ namespace Latino.TextMining
                         word_info.m_most_frequent_form = word_form.Key;
                     }
                 }
-                if (!m_keep_word_forms) { word_info.m_forms.Clear(); } 
             }
             // compute bag-of-words vectors
             Utils.VerboseLine("Computing bag-of-words vectors ...");           
@@ -381,12 +410,20 @@ namespace Latino.TextMining
         // TODO: exceptions
         public ArrayList<SparseVector<double>> GetBowVectors()
         {
-            ArrayList<SparseVector<double>> bow_vectors = new ArrayList<SparseVector<double>>(m_tf_vectors.Count);
+            ArrayList<SparseVector<double>> bow_vectors = new ArrayList<SparseVector<double>>(m_tf_vectors.Count);            
             if (m_word_weight_type == WordWeightType.TermFreq)
             {
-                foreach (SparseVector<double>.ReadOnly tf_vec in m_tf_vectors)
+                foreach (SparseVector<double> tf_vec in m_tf_vectors)
                 {
-                    SparseVector<double> tmp = tf_vec.GetWritableCopy();                    
+                    SparseVector<double> tmp = new SparseVector<double>();
+                    foreach (IdxDat<double> tf_info in tf_vec)
+                    {
+                        if (tf_info.Dat >= m_min_word_freq)
+                        {
+                            tmp.InnerIdx.Add(tf_info.Idx);
+                            tmp.InnerDat.Add(tf_info.Dat);
+                        }
+                    }
                     CutLowWeights(ref tmp);
                     if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(tmp); }
                     bow_vectors.Add(tmp);
@@ -394,37 +431,41 @@ namespace Latino.TextMining
             }
             else if (m_word_weight_type == WordWeightType.TfIdf)
             {
-                foreach (SparseVector<double>.ReadOnly tf_vec in m_tf_vectors)
+                foreach (SparseVector<double> tf_vec in m_tf_vectors)
                 {
                     SparseVector<double> tmp = new SparseVector<double>();
                     foreach (IdxDat<double> tf_info in tf_vec)
                     {
-                        tmp.InnerIdx.Add(tf_info.Idx);
-                        tmp.InnerDat.Add(tf_info.Dat * m_idx_info[tf_info.Idx].m_idf);
+                        if (tf_info.Dat >= m_min_word_freq)
+                        {
+                            tmp.InnerIdx.Add(tf_info.Idx);
+                            tmp.InnerDat.Add(tf_info.Dat * m_idx_info[tf_info.Idx].Idf(m_tf_vectors.Count));
+                        }
                     }
                     CutLowWeights(ref tmp);
                     if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(tmp); }
                     bow_vectors.Add(tmp);
                 }
             }
-            //else if (m_word_weight_type == WordWeightType.LogDfTfIdf)
-            //{
-            //  TODO: implementation
-            //-------------------------------------------------------------------------------------------------
-            //else if (m_word_weight_type == WordWeightType.LogDfTfIdf)
-            //{
-            //    foreach (KeyValuePair<int, int> tf_item in tf_vec)
-            //    {
-            //        double tf_idf = (double)tf_item.Value * m_idx_info[tf_item.Key].m_idf;
-            //        if (tf_idf > 0)
-            //        {
-            //            doc_vec.InnerIdx.Add(tf_item.Key);
-            //            doc_vec.InnerDat.Add(Math.Log(1 + m_idx_info[tf_item.Key].m_doc_freq) * tf_idf);
-            //        }
-            //    }
-            //}
-            //-------------------------------------------------------------------------------------------------
-            //}
+            else if (m_word_weight_type == WordWeightType.LogDfTfIdf)
+            {
+                foreach (SparseVector<double> tf_vec in m_tf_vectors)
+                {
+                    SparseVector<double> tmp = new SparseVector<double>();
+                    foreach (IdxDat<double> tf_info in tf_vec)
+                    {
+                        if (tf_info.Dat >= m_min_word_freq)
+                        {
+                            tmp.InnerIdx.Add(tf_info.Idx);
+                            double tf_idf = tf_info.Dat * m_idx_info[tf_info.Idx].Idf(m_tf_vectors.Count);
+                            tmp.InnerDat.Add(Math.Log(1 + m_idx_info[tf_info.Idx].m_doc_freq) * tf_idf);
+                        }
+                    }
+                    CutLowWeights(ref tmp);
+                    if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    bow_vectors.Add(tmp);
+                }
+            }
             return bow_vectors;
         }
 
@@ -433,21 +474,18 @@ namespace Latino.TextMining
         {
             for (int i = 0; i < n; i++)
             {
-                SparseVector<double>.ReadOnly tf_vec = m_tf_vectors[i];
+                SparseVector<double> tf_vec = m_tf_vectors[i];
                 // decrease doc_freq and freq, update IDF
                 foreach (IdxDat<double> tf_info in tf_vec)
                 {
-                    Word word = m_idx_info[tf_info.Idx];
+                    WordExt word = m_idx_info[tf_info.Idx];
                     word.m_freq -= (int)tf_info.Dat;
                     word.m_doc_freq--;
                     if (word.m_doc_freq == 0)
                     {
-                        // what to do here?
-                        Console.WriteLine(word.m_idx);
-                    }
-                    else
-                    {
-                        word.m_idf = 1.0 / word.m_doc_freq;
+                        m_idx_info[word.m_idx] = null;
+                        m_word_info.Remove(word.m_stem);
+                        m_free_idx.Add(word.m_idx);
                     }
                 }
             }
@@ -457,11 +495,76 @@ namespace Latino.TextMining
         // TODO: exceptions
         public ArrayList<SparseVector<double>> Enqueue(IEnumerable<string> docs)
         {
-            return null;
+            ArrayList<SparseVector<double>> ret_val = new ArrayList<SparseVector<double>>();
+            foreach (string doc in docs)
+            {
+                SparseVector<double> tf_vec = ProcessDocument(doc);
+                SparseVector<double> vec = null;
+                m_tf_vectors.Add(tf_vec);
+                m_word_form_update--;
+                if (m_word_form_update == 0)
+                {
+                    m_word_form_update = m_word_form_update_init;
+                    // set most frequent word forms
+                    foreach (WordExt word_info in m_word_info.Values)
+                    {
+                        int max = 0;
+                        foreach (KeyValuePair<string, int> word_form in word_info.m_forms)
+                        {
+                            if (word_form.Value > max)
+                            {
+                                max = word_form.Value;
+                                word_info.m_most_frequent_form = word_form.Key;
+                            }
+                        }
+                    }
+                }
+                if (m_word_weight_type == WordWeightType.TermFreq)
+                {
+                    vec = new SparseVector<double>();
+                    foreach (IdxDat<double> item in tf_vec)
+                    {
+                        if (item.Dat >= m_min_word_freq)
+                        {
+                            vec.InnerIdx.Add(item.Idx);
+                            vec.InnerDat.Add(item.Dat);
+                        }
+                    }
+                }
+                else if (m_word_weight_type == WordWeightType.TfIdf)
+                {
+                    vec = new SparseVector<double>();
+                    foreach (IdxDat<double> item in tf_vec)
+                    {
+                        if (item.Dat >= m_min_word_freq)
+                        {
+                            vec.InnerIdx.Add(item.Idx);
+                            vec.InnerDat.Add(item.Dat * m_idx_info[item.Idx].Idf(m_tf_vectors.Count));
+                        }
+                    }
+                }
+                else if (m_word_weight_type == WordWeightType.LogDfTfIdf)
+                {
+                    vec = new SparseVector<double>();
+                    foreach (IdxDat<double> item in tf_vec)
+                    {
+                        if (item.Dat >= m_min_word_freq)
+                        {
+                            vec.InnerIdx.Add(item.Idx);
+                            double tf_idf = item.Dat * m_idx_info[item.Idx].Idf(m_tf_vectors.Count);
+                            vec.InnerDat.Add(Math.Log(1 + m_idx_info[item.Idx].m_doc_freq) * tf_idf);
+                        }
+                    }
+                }
+                CutLowWeights(ref vec);
+                if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(vec); }
+                ret_val.Add(vec);
+            }
+            return ret_val;
         }
 
-        private void ProcessDocumentNGrams(ArrayList<WordStem> n_grams, int start_idx, Dictionary<int, int> tf_vec)
-        {
+        private void ProcessDocumentNGrams(ArrayList<WordStem> n_grams, int start_idx, Dictionary<int, int> tf_vec, Set<string> doc_words)
+        {            
             string n_gram_stem = "";
             string n_gram = "";
             for (int i = start_idx; i < n_grams.Count; i++)
@@ -470,23 +573,71 @@ namespace Latino.TextMining
                 n_gram_stem += n_grams[i].Stem;
                 if (m_word_info.ContainsKey(n_gram_stem))
                 {
-                    int stem_idx = m_word_info[n_gram_stem].m_idx;
-                    if (tf_vec.ContainsKey(stem_idx))
+                    WordExt word = m_word_info[n_gram_stem];
+                    // increase doc_freq and freq, update IDF
+                    word.m_freq++;
+                    if (!word.m_forms.ContainsKey(n_gram))
                     {
-                        tf_vec[stem_idx]++;
+                        word.m_forms.Add(n_gram, 1);
                     }
                     else
                     {
-                        tf_vec.Add(stem_idx, 1);
+                        word.m_forms[n_gram]++;
                     }
+                    if (!doc_words.Contains(n_gram_stem))
+                    {
+                        word.m_doc_freq++;
+                        doc_words.Add(n_gram_stem);
+                    }
+                    if (tf_vec.ContainsKey(word.m_idx))
+                    {
+                        tf_vec[word.m_idx]++;
+                    }
+                    else
+                    {
+                        if (word.m_idx == -1)
+                        {
+                            if (m_free_idx.Count > 0)
+                            {
+                                word.m_idx = m_free_idx.Last;
+                                m_idx_info[word.m_idx] = word;
+                                m_free_idx.RemoveAt(m_free_idx.Count - 1);
+                            }
+                            else
+                            {
+                                word.m_idx = m_idx_info.Count;
+                                m_idx_info.Add(word);
+                            }
+                        }
+                        tf_vec.Add(word.m_idx, 1);
+                    }
+                }
+                else // new word
+                {
+                    WordExt word = new WordExt(n_gram, n_gram_stem);                    
+                    m_word_info.Add(n_gram_stem, word);
+                    doc_words.Add(n_gram_stem);
+                    if (m_free_idx.Count > 0)
+                    {
+                        word.m_idx = m_free_idx.Last;
+                        m_idx_info[word.m_idx] = word;
+                        m_free_idx.RemoveAt(m_free_idx.Count - 1);
+                    }
+                    else
+                    {
+                        word.m_idx = m_idx_info.Count;
+                        m_idx_info.Add(word);
+                    }
+                    tf_vec.Add(word.m_idx, 1);
                 }
                 n_gram += " ";
                 n_gram_stem += " ";
             }
         }
 
-        public SparseVector<double> ProcessDocument(string document)
+        private SparseVector<double> ProcessDocument(string document)
         {
+            Set<string> doc_words = new Set<string>();
             Dictionary<int, int> tf_vec = new Dictionary<int, int>();
             ArrayList<WordStem> n_grams = new ArrayList<WordStem>(m_max_n_gram_len);
             m_tokenizer.Text = document;
@@ -512,50 +663,21 @@ namespace Latino.TextMining
                         for (int i = 0; i < m_max_n_gram_len - 1; i++) { n_grams[i] = n_grams[i + 1]; }
                         n_grams[m_max_n_gram_len - 1] = word_stem;
                     }
-                    ProcessDocumentNGrams(n_grams, 0, tf_vec);
+                    ProcessDocumentNGrams(n_grams, 0, tf_vec, doc_words);
                 }
             }
             int start_idx = n_grams.Count == m_max_n_gram_len ? 1 : 0;
             for (int i = start_idx; i < n_grams.Count; i++)
             {
-                ProcessDocumentNGrams(n_grams, i, tf_vec);
+                ProcessDocumentNGrams(n_grams, i, tf_vec, doc_words);
             }
             SparseVector<double> doc_vec = new SparseVector<double>();
-            if (m_word_weight_type == WordWeightType.TermFreq)
+            foreach (KeyValuePair<int, int> tf_item in tf_vec)
             {
-                foreach (KeyValuePair<int, int> tf_item in tf_vec)
-                {
-                    doc_vec.InnerIdx.Add(tf_item.Key);
-                    doc_vec.InnerDat.Add(tf_item.Value);
-                }
-            }
-            else if (m_word_weight_type == WordWeightType.TfIdf)
-            {
-                foreach (KeyValuePair<int, int> tf_item in tf_vec)
-                {
-                    double tf_idf = (double)tf_item.Value * m_idx_info[tf_item.Key].m_idf;
-                    if (tf_idf > 0)
-                    {
-                        doc_vec.InnerIdx.Add(tf_item.Key);
-                        doc_vec.InnerDat.Add(tf_idf);
-                    }
-                }
-            }
-            else if (m_word_weight_type == WordWeightType.LogDfTfIdf)
-            {
-                foreach (KeyValuePair<int, int> tf_item in tf_vec)
-                {
-                    double tf_idf = (double)tf_item.Value * m_idx_info[tf_item.Key].m_idf;
-                    if (tf_idf > 0)
-                    {
-                        doc_vec.InnerIdx.Add(tf_item.Key);
-                        doc_vec.InnerDat.Add(Math.Log(1 + m_idx_info[tf_item.Key].m_doc_freq) * tf_idf);
-                    }
-                }
+                doc_vec.InnerIdx.Add(tf_item.Key);
+                doc_vec.InnerDat.Add(tf_item.Value);
             }
             doc_vec.Sort();
-            CutLowWeights(ref doc_vec);
-            if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(doc_vec); }
             return doc_vec;
         }
 
@@ -591,7 +713,7 @@ namespace Latino.TextMining
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
             writer.WriteInt(m_word_info.Count);
-            foreach (KeyValuePair<string, Word> item in m_word_info)
+            foreach (KeyValuePair<string, WordExt> item in m_word_info)
             {
                 writer.WriteString(item.Key);
                 item.Value.Save(writer);
@@ -601,7 +723,7 @@ namespace Latino.TextMining
         public void LoadVocabulary(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            ArrayList<IdxDat<Word>> tmp = new ArrayList<IdxDat<Word>>();
+            ArrayList<IdxDat<WordExt>> tmp = new ArrayList<IdxDat<WordExt>>();
             // the following statements throw serialization-related exceptions
             m_word_info.Clear();
             m_idx_info.Clear();
@@ -610,12 +732,12 @@ namespace Latino.TextMining
             for (int i = 0; i < count; i++)
             {
                 string key = reader.ReadString();
-                Word dat = new Word(reader);
+                WordExt dat = new WordExt(reader);
                 m_word_info.Add(key, dat);
-                tmp.Add(new IdxDat<Word>(dat.m_idx, dat));
+                tmp.Add(new IdxDat<WordExt>(dat.m_idx, dat));
             }
             tmp.Sort();
-            foreach (IdxDat<Word> item in tmp)
+            foreach (IdxDat<WordExt> item in tmp)
             {
                 m_idx_info.Add(item.Dat);
             }
@@ -630,7 +752,6 @@ namespace Latino.TextMining
             writer.WriteObject<IStemmer>(m_stemmer);
             m_tf_vectors.Save(writer);
             writer.WriteInt(m_max_n_gram_len);
-            writer.WriteInt(m_min_word_freq);
             writer.WriteInt((int)m_word_weight_type);
             writer.WriteDouble(m_cut_low_weights_perc);
             writer.WriteBool(m_normalize_vectors);
@@ -645,7 +766,6 @@ namespace Latino.TextMining
             m_stemmer = reader.ReadObject<IStemmer>();
             m_tf_vectors.Load(reader);
             m_max_n_gram_len = reader.ReadInt();
-            m_min_word_freq = reader.ReadInt();
             m_word_weight_type = (WordWeightType)reader.ReadInt();
             m_cut_low_weights_perc = reader.ReadDouble();
             m_normalize_vectors = reader.ReadBool();

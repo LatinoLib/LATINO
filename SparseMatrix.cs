@@ -248,6 +248,14 @@ namespace Latino
             }
         }
 
+        public T TryGet(int row_idx, int col_idx, T default_val)
+        {
+            Utils.ThrowException(row_idx < 0 ? new ArgumentOutOfRangeException("row_idx") : null);
+            Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
+            Utils.ThrowException(row_idx >= m_rows.Count ? new ArgumentValueException("row_idx") : null);
+            return m_rows[row_idx].TryGet(col_idx, default_val);
+        }
+
         public T this[int row_idx, int col_idx]
         {
             get
@@ -782,6 +790,11 @@ namespace Latino
             public SparseVector<T>.ReadOnly this[int row_idx]
             {
                 get { return m_matrix[row_idx]; }
+            }
+
+            public T TryGet(int row_idx, int col_idx, T default_val)
+            {
+                return m_matrix.TryGet(row_idx, col_idx, default_val);
             }
 
             public T this[int row_idx, int col_idx]

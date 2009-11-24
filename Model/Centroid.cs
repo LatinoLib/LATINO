@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 
 namespace Latino.Model
 {
@@ -156,6 +157,21 @@ namespace Latino.Model
                 dot_prod += item.Dat * m_vec[item.Idx];
             }
             return dot_prod;
+        }
+
+        public void __Update__(int dequeue_n, IExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset) // *** experimental
+        { 
+            // update m_dataset and m_items_current
+            m_dataset = dataset;
+            Set<int> items = new Set<int>();
+            foreach (int item in m_items_current)
+            {
+                if (item >= dequeue_n)
+                {
+                    items.Add(item - dequeue_n);
+                }
+            }
+            m_items_current = items;
         }
     }
 }

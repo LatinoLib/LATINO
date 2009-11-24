@@ -281,6 +281,20 @@ namespace Latino
             }
         }
 
+        public T TryGet(int index, T default_val)
+        {
+            Utils.ThrowException(index < 0 ? new ArgumentOutOfRangeException("index") : null);
+            int direct_idx = m_idx.BinarySearch(index);
+            if (direct_idx >= 0)
+            {
+                return m_dat[direct_idx];
+            }
+            else
+            {
+                return default_val;
+            }
+        }
+
         public T this[int index]
         {
             get
@@ -717,6 +731,11 @@ namespace Latino
             public int IndexOf(T item)
             {
                 return m_vec.IndexOf(item);
+            }
+
+            public T TryGet(int idx, T default_val)
+            {
+                return m_vec.TryGet(idx, default_val);
             }
 
             public T this[int idx]

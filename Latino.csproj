@@ -54,6 +54,7 @@
     <Compile Include="IBinaryOperator.cs" />
     <Compile Include="ICloneable.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Model\__IncrementalKMeans__.cs" />
     <Compile Include="Model\FuzzyKMeans.cs" />
     <Compile Include="Model\IDistance.cs" />
     <Compile Include="Model\IClustering.cs" />
@@ -154,6 +155,7 @@
     <Compile Include="TextMining\StopWords\SpanishStopWords.cs" />
     <Compile Include="TextMining\Word.cs" />
     <Compile Include="Visualization\BoundingArea.cs" />
+    <Compile Include="Visualization\SemanticSpace.cs" />
     <Compile Include="Visualization\Vector2D.cs" />
     <Compile Include="Visualization\DrawableObjectEventArgs.cs" />
     <Compile Include="Visualization\DrawableObjectViewer.cs">
