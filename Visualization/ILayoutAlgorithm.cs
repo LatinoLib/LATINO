@@ -22,6 +22,6 @@ namespace Latino.Visualization
     */
     interface ILayoutAlgorithm
     {
-        Vector2D[] ComputeLayout();
+        Vector2D[] ComputeLayout(LayoutSettings settings);
     }
 }

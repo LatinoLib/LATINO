@@ -16,7 +16,7 @@ using System;
 
 namespace Latino.Model
 {
-    public class KMeans<LblT> : IClustering<LblT, SparseVector<double>.ReadOnly> 
+    public class KMeans : IClustering<SparseVector<double>.ReadOnly> 
     {        
         private ISimilarity<SparseVector<double>.ReadOnly> m_similarity
             = new CosineSimilarity();
@@ -89,7 +89,7 @@ namespace Latino.Model
             get { return typeof(SparseVector<double>.ReadOnly); }
         }
 
-        public ClusteringResult Cluster(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
+        public ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count < m_k ? new ArgumentValueException("dataset") : null);
@@ -112,7 +112,7 @@ namespace Latino.Model
                     tmp.Shuffle(m_rnd);
                     for (int i = 0; i < m_k; i++)
                     {
-                        seeds.Add(ModelUtils.ComputeCentroid(new SparseVector<double>.ReadOnly[] { dataset[tmp[i]].Example }, m_centroid_type));
+                        seeds.Add(ModelUtils.ComputeCentroid(new SparseVector<double>.ReadOnly[] { dataset[tmp[i]] }, m_centroid_type));
                     }
                     // assess quality of seed items
                     double sim_avg = 0;
@@ -146,7 +146,7 @@ namespace Latino.Model
                     foreach (Cluster cluster in clustering.Roots) { cluster.Items.Clear(); }
                     for (int i = 0; i < dataset.Count; i++)
                     {
-                        SparseVector<double>.ReadOnly example = dataset[i].Example;
+                        SparseVector<double>.ReadOnly example = dataset[i];
                         double max_sim = double.MinValue;
                         ArrayList<int> candidates = new ArrayList<int>();
                         for (int j = 0; j < m_k; j++)
@@ -198,11 +198,11 @@ namespace Latino.Model
             return best_clustering;
         }
 
-        ClusteringResult IClustering<LblT>.Cluster(ILabeledExampleCollection<LblT> dataset)
+        ClusteringResult IClustering.Cluster(IUnlabeledExampleCollection dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            return Cluster((ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
+            return Cluster((IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
         }
     }
 }

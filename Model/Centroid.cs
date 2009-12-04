@@ -19,13 +19,13 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Internal class Centroid<LblT>
+       |  Internal class Centroid
        |
        '-----------------------------------------------------------------------
     */
-    internal class Centroid<LblT>
+    internal class Centroid
     {
-        private ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> m_dataset;
+        private IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> m_dataset;
         private Set<int> m_items_current
             = new Set<int>();
         private Set<int> m_items
@@ -36,18 +36,18 @@ namespace Latino.Model
             = 1;
         private double[] m_vec;
 
-        public Centroid(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset, int vec_len)
+        public Centroid(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, int vec_len)
         {
             m_vec = new double[vec_len];
             m_dataset = dataset;
         }
 
-        public Centroid(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
+        public Centroid(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
             int max_idx = -1;
-            foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeled_example in dataset)
+            foreach (SparseVector<double>.ReadOnly example in dataset)
             {
-                int last_idx = labeled_example.Example.LastNonEmptyIndex;
+                int last_idx = example.LastNonEmptyIndex;
                 if (last_idx > max_idx) { max_idx = last_idx; }
             }
             m_vec = new double[max_idx + 1];
@@ -71,7 +71,7 @@ namespace Latino.Model
             //Console.WriteLine(m_items.Count - (add_idx.Count + rmv_idx.Count));
             foreach (int item_idx in add_idx)
             {
-                SparseVector<double>.ReadOnly vec = m_dataset[item_idx].Example;
+                SparseVector<double>.ReadOnly vec = m_dataset[item_idx];
                 foreach (IdxDat<double> item in vec)
                 {
                     if (item.Dat != 0)
@@ -84,7 +84,7 @@ namespace Latino.Model
             }
             foreach (int item_idx in rmv_idx)
             {
-                SparseVector<double>.ReadOnly vec = m_dataset[item_idx].Example;
+                SparseVector<double>.ReadOnly vec = m_dataset[item_idx];
                 foreach (IdxDat<double> item in vec)
                 {
                     if (item.Dat != 0)
@@ -159,7 +159,7 @@ namespace Latino.Model
             return dot_prod;
         }
 
-        public void __Update__(int dequeue_n, ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset) // *** experimental
+        public void __UpdateDataset__(int dequeue_n, IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset) // *** experimental
         { 
             // update m_dataset and m_items_current
             m_dataset = dataset;

@@ -7,8 +7,8 @@
  *  Desc:		   Fundamental LATINO utilities
  *  Author:        Miha Grcar
  *  Created on:    Nov-2007
- *  Last modified: Jan-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -108,38 +108,6 @@ namespace Latino
             }
         }
 
-#if DEPRECATED
-        public static string ReadTextFile(string file_name) // *** use File.ReadAllLines, File.ReadAllText instead
-        {
-            return ReadTextFile(file_name, Encoding.UTF8); // throws ArgumentValueException, OutOfMemoryException, IOException
-        }
-
-        public static string ReadTextFile(string file_name, Encoding enc) // *** use File.ReadAllLines, File.ReadAllText instead
-        {
-            ThrowException(!VerifyFileNameOpen(file_name) ? new ArgumentValueException("file_name") : null);
-            ThrowException(enc == null ? new ArgumentNullException("enc") : null);
-            StreamReader reader = new StreamReader(file_name, enc);
-            string text = reader.ReadToEnd(); // throws OutOfMemoryException, IOException
-            reader.Close();
-            return text;
-        }
-
-        public static void WriteTextFile(string file_name, bool append, string text) // *** use File.WriteAllLines, File.WriteAllText instead
-        {
-            WriteTextFile(file_name, append, text, Encoding.UTF8); // throws ArgumentNullException, ArgumentValueException, IOException
-        }
-
-        public static void WriteTextFile(string file_name, bool append, string text, Encoding enc) // *** use File.WriteAllLines, File.WriteAllText instead
-        {
-            ThrowException(text == null ? new ArgumentNullException("text") : null);
-            ThrowException(!VerifyFileNameCreate(file_name) ? new ArgumentValueException("file_name") : null);
-            ThrowException(enc == null ? new ArgumentNullException("enc") : null);
-            StreamWriter writer = new StreamWriter(file_name, append, enc);
-            writer.Write(text); // throws IOException
-            writer.Close();
-        }
-#endif
-
         public static object Clone(object obj, bool deep_clone)
         {
             if (deep_clone && obj is IDeeplyCloneable)
@@ -233,6 +201,50 @@ namespace Latino
             {
                 return Convert.ChangeType(obj, new_type); // throws InvalidCastException, FormatException, OverflowException
             }
+        }
+
+        // *** SparseVector<double> template specialization ***
+
+        public static double GetVecLenL2(/*this*/SparseVector<double>.ReadOnly vec)
+        {
+            Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            double len = 0;
+            ArrayList<double> dat_inner = vec.Inner.InnerDat;
+            foreach (double val in dat_inner)
+            {
+                len += val * val;
+            }
+            return Math.Sqrt(len);
+        }
+
+        public static double GetVecLenL2(/*this*/ SparseVector<double> vec)
+        {
+            return GetVecLenL2(new SparseVector<double>.ReadOnly(vec)); // throws ArgumentNullException
+        }
+
+        public static void NrmVecL2(/*this*/ SparseVector<double> vec)
+        {
+            Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            double len = GetVecLenL2(vec);
+            Utils.ThrowException(len == 0 ? new InvalidOperationException() : null);
+            ArrayList<double> dat_inner = vec.InnerDat;
+            for (int i = 0; i < vec.Count; i++)
+            {
+                vec.SetDirect(i, dat_inner[i] / len);
+            }
+        }
+
+        public static bool TryNrmVecL2(/*this*/ SparseVector<double> vec)
+        {
+            Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            double len = GetVecLenL2(vec);
+            if (len == 0) { return false; }
+            ArrayList<double> dat_inner = vec.InnerDat;
+            for (int i = 0; i < vec.Count; i++)
+            {
+                vec.SetDirect(i, dat_inner[i] / len);
+            }
+            return true;
         }
     }
 }

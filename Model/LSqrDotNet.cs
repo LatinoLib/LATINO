@@ -7,8 +7,8 @@
  *  Desc:		   C# wrapper for LSQR DLL
  *  Author:        Miha Grcar 
  *  Created on:    Oct-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  * 
  ***************************************************************************/
 
@@ -47,6 +47,8 @@ namespace Latino.Model
         public static double[] DoLSqr(int num_cols, LSqrSparseMatrix mat, LSqrSparseMatrix mat_transp, double[] rhs, int max_iter)
         {
             IntPtr sol_ptr = DoLSqr(mat.Id, mat_transp.Id, rhs, max_iter);
+            GC.KeepAlive(mat); // avoid premature garbage collection
+            GC.KeepAlive(mat_transp);
             double[] sol = new double[num_cols];
             Marshal.Copy(sol_ptr, sol, 0, sol.Length);
             Marshal.FreeHGlobal(sol_ptr);

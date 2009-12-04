@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          SemanticSpace.cs
+ *  File:          SemanticSpaceLayout.cs
  *  Version:       1.0
  *  Desc:		   Semantic space layout algorithm
  *  Author:        Miha Grcar
@@ -13,19 +13,20 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using Latino.Model;
 
 namespace Latino.Visualization
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class SemanticSpace<LblT>
+       |  Class SemanticSpaceLayout 
        |
        '-----------------------------------------------------------------------
     */
-    public class SemanticSpace<LblT> : ILayoutAlgorithm
+    public class SemanticSpaceLayout : ILayoutAlgorithm
     {
-        ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> m_dataset;
+        IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> m_dataset;
         Random m_random
             = new Random(1);
         double m_k_means_eps
@@ -37,51 +38,100 @@ namespace Latino.Visualization
         int m_k_nn
             = 10;
 
-        public SemanticSpace(LabeledDataset<LblT, SparseVector<double>.ReadOnly> dataset)
+        public SemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             m_dataset = dataset;
         }
 
-        // TODO: settings
+        public Random Random
+        {
+            get { return m_random; }
+            set 
+            {
+                Utils.ThrowException(value == null ? new ArgumentNullException("Random") : null);
+                m_random = value; 
+            }
+        }
+
+        public double KMeansEps
+        {
+            get { return m_k_means_eps; }
+            set
+            {
+                Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("KMeansEps") : null);
+                m_k_means_eps = value;
+            }
+        }
+
+        public int KMeansK
+        {
+            get { return m_k_clust; }
+            set
+            {
+                Utils.ThrowException(value < 2 ? new ArgumentOutOfRangeException("KMeansK") : null);
+                m_k_clust = value;
+            }
+        }
+
+        public double SimThresh
+        {
+            get { return m_sim_thresh; }
+            set 
+            {
+                Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("SimThresh") : null);
+                m_sim_thresh = value;
+            }
+        }
+
+        public int NeighborhoodSize
+        {
+            get { return m_k_nn; }
+            set
+            {
+                Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("NeighborhoodSize") : null);
+                m_k_nn = value;
+            }
+        }
 
         // *** ILayoutAlgorithm interface implementation ***
 
         public Vector2D[] ComputeLayout()
         {
-            SparseVectorDataset<byte> dataset = new SparseVectorDataset<byte>();
-            foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> ex in m_dataset) 
-            { 
-                dataset.Add(0, ex.Example); 
-            }
+            return ComputeLayout(/*settings=*/null);
+        }
+
+        public Vector2D[] ComputeLayout(LayoutSettings settings)
+        {
+            UnlabeledDataset<SparseVector<double>.ReadOnly> dataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(m_dataset);
             // clustering 
             Utils.VerboseLine("Clustering ...");
-            KMeansFast<byte> k_means = new KMeansFast<byte>(m_k_clust);
+            KMeansFast k_means = new KMeansFast(m_k_clust);
             k_means.Eps = m_k_means_eps;
             k_means.Random = m_random;
             k_means.Trials = 1;
-            ClusteringResult clustering = k_means.Cluster(dataset); // throws ArgumentValueException
+            ClusteringResult clustering = k_means.Cluster(m_dataset); // throws ArgumentValueException
             // determine reference instances
-            SparseVectorDataset<byte> ds_ref_inst = new SparseVectorDataset<byte>();
+            UnlabeledDataset<SparseVector<double>.ReadOnly> ds_ref_inst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
             foreach (Cluster cluster in clustering.Roots)
             {
-                SparseVector<double> centroid = cluster.ComputeCentroid(dataset, CentroidType.NrmL2);
-                ds_ref_inst.Add(0, centroid); // dataset of reference instances
-                dataset.Add(0, centroid); // add centroids to the main dataset
+                SparseVector<double> centroid = cluster.ComputeCentroid(m_dataset, CentroidType.NrmL2);
+                ds_ref_inst.Add(centroid); // dataset of reference instances
+                dataset.Add(centroid); // add centroids to the main dataset
             }
             // position reference instances
             Utils.VerboseLine("Positioning reference instances ...");
-            SparseMatrix<double> sim_mtx = ds_ref_inst.GetDotProductSimilarity(m_sim_thresh, /*full_matrix=*/false);
-            StressMajorization sm = new StressMajorization(ds_ref_inst.Count, new DistFunc(sim_mtx));
+            SparseMatrix<double> sim_mtx = ModelUtils.GetDotProductSimilarity(ds_ref_inst, m_sim_thresh, /*full_matrix=*/false);
+            StressMajorizationLayout sm = new StressMajorizationLayout(ds_ref_inst.Count, new DistFunc(sim_mtx));
             sm.Random = m_random;
             Vector2D[] centr_pos = sm.ComputeLayout();
             // k-NN
             Utils.VerboseLine("Computing similarities ...");
-            sim_mtx = dataset.GetDotProductSimilarity(m_sim_thresh, /*full_matrix=*/true);
+            sim_mtx = ModelUtils.GetDotProductSimilarity(dataset, m_sim_thresh, /*full_matrix=*/true);
             Utils.VerboseLine("Constructing system of linear equations ...");
-            SparseVectorDataset<double> lsqr_ds = new SparseVectorDataset<double>();
+            LabeledDataset<double, SparseVector<double>.ReadOnly> lsqr_ds = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
             foreach (IdxDat<SparseVector<double>> sim_mtx_row in sim_mtx)
-            {                
+            {
                 if (sim_mtx_row.Dat.Count == 0)
                 {
                     Utils.VerboseLine("*** Warning: instance #{0} has no neighborhood.", sim_mtx_row.Idx);
@@ -97,7 +147,7 @@ namespace Latino.Visualization
                 knn.Sort(new DescSort<KeyDat<double, int>>());
                 int count = Math.Min(knn.Count, m_k_nn);
                 SparseVector<double> eq = new SparseVector<double>();
-                double wgt = 1.0 / (double)count;                
+                double wgt = 1.0 / (double)count;
                 for (int i = 0; i < count; i++)
                 {
                     eq.InnerIdx.Add(knn[i].Dat);
@@ -107,7 +157,7 @@ namespace Latino.Visualization
                 eq[sim_mtx_row.Idx] = 1;
                 lsqr_ds.Add(0, eq);
             }
-            Vector2D[] coords = new Vector2D[dataset.Count - m_k_clust];
+            Vector2D[] layout = new Vector2D[dataset.Count - m_k_clust];
             for (int i = dataset.Count - m_k_clust, j = 0; i < dataset.Count; i++, j++)
             {
                 SparseVector<double> eq = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(i, 1) });
@@ -115,20 +165,20 @@ namespace Latino.Visualization
             }
             LSqrModel lsqr = new LSqrModel();
             lsqr.Train(lsqr_ds);
-            for (int i = 0; i < coords.Length; i++)
+            for (int i = 0; i < layout.Length; i++)
             {
-                coords[i].X = lsqr.Solution[i];
+                layout[i].X = lsqr.Solution[i];
             }
             for (int i = lsqr_ds.Count - m_k_clust, j = 0; i < lsqr_ds.Count; i++, j++)
             {
                 lsqr_ds[i].Label = centr_pos[j].Y;
             }
             lsqr.Train(lsqr_ds);
-            for (int i = 0; i < coords.Length; i++)
+            for (int i = 0; i < layout.Length; i++)
             {
-                coords[i].Y = lsqr.Solution[i];
+                layout[i].Y = lsqr.Solution[i];
             }
-            return coords;
+            return settings == null ? layout : settings.AdjustLayout(layout);
         }
 
         /* .-----------------------------------------------------------------------

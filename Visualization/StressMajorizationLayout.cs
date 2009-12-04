@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          StressMajorization.cs
+ *  File:          StressMajorizationLayout.cs
  *  Version:       1.0
  *  Desc:		   Stress majorization algorithm 
  *  Author:        Miha Grcar
@@ -20,11 +20,11 @@ namespace Latino.Visualization
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class StressMajorization
+       |  Class StressMajorizationLayout
        |
        '-----------------------------------------------------------------------
     */
-    public class StressMajorization : ILayoutAlgorithm
+    public class StressMajorizationLayout : ILayoutAlgorithm
     {
         private int m_max_steps
             = 1000;
@@ -35,7 +35,7 @@ namespace Latino.Visualization
         private int m_num_points;
         private IDistance<int> m_dist_func;
 
-        public StressMajorization(int num_points, IDistance<int> dist_func)
+        public StressMajorizationLayout(int num_points, IDistance<int> dist_func)
         {
             Utils.ThrowException(num_points <= 0 ? new ArgumentOutOfRangeException("num_points") : null);
             Utils.ThrowException(dist_func == null ? new ArgumentNullException("dist_func") : null);
@@ -93,39 +93,23 @@ namespace Latino.Visualization
             }
         }
 
-        private void FitToBounds(Vector2D[] points)
-        {
-            double min_x = double.MaxValue, max_x = double.MinValue;
-            double min_y = double.MaxValue, max_y = double.MinValue;
-            foreach (Vector2D pt in points)
-            {
-                if (pt.X > max_x) { max_x = pt.X; }
-                if (pt.X < min_x) { min_x = pt.X; }
-                if (pt.Y > max_y) { max_y = pt.Y; }
-                if (pt.Y < min_y) { min_y = pt.Y; }
-            }
-            double scale_x = max_x - min_x;
-            double scale_y = max_y - min_y;
-            for (int i = 0; i < points.Length; i++)
-            {
-                Vector2D pt = points[i];
-                double new_x = scale_x == 0 ? 0.5 : ((pt.X - min_x) / scale_x);
-                double new_y = scale_y == 0 ? 0.5 : ((pt.Y - min_y) / scale_y);
-                points[i] = new Vector2D(new_x, new_y);
-            }
-        }
-
         // *** ILayoutAlgorithm interface implementation ***
 
         public Vector2D[] ComputeLayout()
         {
-            if (m_num_points == 1) { return new Vector2D[] { new Vector2D(0.5, 0.5) }; } // trivial case
+            return ComputeLayout(/*settings=*/null);
+        }
+
+        public Vector2D[] ComputeLayout(LayoutSettings settings)
+        {
+            if (settings == null) { settings = new LayoutSettings(); }
+            if (m_num_points == 1) { return settings.AdjustLayout(new Vector2D[] { new Vector2D() }); } // trivial case 
             const double eps = 0.00001;
-            Vector2D[] vert_pos = new Vector2D[m_num_points];
+            Vector2D[] layout = new Vector2D[m_num_points];
             // initialize layout
             for (int i = 0; i < m_num_points; i++)
             {
-                vert_pos[i] = new Vector2D(m_rnd.NextDouble(), m_rnd.NextDouble());
+                layout[i] = new Vector2D(m_rnd.NextDouble(), m_rnd.NextDouble());
             }
             // main optimization loop
             double global_stress = 0, stress_diff = 0;
@@ -144,22 +128,22 @@ namespace Latino.Visualization
                             double d_ij = m_dist_func.GetDistance(i, j);
                             if (d_ij < eps) { d_ij = eps; }
                             double w_ij = 1.0 / Math.Pow(d_ij, 2);
-                            double x_i_minus_x_j = vert_pos[i].X - vert_pos[j].X;
-                            double y_i_minus_y_j = vert_pos[i].Y - vert_pos[j].Y;
+                            double x_i_minus_x_j = layout[i].X - layout[j].X;
+                            double y_i_minus_y_j = layout[i].Y - layout[j].Y;
                             double denom = Math.Sqrt(Math.Pow(x_i_minus_x_j, 2) + Math.Pow(y_i_minus_y_j, 2));
                             if (denom < eps) { denom = eps; } // avoid dividing by zero
                             div += w_ij;
-                            new_pos.X += w_ij * (vert_pos[j].X + d_ij * (x_i_minus_x_j / denom));
-                            new_pos.Y += w_ij * (vert_pos[j].Y + d_ij * (y_i_minus_y_j / denom));
+                            new_pos.X += w_ij * (layout[j].X + d_ij * (x_i_minus_x_j / denom));
+                            new_pos.Y += w_ij * (layout[j].Y + d_ij * (y_i_minus_y_j / denom));
                             if (i < j)
                             {
-                                Vector2D diff = vert_pos[i] - vert_pos[j];
+                                Vector2D diff = layout[i] - layout[j];
                                 global_stress += w_ij * Math.Pow(diff.GetLength() - d_ij, 2);
                             }
                         }
                     }
-                    vert_pos[i].X = new_pos.X / div;
-                    vert_pos[i].Y = new_pos.Y / div;
+                    layout[i].X = new_pos.X / div;
+                    layout[i].Y = new_pos.Y / div;
                 }
                 stress_diff = old_global_stress - global_stress;
                 if ((step - 1) % 100 == 0)
@@ -170,8 +154,7 @@ namespace Latino.Visualization
                 if (stress_diff <= m_min_diff) { break; }
             }
             Utils.VerboseLine("Final global stress: {0:0.00} Diff: {1:0.0000}", global_stress, stress_diff);
-            FitToBounds(vert_pos);
-            return vert_pos;
+            return settings.AdjustLayout(layout);
         }
     }
 }

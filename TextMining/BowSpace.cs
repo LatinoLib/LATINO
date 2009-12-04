@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using Latino.Model;
@@ -38,7 +39,7 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public class BowSpace : ISerializable
+    public class BowSpace : IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>, ISerializable
     {
         private class WordStem
         {
@@ -523,7 +524,7 @@ namespace Latino.TextMining
                 }
                 doc_vec.Sort();
                 CutLowWeights(ref doc_vec);
-                if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(doc_vec); }
+                if (m_normalize_vectors) { Utils.TryNrmVecL2(doc_vec); }
                 m_bow_vectors.Add(doc_vec);
             }
             Utils.VerboseLine("");
@@ -624,7 +625,7 @@ namespace Latino.TextMining
             }
             doc_vec.Sort();
             CutLowWeights(ref doc_vec);
-            if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(doc_vec); }
+            if (m_normalize_vectors) { Utils.TryNrmVecL2(doc_vec); }
             return doc_vec;
         }
 
@@ -651,6 +652,38 @@ namespace Latino.TextMining
                 keyword_list.Add(keywords[i].Dat);
             }
             return keyword_list;
+        }
+
+        // *** IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> interface implementation ***
+
+        public Type ExampleType
+        {
+            get { return typeof(SparseVector<double>.ReadOnly); }
+        }
+
+        public int Count
+        {
+            get { return m_bow_vectors.Count; }
+        }
+
+        public SparseVector<double>.ReadOnly this[int index]
+        {
+            get { return m_bow_vectors[index]; } // throws ArgumentOutOfRangeException
+        }
+
+        public IEnumerator<SparseVector<double>.ReadOnly> GetEnumerator()
+        {
+            return m_bow_vectors.GetEnumerator();
+        }
+
+        object IEnumerableList.this[int index]
+        {
+            get { return this[index]; } // throws ArgumentOutOfRangeException
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         // *** ISerializable interface implementation ***

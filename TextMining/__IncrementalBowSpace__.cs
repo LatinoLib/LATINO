@@ -425,7 +425,7 @@ namespace Latino.TextMining
                         }
                     }
                     CutLowWeights(ref tmp);
-                    if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    if (m_normalize_vectors) { Utils.TryNrmVecL2(tmp); }
                     bow_vectors.Add(tmp);
                 }
             }
@@ -443,7 +443,7 @@ namespace Latino.TextMining
                         }
                     }
                     CutLowWeights(ref tmp);
-                    if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    if (m_normalize_vectors) { Utils.TryNrmVecL2(tmp); }
                     bow_vectors.Add(tmp);
                 }
             }
@@ -462,7 +462,7 @@ namespace Latino.TextMining
                         }
                     }
                     CutLowWeights(ref tmp);
-                    if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    if (m_normalize_vectors) { Utils.TryNrmVecL2(tmp); }
                     bow_vectors.Add(tmp);
                 }
             }
@@ -557,7 +557,7 @@ namespace Latino.TextMining
                     }
                 }
                 CutLowWeights(ref vec);
-                if (m_normalize_vectors) { ModelUtils.TryNrmVecL2(vec); }
+                if (m_normalize_vectors) { Utils.TryNrmVecL2(vec); }
                 ret_val.Add(vec);
             }
             return ret_val;

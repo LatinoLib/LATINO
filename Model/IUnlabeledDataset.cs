@@ -34,7 +34,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public interface IUnlabeledDataset<ExT> : IUnlabeledDataset, IEnumerableList<ExT>
+    public interface IUnlabeledDataset<ExT> : IUnlabeledDataset, IUnlabeledExampleCollection<ExT>
     {
     }
 }

@@ -20,16 +20,14 @@ using System.IO;
 
 namespace Latino.Model
 {
+    /* .-----------------------------------------------------------------------
+       |
+       |  Static class MaxEnt
+       |
+       '-----------------------------------------------------------------------
+    */
     internal static class MaxEnt
     {
-        private class SumOperator : IBinaryOperator<double>
-        {
-            public double PerformOperation(double arg_1, double arg_2)
-            {
-                return arg_1 + arg_2; 
-            }
-        }
-
         private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idx_to_lbl)
         {
             SparseMatrix<double> mtx = new SparseMatrix<double>();
@@ -141,11 +139,6 @@ namespace Latino.Model
                 if (item.Example.Count > max_val) { max_val = item.Example.Count; }
             }
             return max_val;
-        }
-
-        private class RefInt
-        {
-            public int Val;
         }
         
         private static void UpdateExpectationMatrixPass1(object _args)
@@ -462,6 +455,31 @@ namespace Latino.Model
             }
             classifier_result.Inner.Sort(new DescSort<KeyDat<double, LblT>>());
             return classifier_result;*/
+        }
+
+        /* .-----------------------------------------------------------------------
+           |
+           |  Class SumOperator
+           |
+           '-----------------------------------------------------------------------
+        */
+        private class SumOperator : IBinaryOperator<double>
+        {
+            public double PerformOperation(double arg_1, double arg_2)
+            {
+                return arg_1 + arg_2;
+            }
+        }
+
+        /* .-----------------------------------------------------------------------
+           |
+           |  Class RefInt
+           |
+           '-----------------------------------------------------------------------
+        */
+        private class RefInt
+        {
+            public int Val;
         }
     }
 }

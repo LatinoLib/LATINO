@@ -58,7 +58,7 @@ namespace Latino.Model
             get { return m_items; }
         }
 
-        public SparseVector<double> ComputeCentroid<LblT>(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset, CentroidType type)
+        public SparseVector<double> ComputeCentroid(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, CentroidType type)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
@@ -66,7 +66,7 @@ namespace Latino.Model
             foreach (Pair<double, int> wgt_vec in m_items)
             {
                 Utils.ThrowException((wgt_vec.Second < 0 || wgt_vec.Second >= dataset.Count) ? new IndexOutOfRangeException("Items (dataset index)") : null);
-                foreach (IdxDat<double> item in dataset[wgt_vec.Second].Example)
+                foreach (IdxDat<double> item in dataset[wgt_vec.Second])
                 {
                     if (tmp.ContainsKey(item.Idx))
                     {

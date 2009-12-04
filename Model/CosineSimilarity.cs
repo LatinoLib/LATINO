@@ -7,8 +7,8 @@
  *  Desc:		   Similarity implementation
  *  Authors:       Miha Grcar, Matjaz Jursic
  *  Created on:    Dec-2008
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Nov-2009
+ *  Revision:      Nov-2009
  *
  ***************************************************************************/
 
@@ -70,9 +70,9 @@ namespace Latino.Model
                     b_idx_j = b_idx[j];
                 }
             }
-            double len_a = ModelUtils.GetVecLenL2(a);
+            double len_a = Utils.GetVecLenL2(a);
             Utils.ThrowException(len_a == 0 ? new ArgumentValueException("a") : null);
-            double len_b = ModelUtils.GetVecLenL2(b);
+            double len_b = Utils.GetVecLenL2(b);
             Utils.ThrowException(len_b == 0 ? new ArgumentValueException("b") : null);
             double len_mult = len_a * len_b;
             return dot_prod / len_mult;

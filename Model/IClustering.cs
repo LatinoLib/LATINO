@@ -18,24 +18,24 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Interface IClustering<LblT>
+       |  Interface IClustering
        |
        '-----------------------------------------------------------------------
     */
-    public interface IClustering<LblT>
+    public interface IClustering
     {
         Type RequiredExampleType { get; }
-        ClusteringResult Cluster(ILabeledExampleCollection<LblT> dataset);
+        ClusteringResult Cluster(IUnlabeledExampleCollection dataset);
     }
 
     /* .-----------------------------------------------------------------------
        |
-       |  Interface IClustering<LblT, ExT>
+       |  Interface IClustering<ExT>
        |
        '-----------------------------------------------------------------------
     */
-    public interface IClustering<LblT, ExT> : IClustering<LblT>
+    public interface IClustering<ExT> : IClustering
     {
-        ClusteringResult Cluster(ILabeledExampleCollection<LblT, ExT> dataset);
+        ClusteringResult Cluster(IUnlabeledExampleCollection<ExT> dataset);
     }
 }

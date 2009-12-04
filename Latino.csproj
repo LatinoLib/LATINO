@@ -54,6 +54,7 @@
     <Compile Include="IBinaryOperator.cs" />
     <Compile Include="ICloneable.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Model\UnlabeledDataset.cs" />
     <Compile Include="Model\IUnlabeledDataset.cs" />
     <Compile Include="Model\IUnlabeledExampleCollection.cs" />
     <Compile Include="Model\__IncrementalKMeans__.cs" />
@@ -94,7 +95,6 @@
     <Compile Include="Model\MaximumEntropyClassifier.cs" />
     <Compile Include="Model\ModelUtils.cs" />
     <Compile Include="Model\DotProductSimilarity.cs" />
-    <Compile Include="Model\SparseVectorDataset.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Pair.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -156,8 +156,10 @@
     <Compile Include="TextMining\LemmaSharp\RuleWeighted.cs" />
     <Compile Include="TextMining\StopWords\SpanishStopWords.cs" />
     <Compile Include="TextMining\Word.cs" />
+    <Compile Include="Visualization\LayoutSettings.cs" />
+    <Compile Include="Visualization\LayoutIndex.cs" />
     <Compile Include="Visualization\BoundingArea.cs" />
-    <Compile Include="Visualization\SemanticSpace.cs" />
+    <Compile Include="Visualization\SemanticSpaceLayout.cs" />
     <Compile Include="Visualization\Vector2D.cs" />
     <Compile Include="Visualization\DrawableObjectEventArgs.cs" />
     <Compile Include="Visualization\DrawableObjectViewer.cs">
@@ -173,7 +175,7 @@
     <Compile Include="Visualization\DrawableGroup.cs" />
     <Compile Include="Visualization\ILayoutAlgorithm.cs" />
     <Compile Include="Visualization\Line.cs" />
-    <Compile Include="Visualization\StressMajorization.cs" />
+    <Compile Include="Visualization\StressMajorizationLayout.cs" />
     <Compile Include="Visualization\VisualizationUtils.cs" />
     <Compile Include="Visualization\TransformParams.cs" />
     <Compile Include="Visualization\VectorF.cs" />

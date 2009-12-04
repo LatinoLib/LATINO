@@ -588,6 +588,7 @@ namespace Latino
 
             public MatrixEnumerator(SparseMatrix<T> matrix)
             {
+                Utils.ThrowException(matrix == null ? new ArgumentNullException("matrix") : null);
                 m_matrix = matrix;
             }
 
@@ -644,8 +645,9 @@ namespace Latino
             private int m_row_idx
                 = -1;
 
-            public ReadOnlyMatrixEnumerator(SparseMatrix<T> matrix)
+            internal ReadOnlyMatrixEnumerator(SparseMatrix<T> matrix)
             {
+                Utils.ThrowException(matrix == null ? new ArgumentNullException("matrix") : null);
                 m_matrix = matrix;
             }
 
