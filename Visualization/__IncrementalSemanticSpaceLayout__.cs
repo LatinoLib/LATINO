@@ -2,9 +2,9 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          SemanticSpaceLayout.cs
+ *  File:          __IncrementalSemanticSpaceLayout__.cs
  *  Version:       1.0
- *  Desc:		   Semantic space layout algorithm
+ *  Desc:		   Semantic space layout algorithm (experimental)
  *  Author:        Miha Grcar
  *  Created on:    Nov-2009
  *  Last modified: Nov-2009
@@ -20,11 +20,11 @@ namespace Latino.Visualization
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class SemanticSpaceLayout 
+       |  Class IncrementalSemanticSpaceLayout 
        |
        '-----------------------------------------------------------------------
     */
-    public class SemanticSpaceLayout : ILayoutAlgorithm
+    public class IncrementalSemanticSpaceLayout : ILayoutAlgorithm
     {
         private IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> m_dataset;
         private Random m_random
@@ -37,8 +37,16 @@ namespace Latino.Visualization
             = 0.005;
         private int m_k_nn
             = 10;
+        private int m_k_nn_ext
+            = 100;
+        private IncrementalKMeans m_k_means
+            = null;
+        private Vector2D[] m_ref_pos
+            = null;
+        private ArrayList<Neighborhood> m_neighborhoods
+            = null;
 
-        public SemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public IncrementalSemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             m_dataset = dataset;
@@ -106,16 +114,15 @@ namespace Latino.Visualization
             UnlabeledDataset<SparseVector<double>.ReadOnly> dataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(m_dataset);
             // clustering 
             Utils.VerboseLine("Clustering ...");
-            KMeansFast k_means = new KMeansFast(m_k_clust);
-            k_means.Eps = m_k_means_eps;
-            k_means.Random = m_random;
-            k_means.Trials = 1;
-            ClusteringResult clustering = k_means.Cluster(m_dataset); // throws ArgumentValueException
+            m_k_means = new IncrementalKMeans(m_k_clust);
+            m_k_means.Eps = m_k_means_eps;
+            m_k_means.Random = m_random;
+            m_k_means.Trials = 1;
+            m_k_means.Cluster(m_dataset); // throws ArgumentValueException
             // determine reference instances
             UnlabeledDataset<SparseVector<double>.ReadOnly> ds_ref_inst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
-            foreach (Cluster cluster in clustering.Roots)
+            foreach (SparseVector<double> centroid in m_k_means.GetCentroids())
             {
-                SparseVector<double> centroid = cluster.ComputeCentroid(m_dataset, CentroidType.NrmL2);
                 ds_ref_inst.Add(centroid); // dataset of reference instances
                 dataset.Add(centroid); // add centroids to the main dataset
             }
@@ -124,12 +131,13 @@ namespace Latino.Visualization
             SparseMatrix<double> sim_mtx = ModelUtils.GetDotProductSimilarity(ds_ref_inst, m_sim_thresh, /*full_matrix=*/false);
             StressMajorizationLayout sm = new StressMajorizationLayout(ds_ref_inst.Count, new DistFunc(sim_mtx));
             sm.Random = m_random;
-            Vector2D[] centr_pos = sm.ComputeLayout();
+            m_ref_pos = sm.ComputeLayout();
             // k-NN
             Utils.VerboseLine("Computing similarities ...");
             sim_mtx = ModelUtils.GetDotProductSimilarity(dataset, m_sim_thresh, /*full_matrix=*/true);
             Utils.VerboseLine("Constructing system of linear equations ...");
             LabeledDataset<double, SparseVector<double>.ReadOnly> lsqr_ds = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
+            m_neighborhoods.Clear();
             foreach (IdxDat<SparseVector<double>> sim_mtx_row in sim_mtx)
             {
                 if (sim_mtx_row.Dat.Count == 0)
@@ -145,7 +153,15 @@ namespace Latino.Visualization
                     }
                 }
                 knn.Sort(new DescSort<KeyDat<double, int>>());
-                int count = Math.Min(knn.Count, m_k_nn);
+                int count = Math.Min(knn.Count, m_k_nn_ext);
+                Neighborhood neighborhood = new Neighborhood();
+                neighborhood.Neighbors = new ArrayList<KeyDat<double, int>>(count);
+                for (int i = 0; i < count; i++)
+                {
+                    neighborhood.Neighbors.Add(knn[i]);                    
+                }
+                m_neighborhoods.Add(neighborhood);
+                count = Math.Min(knn.Count, m_k_nn);
                 SparseVector<double> eq = new SparseVector<double>();
                 double wgt = 1.0 / (double)count;
                 for (int i = 0; i < count; i++)
@@ -161,7 +177,7 @@ namespace Latino.Visualization
             for (int i = dataset.Count - m_k_clust, j = 0; i < dataset.Count; i++, j++)
             {
                 SparseVector<double> eq = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(i, 1) });
-                lsqr_ds.Add(centr_pos[j].X, eq);
+                lsqr_ds.Add(m_ref_pos[j].X, eq);
             }
             LSqrModel lsqr = new LSqrModel();
             lsqr.Train(lsqr_ds);
@@ -171,7 +187,7 @@ namespace Latino.Visualization
             }
             for (int i = lsqr_ds.Count - m_k_clust, j = 0; i < lsqr_ds.Count; i++, j++)
             {
-                lsqr_ds[i].Label = centr_pos[j].Y;
+                lsqr_ds[i].Label = m_ref_pos[j].Y;
             }
             lsqr.Train(lsqr_ds);
             for (int i = 0; i < layout.Length; i++)
@@ -179,6 +195,31 @@ namespace Latino.Visualization
                 layout[i].Y = lsqr.Solution[i];
             }
             return settings == null ? layout : settings.AdjustLayout(layout);
+        }
+
+        // TODO: exceptions
+        public Vector2D[] Update(int dequeue_n, IEnumerableList<SparseVector<double>.ReadOnly> add_list)
+        {
+            // clustering 
+            Utils.VerboseLine("Clustering ...");
+            m_k_means.Update(dequeue_n, add_list);
+            // determine reference instances
+            UnlabeledDataset<SparseVector<double>.ReadOnly> ds_ref_inst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
+            foreach (SparseVector<double> centroid in m_k_means.GetCentroids())
+            {
+                ds_ref_inst.Add(centroid); // dataset of reference instances
+                //dataset.Add(centroid); // add centroids to the main dataset
+            }
+            // position reference instances
+            Utils.VerboseLine("Positioning reference instances ...");
+            SparseMatrix<double> sim_mtx = ModelUtils.GetDotProductSimilarity(ds_ref_inst, m_sim_thresh, /*full_matrix=*/false);
+            StressMajorizationLayout sm = new StressMajorizationLayout(ds_ref_inst.Count, new DistFunc(sim_mtx));
+            sm.Random = m_random;
+            m_ref_pos = sm.ComputeLayout(/*settings=*/null, m_ref_pos/*make this a property!!!*/);
+            // k-NN
+            Utils.VerboseLine("Computing similarities ...");
+            // ...
+            return null;
         }
 
         /* .-----------------------------------------------------------------------
@@ -205,6 +246,28 @@ namespace Latino.Visualization
             public void Save(BinarySerializer dummy)
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        /* .-----------------------------------------------------------------------
+           |
+           |  Class Neighborhood
+           |
+           '-----------------------------------------------------------------------
+        */
+        private class Neighborhood
+        {
+            public ArrayList<KeyDat<double, int>> Neighbors
+                = null;
+            
+            public void Update(int dequeue_n, ArrayList<KeyDat<double, int>> new_inst_sim_sorted)
+            {
+                ArrayList<KeyDat<double, int>> aux = new ArrayList<KeyDat<double, int>>(Neighbors.Count);
+                foreach (KeyDat<double, int> item in Neighbors)
+                {
+                    //if (item.Dat >= dequeue_n) { aux.Add(item - dequeue_n); }
+                }
+                Neighbors = aux;
             }
         }
     }

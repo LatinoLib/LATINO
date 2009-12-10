@@ -101,7 +101,7 @@ namespace Latino.Model
                 Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, m_trials);
                 ArrayList<SparseVector<double>.ReadOnly> centroids = null;
                 clustering = new ClusteringResult();
-                for (int i = 0; i < m_k; i++) { clustering.Roots.Add(new Cluster()); }
+                for (int i = 0; i < m_k; i++) { clustering.AddRoot(new Cluster()); }
                 // select seed items
                 double min_sim = double.MaxValue;
                 ArrayList<int> tmp = new ArrayList<int>(dataset.Count);
@@ -166,11 +166,11 @@ namespace Latino.Model
                         }
                         if (candidates.Count > 1)
                         {
-                            candidates.Shuffle(m_rnd);
+                            candidates.Shuffle(m_rnd); 
                         }
                         if (candidates.Count > 0) // *** is this always true? 
                         {
-                            clustering.Roots[candidates[0]].Items.Add(new Pair<double, int>(1, i));
+                            clustering.Roots[candidates[0]].Items.Add(i);
                             clust_qual += max_sim;
                         }
                     }

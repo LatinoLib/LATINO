@@ -40,6 +40,28 @@
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>C:\Program Files (x86)\Microsoft Visual Studio 8\Team Tools\Static Analysis Tools\FxCop\\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>C:\Program Files (x86)\Microsoft Visual Studio 8\Team Tools\Static Analysis Tools\FxCop\\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -51,9 +73,10 @@
     <Compile Include="BinaryVector.cs" />
     <Compile Include="IPair.cs" />
     <Compile Include="IEnumerableList.cs" />
-    <Compile Include="IBinaryOperator.cs" />
     <Compile Include="ICloneable.cs" />
     <Compile Include="Exceptions.cs" />
+    <Compile Include="Model\IHierarchicalModel.cs" />
+    <Compile Include="Model\__HierarchicalCentroidClassifier__.cs" />
     <Compile Include="Model\UnlabeledDataset.cs" />
     <Compile Include="Model\IUnlabeledDataset.cs" />
     <Compile Include="Model\IUnlabeledExampleCollection.cs" />
@@ -156,6 +179,7 @@
     <Compile Include="TextMining\LemmaSharp\RuleWeighted.cs" />
     <Compile Include="TextMining\StopWords\SpanishStopWords.cs" />
     <Compile Include="TextMining\Word.cs" />
+    <Compile Include="Visualization\__IncrementalSemanticSpaceLayout__.cs" />
     <Compile Include="Visualization\LayoutSettings.cs" />
     <Compile Include="Visualization\LayoutIndex.cs" />
     <Compile Include="Visualization\BoundingArea.cs" />
@@ -182,7 +206,6 @@
     <Compile Include="Visualization\VisualizationInterfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Set.cs" />
-    <Compile Include="IUnaryOperator.cs" />
     <Compile Include="SparseVector.cs" />
     <Compile Include="TextMining\BowSpace.cs" />
     <Compile Include="TextMining\RegexTokenizer.cs" />

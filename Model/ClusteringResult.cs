@@ -14,6 +14,7 @@
 
 using System;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Latino.Model
 {
@@ -37,24 +38,51 @@ namespace Latino.Model
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        public ArrayList<Cluster> Roots
+        public ArrayList<Cluster>.ReadOnly Roots
         {
             get { return m_roots; }
         }
 
-        public ILabeledDataset<Cluster, ExT> GetClusteringDataset<ExT>(IUnlabeledDataset<ExT> dataset)
+        public void AddRoot(Cluster root)
+        {
+            Utils.ThrowException(root == null ? new ArgumentNullException("root") : null);
+            m_roots.Add(root);
+        }
+
+        public void AddRoots(IEnumerable<Cluster> roots)
+        {
+            Utils.ThrowException(roots == null ? new ArgumentNullException("roots") : null);
+            foreach (Cluster root in roots)
+            {
+                Utils.ThrowException(root == null ? new ArgumentValueException("roots") : null);
+                m_roots.Add(root);
+            }
+        }
+
+        public void Clear()
+        {
+            m_roots.Clear();
+        }
+
+        private void FillClassificationDataset<ExT>(IEnumerable<Cluster> clusters, IUnlabeledExampleCollection<ExT> dataset, LabeledDataset<Cluster, ExT> classification_dataset)
+        {
+            foreach (Cluster cluster in clusters)
+            {
+                foreach (int idx in cluster.Items)
+                {
+                    Utils.ThrowException(idx < 0 || idx >= dataset.Count ? new ArgumentValueException("clusters") : null);
+                    classification_dataset.Add(cluster, dataset[idx]);
+                }
+                FillClassificationDataset(cluster.Children, dataset, classification_dataset);
+            }
+        }
+
+        public LabeledDataset<Cluster, ExT> GetClassificationDataset<ExT>(IUnlabeledExampleCollection<ExT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            LabeledDataset<Cluster, ExT> clustering_dataset = new LabeledDataset<Cluster, ExT>();
-            foreach (Cluster cluster in m_roots)
-            {
-                foreach (Pair<double, int> ex_info in cluster.Items)
-                {
-                    Utils.ThrowException(ex_info.Second < 0 || ex_info.Second >= dataset.Count ? new ArgumentValueException("Roots (cluster items)") : null);
-                    clustering_dataset.Add(cluster, dataset[ex_info.Second]);
-                }
-            }
-            return clustering_dataset;
+            LabeledDataset<Cluster, ExT> classification_dataset = new LabeledDataset<Cluster, ExT>();
+            FillClassificationDataset(m_roots, dataset, classification_dataset);
+            return classification_dataset;
         }
 
         public override string ToString()

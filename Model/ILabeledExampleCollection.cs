@@ -4,7 +4,7 @@
  *
  *  File:          ILabeledExampleCollection.cs
  *  Version:       1.0
- *  Desc:		   Interface definition
+ *  Desc:		   Labeled example collection interface definition
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
  *  Last modified: Nov-2009

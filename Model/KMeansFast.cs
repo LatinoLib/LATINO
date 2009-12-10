@@ -188,11 +188,8 @@ namespace Latino.Model
                     clustering = new ClusteringResult();
                     for (int i = 0; i < m_k; i++)
                     {
-                        clustering.Roots.Add(new Cluster());
-                        foreach (int idx in centroids[i].Items)
-                        {
-                            clustering.Roots.Last.Items.Add(new Pair<double, int>(1, idx));
-                        }
+                        clustering.AddRoot(new Cluster());
+                        clustering.Roots.Last.Items.AddRange(centroids[i].Items);
                     }
                 }
             }

@@ -26,7 +26,7 @@ namespace Latino.Model
     internal class Centroid
     {
         private IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> m_dataset;
-        private Set<int> m_items_current
+        private Set<int> m_current_items
             = new Set<int>();
         private Set<int> m_items
             = new Set<int>();
@@ -59,6 +59,11 @@ namespace Latino.Model
             get { return m_items; }
         }
 
+        public Set<int>.ReadOnly CurrentItems
+        {
+            get { return m_current_items; }
+        }
+
         public int VecLen
         {
             get { return m_vec.Length; }
@@ -66,8 +71,8 @@ namespace Latino.Model
 
         public void Update()
         { 
-            Set<int> add_idx = Set<int>.Difference(m_items, m_items_current);
-            Set<int> rmv_idx = Set<int>.Difference(m_items_current, m_items);
+            Set<int> add_idx = Set<int>.Difference(m_items, m_current_items);
+            Set<int> rmv_idx = Set<int>.Difference(m_current_items, m_items);
             //Console.WriteLine(m_items.Count - (add_idx.Count + rmv_idx.Count));
             foreach (int item_idx in add_idx)
             {
@@ -95,7 +100,7 @@ namespace Latino.Model
                     }
                 }
             }
-            m_items_current = m_items;
+            m_current_items = m_items;
             m_items = new Set<int>();
         }
 
@@ -157,21 +162,6 @@ namespace Latino.Model
                 dot_prod += item.Dat * m_vec[item.Idx];
             }
             return dot_prod;
-        }
-
-        public void __UpdateDataset__(int dequeue_n, IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset) // *** experimental
-        { 
-            // update m_dataset and m_items_current
-            m_dataset = dataset;
-            Set<int> items = new Set<int>();
-            foreach (int item in m_items_current)
-            {
-                if (item >= dequeue_n)
-                {
-                    items.Add(item - dequeue_n);
-                }
-            }
-            m_items_current = items;
         }
     }
 }

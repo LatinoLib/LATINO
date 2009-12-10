@@ -30,6 +30,7 @@ namespace Latino.Model
     {
         private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idx_to_lbl)
         {
+            Utils.BinaryOperatorDelegate<double> sum_operator = delegate(double a, double b) { return a + b; };
             SparseMatrix<double> mtx = new SparseMatrix<double>();
             ArrayList<LblT> tmp = new ArrayList<LblT>();
             Dictionary<LblT, int> lbl_to_idx = new Dictionary<LblT, int>();
@@ -53,7 +54,7 @@ namespace Latino.Model
                 else
                 {
                     SparseVector<double> new_vec = ModelUtils.ConvertExample<SparseVector<double>>(labeled_example.Example);
-                    new_vec.Merge(mtx[lbl_idx], new SumOperator()); 
+                    new_vec.Merge(mtx[lbl_idx], sum_operator); 
                     mtx[lbl_idx] = new_vec;
                 }
             }
@@ -455,20 +456,6 @@ namespace Latino.Model
             }
             classifier_result.Inner.Sort(new DescSort<KeyDat<double, LblT>>());
             return classifier_result;*/
-        }
-
-        /* .-----------------------------------------------------------------------
-           |
-           |  Class SumOperator
-           |
-           '-----------------------------------------------------------------------
-        */
-        private class SumOperator : IBinaryOperator<double>
-        {
-            public double PerformOperation(double arg_1, double arg_2)
-            {
-                return arg_1 + arg_2;
-            }
         }
 
         /* .-----------------------------------------------------------------------

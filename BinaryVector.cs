@@ -28,8 +28,8 @@ namespace Latino
     public class BinaryVector<T> : ICollection<T>, ICollection, IEnumerable<T>, ICloneable<BinaryVector<T>>, IDeeplyCloneable<BinaryVector<T>>, IContentEquatable<BinaryVector<T>>, 
         ISerializable where T : IComparable<T>
     {
-        private List<T> m_vec
-            = new List<T>();
+        private ArrayList<T> m_vec
+            = new ArrayList<T>();
 
         public BinaryVector()
         {
@@ -79,6 +79,9 @@ namespace Latino
         {
             Utils.ThrowException(items == null ? new ArgumentNullException("items") : null);
             int old_len = m_vec.Count;
+#if THROW_EXCEPTIONS
+            foreach (T item in items) { Utils.ThrowException(item == null ? new ArgumentValueException("items") : null); }
+#endif
             m_vec.AddRange(items);
             if (m_vec.Count == old_len) { return; }
             m_vec.Sort();
@@ -97,15 +100,37 @@ namespace Latino
             get { return m_vec[idx]; } // throws ArgumentOutOfRangeException
         }
 
+        public NewT[] ToArray<NewT>()
+        {
+            return m_vec.ToArray<NewT>(/*fmt_provider=*/null); // throws InvalidCastException, FormatException, OverflowException
+        }
+
+        public NewT[] ToArray<NewT>(IFormatProvider fmt_provider)
+        {
+            return m_vec.ToArray<NewT>(fmt_provider); // throws InvalidCastException, FormatException, OverflowException
+        }
+
+        public void RemoveRange(IEnumerable<T> items)
+        {
+            Utils.ThrowException(items == null ? new ArgumentNullException("items") : null);
+            Set<T> tmp = new Set<T>(items); // throws ArgumentNullException
+            ArrayList<T> new_vec = new ArrayList<T>(m_vec.Count);
+            foreach (T item in m_vec)
+            {
+                if (!tmp.Contains(item)) { new_vec.Add(item); }
+            }
+            m_vec = new_vec;
+        }
+
         public override string ToString()
         {
-            StringBuilder str_builder = new StringBuilder("{");
+            StringBuilder str_builder = new StringBuilder("(");
             foreach (T item in m_vec)
             {
                 str_builder.Append(" ");
                 str_builder.Append(item);
             }
-            str_builder.Append(" }");
+            str_builder.Append(" )");
             return str_builder.ToString();
         }
 
@@ -113,6 +138,7 @@ namespace Latino
 
         public void Add(T item)
         {
+            Utils.ThrowException(item == null ? new ArgumentNullException("item") : null);
             int idx = m_vec.BinarySearch(item);
             if (idx < 0) { idx = ~idx; }
             m_vec.Insert(idx, item);
@@ -125,6 +151,7 @@ namespace Latino
 
         public bool Contains(T item)
         {
+            Utils.ThrowException(item == null ? new ArgumentNullException("item") : null);
             return m_vec.BinarySearch(item) >= 0;
         }
 
@@ -150,6 +177,7 @@ namespace Latino
 
         public bool Remove(T item)
         {
+            Utils.ThrowException(item == null ? new ArgumentNullException("item") : null);
             int idx = m_vec.BinarySearch(item);
             if (idx >= 0)
             {
@@ -200,7 +228,7 @@ namespace Latino
         public BinaryVector<T> Clone()
         {
             BinaryVector<T> clone = new BinaryVector<T>();
-            clone.m_vec = new List<T>(m_vec);
+            clone.m_vec = m_vec.Clone();
             return clone;
         }
 
@@ -213,13 +241,8 @@ namespace Latino
 
         public BinaryVector<T> DeepClone()
         {
-            List<T> vec = new List<T>(m_vec.Count);
-            foreach (T item in m_vec)
-            {
-                vec.Add((T)Utils.Clone(item, /*deep_clone=*/true));
-            }
             BinaryVector<T> clone = new BinaryVector<T>();
-            clone.m_vec = vec;
+            clone.m_vec = m_vec.DeepClone();
             return clone;
         }
 
@@ -308,6 +331,16 @@ namespace Latino
             public T this[int idx]
             {
                 get { return m_vec[idx]; }
+            }
+
+            public NewT[] ToArray<NewT>()
+            {
+                return m_vec.ToArray<NewT>();
+            }
+
+            public NewT[] ToArray<NewT>(IFormatProvider fmt_provider)
+            {
+                return m_vec.ToArray<NewT>(fmt_provider);
             }
 
             public override string ToString()

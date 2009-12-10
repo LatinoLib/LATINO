@@ -7,8 +7,8 @@
  *  Desc:		   Holds information about a cluster
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Dec-2009
+ *  Revision:      Dec-2009
  * 
  ***************************************************************************/
 
@@ -30,8 +30,8 @@ namespace Latino.Model
             = null;
         private ArrayList<Cluster> m_children
             = new ArrayList<Cluster>();
-        private ArrayList<Pair<double, int>> m_items
-            = new ArrayList<Pair<double, int>>();
+        private Set<int> m_items
+            = new Set<int>();
 
         public Cluster()
         { 
@@ -48,73 +48,41 @@ namespace Latino.Model
             set { m_parent = null; }
         }
 
-        public ArrayList<Cluster> Children
+        public ArrayList<Cluster>.ReadOnly Children
         {
             get { return m_children; }
         }
 
-        public ArrayList<Pair<double, int>> Items
+        public void AddChild(Cluster child)
+        {
+            Utils.ThrowException(child == null ? new ArgumentNullException("child") : null);
+            m_children.Add(child);
+        }
+
+        public void AddChildren(IEnumerable<Cluster> children)
+        {
+            Utils.ThrowException(children == null ? new ArgumentNullException("children") : null);
+            foreach (Cluster child in children)
+            {
+                Utils.ThrowException(child == null ? new ArgumentValueException("children") : null);
+                m_children.Add(child);
+            }
+        }
+
+        public void RemoveChildren()
+        {
+            m_children.Clear();
+        }
+
+        public Set<int> Items
         {
             get { return m_items; }
         }
 
         public SparseVector<double> ComputeCentroid(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, CentroidType type)
         {
-            Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Dictionary<int, double> tmp = new Dictionary<int, double>();
-            double wgt_sum = 0;
-            foreach (Pair<double, int> wgt_vec in m_items)
-            {
-                Utils.ThrowException((wgt_vec.Second < 0 || wgt_vec.Second >= dataset.Count) ? new IndexOutOfRangeException("Items (dataset index)") : null);
-                foreach (IdxDat<double> item in dataset[wgt_vec.Second])
-                {
-                    if (tmp.ContainsKey(item.Idx))
-                    {
-                        tmp[item.Idx] += wgt_vec.First * item.Dat;
-                    }
-                    else
-                    {
-                        tmp.Add(item.Idx, wgt_vec.First * item.Dat);
-                    }
-                }
-                wgt_sum += wgt_vec.First;
-            }
-            Utils.ThrowException(wgt_sum == 0 ? new ArgumentValueException("Items (weights)") : null);
-            SparseVector<double> centroid = new SparseVector<double>();
-            switch (type)
-            {
-                case CentroidType.Sum:
-                    foreach (KeyValuePair<int, double> item in tmp)
-                    {
-                        centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value);
-                    }
-                    break;
-                case CentroidType.Avg:
-                    foreach (KeyValuePair<int, double> item in tmp)
-                    {
-                        centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / wgt_sum);
-                    }
-                    break;
-                case CentroidType.NrmL2:
-                    double vec_len = 0;
-                    foreach (KeyValuePair<int, double> item in tmp)
-                    {
-                        vec_len += item.Value * item.Value;
-                    }
-                    Utils.ThrowException(vec_len == 0 ? new InvalidOperationException() : null);
-                    vec_len = Math.Sqrt(vec_len);
-                    foreach (KeyValuePair<int, double> item in tmp)
-                    {
-                        centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / vec_len);
-                    }
-                    break;
-            }
-            centroid.Sort();
-            return centroid;
-        }        
+            return ModelUtils.ComputeCentroid(m_items, dataset, type); // throws ArgumentValueException
+        }
 
         public override string ToString()
         {
@@ -129,27 +97,18 @@ namespace Latino.Model
             }
             else if (format == "CC") // cluster compact 
             {
-                ArrayList<int> tmp = new ArrayList<int>(m_items.Count);
-                foreach (IPair<double, int> item in m_items)
-                {
-                    tmp.Add(item.Second);
-                }
-                return tmp.ToString();
-            }
-            else if (format == "CCW") // cluster compact with weights
-            {
                 return m_items.ToString();
             }
             else if (format == "T") // tree 
             {
                 StringBuilder str_builder = new StringBuilder();
-                ToString("", str_builder, /*compact=*/false);
+                ToString("", str_builder);
                 return str_builder.ToString().TrimEnd('\n', '\r');
             }
             else if (format == "TC") // tree compact
             {
                 StringBuilder str_builder = new StringBuilder();
-                ToString("", str_builder, /*compact=*/true);
+                ToString("", str_builder);
                 return str_builder.ToString().TrimEnd('\n', '\r');
             }
             else
@@ -158,13 +117,13 @@ namespace Latino.Model
             }
         }
 
-        private void ToString(string tab, StringBuilder str_builder, bool compact)
+        private void ToString(string tab, StringBuilder str_builder)
         {
             str_builder.Append(tab);
-            str_builder.AppendLine(ToString(compact ? "CC" : "CCW"));
+            str_builder.AppendLine(ToString("CC"));
             foreach (Cluster child in m_children)
             {
-                child.ToString(tab + "\t", str_builder, compact);
+                child.ToString(tab + "\t", str_builder);
             }
         }
 
@@ -185,7 +144,7 @@ namespace Latino.Model
             // the following statements throw serialization-related exceptions
             m_parent = reader.ReadObject<Cluster>();
             m_children = new ArrayList<Cluster>(reader);
-            m_items = new ArrayList<Pair<double, int>>(reader);
+            m_items = new Set<int>(reader);
         }        
     }
 }

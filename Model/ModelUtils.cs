@@ -255,6 +255,65 @@ namespace Latino.Model
             return centroid;
         }
 
+        public static SparseVector<double> ComputeCentroid(IEnumerable<int> vec_idx_list, IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, CentroidType type)
+        {
+            Utils.ThrowException(vec_idx_list == null ? new ArgumentNullException("vec_idx_list") : null);
+            Dictionary<int, double> tmp = new Dictionary<int, double>();
+            int vec_count = 0;
+            foreach (int vec_idx in vec_idx_list)
+            {
+                Utils.ThrowException((vec_idx < 0 || vec_idx >= dataset.Count) ? new ArgumentValueException("vec_idx_list") : null);
+                SparseVector<double>.ReadOnly vec = dataset[vec_idx];
+                foreach (IdxDat<double> item in vec)
+                {
+                    if (tmp.ContainsKey(item.Idx))
+                    {
+                        tmp[item.Idx] += item.Dat;
+                    }
+                    else
+                    {
+                        tmp.Add(item.Idx, item.Dat);
+                    }
+                }
+                vec_count++;
+            }
+            Utils.ThrowException(vec_count == 0 ? new ArgumentValueException("vec_idx_list") : null);
+            SparseVector<double> centroid = new SparseVector<double>();
+            switch (type)
+            {
+                case CentroidType.Sum:
+                    foreach (KeyValuePair<int, double> item in tmp)
+                    {
+                        centroid.InnerIdx.Add(item.Key);
+                        centroid.InnerDat.Add(item.Value);
+                    }
+                    break;
+                case CentroidType.Avg:
+                    foreach (KeyValuePair<int, double> item in tmp)
+                    {
+                        centroid.InnerIdx.Add(item.Key);
+                        centroid.InnerDat.Add(item.Value / (double)vec_count);
+                    }
+                    break;
+                case CentroidType.NrmL2:
+                    double vec_len = 0;
+                    foreach (KeyValuePair<int, double> item in tmp)
+                    {
+                        vec_len += item.Value * item.Value;
+                    }
+                    Utils.ThrowException(vec_len == 0 ? new InvalidOperationException() : null);
+                    vec_len = Math.Sqrt(vec_len);
+                    foreach (KeyValuePair<int, double> item in tmp)
+                    {
+                        centroid.InnerIdx.Add(item.Key);
+                        centroid.InnerDat.Add(item.Value / vec_len);
+                    }
+                    break;
+            }
+            centroid.Sort();
+            return centroid;
+        }
+
         public static SparseVector<double> ComputeCentroidWgt(IEnumerable<Pair<double, SparseVector<double>.ReadOnly>> wgt_vec_list, CentroidType type)
         {
             Utils.ThrowException(wgt_vec_list == null ? new ArgumentNullException("wgt_vec_list") : null);

@@ -114,13 +114,13 @@ namespace Latino
 
         public override string ToString()
         {
-            StringBuilder str_bld = new StringBuilder("{");
+            StringBuilder str_bld = new StringBuilder("(");
             for (int i = 0; i < m_idx.Count; i++)
             {
                 str_bld.Append(" ");
                 str_bld.Append(string.Format("( {0} {1} )", m_idx[i], m_dat[i]));
             }
-            str_bld.Append(" }");
+            str_bld.Append(" )");
             return str_bld.ToString();
         }
 
@@ -135,7 +135,7 @@ namespace Latino
             }
         }
 
-        public void Merge(SparseVector<T>.ReadOnly other_vec, IBinaryOperator<T> binary_operator)
+        public void Merge(SparseVector<T>.ReadOnly other_vec, Utils.BinaryOperatorDelegate<T> binary_operator)
         {
             Utils.ThrowException(other_vec == null ? new ArgumentNullException("other_vec") : null);
             Utils.ThrowException(binary_operator == null ? new ArgumentNullException("binary_operator") : null);
@@ -150,7 +150,7 @@ namespace Latino
                 int b_idx = other_idx[j];
                 if (a_idx == b_idx)
                 {
-                    T value = binary_operator.PerformOperation(m_dat[i], other_dat[j]); 
+                    T value = binary_operator(m_dat[i], other_dat[j]); 
                     if (value != null) { new_idx.Add(a_idx); new_dat.Add(value); }
                     i++;
                     j++;
@@ -178,12 +178,12 @@ namespace Latino
             m_dat = new_dat;
         }
 
-        public void PerformUnaryOperation(IUnaryOperator<T> unary_operator)
+        public void PerformUnaryOperation(Utils.UnaryOperatorDelegate<T> unary_operator)
         {
             Utils.ThrowException(unary_operator == null ? new ArgumentNullException("unary_operator") : null);
             for (int i = m_dat.Count - 1; i >= 0; i--)
             {
-                T value = unary_operator.PerformOperation(m_dat[i]);
+                T value = unary_operator(m_dat[i]);
                 if (value == null)
                 {
                     RemoveDirect(i);

@@ -97,19 +97,36 @@ namespace Latino.Visualization
 
         public Vector2D[] ComputeLayout()
         {
-            return ComputeLayout(/*settings=*/null);
+            return ComputeLayout(/*settings=*/null, /*init_layout=*/null);
         }
 
         public Vector2D[] ComputeLayout(LayoutSettings settings)
+        {
+            return ComputeLayout(settings, /*init_layout=*/null);
+        }
+
+        public Vector2D[] ComputeLayout(LayoutSettings settings, Vector2D[] init_layout)
         {
             if (settings == null) { settings = new LayoutSettings(); }
             if (m_num_points == 1) { return settings.AdjustLayout(new Vector2D[] { new Vector2D() }); } // trivial case 
             const double eps = 0.00001;
             Vector2D[] layout = new Vector2D[m_num_points];
             // initialize layout
-            for (int i = 0; i < m_num_points; i++)
+            if (init_layout != null)
             {
-                layout[i] = new Vector2D(m_rnd.NextDouble(), m_rnd.NextDouble());
+                int init_len = Math.Min(m_num_points, init_layout.Length);
+                Array.Copy(init_layout, layout, init_len);
+                for (int i = init_layout.Length; i < m_num_points; i++)
+                {
+                    layout[i] = new Vector2D(m_rnd.NextDouble(), m_rnd.NextDouble());
+                }
+            }
+            else
+            {
+                for (int i = 0; i < m_num_points; i++)
+                {
+                    layout[i] = new Vector2D(m_rnd.NextDouble(), m_rnd.NextDouble());
+                }
             }
             // main optimization loop
             double global_stress = 0, stress_diff = 0;

@@ -2,13 +2,13 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          IClustering.cs
+ *  File:          IHierarchicalModel.cs
  *  Version:       1.0
- *  Desc:		   Clustering interface definition
+ *  Desc:		   Hierarchical model interface definition
  *  Author:        Miha Grcar
- *  Created on:    Aug-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Created on:    Dec-2009
+ *  Last modified: Dec-2009
+ *  Revision:      Dec-2009
  *
  ***************************************************************************/
 
@@ -18,24 +18,27 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Interface IClustering
+       |  Interface IHierarchicalModel
        |
        '-----------------------------------------------------------------------
     */
-    public interface IClustering
+    public interface IHierarchicalModel : ISerializable
     {
         Type RequiredExampleType { get; }
-        ClusteringResult Cluster(IUnlabeledExampleCollection dataset);
+        bool IsTrained { get; }
+        void Train(IUnlabeledExampleCollection dataset, ClusteringResult hierarchy);
+        Prediction<Cluster> Predict(object example);
     }
 
     /* .-----------------------------------------------------------------------
        |
-       |  Interface IClustering<ExT>
+       |  Interface IHierarchicalModel<ExT>
        |
        '-----------------------------------------------------------------------
     */
-    public interface IClustering<ExT> : IClustering
+    public interface IHierarchicalModel<ExT> : IHierarchicalModel
     {
-        ClusteringResult Cluster(IUnlabeledExampleCollection<ExT> dataset);
+        void Train(IUnlabeledExampleCollection<ExT> dataset, ClusteringResult hierarchy);
+        Prediction<Cluster> Predict(ExT example);
     }
 }

@@ -213,12 +213,12 @@ namespace Latino
             m_vtx_to_idx.Clear();
         }
 
-        public void PerformEdgeOperation(IUnaryOperator<EdgeT> unary_op)
+        public void PerformEdgeOperation(Utils.UnaryOperatorDelegate<EdgeT> unary_op)
         {
             m_mtx.PerformUnaryOperation(unary_op); // throws ArgumentNullException
         }
 
-        public void ToUndirected(IBinaryOperator<EdgeT> bin_op)
+        public void ToUndirected(Utils.BinaryOperatorDelegate<EdgeT> bin_op)
         {
             m_mtx.Symmetrize(bin_op); // throws ArgumentNullException
         }

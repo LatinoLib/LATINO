@@ -142,6 +142,31 @@ namespace Latino
             }
         }
 
+        public NewT[] ToArray<NewT>()
+        {
+            return ToArray<NewT>(/*fmt_provider=*/null); // throws InvalidCastException, FormatException, OverflowException
+        }
+
+        public NewT[] ToArray<NewT>(IFormatProvider fmt_provider)
+        {
+            NewT[] array = new NewT[m_items.Count];
+            int i = 0;
+            foreach (T item in m_items.Keys)
+            {
+                array[i++] = (NewT)Utils.ChangeType(item, typeof(NewT), fmt_provider); // throws InvalidCastException, FormatException, OverflowException
+            }
+            return array;
+        }
+
+        public void RemoveRange(IEnumerable<T> items)
+        {
+            Utils.ThrowException(items == null ? new ArgumentNullException("items") : null);
+            foreach (T item in items)
+            {
+                m_items.Remove(item); // throws ArgumentNullException
+            }
+        }
+
         public override string ToString()
         {
             StringBuilder str_bld = new StringBuilder("{");
@@ -344,6 +369,16 @@ namespace Latino
             public T Any
             {
                 get { return m_set.Any; }
+            }
+
+            public NewT[] ToArray<NewT>()
+            {
+                return m_set.ToArray<NewT>();
+            }
+
+            public NewT[] ToArray<NewT>(IFormatProvider fmt_provider)
+            {
+                return m_set.ToArray<NewT>(fmt_provider);
             }
 
             public override string ToString()

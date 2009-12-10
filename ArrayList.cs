@@ -126,7 +126,7 @@ namespace Latino
             NewT[] array = new NewT[Count];
             for (int i = 0; i < Count; i++)
             {
-                array[i] = (NewT)Utils.ChangeType(this[i], typeof(NewT)); // throws InvalidCastException, FormatException, OverflowException
+                array[i] = (NewT)Utils.ChangeType(this[i], typeof(NewT), fmt_provider); // throws InvalidCastException, FormatException, OverflowException
             }
             return array;
         }

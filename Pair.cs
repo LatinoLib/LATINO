@@ -56,7 +56,7 @@ namespace Latino
 
         public override string ToString()
         {
-            return string.Format("( {0}, {1} )", m_first, m_second);
+            return string.Format("( {0} {1} )", m_first, m_second);
         }
 
         public override bool Equals(object obj)

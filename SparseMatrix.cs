@@ -386,7 +386,7 @@ namespace Latino
             }
         }
 
-        public void Merge(SparseMatrix<T>.ReadOnly other_matrix, IBinaryOperator<T> binary_operator)
+        public void Merge(SparseMatrix<T>.ReadOnly other_matrix, Utils.BinaryOperatorDelegate<T> binary_operator)
         {
             Utils.ThrowException(binary_operator == null ? new ArgumentNullException("binary_operator") : null);
             int other_matrix_num_rows = other_matrix.GetLastNonEmptyRowIdx() + 1;
@@ -400,7 +400,7 @@ namespace Latino
             }
         }
 
-        public void PerformUnaryOperation(IUnaryOperator<T> unary_operator)
+        public void PerformUnaryOperation(Utils.UnaryOperatorDelegate<T> unary_operator)
         {
             Utils.ThrowException(unary_operator == null ? new ArgumentNullException("unary_operator") : null);
             foreach (SparseVector<T> row in m_rows)
@@ -409,7 +409,7 @@ namespace Latino
             }
         }
 
-        public void Symmetrize(IBinaryOperator<T> bin_op)
+        public void Symmetrize(Utils.BinaryOperatorDelegate<T> bin_op)
         {
             SparseMatrix<T> tr_mat = GetTransposedCopy();
             tr_mat.RemoveDiagonal();

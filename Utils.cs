@@ -190,7 +190,7 @@ namespace Latino
             return dict;
         }
 
-        public static object ChangeType(object obj, Type new_type)
+        public static object ChangeType(object obj, Type new_type, IFormatProvider fmt_provider)
         {
             ThrowException(new_type == null ? new ArgumentNullException("new_type") : null);
             if (new_type.IsAssignableFrom(obj.GetType()))
@@ -199,7 +199,7 @@ namespace Latino
             }
             else 
             {
-                return Convert.ChangeType(obj, new_type); // throws InvalidCastException, FormatException, OverflowException
+                return Convert.ChangeType(obj, new_type, fmt_provider); // throws InvalidCastException, FormatException, OverflowException
             }
         }
 
@@ -246,5 +246,10 @@ namespace Latino
             }
             return true;
         }
+
+        // *** Delegates ***
+
+        public delegate T UnaryOperatorDelegate<T>(T val);
+        public delegate T BinaryOperatorDelegate<T>(T a, T b);
     }
 }
