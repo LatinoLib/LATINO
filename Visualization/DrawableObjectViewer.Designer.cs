@@ -60,6 +60,7 @@ namespace Latino.Visualization
             this.FpsInfo.Size = new System.Drawing.Size(78, 13);
             this.FpsInfo.TabIndex = 1;
             this.FpsInfo.Text = "0.00 ms / draw";
+            this.FpsInfo.Visible = false;
             this.FpsInfo.Click += new System.EventHandler(this.FpsInfo_Click);
             // 
             // DrawableObjectViewer
@@ -70,7 +71,7 @@ namespace Latino.Visualization
             this.Controls.Add(this.FpsInfo);
             this.Controls.Add(this.picBoxCanvas);
             this.Name = "DrawableObjectViewer";
-            this.Size = new System.Drawing.Size(99, 99);
+            this.Size = new System.Drawing.Size(82, 82);
             ((System.ComponentModel.ISupportInitialize)(this.picBoxCanvas)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

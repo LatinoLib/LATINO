@@ -142,6 +142,55 @@ namespace Latino
             return PageRank(src_vtx_list, damping, max_steps, eps, /*init_pr=*/null, /*no_bounding=*/true, /*inlinks=*/null); // throws InvalidOperationException, ArgumentOutOfRangeException
         }
 
+        public SparseMatrix<double> SimRank(double damping, int max_steps/*, double eps*/)
+        {
+            Utils.ThrowException(m_vtx.Count == 0 ? new InvalidOperationException() : null);            
+            Utils.ThrowException((damping < 0 || damping >= 1) ? new ArgumentOutOfRangeException("damping") : null);
+            Utils.ThrowException(max_steps <= 0 ? new ArgumentOutOfRangeException("max_steps") : null);
+            //Utils.ThrowException(eps < 0 ? new ArgumentOutOfRangeException("eps") : null);
+            SparseMatrix<double> sim_rank = new SparseMatrix<double>();
+            // initialize SimRank
+            for (int i = 0; i < m_vtx.Count; i++)
+            {
+                sim_rank[i] = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(i, 1) });
+            }
+            // main loop
+            int step = 0;            
+            do
+            {
+                for (int i = 0; i < m_vtx.Count; i++)
+                {
+                    for (int j = 0; j < m_vtx.Count; j++)
+                    {
+                        if (i != j && m_mtx[i] != null && m_mtx[j] != null)
+                        {
+                            SparseVector<double> mtx_i = m_mtx[i];
+                            SparseVector<double> mtx_j = m_mtx[j];
+                            double sum_sum = 0;
+                            foreach (IdxDat<double> item_i in mtx_i)
+                            {
+                                if (sim_rank.ContainsRowAt(item_i.Idx))
+                                {
+                                    foreach (IdxDat<double> item_j in mtx_j)
+                                    {
+                                        int idx = sim_rank[item_i.Idx].GetDirectIdx(item_j.Idx);
+                                        if (idx >= 0)
+                                        {
+                                            sum_sum += sim_rank[item_i.Idx].GetDatDirect(idx);
+                                        }
+                                    }
+                                }
+                            }
+                            double sim = damping / (double)(mtx_i.Count * mtx_j.Count) * sum_sum;
+                            if (sim > 0) { sim_rank[i, j] = sim; } // threshold!!!
+                        }
+                    }
+                }
+                step++;
+            } while (step < max_steps /*&& diff > eps*/);
+            return sim_rank;
+        }
+
         public double[] PageRank(IEnumerable<int> src_vtx_list, double damping, int max_steps, double eps, double[] init_pr, bool no_bounding, SparseMatrix<double>.ReadOnly inlinks)
         {            
             Utils.ThrowException((m_vtx.Count == 0 || !HasPositiveEdges()) ? new InvalidOperationException() : null);

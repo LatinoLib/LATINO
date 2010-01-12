@@ -52,6 +52,16 @@ namespace Latino.Model
             }
         }
 
+        public int NumIter
+        {
+            get { return m_num_iter; }
+            set
+            {
+                Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("NumIter") : null);
+                m_num_iter = value;
+            }
+        }
+
         // *** IModel<double, SparseVector<double>.ReadOnly> interface implementation ***
 
         public Type RequiredExampleType

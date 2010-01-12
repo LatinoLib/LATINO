@@ -132,7 +132,7 @@ namespace Latino.Visualization
             LabeledDataset<double, SparseVector<double>.ReadOnly> lsqr_ds = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
             foreach (IdxDat<SparseVector<double>> sim_mtx_row in sim_mtx)
             {
-                if (sim_mtx_row.Dat.Count == 0)
+                if (sim_mtx_row.Dat.Count <= 1)
                 {
                     Utils.VerboseLine("*** Warning: instance #{0} has no neighborhood.", sim_mtx_row.Idx);
                 }

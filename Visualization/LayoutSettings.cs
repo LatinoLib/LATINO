@@ -185,7 +185,7 @@ namespace Latino.Visualization
                 {
                     avg.X += pt.X;
                     avg.Y += pt.Y;
-                }
+                }                
                 avg.X /= (double)pt_count;
                 avg.Y /= (double)pt_count;
                 Vector2D stdev = new Vector2D(0, 0);
@@ -235,12 +235,11 @@ namespace Latino.Visualization
                         Vector2D pt = new_layout[i];                        
                         Vector2D pt_vec = pt - center;
                         double angle = pt_vec.GetAngle();
-                        Vector2D bound_vec = new Vector2D(size.X * Math.Cos(angle), size.Y * Math.Sin(angle));
-                        //Console.WriteLine("{0} {1}", angle, bound_vec.GetAngle());
-                        if (pt_vec.GetLength() > bound_vec.GetLength())
+                        double r_bound = size.X * size.Y / Math.Sqrt(Math.Pow(size.Y * Math.Cos(angle), 2) + Math.Pow(size.X * Math.Sin(angle), 2));
+                        if (pt_vec.GetLength() > r_bound)
                         {
-                            pt -= pt_vec - bound_vec;
-                            new_layout[i] = pt;
+                            pt_vec.SetLength(r_bound);
+                            new_layout[i] = center + pt_vec;
                         }
                     }
                 }

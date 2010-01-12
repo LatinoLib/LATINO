@@ -408,9 +408,9 @@ namespace Latino.TextMining
         }
 
         // TODO: exceptions
-        public ArrayList<SparseVector<double>> GetBowVectors()
+        public ArrayList<SparseVector<double>.ReadOnly> GetBowVectors()
         {
-            ArrayList<SparseVector<double>> bow_vectors = new ArrayList<SparseVector<double>>(m_tf_vectors.Count);            
+            ArrayList<SparseVector<double>.ReadOnly> bow_vectors = new ArrayList<SparseVector<double>.ReadOnly>(m_tf_vectors.Count);            
             if (m_word_weight_type == WordWeightType.TermFreq)
             {
                 foreach (SparseVector<double> tf_vec in m_tf_vectors)
@@ -418,7 +418,7 @@ namespace Latino.TextMining
                     SparseVector<double> tmp = new SparseVector<double>();
                     foreach (IdxDat<double> tf_info in tf_vec)
                     {
-                        if (tf_info.Dat >= m_min_word_freq)
+                        if (m_idx_info[tf_info.Idx].Freq >= m_min_word_freq)
                         {
                             tmp.InnerIdx.Add(tf_info.Idx);
                             tmp.InnerDat.Add(tf_info.Dat);
@@ -436,8 +436,8 @@ namespace Latino.TextMining
                     SparseVector<double> tmp = new SparseVector<double>();
                     foreach (IdxDat<double> tf_info in tf_vec)
                     {
-                        if (tf_info.Dat >= m_min_word_freq)
-                        {
+                        if (m_idx_info[tf_info.Idx].Freq >= m_min_word_freq)
+                        {                           
                             tmp.InnerIdx.Add(tf_info.Idx);
                             tmp.InnerDat.Add(tf_info.Dat * m_idx_info[tf_info.Idx].Idf(m_tf_vectors.Count));
                         }
@@ -454,7 +454,7 @@ namespace Latino.TextMining
                     SparseVector<double> tmp = new SparseVector<double>();
                     foreach (IdxDat<double> tf_info in tf_vec)
                     {
-                        if (tf_info.Dat >= m_min_word_freq)
+                        if (m_idx_info[tf_info.Idx].Freq >= m_min_word_freq)
                         {
                             tmp.InnerIdx.Add(tf_info.Idx);
                             double tf_idf = tf_info.Dat * m_idx_info[tf_info.Idx].Idf(m_tf_vectors.Count);
@@ -524,7 +524,7 @@ namespace Latino.TextMining
                     vec = new SparseVector<double>();
                     foreach (IdxDat<double> item in tf_vec)
                     {
-                        if (item.Dat >= m_min_word_freq)
+                        if (m_idx_info[item.Idx].Freq >= m_min_word_freq)
                         {
                             vec.InnerIdx.Add(item.Idx);
                             vec.InnerDat.Add(item.Dat);
@@ -536,7 +536,7 @@ namespace Latino.TextMining
                     vec = new SparseVector<double>();
                     foreach (IdxDat<double> item in tf_vec)
                     {
-                        if (item.Dat >= m_min_word_freq)
+                        if (m_idx_info[item.Idx].Freq >= m_min_word_freq)
                         {
                             vec.InnerIdx.Add(item.Idx);
                             vec.InnerDat.Add(item.Dat * m_idx_info[item.Idx].Idf(m_tf_vectors.Count));
@@ -548,7 +548,7 @@ namespace Latino.TextMining
                     vec = new SparseVector<double>();
                     foreach (IdxDat<double> item in tf_vec)
                     {
-                        if (item.Dat >= m_min_word_freq)
+                        if (m_idx_info[item.Idx].Freq >= m_min_word_freq)
                         {
                             vec.InnerIdx.Add(item.Idx);
                             double tf_idf = item.Dat * m_idx_info[item.Idx].Idf(m_tf_vectors.Count);

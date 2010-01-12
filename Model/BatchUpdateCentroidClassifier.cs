@@ -7,8 +7,8 @@
  *  Desc:		   Batch-update centroid classifier 
  *  Author:        Miha Grcar
  *  Created on:    May-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Dec-2009
+ *  Revision:      Dec-2009
  *
  ***************************************************************************/
 
@@ -78,6 +78,19 @@ namespace Latino.Model
             set { m_positive_values_only = value; }
         }
 
+        public ArrayList<SparseVector<double>> GetCentroids(IEnumerable<LblT> labels)
+        {
+            Utils.ThrowException(m_centroids == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(labels == null ? new ArgumentNullException("labels") : null);
+            ArrayList<SparseVector<double>> centroids = new ArrayList<SparseVector<double>>();
+            foreach (LblT label in labels)
+            {
+                CentroidData data = m_centroids[label]; // throws ArgumentNullException, KeyNotFoundException
+                centroids.Add(data.GetCentroid());
+            }
+            return centroids;
+        }
+
         // *** IModel<LblT, SparseVector<double>.ReadOnly> interface implementation ***
 
         public Type RequiredExampleType
@@ -129,7 +142,7 @@ namespace Latino.Model
                     SparseVector<double>.ReadOnly vec = labeled_example.Example;
                     foreach (KeyValuePair<LblT, CentroidData> labeled_centroid in m_centroids)
                     {                        
-                        double sim = labeled_centroid.Value.GetSimilarity(vec);
+                        double sim = labeled_centroid.Value.GetDotProduct(vec);
                         if (sim > max_sim) { max_sim = sim; assigned_centroid = labeled_centroid.Value; }
                         if (labeled_centroid.Key.Equals(labeled_example.Label)) { actual_centroid = labeled_centroid.Value; }
                     }                        
@@ -169,7 +182,7 @@ namespace Latino.Model
             Prediction<LblT> result = new Prediction<LblT>();
             foreach (KeyValuePair<LblT, CentroidData> labeled_centroid in m_centroids)
             {
-                double sim = labeled_centroid.Value.GetSimilarity(example);
+                double sim = labeled_centroid.Value.GetDotProduct(example);
                 result.Items.Add(new KeyDat<double, LblT>(sim, labeled_centroid.Key));
             }
             result.Items.Sort(new DescSort<KeyDat<double, LblT>>());
@@ -215,7 +228,7 @@ namespace Latino.Model
            |
            '-----------------------------------------------------------------------
         */
-        // *** would it make sense to use Centroid<LblT> within CentroidData?
+        // *** would it make sense to use Centroid<LblT> within/instead of CentroidData?
         private class CentroidData : ISerializable
         {
             public Dictionary<int, double> CentroidSum
@@ -303,7 +316,7 @@ namespace Latino.Model
                 CentroidLen = Math.Sqrt(CentroidLen);
             }
 
-            public double GetSimilarity(SparseVector<double>.ReadOnly vec)
+            public double GetDotProduct(SparseVector<double>.ReadOnly vec)
             {
                 double result = 0;
                 foreach (IdxDat<double> item in vec)
@@ -314,6 +327,18 @@ namespace Latino.Model
                     }
                 }
                 return result / CentroidLen;
+            }
+
+            public SparseVector<double> GetCentroid()
+            {
+                SparseVector<double> vec = new SparseVector<double>();
+                foreach (KeyValuePair<int, double> item in CentroidSum)
+                {
+                    vec.InnerIdx.Add(item.Key);
+                    vec.InnerDat.Add(item.Value / CentroidLen);
+                }
+                vec.Sort();
+                return vec;
             }
 
             // *** ISerializable interface implementation ***

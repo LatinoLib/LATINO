@@ -65,6 +65,23 @@ namespace Latino.Model
             }
         }
 
+        public ArrayList<SparseVector<double>.ReadOnly> GetCentroids(IEnumerable<LblT> labels)
+        {
+            Utils.ThrowException(m_centroids == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(labels == null ? new ArgumentNullException("labels") : null);
+            Dictionary<LblT, SparseVector<double>.ReadOnly> aux = new Dictionary<LblT, SparseVector<double>.ReadOnly>(); 
+            ArrayList<SparseVector<double>.ReadOnly> list = new ArrayList<SparseVector<double>.ReadOnly>();
+            foreach (Pair<LblT, SparseVector<double>.ReadOnly> centroid in m_centroids)
+            {
+                aux.Add(centroid.First, centroid.Second);
+            }
+            foreach (LblT label in labels)
+            {
+                list.Add(aux[label]); // throws ArgumentNullException, KeyNotFoundException
+            }
+            return list;
+        }
+
         // *** IModel<LblT, SparseVector<double>.ReadOnly> interface implementation ***
 
         public Type RequiredExampleType

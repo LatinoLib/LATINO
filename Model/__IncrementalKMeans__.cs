@@ -4,7 +4,7 @@
  *
  *  File:          __IncrementalKMeans__.cs 
  *  Version:       1.0
- *  Desc:		   Incremental K-means clustering algorithm (experimental)
+ *  Desc:		   Incremental k-means clustering algorithm (experimental)
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
  *  Last modified: Nov-2009
@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 
 namespace Latino.Model
 {
@@ -28,6 +29,8 @@ namespace Latino.Model
         private int m_trials
             = 1;
         private ArrayList<Centroid> m_centroids
+            = null;
+        private ArrayList<KeyDat<double, int>> m_medoids
             = null;
         private UnlabeledDataset<SparseVector<double>.ReadOnly> m_dataset
             = null;
@@ -79,7 +82,7 @@ namespace Latino.Model
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count < m_k ? new ArgumentValueException("dataset") : null);
-            m_dataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(dataset); 
+            m_dataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(dataset);            
             ClusteringResult clustering = null;
             double global_best_clust_qual = 0;
             for (int trial = 1; trial <= m_trials; trial++)
@@ -126,10 +129,12 @@ namespace Latino.Model
                         for (int i = 0; i < m_k; i++) { best_seeds.Add(tmp[i]); }
                     }
                 }
+                ArrayList<KeyDat<double, int>> medoids = new ArrayList<KeyDat<double, int>>(m_k);
                 for (int i = 0; i < m_k; i++)
                 {
                     centroids[i].Items.Add(best_seeds[i]);
                     centroids[i].Update();
+                    medoids.Add(new KeyDat<double, int>(-1, best_seeds[i]));
                 }
                 // main loop
                 int iter = 0;
@@ -167,6 +172,10 @@ namespace Latino.Model
                         {
                             centroids[candidates[0]].Items.Add(i);
                             clust_qual += max_sim;
+                            if (medoids[candidates[0]].Key < max_sim)
+                            {
+                                medoids[candidates[0]] = new KeyDat<double, int>(max_sim, i);
+                            }
                         }
                     }
                     clust_qual /= (double)m_dataset.Count;
@@ -185,11 +194,16 @@ namespace Latino.Model
                         break;
                     }
                     best_clust_qual = clust_qual;
+                    for (int i = 0; i < medoids.Count; i++)
+                    {
+                        medoids[i] = new KeyDat<double, int>(-1, medoids[i].Dat);
+                    }
                 }
                 if (trial == 1 || clust_qual > global_best_clust_qual)
                 {
                     global_best_clust_qual = clust_qual;
                     m_centroids = centroids;
+                    m_medoids = medoids;
                     // save the result
                     clustering = new ClusteringResult();
                     for (int i = 0; i < m_k; i++)
@@ -200,6 +214,17 @@ namespace Latino.Model
                 }
             }            
             return clustering;
+        }
+
+        // TODO: exceptions
+        public ArrayList<int> GetMedoids()
+        {
+            ArrayList<int> medoids = new ArrayList<int>(m_medoids.Count);
+            foreach (KeyDat<double, int> item in m_medoids)
+            {
+                medoids.Add(item.Dat);
+            }
+            return medoids;
         }
 
         // TODO: exceptions
@@ -214,7 +239,7 @@ namespace Latino.Model
         }
 
         // TODO: exceptions
-        public ClusteringResult Update(int dequeue_n, IEnumerableList<SparseVector<double>.ReadOnly> add_list)
+        public ClusteringResult Update(int dequeue_n, IEnumerable<SparseVector<double>.ReadOnly> add_list)
         {            
             // update centroid data (1)
             foreach (Centroid centroid in m_centroids)

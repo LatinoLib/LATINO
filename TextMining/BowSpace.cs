@@ -7,8 +7,8 @@
  *  Desc:		   Bag-of-words space
  *  Author:        Miha Grcar
  *  Created on:    Dec-2008
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Dec-2009
+ *  Revision:      Dec-2009
  *
  ***************************************************************************/
 
@@ -652,6 +652,18 @@ namespace Latino.TextMining
                 keyword_list.Add(keywords[i].Dat);
             }
             return keyword_list;
+        }
+
+        public string GetKeywordsStr(SparseVector<double>.ReadOnly bow_vec, int n)
+        {
+            ArrayList<string> keywords = GetKeywords(bow_vec, n); // throws ArgumentOutOfRangeException, ArgumentNullException
+            if (keywords.Count == 0) { return ""; }
+            string keywords_str = keywords[0];
+            for (int i = 1; i < keywords.Count; i++)
+            {
+                keywords_str += ", " + keywords[i];
+            }
+            return keywords_str;
         }
 
         // *** IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> interface implementation ***

@@ -373,11 +373,11 @@ namespace Latino.Model
 
         // *** IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> template specialization ***
 
-        private static void GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, SparseVector<double>.ReadOnly vec, ref double[] sim_vec, ref SparseMatrix<double> tr_mtx, int start_idx)
+        private static void GetDotProductSimilarity(SparseVector<double>.ReadOnly vec, double[] sim_vec, SparseMatrix<double>.ReadOnly tr_mtx, int start_idx)
         {
             foreach (IdxDat<double> item in vec)
             {
-                SparseVector<double> col = tr_mtx[item.Idx];
+                SparseVector<double>.ReadOnly col = tr_mtx[item.Idx];
                 if (col != null)
                 {
                     int start_idx_direct = col.GetDirectIdx(start_idx);
@@ -391,8 +391,10 @@ namespace Latino.Model
             }
         }
 
-        private static SparseMatrix<double> GetTransposedMatrix(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public static SparseMatrix<double> GetTransposedMatrix(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
+            Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
+            Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             SparseMatrix<double> tr_mtx = new SparseMatrix<double>();
             int row_idx = 0;
             foreach (SparseVector<double>.ReadOnly item in dataset)
@@ -414,14 +416,57 @@ namespace Latino.Model
             return tr_mtx;
         }
 
+        public static double[] GetDotProductSimilarity(SparseMatrix<double>.ReadOnly tr_mtx, int dataset_count, SparseVector<double>.ReadOnly vec)
+        {
+            // TODO: exceptions on dataset count
+            Utils.ThrowException(tr_mtx == null ? new ArgumentNullException("tr_mtx") : null);
+            Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            double[] sim_vec = new double[dataset_count];
+            GetDotProductSimilarity(vec, sim_vec, tr_mtx, /*start_idx=*/0);
+            return sim_vec;
+        }
+
+        public static SparseVector<double> GetDotProductSimilarity(SparseMatrix<double>.ReadOnly tr_mtx, int dataset_count, SparseVector<double>.ReadOnly vec, double thresh)
+        {
+            // TODO: exceptions on dataset count
+            Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
+            double[] sim_vec = GetDotProductSimilarity(tr_mtx, dataset_count, vec); // throws ArgumentNullException
+            SparseVector<double> sparse_vec = new SparseVector<double>();
+            for (int i = 0; i < sim_vec.Length; i++)
+            {
+                if (sim_vec[i] > thresh)
+                {
+                    sparse_vec.InnerIdx.Add(i);
+                    sparse_vec.InnerDat.Add(sim_vec[i]);
+                }
+            }
+            return sparse_vec;
+        }
+
         public static double[] GetDotProductSimilarity(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, SparseVector<double>.ReadOnly vec)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             SparseMatrix<double> tr_mtx = GetTransposedMatrix(dataset);
             double[] sim_vec = new double[dataset.Count];
-            GetDotProductSimilarity(dataset, vec, ref sim_vec, ref tr_mtx, /*start_idx=*/0);
+            GetDotProductSimilarity(vec, sim_vec, tr_mtx, /*start_idx=*/0);
             return sim_vec;
+        }
+
+        public static SparseVector<double> GetDotProductSimilarity(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, SparseVector<double>.ReadOnly vec, double thresh)
+        {
+            Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
+            double[] sim_vec = GetDotProductSimilarity(dataset, vec); // throws ArgumentNullException
+            SparseVector<double> sparse_vec = new SparseVector<double>();
+            for (int i = 0; i < sim_vec.Length; i++)
+            {
+                if (sim_vec[i] > thresh)
+                {
+                    sparse_vec.InnerIdx.Add(i);
+                    sparse_vec.InnerDat.Add(sim_vec[i]);
+                }
+            }
+            return sparse_vec;
         }
 
         public static SparseMatrix<double> GetDotProductSimilarity(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, double thresh, bool full_matrix) // if full_matrix is false, upper (right) triangular sparse matrix of dot products is computed
@@ -434,7 +479,7 @@ namespace Latino.Model
             int row_idx = 0;
             foreach (SparseVector<double>.ReadOnly item in dataset)
             {
-                GetDotProductSimilarity(dataset, item, ref sim_vec, ref tr_mtx, /*start_idx=*/full_matrix ? 0 : row_idx);
+                GetDotProductSimilarity(item, sim_vec, tr_mtx, /*start_idx=*/full_matrix ? 0 : row_idx);
                 for (int idx = 0; idx < sim_vec.Length; idx++)
                 {
                     double sim = sim_vec[idx];

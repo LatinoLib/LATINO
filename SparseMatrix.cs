@@ -138,18 +138,19 @@ namespace Latino
             {
                 return m_rows.ToString();
             }
-            else if (format == "E") // extended format
+            else if (format.StartsWith("E")) // extended format
             {
                 StringBuilder str_bld = new StringBuilder();
                 int row_count = m_rows.Count; // this will show empty rows at the end if the matrix is not trimmed
                 int col_count = GetLastNonEmptyColIdx() + 1;
+                string val_fmt = format.Length == 1 ? "{0}" : "{0:" + format.Substring(1) + "}";
                 for (int row_idx = 0; row_idx < row_count; row_idx++)
                 {
                     for (int col_idx = 0; col_idx < col_count; col_idx++)
                     {
                         if (ContainsAt(row_idx, col_idx))
                         {
-                            str_bld.Append(this[row_idx, col_idx]);
+                            str_bld.Append(string.Format(val_fmt, this[row_idx, col_idx])); // throws FormatException
                         }
                         else
                         {
@@ -413,7 +414,7 @@ namespace Latino
         {
             SparseMatrix<T> tr_mat = GetTransposedCopy();
             tr_mat.RemoveDiagonal();
-            tr_mat.Merge(this, bin_op); // throws ArgumentNullException
+            tr_mat.MergeSym(this, bin_op); // throws ArgumentNullException
             m_rows = tr_mat.m_rows;
         }
 
@@ -464,6 +465,72 @@ namespace Latino
                 if (row.ContainsAt(row_idx++)) { return true; }
             }
             return false;
+        }
+
+        private void MergeSym(SparseMatrix<T>.ReadOnly other_matrix, Utils.BinaryOperatorDelegate<T> binary_operator)
+        {
+            int other_matrix_num_rows = other_matrix.GetLastNonEmptyRowIdx() + 1;
+            if (m_rows.Count < other_matrix_num_rows)
+            {
+                SetRowListSize(other_matrix_num_rows);
+            }
+            for (int row_idx = 0; row_idx < other_matrix_num_rows; row_idx++)
+            {
+                m_rows[row_idx] = MergeRowsSym(m_rows[row_idx], other_matrix.Inner.m_rows[row_idx], binary_operator, row_idx);
+            }
+        }
+
+        private SparseVector<T> MergeRowsSym(SparseVector<T> row, SparseVector<T> other_row, Utils.BinaryOperatorDelegate<T> binary_operator, int row_idx)
+        {
+            SparseVector<T> new_row = new SparseVector<T>();
+            ArrayList<int> idx = row.InnerIdx;
+            ArrayList<T> dat = row.InnerDat;
+            ArrayList<int> other_idx = other_row.InnerIdx;
+            ArrayList<T> other_dat = other_row.InnerDat;
+            new_row.InnerIdx.Capacity = idx.Count + other_idx.Count;
+            new_row.InnerDat.Capacity = dat.Count + other_dat.Count;
+            ArrayList<int> new_idx = new_row.InnerIdx;
+            ArrayList<T> new_dat = new_row.InnerDat;
+            int i = 0, j = 0;
+            while (i < idx.Count && j < other_idx.Count)
+            {
+                int a_idx = idx[i];
+                int b_idx = other_idx[j];
+                if (a_idx == b_idx)
+                {
+                    T value;
+                    if (a_idx < row_idx)
+                    {
+                        value = binary_operator(dat[i], other_dat[j]);
+                    }
+                    else
+                    {
+                        value = binary_operator(other_dat[j], dat[i]);
+                    }
+                    if (value != null) { new_idx.Add(a_idx); new_dat.Add(value); }
+                    i++;
+                    j++;
+                }
+                else if (a_idx < b_idx)
+                {
+                    new_idx.Add(a_idx); new_dat.Add(dat[i]);
+                    i++;
+                }
+                else
+                {
+                    new_idx.Add(b_idx); new_dat.Add(other_dat[j]);
+                    j++;
+                }
+            }
+            for (; i < idx.Count; i++)
+            {
+                new_idx.Add(idx[i]); new_dat.Add(dat[i]);
+            }
+            for (; j < other_idx.Count; j++)
+            {
+                new_idx.Add(other_idx[j]); new_dat.Add(other_dat[j]);
+            }
+            return new_row;
         }
 
         // *** IEnumerable<IdxDat<SparseVector<T>>> interface implementation ***

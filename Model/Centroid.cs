@@ -81,6 +81,16 @@ namespace Latino.Model
                 {
                     if (item.Dat != 0)
                     {
+                        if (item.Idx >= m_vec.Length)
+                        { 
+                            // extend vector
+                            double[] new_vec = new double[item.Idx + 1];
+                            foreach (int idx in m_non_zero_idx)
+                            {
+                                new_vec[idx] = m_vec[idx];
+                            }
+                            m_vec = new_vec;
+                        }
                         if (m_vec[item.Idx] == 0) { m_non_zero_idx.Add(item.Idx); }
                         else if (m_vec[item.Idx] == -item.Dat) { m_non_zero_idx.Remove(item.Idx); }
                         m_vec[item.Idx] += item.Dat;
@@ -159,7 +169,10 @@ namespace Latino.Model
             double dot_prod = 0;
             foreach (IdxDat<double> item in vec)
             {
-                dot_prod += item.Dat * m_vec[item.Idx];
+                if (item.Idx < m_vec.Length)
+                {
+                    dot_prod += item.Dat * m_vec[item.Idx];
+                }
             }
             return dot_prod;
         }

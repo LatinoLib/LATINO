@@ -192,9 +192,9 @@ namespace Latino
 
         public static object ChangeType(object obj, Type new_type, IFormatProvider fmt_provider)
         {
-            ThrowException(new_type == null ? new ArgumentNullException("new_type") : null);
+            ThrowException(new_type == null ? new ArgumentNullException("new_type") : null);            
             if (new_type.IsAssignableFrom(obj.GetType()))
-            {
+            {              
                 return obj;
             }
             else 
