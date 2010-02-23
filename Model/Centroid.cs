@@ -73,7 +73,6 @@ namespace Latino.Model
         { 
             Set<int> add_idx = Set<int>.Difference(m_items, m_current_items);
             Set<int> rmv_idx = Set<int>.Difference(m_current_items, m_items);
-            //Console.WriteLine(m_items.Count - (add_idx.Count + rmv_idx.Count));
             foreach (int item_idx in add_idx)
             {
                 SparseVector<double>.ReadOnly vec = m_dataset[item_idx];
@@ -91,8 +90,8 @@ namespace Latino.Model
                             }
                             m_vec = new_vec;
                         }
-                        if (m_vec[item.Idx] == 0) { m_non_zero_idx.Add(item.Idx); }
-                        else if (m_vec[item.Idx] == -item.Dat) { m_non_zero_idx.Remove(item.Idx); }
+                        if (Math.Abs(m_vec[item.Idx]) < 1E-6) { m_non_zero_idx.Add(item.Idx); }
+                        else if (Math.Abs(m_vec[item.Idx] + item.Dat) < 1E-6) { m_non_zero_idx.Remove(item.Idx); }
                         m_vec[item.Idx] += item.Dat;
                     }
                 }
@@ -104,8 +103,8 @@ namespace Latino.Model
                 {
                     if (item.Dat != 0)
                     {
-                        if (m_vec[item.Idx] == 0) { m_non_zero_idx.Add(item.Idx); }
-                        else if (m_vec[item.Idx] == item.Dat) { m_non_zero_idx.Remove(item.Idx); }
+                        if (Math.Abs(m_vec[item.Idx]) < 1E-6) { m_non_zero_idx.Add(item.Idx); }
+                        else if (Math.Abs(m_vec[item.Idx] - item.Dat) < 1E-6) { m_non_zero_idx.Remove(item.Idx); }
                         m_vec[item.Idx] -= item.Dat;
                     }
                 }

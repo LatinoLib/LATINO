@@ -100,7 +100,7 @@ namespace Latino.Model
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             m_lambda = null; // allow GC to collect this
-            m_lambda = MaxEnt.Gis(dataset, m_cut_off, m_num_iter, m_move_data, /*mtx_file_name=*/null, ref m_idx_to_lbl, m_num_threads);
+            m_lambda = MaxEnt.Gis(dataset, m_cut_off, m_num_iter, m_move_data, /*mtx_file_name=*/null, ref m_idx_to_lbl, m_num_threads, /*allowed_diff=*/0); // *** allowed_diff
         }
 
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
@@ -114,7 +114,7 @@ namespace Latino.Model
         {
             Utils.ThrowException(m_lambda == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            return MaxEnt.Classify(example, m_lambda, m_idx_to_lbl);
+            return MaxEnt.Classify(example, m_lambda, m_idx_to_lbl, /*normalize=*/false); // *** normalize
         }
 
         Prediction<LblT> IModel<LblT>.Predict(object example)

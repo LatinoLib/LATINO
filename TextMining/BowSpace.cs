@@ -333,7 +333,7 @@ namespace Latino.TextMining
                         ProcessNGramsPass1(n_grams, i, doc_words);
                     }
                 }
-                Utils.VerboseLine("");
+                Utils.VerboseLine();
             }
             else // large-scale mode (needs less memory, slower)
             {
@@ -419,7 +419,7 @@ namespace Latino.TextMining
                             }
                         }
                     }
-                    Utils.VerboseLine("");
+                    Utils.VerboseLine();
                 }
             }            
             // remove unfrequent words and n-grams, precompute IDF      
@@ -527,7 +527,7 @@ namespace Latino.TextMining
                 if (m_normalize_vectors) { Utils.TryNrmVecL2(doc_vec); }
                 m_bow_vectors.Add(doc_vec);
             }
-            Utils.VerboseLine("");
+            Utils.VerboseLine();
         }
 
         private void ProcessDocumentNGrams(ArrayList<WordStem> n_grams, int start_idx, Dictionary<int, int> tf_vec)

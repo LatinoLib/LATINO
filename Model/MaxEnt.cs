@@ -7,8 +7,8 @@
  *  Desc:		   Maximum entropy classifier 
  *  Author:        Jan Rupnik, Miha Grcar
  *  Created on:    Sep-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Feb-2010
+ *  Revision:      Feb-2010
  *
  ***************************************************************************/
 
@@ -58,7 +58,7 @@ namespace Latino.Model
                     mtx[lbl_idx] = new_vec;
                 }
             }
-            Utils.VerboseLine("");
+            Utils.VerboseLine();
             idx_to_lbl = tmp.ToArray();
             return mtx;
         }
@@ -77,19 +77,6 @@ namespace Latino.Model
             }
             return new_mtx;
         }
-
-        //private static void SaveForMatlab(SparseMatrix<double>.ReadOnly mtx, string file_name)
-        //{
-        //    StreamWriter writer = new StreamWriter(file_name);
-        //    foreach (IdxDat<SparseVector<double>.ReadOnly> row in mtx)
-        //    {
-        //        foreach (IdxDat<double> item in row.Dat)
-        //        {
-        //            writer.WriteLine("{0} {1} {2}", row.Idx + 1, item.Idx + 1, item.Dat);
-        //        }
-        //    }
-        //    writer.Close();
-        //}
 
         private static SparseMatrix<double> CopyStructure(SparseMatrix<double>.ReadOnly mtx)
         {
@@ -125,7 +112,6 @@ namespace Latino.Model
                 foreach (IdxDat<double> item in row.Dat)
                 {
                     double new_val = lambda[row.Idx].GetDirect(i).Dat + 1.0 / f * Math.Log(observations[row.Idx].GetDirect(i).Dat / expectations[row.Idx].GetDirect(i).Dat);
-                    //Utils.VerboseLine("{0} {1} {2} {3} {4}", lambda[row.Idx].GetDirect(i).Dat, f, observations[row.Idx].GetDirect(i).Dat, expectations[row.Idx].GetDirect(i).Dat, new_val);
                     lambda[row.Idx].SetDirect(i, new_val);
                     i++;
                 }
@@ -150,7 +136,7 @@ namespace Latino.Model
             SparseMatrix<double>.ReadOnly train_mtx_tr = (SparseMatrix<double>.ReadOnly)args[2];
             IdxDat<SparseVector<double>.ReadOnly>[] rows = (IdxDat<SparseVector<double>.ReadOnly>[])args[3];
             double[,] mtx = (double[,])args[4];
-            RefInt progress = (RefInt)args[5];
+            Ref<int> progress = (Ref<int>)args[5];
             for (int i = start_idx; i <= end_idx; i++)
             {
                 IdxDat<SparseVector<double>.ReadOnly> row = rows[i];                
@@ -165,7 +151,7 @@ namespace Latino.Model
                         }
                     }
                 }
-                progress.Val++;
+                progress++;
             }
         }
 
@@ -178,7 +164,7 @@ namespace Latino.Model
             IdxDat<SparseVector<double>>[] rows = (IdxDat<SparseVector<double>>[])args[3];
             double[,] mtx = (double[,])args[4];
             double[] z = (double[])args[5];
-            RefInt progress = (RefInt)args[6];
+            Ref<int> progress = (Ref<int>)args[6];
             for (int i = start_idx; i <= end_idx; i++)
             {
                 IdxDat<SparseVector<double>> row = rows[i];     
@@ -192,7 +178,7 @@ namespace Latino.Model
                     }
                     item_idx++;
                 }
-                progress.Val++;
+                progress++;
             }
         }
 
@@ -210,25 +196,24 @@ namespace Latino.Model
             }
             int chunk_sz = (int)Math.Round((double)lambda_row_count / (double)num_threads); // *** this load balancing is not so good; should I count values instead of rows?
             Thread[] threads = new Thread[num_threads];
-            RefInt[] progress_info = new RefInt[num_threads];
+            Ref<int>[] progress_info = new Ref<int>[num_threads];
             int start_idx = 0;            
             for (i = 0; i < num_threads; i++)
             {
                 int end_idx = start_idx + chunk_sz - 1;
                 if (i == num_threads - 1) { end_idx = aux.Length - 1; }
-                progress_info[i] = new RefInt();
+                progress_info[i] = new Ref<int>();
                 threads[i] = new Thread(new ParameterizedThreadStart(UpdateExpectationMatrixPass1));
                 threads[i].Start(new object[] { start_idx, end_idx, train_mtx_tr, aux, mtx, progress_info[i] });
-                //Console.WriteLine("{0}-{1}", start_idx, end_idx);
                 start_idx += chunk_sz;
             }
             bool is_alive = true;
             while (is_alive)
             {
                 int aggr_progress = 0;
-                foreach (RefInt progress in progress_info)
+                foreach (Ref<int> progress in progress_info)
                 {
-                    aggr_progress += progress.Val;
+                    aggr_progress += progress;
                 }
                 Utils.Verbose("Pass 1: {0} / {1}\r", aggr_progress, lambda_row_count);
                 is_alive = false;
@@ -259,7 +244,7 @@ namespace Latino.Model
             {
                 int end_idx = start_idx + chunk_sz - 1;
                 if (i == num_threads - 1) { end_idx = aux.Length - 1; }
-                progress_info[i].Val = 0;
+                progress_info[i] = 0;
                 threads[i] = new Thread(new ParameterizedThreadStart(UpdateExpectationMatrixPass2));
                 threads[i].Start(new object[] { start_idx, end_idx, train_mtx_tr, aux2, mtx, z, progress_info[i] });
                 start_idx += chunk_sz;
@@ -268,9 +253,9 @@ namespace Latino.Model
             while (is_alive)
             {
                 int aggr_progress = 0;
-                foreach (RefInt progress in progress_info)
+                foreach (Ref<int> progress in progress_info)
                 {
-                    aggr_progress += progress.Val;
+                    aggr_progress += progress;
                 }
                 Utils.Verbose("Pass 2: {0} / {1}\r", aggr_progress, expe_row_count);
                 is_alive = false;
@@ -302,7 +287,7 @@ namespace Latino.Model
                     }
                 }
             }
-            Utils.VerboseLine("");
+            Utils.VerboseLine();
             for (int i = 0; i < num_classes; i++)
             {
                 for (int j = 0; j < train_set_size; j++)
@@ -325,7 +310,7 @@ namespace Latino.Model
                     item_idx++;
                 }
             }
-            Utils.VerboseLine("");
+            Utils.VerboseLine();
         }
 
         private static SparseMatrix<double> TransposeDataset<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, bool clear_dataset)
@@ -350,7 +335,7 @@ namespace Latino.Model
             return aux.GetTransposedCopy();
         }
 
-        public static SparseMatrix<double> Gis<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, int cut_off, int num_iter, bool clear_dataset, string mtx_file_name, ref LblT[] idx_to_lbl, int num_threads) 
+        public static SparseMatrix<double> Gis<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, int cut_off, int num_iter, bool clear_dataset, string mtx_file_name, ref LblT[] idx_to_lbl, int num_threads, double allowed_diff) 
         {
             Utils.VerboseLine("Creating observation matrix ...");
             SparseMatrix<double> observations = null;
@@ -385,6 +370,11 @@ namespace Latino.Model
             double f = GisFindMaxF(dataset);
             SparseMatrix<double> train_mtx_tr = TransposeDataset(dataset, clear_dataset);            
             Utils.VerboseLine("Entering main loop ...");
+            double[] old_lambda = null;
+            if (allowed_diff > 0)
+            {
+                old_lambda = new double[lambda.CountValues()];
+            }
             for (int i = 0; i < num_iter; i++)
             {
                 Utils.VerboseLine("Iteration {0} / {1} ...", i + 1, num_iter);
@@ -399,74 +389,55 @@ namespace Latino.Model
                 }
                 Utils.VerboseLine("Updating lambdas ...");
                 GisUpdate(lambda, expectations, observations, f);
-                //SaveForMatlab(expectations, "c:\\mec\\old\\expem.txt");
                 Reset(expectations);
+                // check lambda change
+                if (allowed_diff > 0)
+                {
+                    int j = 0;
+                    double max_diff = 0;
+                    foreach (IdxDat<SparseVector<double>> row in lambda)
+                    {
+                        foreach (IdxDat<double> item in row.Dat)
+                        {
+                            double diff = Math.Abs(item.Dat - old_lambda[j]);
+                            if (diff > max_diff) { max_diff = diff; }
+                            old_lambda[j] = item.Dat;
+                            j++;
+                        }
+                    }
+                    Utils.VerboseLine("Max lambda diff: {0:0.0000}", max_diff);
+                    if (max_diff <= allowed_diff)
+                    {
+                        Utils.VerboseLine("Max lambda diff is small enough. Exiting optimization loop.");
+                        break;
+                    }
+                }
             }
-            //SaveForMatlab(lambda, "c:\\mec\\old\\lamem.txt");
-            //SaveForMatlab(observations, "c:\\mec\\old\\obsem.txt");
             return lambda;
         }
 
-        public static Prediction<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly bin_vec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idx_to_lbl)
+        public static Prediction<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly bin_vec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idx_to_lbl, bool normalize)
         {
             DotProductSimilarity dot_prod = new DotProductSimilarity();
             SparseVector<double> vec = ModelUtils.ConvertExample<SparseVector<double>>(bin_vec);
-            ArrayList<KeyDat<double, LblT>> scores = new ArrayList<KeyDat<double, LblT>>();
+            Prediction<LblT> scores = new Prediction<LblT>();
+            double sum = 0;
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambdas)
             {
                 double score = Math.Exp(dot_prod.GetSimilarity(row.Dat, vec));
-                scores.Add(new KeyDat<double, LblT>(score, idx_to_lbl[row.Idx]));
+                scores.Items.Add(new KeyDat<double, LblT>(score, idx_to_lbl[row.Idx]));
+                sum += score;
             }
-            return new Prediction<LblT>(scores);
-            // *** for some reason, the code below is slower than the one currently in use
-            /*ClassifierResult<LblT> classifier_result = new ClassifierResult<LblT>();
-            foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambdas)
+            if (normalize && sum > 0)
             {
-                int i = 0, j = 0;
-                int a_count = bin_vec.Count;
-                int b_count = row.Dat.Count;
-                double dot_prod = 0;
-                List<int> a_idx = bin_vec.Inner.Inner;
-                ArrayList<int> b_idx = row.Dat.Inner.InnerIdx;
-                ArrayList<double> b_dat = row.Dat.Inner.InnerDat;
-                int a_idx_i = a_idx[0];
-                int b_idx_j = b_idx[0];
-                while (true)
+                for (int i = 0; i < scores.Count; i++)
                 {
-                    if (a_idx_i < b_idx_j)
-                    {
-                        if (++i == a_count) { break; }
-                        a_idx_i = a_idx[i];
-                    }
-                    else if (a_idx_i > b_idx_j)
-                    {
-                        if (++j == b_count) { break; }
-                        b_idx_j = b_idx[j];
-                    }
-                    else
-                    {
-                        dot_prod += b_dat[j];
-                        if (++i == a_count || ++j == b_count) { break; }
-                        a_idx_i = a_idx[i];
-                        b_idx_j = b_idx[j];
-                    }
+                    KeyDat<double, LblT> score = scores[i];
+                    scores.Items[i] = new KeyDat<double, LblT>(score.Key / sum, score.Dat);
                 }
-                double score = Math.Exp(dot_prod);
-                classifier_result.Inner.Add(new KeyDat<double, LblT>(score, idx_to_lbl[row.Idx]));
             }
-            classifier_result.Inner.Sort(new DescSort<KeyDat<double, LblT>>());
-            return classifier_result;*/
-        }
-
-        /* .-----------------------------------------------------------------------
-           |
-           |  Class RefInt
-           |
-           '-----------------------------------------------------------------------
-        */
-        private class RefInt
-        {
-            public int Val;
+            scores.Items.Sort(new DescSort<KeyDat<double, LblT>>());
+            return scores;
         }
     }
 }

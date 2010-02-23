@@ -35,18 +35,26 @@ namespace Latino.Model
 
         [DllImport(LSQR_DLL)]
         public static extern int NewMatrix(int row_count);
+
         [DllImport(LSQR_DLL)]
         public static extern void DeleteMatrix(int id);
+
         [DllImport(LSQR_DLL)]
         public static extern void InsertValue(int mat_id, int row_idx, int col_idx, double val);
-        [DllImport(LSQR_DLL)]
-        public static extern IntPtr DoLSqr(int mat_id, int mat_transp_id, double[] rhs, int max_iter);
 
-        // *** Wrapper for external DoLSqr ***
+        [DllImport(LSQR_DLL)]
+        public static extern IntPtr DoLSqr(int mat_id, int mat_transp_id, double[] init_sol, double[] rhs, int max_iter);
+
+        // *** Wrappers for external DoLSqr ***
 
         public static double[] DoLSqr(int num_cols, LSqrSparseMatrix mat, LSqrSparseMatrix mat_transp, double[] rhs, int max_iter)
         {
-            IntPtr sol_ptr = DoLSqr(mat.Id, mat_transp.Id, rhs, max_iter);
+            return DoLSqr(num_cols, mat, mat_transp, /*init_sol=*/null, rhs, max_iter);
+        }
+
+        public static double[] DoLSqr(int num_cols, LSqrSparseMatrix mat, LSqrSparseMatrix mat_transp, double[] init_sol, double[] rhs, int max_iter)
+        {
+            IntPtr sol_ptr = DoLSqr(mat.Id, mat_transp.Id, init_sol, rhs, max_iter);
             GC.KeepAlive(mat); // avoid premature garbage collection
             GC.KeepAlive(mat_transp);
             double[] sol = new double[num_cols];

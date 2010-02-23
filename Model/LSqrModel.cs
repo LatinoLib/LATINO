@@ -28,6 +28,8 @@ namespace Latino.Model
             = null;
         private int m_num_iter
             = -1;
+        private double[] m_init_sol
+            = null;
 
         public LSqrModel()
         {
@@ -62,6 +64,12 @@ namespace Latino.Model
             }
         }
 
+        public double[] InitialSolution
+        {
+            get { return m_init_sol; }
+            set { m_init_sol = value; }
+        }
+
         // *** IModel<double, SparseVector<double>.ReadOnly> interface implementation ***
 
         public Type RequiredExampleType
@@ -94,6 +102,7 @@ namespace Latino.Model
                 }
                 rhs[i++] = labeled_example.Label;
             }
+            Utils.ThrowException((m_init_sol != null && m_init_sol.Length != sol_size) ? new ArgumentValueException("InitialSolution") : null);
             LSqrSparseMatrix mat_t = new LSqrSparseMatrix(sol_size);
             i = 0;
             foreach (LabeledExample<double, SparseVector<double>.ReadOnly> labeled_example in dataset)
@@ -105,7 +114,7 @@ namespace Latino.Model
                 i++;
             }
             int num_iter = m_num_iter < 0 ? sol_size + dataset.Count + 50 : m_num_iter;
-            m_sol = new ArrayList<double>(LSqrDll.DoLSqr(sol_size, mat, mat_t, rhs, num_iter));
+            m_sol = new ArrayList<double>(LSqrDll.DoLSqr(sol_size, mat, mat_t, m_init_sol, rhs, num_iter));
             mat.Dispose();
             mat_t.Dispose();
         }

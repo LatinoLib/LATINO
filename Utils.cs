@@ -48,6 +48,11 @@ namespace Latino
             if (m_verbose) { Console.WriteLine(String.Format("{0}", format), args); } // throws ArgumentNullException, FormatException
         }
 
+        public static void VerboseLine()
+        {
+            if (m_verbose) { Console.WriteLine(); } 
+        }
+
         [Conditional("THROW_EXCEPTIONS")]
         public static void ThrowException(Exception exception)
         {

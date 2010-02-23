@@ -238,9 +238,23 @@ namespace Latino.Model
             return centroids;
         }
 
+        //private double GetQual()
+        //{
+        //    double clust_qual = 0;
+        //    foreach (Centroid centroid in m_centroids)
+        //    {
+        //        foreach (int item_idx in centroid.CurrentItems)
+        //        {
+        //            clust_qual += centroid.GetDotProduct(m_dataset[item_idx]);
+        //        }
+        //    }
+        //    clust_qual /= (double)m_dataset.Count;
+        //    return clust_qual;
+        //}
+
         // TODO: exceptions
-        public ClusteringResult Update(int dequeue_n, IEnumerable<SparseVector<double>.ReadOnly> add_list)
-        {            
+        public ClusteringResult Update(int dequeue_n, IEnumerable<SparseVector<double>.ReadOnly> add_list, ref int iter)
+        {
             // update centroid data (1)
             foreach (Centroid centroid in m_centroids)
             {
@@ -250,10 +264,11 @@ namespace Latino.Model
                 }
                 centroid.ResetNrmL2();
                 centroid.Update();
-                centroid.NormalizeL2();                        
+                centroid.NormalizeL2();
             }
             // update dataset
             m_dataset.RemoveRange(0, dequeue_n);
+            int ofs = m_dataset.Count;
             m_dataset.AddRange(add_list);
             // update centroid data (2)
             foreach (Centroid centroid in m_centroids)
@@ -264,15 +279,64 @@ namespace Latino.Model
                     items_ofs.Add(item - dequeue_n);
                 }
                 centroid.CurrentItems.Inner.SetItems(items_ofs);
+                centroid.Items.SetItems(items_ofs);
             }
-            // k-means loop
-            int iter = 0;
+            // assign new instances
             double best_clust_qual = 0;
-            double clust_qual;
+            {
+                int i = 0;
+                foreach (SparseVector<double>.ReadOnly example in add_list)
+                {
+                    double max_sim = double.MinValue;
+                    ArrayList<int> candidates = new ArrayList<int>();
+                    for (int j = 0; j < m_k; j++)
+                    {
+                        double sim = m_centroids[j].GetDotProduct(example);
+                        if (sim > max_sim)
+                        {
+                            max_sim = sim;
+                            candidates.Clear();
+                            candidates.Add(j);
+                        }
+                        else if (sim == max_sim)
+                        {
+                            candidates.Add(j);
+                        }
+                    }
+                    if (candidates.Count > 1)
+                    {
+                        candidates.Shuffle(m_rnd);
+                    }
+                    if (candidates.Count > 0) // *** is this always true? 
+                    {
+                        m_centroids[candidates[0]].Items.Add(ofs + i);
+                    }
+                    i++;
+                }
+                // update centroids
+                foreach (Centroid centroid in m_centroids)
+                {
+                    centroid.ResetNrmL2();
+                    centroid.Update();
+                    centroid.NormalizeL2();
+                }
+                //Console.WriteLine(GetQual());
+                foreach (Centroid centroid in m_centroids)
+                {
+                    foreach (int item_idx in centroid.CurrentItems)
+                    {
+                        best_clust_qual += centroid.GetDotProduct(m_dataset[item_idx]);
+                    }
+                }
+                best_clust_qual /= (double)m_dataset.Count;
+                Utils.VerboseLine("*** Initialization ***");
+                Utils.VerboseLine("Quality: {0:0.0000}", best_clust_qual);
+            }
+            // main k-means loop
+            iter = 0;
             while (true)
             {
                 iter++;
-                clust_qual = 0;
                 // assign items to clusters
                 for (int i = 0; i < m_dataset.Count; i++)
                 {
@@ -300,21 +364,29 @@ namespace Latino.Model
                     if (candidates.Count > 0) // *** is this always true? 
                     {
                         m_centroids[candidates[0]].Items.Add(i);
-                        clust_qual += max_sim;
+                    }
+                }
+                double clust_qual = 0;
+                // update centroids
+                foreach (Centroid centroid in m_centroids)
+                {
+                    centroid.ResetNrmL2();
+                    centroid.Update();
+                    centroid.NormalizeL2();
+                }
+                //Console.WriteLine(GetQual());
+                foreach (Centroid centroid in m_centroids)
+                {
+                    foreach (int item_idx in centroid.CurrentItems)
+                    {
+                        clust_qual += centroid.GetDotProduct(m_dataset[item_idx]);
                     }
                 }
                 clust_qual /= (double)m_dataset.Count;
                 Utils.VerboseLine("*** Iteration {0} ***", iter);
-                Utils.VerboseLine("Quality: {0:0.0000}", clust_qual);
-                // compute new centroids
-                for (int i = 0; i < m_k; i++)
-                {
-                    m_centroids[i].ResetNrmL2();
-                    m_centroids[i].Update();
-                    m_centroids[i].NormalizeL2();
-                }
+                Utils.VerboseLine("Quality: {0:0.0000} Diff: {1:0.0000}", clust_qual, clust_qual - best_clust_qual);
                 // check if done
-                if (iter > 1 && clust_qual - best_clust_qual <= m_eps)
+                if (clust_qual - best_clust_qual <= m_eps)
                 {
                     break;
                 }

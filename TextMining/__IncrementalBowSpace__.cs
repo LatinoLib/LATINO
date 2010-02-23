@@ -342,7 +342,7 @@ namespace Latino.TextMining
                     ProcessNGramsPass1(n_grams, i, doc_words);
                 }
             }
-            Utils.VerboseLine("");
+            Utils.VerboseLine();
             // determine most frequent word and n-gram forms
             foreach (WordExt word_info in m_word_info.Values)
             { 
@@ -404,7 +404,7 @@ namespace Latino.TextMining
                 doc_vec.Sort();
                 m_tf_vectors.Add(doc_vec);
             }
-            Utils.VerboseLine("");
+            Utils.VerboseLine();
         }
 
         // TODO: exceptions

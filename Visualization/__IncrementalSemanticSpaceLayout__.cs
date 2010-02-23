@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using Latino.Model;
+using System.IO;
 
 namespace Latino.Visualization
 {
@@ -26,7 +27,7 @@ namespace Latino.Visualization
     */
     public class IncrementalSemanticSpaceLayout : ILayoutAlgorithm
     {
-        /*private*/public UnlabeledDataset<SparseVector<double>.ReadOnly> m_dataset;
+        private UnlabeledDataset<SparseVector<double>.ReadOnly> m_dataset;
         private Random m_random
             = new Random(1);
         private double m_k_means_eps
@@ -38,13 +39,17 @@ namespace Latino.Visualization
         private int m_k_nn
             = 10;
         private int m_k_nn_ext
-            = 30;
+            = 60;
         private IncrementalKMeans m_k_means
             = null;
         private Vector2D[] m_ref_pos
             = null;
         private ArrayList<Patch> m_patches
             = new ArrayList<Patch>();
+        private ArrayList<double> m_sol_x 
+            = null;
+        private ArrayList<double> m_sol_y 
+            = null;
 
         public IncrementalSemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
@@ -130,11 +135,11 @@ namespace Latino.Visualization
             SparseMatrix<double> sim_mtx = ModelUtils.GetDotProductSimilarity(ds_ref_inst, m_sim_thresh, /*full_matrix=*/false);
             StressMajorizationLayout sm = new StressMajorizationLayout(ds_ref_inst.Count, new DistFunc(sim_mtx));
             sm.Random = m_random;
-            sm.MaxSteps = 10000;
-            sm.MinDiff = 0;
+            sm.MaxSteps = int.MaxValue;
+            sm.MinDiff = 0.00001;
             m_ref_pos = sm.ComputeLayout();
             // k-NN
-            Utils.VerboseLine("Computing similarities ...");
+            Utils.VerboseLine("Computing similarities ...");           
             sim_mtx = ModelUtils.GetDotProductSimilarity(m_dataset, m_sim_thresh, /*full_matrix=*/true);
             Utils.VerboseLine("Constructing system of linear equations ...");
             LabeledDataset<double, SparseVector<double>.ReadOnly> lsqr_ds = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
@@ -184,6 +189,7 @@ namespace Latino.Visualization
             }
             LSqrModel lsqr = new LSqrModel();
             lsqr.Train(lsqr_ds);
+            m_sol_x = lsqr.Solution.GetWritableCopy();
             for (int i = 0; i < layout.Length; i++)
             {
                 layout[i].X = lsqr.Solution[i];
@@ -193,6 +199,7 @@ namespace Latino.Visualization
                 lsqr_ds[i].Label = m_ref_pos[j].Y;
             }
             lsqr.Train(lsqr_ds);
+            m_sol_y = lsqr.Solution.GetWritableCopy();
             for (int i = 0; i < layout.Length; i++)
             {
                 layout[i].Y = lsqr.Solution[i];
@@ -216,14 +223,44 @@ namespace Latino.Visualization
             public SparseVector<double> Vec;
         }
 
-        // TODO: exceptions
-        public Vector2D[] Update(int num_dequeue, IEnumerable<SparseVector<double>.ReadOnly> new_inst, bool test, LayoutSettings settings, ref PtInfo[] pt_info)
+        public class StopWatch
         {
-            // clustering 
+            DateTime m_dt
+                = DateTime.Now;
+            public double TotalMilliseconds
+            {
+                get { return (DateTime.Now - m_dt).TotalMilliseconds; }
+            }
+            public void Reset()
+            {
+                m_dt = DateTime.Now;
+            }
+            public void Save(string file_name, int count)
+            {
+                StreamWriter writer = new StreamWriter(file_name, /*append=*/true);
+                writer.WriteLine("{0}\t{1}", count, TotalMilliseconds);
+                writer.Close();
+            }
+            public void Save(string file_name, int count, string add_info)
+            {
+                StreamWriter writer = new StreamWriter(file_name, /*append=*/true);
+                writer.WriteLine("{0}\t{1}\t{2}", count, TotalMilliseconds, add_info);
+                writer.Close();
+            }
+        }
+
+        // TODO: exceptions
+        public Vector2D[] Update(int num_dequeue, IEnumerable<SparseVector<double>.ReadOnly> new_inst, bool test, LayoutSettings settings, ref PtInfo[] pt_info, int _count)
+        {
+            // clustering             
             Utils.VerboseLine("Clustering ...");
+            /*prof*/StopWatch sw = new StopWatch();
             m_k_means.Eps = m_k_means_eps;
-            m_k_means.Update(num_dequeue, new_inst);
+            int iter = 0;
+            m_k_means.Update(num_dequeue, new_inst, ref iter);
+            /*prof*/sw.Save("cl.txt", _count, iter.ToString());
             // determine reference instances
+            /*prof*/sw.Reset();
             UnlabeledDataset<SparseVector<double>.ReadOnly> ds_ref_inst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
             UnlabeledDataset<SparseVector<double>.ReadOnly> ds_new_inst = new UnlabeledDataset<SparseVector<double>.ReadOnly>(new_inst);
             foreach (SparseVector<double> centroid in m_k_means.GetCentroids())
@@ -236,13 +273,18 @@ namespace Latino.Visualization
             SparseMatrix<double> sim_mtx = ModelUtils.GetDotProductSimilarity(ds_ref_inst, m_sim_thresh, /*full_matrix=*/false);
             StressMajorizationLayout sm = new StressMajorizationLayout(ds_ref_inst.Count, new DistFunc(sim_mtx));
             sm.Random = m_random;
+            sm.MaxSteps = int.MaxValue;
+            sm.MinDiff = 1E-3;
             m_ref_pos = sm.ComputeLayout(/*settings=*/null, m_ref_pos/*make this a property!!!*/);
+            /*prof*/sw.Save("sm.txt", _count);
             // k-NN
+            /*prof*/sw.Reset();
+            DateTime t = DateTime.Now;
             Utils.VerboseLine("Computing similarities ...");
             // update list of neighborhoods
             m_patches.RemoveRange(m_dataset.Count - m_k_clust, m_k_clust);
             m_patches.RemoveRange(0, num_dequeue);
-            // remove instances from dataset and neighborhoods
+            // remove instances from [dataset and] neighborhoods
             foreach (Patch patch in m_patches)
             {                                
                 if (patch.Min != null && (patch.Min.Idx < num_dequeue || patch.Max.Idx >= m_dataset.Count - m_k_clust))
@@ -365,7 +407,11 @@ namespace Latino.Visualization
                     }
                 }
             }
+            /*prof*/sw.Save("knn.txt", _count);
             // *** Test ***
+            sw.Reset();
+            ModelUtils.GetDotProductSimilarity(m_dataset, m_sim_thresh, /*full_matrix=*/true);
+            sw.Save("self_sim.txt", _count, m_dataset.Count.ToString());
             if (test)
             {
                 sim_mtx = ModelUtils.GetDotProductSimilarity(m_dataset, m_sim_thresh, /*full_matrix=*/true);
@@ -433,6 +479,8 @@ namespace Latino.Visualization
             //    waka += patch.List.Count;
             //}
             //Console.WriteLine("Avg list size: {0}", (double)waka / (double)m_patches.Count);
+            Console.WriteLine((DateTime.Now - t).TotalMilliseconds);
+            /*prof*/sw.Reset();
             Utils.VerboseLine("Constructing system of linear equations ...");
             LabeledDataset<double, SparseVector<double>.ReadOnly> lsqr_ds = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
             Vector2D[] layout = new Vector2D[m_dataset.Count - m_k_clust];
@@ -456,7 +504,22 @@ namespace Latino.Visualization
                 lsqr_ds.Add(m_ref_pos[j].X, eq);
             }
             LSqrModel lsqr = new LSqrModel();
-            lsqr.Train(lsqr_ds);
+            m_sol_x.RemoveRange(0, num_dequeue);
+            double[] aux = new double[m_k_clust];
+            m_sol_x.CopyTo(m_sol_x.Count - m_k_clust, aux, 0, m_k_clust);
+            m_sol_x.RemoveRange(m_sol_x.Count - m_k_clust, m_k_clust);
+            foreach (SparseVector<double>.ReadOnly new_vec in new_inst)
+            {
+                m_sol_x.Add(0);
+            }
+            m_sol_x.AddRange(aux);
+            lsqr.InitialSolution = m_sol_x.ToArray();
+            lsqr.Train(lsqr_ds);            
+            m_sol_x = lsqr.Solution.GetWritableCopy();
+            //for (int i = 0; i < lsqr.InitialSolution.Length; i++) 
+            //{
+            //    Console.WriteLine("{0}\t{1}", lsqr.InitialSolution[i], lsqr.Solution[i]);
+            //}
             for (int i = 0; i < layout.Length; i++)
             {
                 layout[i].X = lsqr.Solution[i];
@@ -465,11 +528,23 @@ namespace Latino.Visualization
             {
                 lsqr_ds[i].Label = m_ref_pos[j].Y;
             }
+            m_sol_y.RemoveRange(0, num_dequeue);
+            aux = new double[m_k_clust];
+            m_sol_y.CopyTo(m_sol_y.Count - m_k_clust, aux, 0, m_k_clust);
+            m_sol_y.RemoveRange(m_sol_y.Count - m_k_clust, m_k_clust);
+            foreach (SparseVector<double>.ReadOnly new_vec in new_inst)
+            {
+                m_sol_y.Add(0);
+            }
+            m_sol_y.AddRange(aux);
+            lsqr.InitialSolution = m_sol_y.ToArray();
             lsqr.Train(lsqr_ds);
+            m_sol_y = lsqr.Solution.GetWritableCopy();
             for (int i = 0; i < layout.Length; i++)
             {
                 layout[i].Y = lsqr.Solution[i];
             }
+            /*prof*/sw.Save("lsqr.txt", _count);
             // -----------------------------------------------------------------
             // make pt_info
             // -----------------------------------------------------------------

@@ -153,7 +153,7 @@ namespace Latino.Model
                         num_miscfy++;
                     }                        
                 }
-                Utils.VerboseLine("");
+                Utils.VerboseLine();
                 Utils.VerboseLine("Training set error rate: {0:0.00}%", (double)num_miscfy / (double)dataset.Count * 100.0);
                 // update centroids
                 i = 0;
@@ -163,7 +163,7 @@ namespace Latino.Model
                     centroid_data.UpdateCentroid(m_positive_values_only);
                     centroid_data.UpdateCentroidLen();
                 }
-                Utils.VerboseLine("");
+                Utils.VerboseLine();
                 learn_rate *= m_damping;
             }
         }
