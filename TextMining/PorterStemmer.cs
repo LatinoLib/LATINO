@@ -23,7 +23,7 @@ namespace Latino.TextMining
        '-----------------------------------------------------------------------
     */
     // This code was originally written by Martin Porter in Java. The code was ported 
-    // to C# by Andr� Hazelwood and Leif Azzopardi. Furthermore, it was slightly modified 
+    // to C# by Andre Hazelwood and Leif Azzopardi. Furthermore, it was slightly modified 
     // to fit the LATINO coding style. See http://tartarus.org/~martin/PorterStemmer/    
     // This stemmer is for English and is faster than the Snowball equivalent for English.
     public class PorterStemmer : IStemmer

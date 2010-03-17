@@ -33,11 +33,11 @@ namespace Latino.TextMining
         Norwegian,
         Portuguese,
         Swedish,
-        Serbian,     // *** missing stop words
+        Serbian,     
         Slovene,     
         Romanian,
         Hungarian,
-        Estonian,    // *** missing stop words
+        Estonian, // *** missing stop words
         Bulgarian,
         Czech,
         Russian

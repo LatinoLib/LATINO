@@ -4,7 +4,7 @@
  *
  *  File:          Tokenizer.cs
  *  Version:       1.0
- *  Desc:		   Tokenizer interface
+ *  Desc:		   Interface definition
  *  Author:        Miha Grcar
  *  Created on:    Apr-2009
  *  Last modified: Nov-2009

@@ -4,7 +4,7 @@
  *
  *  File:          IStemmer.cs
  *  Version:       1.0
- *  Desc:		   Word stemmer interface 
+ *  Desc:		   Interface definition
  *  Author:        Miha Grcar
  *  Created on:    Dec-2008
  *  Last modified: Nov-2009

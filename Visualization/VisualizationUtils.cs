@@ -20,7 +20,7 @@ namespace Latino.Visualization
 {
     /* .-----------------------------------------------------------------------
        |		 
-       |  Static class VisualizationUtils
+       |  Class VisualizationUtils
        |
        '-----------------------------------------------------------------------
     */

@@ -108,7 +108,9 @@
     <Compile Include="SetEqualityComparer.cs" />
     <Compile Include="SparseMatrix.cs" />
     <Compile Include="TextMining\LanguageDetector.cs" />
+    <Compile Include="TextMining\StopWords\SerbianStopWords.cs" />
     <Compile Include="TextMining\StopWords\SloveneStopWords.cs" />
+    <Compile Include="TextMining\TextMiningUtils.cs" />
     <Compile Include="TextMining\__IncrementalBowSpace__.cs" />
     <Compile Include="TextMining\Lemmatizer.cs" />
     <Compile Include="TextMining\IStemmer.cs" />
@@ -160,7 +162,6 @@
     <Compile Include="TextMining\LemmaSharp\RuleList.cs" />
     <Compile Include="TextMining\LemmaSharp\RuleWeighted.cs" />
     <Compile Include="TextMining\StopWords\SpanishStopWords.cs" />
-    <Compile Include="TextMining\Word.cs" />
     <Compile Include="Visualization\__IncrementalSemanticSpaceLayout__.cs" />
     <Compile Include="Visualization\LayoutSettings.cs" />
     <Compile Include="Visualization\LayoutIndex.cs" />
