@@ -210,7 +210,7 @@ namespace Latino
 
         // *** SparseVector<double> template specialization ***
 
-        public static double GetVecLenL2(/*this*/SparseVector<double>.ReadOnly vec)
+        public static double GetVecLenL2(/*this*/ SparseVector<double>.ReadOnly vec)
         {
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = 0;

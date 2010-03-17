@@ -34,7 +34,7 @@ namespace Latino.TextMining
         Portuguese,
         Swedish,
         Serbian,     // *** missing stop words
-        Slovene,     // *** missing stop words
+        Slovene,     
         Romanian,
         Hungarian,
         Estonian,    // *** missing stop words

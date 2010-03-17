@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Web;
 using System.Xml;
 using System.Net;
-//using System.IO;
 
 namespace Latino.Web
 {
@@ -90,6 +89,7 @@ namespace Latino.Web
         private string m_url;
         private double m_relevance;
         private string m_raw_text;
+
         public SearchEngineResult(string title, string snippet, string url, double relevance, string raw_text)
         {
             m_title = title;
@@ -98,6 +98,7 @@ namespace Latino.Web
             m_relevance = relevance;
             m_raw_text = raw_text;
         }
+
         public SearchEngineResult(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
@@ -108,6 +109,7 @@ namespace Latino.Web
             m_relevance = reader.ReadDouble();
             m_raw_text = reader.ReadString();
         }
+
         public SearchEngineResult(XmlReader xml_reader)
         {
             Utils.ThrowException(xml_reader == null ? new ArgumentNullException("xml_reader") : null);
@@ -160,31 +162,39 @@ namespace Latino.Web
                 }
             }
         }
+
         public string Title
         {
             get { return m_title; }
         }
+
         public string Snippet
         {
             get { return m_snippet; }
         }
+
         public string Url
         {
             get { return m_url; }
         }
+
         internal void SetUrl(string url)
         {
             m_url = url;
         }
+
         public double Relevance
         {
             get { return m_relevance; }
         }
+
         public string RawText
         {
             get { return m_raw_text; }
         }
+
         // *** IXmlSerializable interface implementation ***
+
         public void SaveXml(XmlWriter xml_writer)
         {
             Utils.ThrowException(xml_writer == null ? new ArgumentNullException("xml_writer") : null);
@@ -203,7 +213,9 @@ namespace Latino.Web
             xml_writer.WriteEndElement();
             xml_writer.WriteEndElement();
         }
+
         // *** ISerializable interface implementation ***
+
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
@@ -226,18 +238,20 @@ namespace Latino.Web
     {
         private ArrayList<SearchEngineResult> m_items
             = new ArrayList<SearchEngineResult>();
+
         public SearchEngineResultSet()
         {
         }
+
         public SearchEngineResultSet(BinarySerializer reader)
         {
             m_items.Load(reader); // throws serialization-related exceptions
         }
-        public SearchEngineResultSet(XmlReader xml_reader)
-            : this(xml_reader, int.MaxValue)
-        {
-            // throws ArgumentNullException, ArgumentOutOfRangeException, XmlFormatException, XmlException, OverflowException, FormatException
+
+        public SearchEngineResultSet(XmlReader xml_reader) : this(xml_reader, int.MaxValue) // throws ArgumentNullException, ArgumentOutOfRangeException, XmlFormatException, XmlException, OverflowException, FormatException
+        {            
         }
+
         public SearchEngineResultSet(XmlReader xml_reader, int size_limit)
         {
             Utils.ThrowException(xml_reader == null ? new ArgumentNullException("xml_reader") : null);
@@ -262,15 +276,19 @@ namespace Latino.Web
                 }
             }
         }
+
         internal ArrayList<SearchEngineResult> Items
         {
             get { return m_items; }
         }
+
         // *** IEnumerableList<SearchEngineResult> interface implementation ***
+
         public int Count
         {
             get { return m_items.Count; }
         }
+
         public SearchEngineResult this[int index]
         {
             get
@@ -279,19 +297,24 @@ namespace Latino.Web
                 return m_items[index];
             }
         }
+
         object IEnumerableList.this[int index]
         {
             get { return this[index]; } // throws ArgumentOutOfRangeException
         }
+
         public IEnumerator<SearchEngineResult> GetEnumerator()
         {
             return m_items.GetEnumerator();
         }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
+
         // *** IXmlSerializable interface implementation ***
+
         public void SaveXml(XmlWriter xml_writer)
         {
             Utils.ThrowException(xml_writer == null ? new ArgumentNullException("xml_writer") : null);
@@ -304,17 +327,21 @@ namespace Latino.Web
             }
             xml_writer.WriteEndElement();
         }
-        // *** ISerializable interface implementation ***
-        public void Save(BinarySerializer writer)
-        {
-            m_items.Save(writer); // throws serialization-related exceptions
-        }
+
         // *** ICloneable interface implementation ***
+
         public object Clone()
         {
             SearchEngineResultSet clone = new SearchEngineResultSet();
             clone.m_items = m_items.Clone();
             return clone;
+        }
+
+        // *** ISerializable interface implementation ***
+
+        public void Save(BinarySerializer writer)
+        {
+            m_items.Save(writer); // throws serialization-related exceptions
         }
     }
 
@@ -339,47 +366,55 @@ namespace Latino.Web
             = null;
         protected SearchEngineResultSet m_result_set
             = new SearchEngineResultSet();
+
         public SearchEngine(string query)
         {
             Utils.ThrowException(query == null ? new ArgumentNullException("query") : null);
             m_query = query;
         }
+
         public string Query
         {
             get { return m_query; }
             set
             {
-                Utils.ThrowException(value == null ? new ArgumentNullException("Query setter value") : null);
+                Utils.ThrowException(value == null ? new ArgumentNullException("Query") : null);
                 m_query = value;
             }
         }
+
         public int ResultSetMaxSize
         {
             get { return m_result_set_max_sz; }
             set
             {
-                Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("ResultSetMaxSize setter value") : null);
+                Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("ResultSetMaxSize") : null);
                 m_result_set_max_sz = value;
             }
         }
+
         public long TotalHits
         {
             get { return m_total_hits; }
         }
+
         public SearchEngineLanguage Language
         {
             get { return m_language; }
             set { m_language = value; }
         }
+
         public ISearchEngineCache Cache
         {
             get { return m_cache; }
             set { m_cache = value; }
         }
+
         public SearchEngineResultSet ResultSet
         {
             get { return m_result_set; }
         }
+
         // the following function is implemented in derived classes
         public abstract void Search();
     }
@@ -392,10 +427,10 @@ namespace Latino.Web
     */
     public class GoogleDefine : SearchEngine
     {
-        public GoogleDefine(string query)
-            : base(query) // throws ArgumentNullException
+        public GoogleDefine(string query) : base(query) // throws ArgumentNullException
         {
         }
+
         public override void Search()
         {
             m_result_set.Items.Clear();
@@ -434,99 +469,6 @@ namespace Latino.Web
         }
     }
 
-    #region GoogleSearch is obsolete
-    /* .-----------------------------------------------------------------------
-	   |		
-	   |  Class GoogleSearch
-	   |
-	   '-----------------------------------------------------------------------
-	*/
-    public class GoogleSearch : SearchEngine
-    {
-        private int m_delay // delay between consecutive requests (2 seconds by default)
-            = 2000;
-        public GoogleSearch(string query)
-            : base(query) // throws ArgumentNullException
-        {
-        }
-        public int Delay
-        {
-            get { return m_delay; }
-            set
-            {
-                Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("Delay setter value") : null);
-                m_delay = value;
-            }
-        }
-        public override void Search()
-        {
-            m_result_set.Items.Clear();
-            if (m_cache == null || !m_cache.GetFromCache("GoogleSearch", m_language, m_query, m_result_set_max_sz, ref m_total_hits, ref m_result_set))
-            {
-                m_total_hits = -1;
-                string previous_request = null;
-                for (int i = 0; m_result_set.Count < m_result_set_max_sz || m_total_hits == -1; i += 10)
-                {
-                    if (previous_request != null) { Thread.Sleep(m_delay); }
-                    string request = string.Format("http://www.google.com/search?q={0}&lr=lang_{1}&start={2}", HttpUtility.UrlEncode(m_query), m_language == SearchEngineLanguage.Any ? "" : m_language.ToString().ToLower(), i);
-                    string result_set_html = WebUtils.GetWebPage(request, previous_request); // throws WebException
-                    previous_request = request;
-                    result_set_html = Regex.Replace(result_set_html, "<em>|</em>|<b>|</b>", "");
-                    if (m_total_hits == -1)
-                    {
-                        Match m = new Regex(@"of (about )?(?<total_hits>[\d,]+) ").Match(result_set_html);
-                        if (m.Success)
-                        {
-                            m_total_hits = Convert.ToInt64(m.Result("${total_hits}").Replace(",", ""));
-                        }
-                    }
-                    int start_idx = -1;
-                    Match hit_match = new Regex(@"(<a href=""[^""]*"" class=l)|(About Google</a></p></div>)").Match(result_set_html);
-                    while (hit_match.Success)
-                    {
-                        if (start_idx == -1)
-                        {
-                            start_idx = hit_match.Index;
-                        }
-                        else
-                        {
-                            if (m_result_set.Count >= m_result_set_max_sz) { break; }
-                            int length = hit_match.Index - start_idx;
-                            string result_html = result_set_html.Substring(start_idx, length);
-                            start_idx = hit_match.Index;
-                            Match regex_match = new Regex(@"<a href=""(?<url>[^""]*)"" class=l[^>]*>(?<title>[^<]*)</a>").Match(result_html);
-                            string url = regex_match.Result("${url}");
-                            string title = HttpUtility.HtmlDecode(regex_match.Result("${title}"));
-                            regex_match = new Regex(@"<td class=[""]?j( hc)?[""]?><div class=std>(?<snippet>[^<]+)").Match(result_html);
-                            if (!regex_match.Success) { regex_match = new Regex(@"<br>(?<snippet>[^<]+)").Match(result_html); }
-                            if (!regex_match.Success) { regex_match = new Regex(@"<font size=-1>(?<snippet>[^<]+)").Match(result_html); }
-                            if (!regex_match.Success) { regex_match = new Regex(@"<div class=(std|""s[^""]*"")>(?<snippet>[^<]+)").Match(result_html); }
-                            string snippet = "";
-                            if (regex_match.Success)
-                            {
-                                snippet = HttpUtility.HtmlDecode(regex_match.Result("${snippet}"));
-                            }
-                            int raw_txt_max_len = Math.Min(result_html.Length, RAW_TEXT_MAX_LEN);
-                            m_result_set.Items.Add(new SearchEngineResult(title, snippet, url, m_result_set.Count + 1, result_html.Substring(0, raw_txt_max_len)));
-                        }
-                        hit_match = hit_match.NextMatch();
-                    }
-                    if (result_set_html.IndexOf("</span>Next</a>") == -1)
-                    {
-                        m_total_hits = m_result_set.Count;
-                        break;
-                    }
-                }
-                m_total_hits = Math.Max(m_total_hits, (long)m_result_set.Count); // just to make sure ...
-                if (m_cache != null)
-                {
-                    m_cache.PutIntoCache("GoogleSearch", m_language, m_query, m_total_hits, m_result_set);
-                }
-            }
-        }
-    }
-    #endregion
-
     /* .-----------------------------------------------------------------------
        |		
        |  Class QuotaExceededException
@@ -535,8 +477,7 @@ namespace Latino.Web
     */
     public class QuotaExceededException : Exception
     {
-        public QuotaExceededException()
-            : base("Quota exceeded.")
+        public QuotaExceededException() : base("Quota exceeded.")
         {
         }
     }
@@ -557,24 +498,27 @@ namespace Latino.Web
             = new Regex(@"\<Result\>((\<Title\>(?<title>[^<]*)\</Title\>)|(\<Title /\>))" +
                 @"((\<Summary\>(?<summary>[^<]*)\</Summary\>)|(\<Summary /\>))" +
                 @"((\<Url\>(?<url>[^<]*)\</Url\>)|(\<Url /\>))", RegexOptions.Singleline | RegexOptions.Compiled);
-        public YahooSearch(string query)
-            : base(query) // throws ArgumentNullException
+
+        public YahooSearch(string query) : base(query) // throws ArgumentNullException
         {
         }
+
         public string AppId
         {
             get { return m_app_id; }
             set
             {
-                Utils.ThrowException(m_app_id == null ? new ArgumentNullException("AppId value") : null);
+                Utils.ThrowException(m_app_id == null ? new ArgumentNullException("AppId") : null);
                 m_app_id = value;
             }
         }
+
         public bool Retry
         {
             get { return m_retry; }
             set { m_retry = value; }
         }
+
         public override void Search()
         {
             Utils.ThrowException(m_result_set_max_sz > 1000 ? new InvalidOperationException() : null);

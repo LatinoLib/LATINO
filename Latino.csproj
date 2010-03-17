@@ -107,6 +107,8 @@
     <Compile Include="Ref.cs" />
     <Compile Include="SetEqualityComparer.cs" />
     <Compile Include="SparseMatrix.cs" />
+    <Compile Include="TextMining\LanguageDetector.cs" />
+    <Compile Include="TextMining\StopWords\SloveneStopWords.cs" />
     <Compile Include="TextMining\__IncrementalBowSpace__.cs" />
     <Compile Include="TextMining\Lemmatizer.cs" />
     <Compile Include="TextMining\IStemmer.cs" />
