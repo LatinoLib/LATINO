@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -27,13 +27,13 @@ namespace Latino.TextMining
     */
     public class RegexTokenizer : ITokenizer
     {
-        private string m_text
+        private string mText
             = "";
-        private Regex m_token_regex
+        private Regex mTokenRegex
             = new Regex(@"[A-Za-z]+(-[A-Za-z]+)*", RegexOptions.Compiled);
-        private Regex m_delim_regex
+        private Regex mDelimRegex
             = new Regex(@"\s+|$", RegexOptions.Compiled); // *** this is not (yet?) publicly accessible
-        private bool m_ignore_unknown_tokens
+        private bool mIgnoreUnknownTokens
             = false;
 
         public RegexTokenizer()
@@ -43,7 +43,7 @@ namespace Latino.TextMining
         public RegexTokenizer(string text)
         {
             Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
-            m_text = text;
+            mText = text;
         }
 
         public RegexTokenizer(BinarySerializer reader)
@@ -53,36 +53,36 @@ namespace Latino.TextMining
 
         public string TokenRegex
         { 
-            get { return m_token_regex.ToString(); }
-            set { m_token_regex = new Regex(value, RegexOptions.Compiled); } // throws ArgumentNullException, ArgumentException
+            get { return mTokenRegex.ToString(); }
+            set { mTokenRegex = new Regex(value, RegexOptions.Compiled); } // throws ArgumentNullException, ArgumentException
         }
 
         public bool IgnoreUnknownTokens
         {
-            get { return m_ignore_unknown_tokens; }
-            set { m_ignore_unknown_tokens = value; }
+            get { return mIgnoreUnknownTokens; }
+            set { mIgnoreUnknownTokens = value; }
         }
 
         // *** ITokenizer interface implementation ***
 
         public string Text
         {
-            get { return m_text; }
+            get { return mText; }
             set 
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Text") : null);
-                m_text = value;
+                mText = value;
             }
         }
 
         public IEnumerator<string> GetEnumerator()
         {
-            return new Enumerator(m_text, m_token_regex, m_delim_regex, m_ignore_unknown_tokens);
+            return new Enumerator(mText, mTokenRegex, mDelimRegex, mIgnoreUnknownTokens);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new Enumerator(m_text, m_token_regex, m_delim_regex, m_ignore_unknown_tokens);
+            return new Enumerator(mText, mTokenRegex, mDelimRegex, mIgnoreUnknownTokens);
         }
 
         // *** ISerializable interface implementation ***
@@ -91,18 +91,18 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteString(m_token_regex.ToString());
-            writer.WriteString(m_delim_regex.ToString());
-            writer.WriteBool(m_ignore_unknown_tokens);
+            writer.WriteString(mTokenRegex.ToString());
+            writer.WriteString(mDelimRegex.ToString());
+            writer.WriteBool(mIgnoreUnknownTokens);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            m_token_regex = new Regex(reader.ReadString(), RegexOptions.Compiled);
-            m_delim_regex = new Regex(reader.ReadString(), RegexOptions.Compiled);
-            m_ignore_unknown_tokens = reader.ReadBool();
+            mTokenRegex = new Regex(reader.ReadString(), RegexOptions.Compiled);
+            mDelimRegex = new Regex(reader.ReadString(), RegexOptions.Compiled);
+            mIgnoreUnknownTokens = reader.ReadBool();
         }
 
         /* .-----------------------------------------------------------------------
@@ -113,76 +113,76 @@ namespace Latino.TextMining
         */
         public class Enumerator : IEnumerator<string>
         {
-            private string m_text;
-            private Regex m_token_regex;
-            private Regex m_delim_regex;
-            private bool m_ignore_unknown_tokens;
-            private Queue<string> m_tokens
+            private string mText;
+            private Regex mTokenRegex;
+            private Regex mDelimRegex;
+            private bool mIgnoreUnknownTokens;
+            private Queue<string> mTokens
                 = new Queue<string>();
-            private Match m_token_match
+            private Match mTokenMatch
                 = null;
 
-            internal Enumerator(string text, Regex token_regex, Regex delim_regex, bool ignore_unknown_tokens)
+            internal Enumerator(string text, Regex tokenRegex, Regex delimRegex, bool ignoreUnknownTokens)
             {
-                m_text = text;
-                m_token_regex = token_regex;
-                m_delim_regex = delim_regex;
-                m_ignore_unknown_tokens = ignore_unknown_tokens;
+                mText = text;
+                mTokenRegex = tokenRegex;
+                mDelimRegex = delimRegex;
+                mIgnoreUnknownTokens = ignoreUnknownTokens;
             }
 
             private void GetMoreTokens()
             {
-                int start_idx = 0;
-                if (m_token_match == null)
+                int startIdx = 0;
+                if (mTokenMatch == null)
                 {
-                    m_token_match = m_token_regex.Match(m_text);
+                    mTokenMatch = mTokenRegex.Match(mText);
                 }
                 else
                 {
-                    start_idx = m_token_match.Index + m_token_match.Value.Length;
-                    m_token_match = m_token_match.NextMatch();
+                    startIdx = mTokenMatch.Index + mTokenMatch.Value.Length;
+                    mTokenMatch = mTokenMatch.NextMatch();
                 }
-                if (m_token_match.Success)
+                if (mTokenMatch.Success)
                 {
-                    if (!m_ignore_unknown_tokens)
+                    if (!mIgnoreUnknownTokens)
                     {
-                        int len = m_token_match.Index - start_idx;
+                        int len = mTokenMatch.Index - startIdx;
                         if (len > 0)
                         {
-                            string glue = m_text.Substring(start_idx, len);
-                            Match delim_match = m_delim_regex.Match(glue);
-                            int inner_start_idx = 0;
-                            while (delim_match.Success)
+                            string glue = mText.Substring(startIdx, len);
+                            Match delimMatch = mDelimRegex.Match(glue);
+                            int innerStartIdx = 0;
+                            while (delimMatch.Success)
                             {
-                                int inner_len = delim_match.Index - inner_start_idx;
-                                if (inner_len > 0)
+                                int innerLen = delimMatch.Index - innerStartIdx;
+                                if (innerLen > 0)
                                 {
-                                    m_tokens.Enqueue(glue.Substring(inner_start_idx, inner_len));
+                                    mTokens.Enqueue(glue.Substring(innerStartIdx, innerLen));
                                 }
-                                inner_start_idx = delim_match.Index + delim_match.Value.Length;
-                                delim_match = delim_match.NextMatch();
+                                innerStartIdx = delimMatch.Index + delimMatch.Value.Length;
+                                delimMatch = delimMatch.NextMatch();
                             }
                         }
                     }
-                    m_tokens.Enqueue(m_token_match.Value);
-                    if (!m_ignore_unknown_tokens && !m_token_match.NextMatch().Success) // tokenize tail
+                    mTokens.Enqueue(mTokenMatch.Value);
+                    if (!mIgnoreUnknownTokens && !mTokenMatch.NextMatch().Success) // tokenize tail
                     {
-                        start_idx = m_token_match.Index + m_token_match.Value.Length;
-                        int len = m_text.Length - start_idx;
+                        startIdx = mTokenMatch.Index + mTokenMatch.Value.Length;
+                        int len = mText.Length - startIdx;
                         if (len > 0)
                         {
-                            string glue = m_text.Substring(start_idx, len);
-                            Match delim_match = m_delim_regex.Match(glue);
-                            int inner_start_idx = 0;
-                            while (delim_match.Success)
+                            string glue = mText.Substring(startIdx, len);
+                            Match delimMatch = mDelimRegex.Match(glue);
+                            int innerStartIdx = 0;
+                            while (delimMatch.Success)
                             {
-                                int inner_len = delim_match.Index - inner_start_idx;
-                                if (inner_len > 0)
+                                int innerLen = delimMatch.Index - innerStartIdx;
+                                if (innerLen > 0)
                                 {
-                                    m_tokens.Enqueue(glue.Substring(inner_start_idx, inner_len));
+                                    mTokens.Enqueue(glue.Substring(innerStartIdx, innerLen));
                                 }
-                                inner_start_idx = delim_match.Index + delim_match.Value.Length;
-                                delim_match = delim_match.NextMatch();
+                                innerStartIdx = delimMatch.Index + delimMatch.Value.Length;
+                                delimMatch = delimMatch.NextMatch();
                             }
                         }
                     }
@@ -195,8 +195,8 @@ namespace Latino.TextMining
             {
                 get
                 {
-                    Utils.ThrowException(m_tokens.Count == 0 ? new InvalidOperationException() : null);
-                    return m_tokens.Peek();
+                    Utils.ThrowException(mTokens.Count == 0 ? new InvalidOperationException() : null);
+                    return mTokens.Peek();
                 }
             }
 
@@ -207,16 +207,16 @@ namespace Latino.TextMining
 
             public bool MoveNext()
             {
-                if (m_tokens.Count > 0) { m_tokens.Dequeue(); }
-                if (m_tokens.Count == 0) { GetMoreTokens(); }
-                if (m_tokens.Count == 0) { Reset(); }
-                return m_tokens.Count > 0;
+                if (mTokens.Count > 0) { mTokens.Dequeue(); }
+                if (mTokens.Count == 0) { GetMoreTokens(); }
+                if (mTokens.Count == 0) { Reset(); }
+                return mTokens.Count > 0;
             }
 
             public void Reset()
             {
-                m_tokens.Clear();
-                m_token_match = null;
+                mTokens.Clear();
+                mTokenMatch = null;
             }
 
             public void Dispose()

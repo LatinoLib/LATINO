@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -38,38 +38,38 @@ namespace Latino.Model
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            double dot_prod = 0;
+            double dotProd = 0;
             int i = 0, j = 0;
-            int a_count = a.Count;
-            int b_count = b.Count;
-            if (a_count == 0 || b_count == 0) { return 0; }
-            ArrayList<int> a_idx = a.Inner.InnerIdx;
-            ArrayList<double> a_dat = a.Inner.InnerDat;
-            ArrayList<int> b_idx = b.Inner.InnerIdx;
-            ArrayList<double> b_dat = b.Inner.InnerDat;            
-            int a_idx_i = a_idx[0];
-            int b_idx_j = b_idx[0];
+            int aCount = a.Count;
+            int bCount = b.Count;
+            if (aCount == 0 || bCount == 0) { return 0; }
+            ArrayList<int> aIdx = a.Inner.InnerIdx;
+            ArrayList<double> aDat = a.Inner.InnerDat;
+            ArrayList<int> bIdx = b.Inner.InnerIdx;
+            ArrayList<double> bDat = b.Inner.InnerDat;            
+            int aIdxI = aIdx[0];
+            int bIdxJ = bIdx[0];
             while (true)
             {
-                if (a_idx_i < b_idx_j)
+                if (aIdxI < bIdxJ)
                 {
-                    if (++i == a_count) { break; }
-                    a_idx_i = a_idx[i];
+                    if (++i == aCount) { break; }
+                    aIdxI = aIdx[i];
                 }
-                else if (a_idx_i > b_idx_j)
+                else if (aIdxI > bIdxJ)
                 {
-                    if (++j == b_count) { break; }
-                    b_idx_j = b_idx[j];
+                    if (++j == bCount) { break; }
+                    bIdxJ = bIdx[j];
                 }
                 else
                 {
-                    dot_prod += a_dat[i] * b_dat[j];
-                    if (++i == a_count || ++j == b_count) { break; }
-                    a_idx_i = a_idx[i];
-                    b_idx_j = b_idx[j];                    
+                    dotProd += aDat[i] * bDat[j];
+                    if (++i == aCount || ++j == bCount) { break; }
+                    aIdxI = aIdx[i];
+                    bIdxJ = bIdx[j];                    
                 }
             }
-            return dot_prod;
+            return dotProd;
         }
 
         // *** ISerializable interface implementation ***

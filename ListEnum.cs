@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,32 +26,32 @@ namespace Latino
     */
     public class ListEnum : IEnumerator
     {
-        private IEnumerableList m_list;
-        private int m_current_idx
+        private IEnumerableList mList;
+        private int mCurrentIdx
             = -1;
 
         public ListEnum(IEnumerableList list)
         {
             Utils.ThrowException(list == null ? new ArgumentNullException("list") : null);
-            m_list = list;
+            mList = list;
         }
 
         // *** IEnumerator interface implementation ***
 
         public void Reset()
         {
-            m_current_idx = -1;
+            mCurrentIdx = -1;
         }
 
         public object Current
         {
-            get { return m_list[m_current_idx]; } // throws ArgumentOutOfRangeException
+            get { return mList[mCurrentIdx]; } // throws ArgumentOutOfRangeException
         }
 
         public bool MoveNext()
         {
-            m_current_idx++;
-            if (m_current_idx >= m_list.Count) 
+            mCurrentIdx++;
+            if (mCurrentIdx >= mList.Count) 
             { 
                 Reset(); 
                 return false; 
@@ -68,26 +68,26 @@ namespace Latino
     */
     public class ListEnum<T> : IEnumerator<T>
     {
-        private IEnumerableList<T> m_list;
-        private int m_current_idx
+        private IEnumerableList<T> mList;
+        private int mCurrentIdx
             = -1;
 
         public ListEnum(IEnumerableList<T> list)
         {
             Utils.ThrowException(list == null ? new ArgumentNullException("list") : null);
-            m_list = list;
+            mList = list;
         }
 
         // *** IEnumerator<T> interface implementation ***
 
         public void Reset()
         {
-            m_current_idx = -1;
+            mCurrentIdx = -1;
         }
 
         public T Current
         {
-            get { return m_list[m_current_idx]; } // throws ArgumentOutOfRangeException
+            get { return mList[mCurrentIdx]; } // throws ArgumentOutOfRangeException
         }
 
         object IEnumerator.Current
@@ -97,8 +97,8 @@ namespace Latino
 
         public bool MoveNext()
         {
-            m_current_idx++;
-            if (m_current_idx >= m_list.Count) 
+            mCurrentIdx++;
+            if (mCurrentIdx >= mList.Count) 
             { 
                 Reset(); 
                 return false; 

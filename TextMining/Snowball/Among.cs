@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -20,11 +20,11 @@ namespace SF.Snowball
 	
 	public class Among
 	{
-		public Among(System.String s, int substring_i, int result, System.String methodname, SnowballProgram methodobject)
+		public Among(System.String s, int substringI, int result, System.String methodname, SnowballProgram methodobject)
 		{
-			this.s_size = s.Length;
+			this.sSize = s.Length;
 			this.s = s;
-			this.substring_i = substring_i;
+			this.substringI = substringI;
 			this.result = result;
 			this.methodobject = methodobject;
 			if (methodname.Length == 0)
@@ -45,9 +45,9 @@ namespace SF.Snowball
 			}
 		}
 		
-		public int s_size; /* search string */
+		public int sSize; /* search string */
 		public System.String s; /* search string */
-		public int substring_i; /* index to longest matching substring */
+		public int substringI; /* index to longest matching substring */
 		public int result; /* result of the lookup */
 		public System.Reflection.MethodInfo method; /* method to use if substring matches */
 		public SnowballProgram methodobject; /* object to invoke method on */

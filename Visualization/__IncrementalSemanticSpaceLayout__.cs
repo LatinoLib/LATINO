@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -27,83 +27,83 @@ namespace Latino.Visualization
     */
     public class IncrementalSemanticSpaceLayout : ILayoutAlgorithm
     {
-        private UnlabeledDataset<SparseVector<double>.ReadOnly> m_dataset;
-        private Random m_random
+        private UnlabeledDataset<SparseVector<double>.ReadOnly> mDataset;
+        private Random mRandom
             = new Random(1);
-        private double m_k_means_eps
+        private double mKMeansEps
             = 0.01;
-        private int m_k_clust
+        private int mKClust
             = 100;
-        private double m_sim_thresh
+        private double mSimThresh
             = 0.005;
-        private int m_k_nn
+        private int mKNn
             = 10;
-        private int m_k_nn_ext
+        private int mKNnExt
             = 60;
-        private IncrementalKMeans m_k_means
+        private IncrementalKMeans mKMeans
             = null;
-        private Vector2D[] m_ref_pos
+        private Vector2D[] mRefPos
             = null;
-        private ArrayList<Patch> m_patches
+        private ArrayList<Patch> mPatches
             = new ArrayList<Patch>();
-        private ArrayList<double> m_sol_x 
+        private ArrayList<double> mSolX 
             = null;
-        private ArrayList<double> m_sol_y 
+        private ArrayList<double> mSolY 
             = null;
 
         public IncrementalSemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            m_dataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(dataset);
+            mDataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(dataset);
         }
 
         public Random Random
         {
-            get { return m_random; }
+            get { return mRandom; }
             set 
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Random") : null);
-                m_random = value; 
+                mRandom = value; 
             }
         }
 
         public double KMeansEps
         {
-            get { return m_k_means_eps; }
+            get { return mKMeansEps; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("KMeansEps") : null);
-                m_k_means_eps = value;
+                mKMeansEps = value;
             }
         }
 
         public int KMeansK
         {
-            get { return m_k_clust; }
+            get { return mKClust; }
             set
             {
                 Utils.ThrowException(value < 2 ? new ArgumentOutOfRangeException("KMeansK") : null);
-                m_k_clust = value;
+                mKClust = value;
             }
         }
 
         public double SimThresh
         {
-            get { return m_sim_thresh; }
+            get { return mSimThresh; }
             set 
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("SimThresh") : null);
-                m_sim_thresh = value;
+                mSimThresh = value;
             }
         }
 
         public int NeighborhoodSize
         {
-            get { return m_k_nn; }
+            get { return mKNn; }
             set
             {
                 Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("NeighborhoodSize") : null);
-                m_k_nn = value;
+                mKNn = value;
             }
         }
 
@@ -118,58 +118,58 @@ namespace Latino.Visualization
         {
             // clustering 
             Utils.VerboseLine("Clustering ...");
-            m_k_means = new IncrementalKMeans(m_k_clust);
-            m_k_means.Eps = m_k_means_eps;
-            m_k_means.Random = m_random;
-            m_k_means.Trials = 3;
-            ClusteringResult clustering = m_k_means.Cluster(m_dataset); // throws ArgumentValueException
+            mKMeans = new IncrementalKMeans(mKClust);
+            mKMeans.Eps = mKMeansEps;
+            mKMeans.Random = mRandom;
+            mKMeans.Trials = 3;
+            ClusteringResult clustering = mKMeans.Cluster(mDataset); // throws ArgumentValueException
             // determine reference instances
-            UnlabeledDataset<SparseVector<double>.ReadOnly> ds_ref_inst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
-            foreach (SparseVector<double> centroid in m_k_means.GetCentroids())
+            UnlabeledDataset<SparseVector<double>.ReadOnly> dsRefInst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
+            foreach (SparseVector<double> centroid in mKMeans.GetCentroids())
             {
-                ds_ref_inst.Add(centroid); // dataset of reference instances
-                m_dataset.Add(centroid); // add centroids to the main dataset
+                dsRefInst.Add(centroid); // dataset of reference instances
+                mDataset.Add(centroid); // add centroids to the main dataset
             }
             // position reference instances
             Utils.VerboseLine("Positioning reference instances ...");
-            SparseMatrix<double> sim_mtx = ModelUtils.GetDotProductSimilarity(ds_ref_inst, m_sim_thresh, /*full_matrix=*/false);
-            StressMajorizationLayout sm = new StressMajorizationLayout(ds_ref_inst.Count, new DistFunc(sim_mtx));
-            sm.Random = m_random;
+            SparseMatrix<double> simMtx = ModelUtils.GetDotProductSimilarity(dsRefInst, mSimThresh, /*fullMatrix=*/false);
+            StressMajorizationLayout sm = new StressMajorizationLayout(dsRefInst.Count, new DistFunc(simMtx));
+            sm.Random = mRandom;
             sm.MaxSteps = int.MaxValue;
             sm.MinDiff = 0.00001;
-            m_ref_pos = sm.ComputeLayout();
+            mRefPos = sm.ComputeLayout();
             // k-NN
             Utils.VerboseLine("Computing similarities ...");           
-            sim_mtx = ModelUtils.GetDotProductSimilarity(m_dataset, m_sim_thresh, /*full_matrix=*/true);
+            simMtx = ModelUtils.GetDotProductSimilarity(mDataset, mSimThresh, /*fullMatrix=*/true);
             Utils.VerboseLine("Constructing system of linear equations ...");
-            LabeledDataset<double, SparseVector<double>.ReadOnly> lsqr_ds = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
-            m_patches = new ArrayList<Patch>(m_dataset.Count);
-            for (int i = 0; i < m_dataset.Count; i++)
+            LabeledDataset<double, SparseVector<double>.ReadOnly> lsqrDs = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
+            mPatches = new ArrayList<Patch>(mDataset.Count);
+            for (int i = 0; i < mDataset.Count; i++)
             {
-                m_patches.Add(new Patch(i));
+                mPatches.Add(new Patch(i));
             }
-            foreach (IdxDat<SparseVector<double>> sim_mtx_row in sim_mtx)
+            foreach (IdxDat<SparseVector<double>> simMtxRow in simMtx)
             {
-                if (sim_mtx_row.Dat.Count <= 1)
+                if (simMtxRow.Dat.Count <= 1)
                 {
-                    Utils.VerboseLine("*** Warning: instance #{0} has no neighborhood.", sim_mtx_row.Idx);
+                    Utils.VerboseLine("*** Warning: instance #{0} has no neighborhood.", simMtxRow.Idx);
                 }
-                ArrayList<KeyDat<double, int>> knn = new ArrayList<KeyDat<double, int>>(sim_mtx_row.Dat.Count);
-                foreach (IdxDat<double> item in sim_mtx_row.Dat)
+                ArrayList<KeyDat<double, int>> knn = new ArrayList<KeyDat<double, int>>(simMtxRow.Dat.Count);
+                foreach (IdxDat<double> item in simMtxRow.Dat)
                 {
-                    if (item.Idx != sim_mtx_row.Idx)
+                    if (item.Idx != simMtxRow.Idx)
                     {
                         knn.Add(new KeyDat<double, int>(item.Dat, item.Idx));
                     }
                 }
                 knn.Sort(new DescSort<KeyDat<double, int>>());
-                int count = Math.Min(knn.Count, m_k_nn_ext);
+                int count = Math.Min(knn.Count, mKNnExt);
                 for (int i = 0; i < count; i++)
                 {
-                    m_patches[sim_mtx_row.Idx].List.Add(new KeyDat<double, Patch>(knn[i].Key, m_patches[knn[i].Dat]));                    
+                    mPatches[simMtxRow.Idx].List.Add(new KeyDat<double, Patch>(knn[i].Key, mPatches[knn[i].Dat]));                    
                 }
-                m_patches[sim_mtx_row.Idx].ProcessList();
-                count = Math.Min(knn.Count, m_k_nn);
+                mPatches[simMtxRow.Idx].ProcessList();
+                count = Math.Min(knn.Count, mKNn);
                 SparseVector<double> eq = new SparseVector<double>();
                 double wgt = 1.0 / (double)count;
                 for (int i = 0; i < count; i++)
@@ -178,28 +178,28 @@ namespace Latino.Visualization
                     eq.InnerDat.Add(-wgt);
                 }
                 eq.InnerIdx.Sort(); // *** sort only indices
-                eq[sim_mtx_row.Idx] = 1;
-                lsqr_ds.Add(0, eq);
+                eq[simMtxRow.Idx] = 1;
+                lsqrDs.Add(0, eq);
             }
-            Vector2D[] layout = new Vector2D[m_dataset.Count - m_k_clust];
-            for (int i = m_dataset.Count - m_k_clust, j = 0; i < m_dataset.Count; i++, j++)
+            Vector2D[] layout = new Vector2D[mDataset.Count - mKClust];
+            for (int i = mDataset.Count - mKClust, j = 0; i < mDataset.Count; i++, j++)
             {
                 SparseVector<double> eq = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(i, 1) });
-                lsqr_ds.Add(m_ref_pos[j].X, eq);
+                lsqrDs.Add(mRefPos[j].X, eq);
             }
             LSqrModel lsqr = new LSqrModel();
-            lsqr.Train(lsqr_ds);
-            m_sol_x = lsqr.Solution.GetWritableCopy();
+            lsqr.Train(lsqrDs);
+            mSolX = lsqr.Solution.GetWritableCopy();
             for (int i = 0; i < layout.Length; i++)
             {
                 layout[i].X = lsqr.Solution[i];
             }
-            for (int i = lsqr_ds.Count - m_k_clust, j = 0; i < lsqr_ds.Count; i++, j++)
+            for (int i = lsqrDs.Count - mKClust, j = 0; i < lsqrDs.Count; i++, j++)
             {
-                lsqr_ds[i].Label = m_ref_pos[j].Y;
+                lsqrDs[i].Label = mRefPos[j].Y;
             }
-            lsqr.Train(lsqr_ds);
-            m_sol_y = lsqr.Solution.GetWritableCopy();
+            lsqr.Train(lsqrDs);
+            mSolY = lsqr.Solution.GetWritableCopy();
             for (int i = 0; i < layout.Length; i++)
             {
                 layout[i].Y = lsqr.Solution[i];
@@ -225,119 +225,119 @@ namespace Latino.Visualization
 
         public class StopWatch
         {
-            DateTime m_dt
+            DateTime mDt
                 = DateTime.Now;
             public double TotalMilliseconds
             {
-                get { return (DateTime.Now - m_dt).TotalMilliseconds; }
+                get { return (DateTime.Now - mDt).TotalMilliseconds; }
             }
             public void Reset()
             {
-                m_dt = DateTime.Now;
+                mDt = DateTime.Now;
             }
-            public void Save(string file_name, int count)
+            public void Save(string fileName, int count)
             {
-                StreamWriter writer = new StreamWriter(file_name, /*append=*/true);
+                StreamWriter writer = new StreamWriter(fileName, /*append=*/true);
                 writer.WriteLine("{0}\t{1}", count, TotalMilliseconds);
                 writer.Close();
             }
-            public void Save(string file_name, int count, string add_info)
+            public void Save(string fileName, int count, string addInfo)
             {
-                StreamWriter writer = new StreamWriter(file_name, /*append=*/true);
-                writer.WriteLine("{0}\t{1}\t{2}", count, TotalMilliseconds, add_info);
+                StreamWriter writer = new StreamWriter(fileName, /*append=*/true);
+                writer.WriteLine("{0}\t{1}\t{2}", count, TotalMilliseconds, addInfo);
                 writer.Close();
             }
         }
 
         // TODO: exceptions
-        public Vector2D[] Update(int num_dequeue, IEnumerable<SparseVector<double>.ReadOnly> new_inst, bool test, LayoutSettings settings, ref PtInfo[] pt_info, int _count)
+        public Vector2D[] Update(int numDequeue, IEnumerable<SparseVector<double>.ReadOnly> newInst, bool test, LayoutSettings settings, ref PtInfo[] ptInfo, int _count)
         {
             // clustering             
             Utils.VerboseLine("Clustering ...");
             /*prof*/StopWatch sw = new StopWatch();
-            m_k_means.Eps = m_k_means_eps;
+            mKMeans.Eps = mKMeansEps;
             int iter = 0;
-            m_k_means.Update(num_dequeue, new_inst, ref iter);
+            mKMeans.Update(numDequeue, newInst, ref iter);
             /*prof*/sw.Save("cl.txt", _count, iter.ToString());
             // determine reference instances
             /*prof*/sw.Reset();
-            UnlabeledDataset<SparseVector<double>.ReadOnly> ds_ref_inst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
-            UnlabeledDataset<SparseVector<double>.ReadOnly> ds_new_inst = new UnlabeledDataset<SparseVector<double>.ReadOnly>(new_inst);
-            foreach (SparseVector<double> centroid in m_k_means.GetCentroids())
+            UnlabeledDataset<SparseVector<double>.ReadOnly> dsRefInst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
+            UnlabeledDataset<SparseVector<double>.ReadOnly> dsNewInst = new UnlabeledDataset<SparseVector<double>.ReadOnly>(newInst);
+            foreach (SparseVector<double> centroid in mKMeans.GetCentroids())
             {
-                ds_ref_inst.Add(centroid); // dataset of reference instances
-                ds_new_inst.Add(centroid); // dataset of new instances
+                dsRefInst.Add(centroid); // dataset of reference instances
+                dsNewInst.Add(centroid); // dataset of new instances
             }
             // position reference instances
             Utils.VerboseLine("Positioning reference instances ...");
-            SparseMatrix<double> sim_mtx = ModelUtils.GetDotProductSimilarity(ds_ref_inst, m_sim_thresh, /*full_matrix=*/false);
-            StressMajorizationLayout sm = new StressMajorizationLayout(ds_ref_inst.Count, new DistFunc(sim_mtx));
-            sm.Random = m_random;
+            SparseMatrix<double> simMtx = ModelUtils.GetDotProductSimilarity(dsRefInst, mSimThresh, /*fullMatrix=*/false);
+            StressMajorizationLayout sm = new StressMajorizationLayout(dsRefInst.Count, new DistFunc(simMtx));
+            sm.Random = mRandom;
             sm.MaxSteps = int.MaxValue;
             sm.MinDiff = 1E-3;
-            m_ref_pos = sm.ComputeLayout(/*settings=*/null, m_ref_pos/*make this a property!!!*/);
+            mRefPos = sm.ComputeLayout(/*settings=*/null, mRefPos/*make this a property!!!*/);
             /*prof*/sw.Save("sm.txt", _count);
             // k-NN
             /*prof*/sw.Reset();
             DateTime t = DateTime.Now;
             Utils.VerboseLine("Computing similarities ...");
             // update list of neighborhoods
-            m_patches.RemoveRange(m_dataset.Count - m_k_clust, m_k_clust);
-            m_patches.RemoveRange(0, num_dequeue);
+            mPatches.RemoveRange(mDataset.Count - mKClust, mKClust);
+            mPatches.RemoveRange(0, numDequeue);
             // remove instances from [dataset and] neighborhoods
-            foreach (Patch patch in m_patches)
+            foreach (Patch patch in mPatches)
             {                                
-                if (patch.Min != null && (patch.Min.Idx < num_dequeue || patch.Max.Idx >= m_dataset.Count - m_k_clust))
+                if (patch.Min != null && (patch.Min.Idx < numDequeue || patch.Max.Idx >= mDataset.Count - mKClust))
                 {
-                    int old_count = patch.List.Count;
+                    int oldCount = patch.List.Count;
                     ArrayList<KeyDat<double, Patch>> tmp = new ArrayList<KeyDat<double, Patch>>();
                     foreach (KeyDat<double, Patch> item in patch.List)
                     {
-                        if (item.Dat.Idx >= num_dequeue && item.Dat.Idx < m_dataset.Count - m_k_clust)
+                        if (item.Dat.Idx >= numDequeue && item.Dat.Idx < mDataset.Count - mKClust)
                         {
                             tmp.Add(item);
                         }
                         //else
                         //{
-                        //    Console.WriteLine("Remove {0}", item.Dat.Idx - num_dequeue);
+                        //    Console.WriteLine("Remove {0}", item.Dat.Idx - numDequeue);
                         //}
                     }                   
                     patch.List = tmp;
                     patch.ProcessList();
-                    patch.NeedUpdate = patch.List.Count < m_k_nn && old_count >= m_k_nn;
+                    patch.NeedUpdate = patch.List.Count < mKNn && oldCount >= mKNn;
                 }                
             }
             // update dataset
-            m_dataset.RemoveRange(m_dataset.Count - m_k_clust, m_k_clust);
-            m_dataset.RemoveRange(0, num_dequeue);
+            mDataset.RemoveRange(mDataset.Count - mKClust, mKClust);
+            mDataset.RemoveRange(0, numDequeue);
             // add new instances to dataset 
-            int pre_add_count = m_dataset.Count;
-            m_dataset.AddRange(ds_new_inst);
+            int preAddCount = mDataset.Count;
+            mDataset.AddRange(dsNewInst);
             // precompute transposed matrices
-            SparseMatrix<double> tr_new_inst = ModelUtils.GetTransposedMatrix(ds_new_inst);
-            SparseMatrix<double> tr_dataset = ModelUtils.GetTransposedMatrix(m_dataset);
+            SparseMatrix<double> trNewInst = ModelUtils.GetTransposedMatrix(dsNewInst);
+            SparseMatrix<double> trDataset = ModelUtils.GetTransposedMatrix(mDataset);
             // add new instances to neighborhoods
-            for (int i = 0; i < ds_new_inst.Count; i++)
+            for (int i = 0; i < dsNewInst.Count; i++)
             {
-                m_patches.Add(new Patch(-1));
-                m_patches.Last.NeedUpdate = true;
+                mPatches.Add(new Patch(-1));
+                mPatches.Last.NeedUpdate = true;
             }
-            for (int i = 0; i < m_patches.Count; i++)
+            for (int i = 0; i < mPatches.Count; i++)
             { 
-                m_patches[i].Idx = i;
+                mPatches[i].Idx = i;
             }
-            for (int i = 0; i < m_patches.Count; i++)
+            for (int i = 0; i < mPatches.Count; i++)
             {
-                Patch patch = m_patches[i];                
-                SparseVector<double>.ReadOnly vec = m_dataset[i];
+                Patch patch = mPatches[i];                
+                SparseVector<double>.ReadOnly vec = mDataset[i];
                 if (vec != null)
                 {
                     if (patch.NeedUpdate) // full update required
                     {
                         //if (i == 1347) { Console.WriteLine("full update"); }
-                        SparseVector<double> sim_vec = ModelUtils.GetDotProductSimilarity(tr_dataset, m_dataset.Count, vec, m_sim_thresh);
+                        SparseVector<double> simVec = ModelUtils.GetDotProductSimilarity(trDataset, mDataset.Count, vec, mSimThresh);
                         ArrayList<KeyDat<double, int>> tmp = new ArrayList<KeyDat<double, int>>();
-                        foreach (IdxDat<double> item in sim_vec)
+                        foreach (IdxDat<double> item in simVec)
                         {
                             if (item.Idx != i)
                             {
@@ -345,11 +345,11 @@ namespace Latino.Visualization
                             }
                         }
                         tmp.Sort(new Comparer2());
-                        int count = Math.Min(tmp.Count, m_k_nn_ext);
+                        int count = Math.Min(tmp.Count, mKNnExt);
                         patch.List.Clear();
                         for (int j = 0; j < count; j++)
                         {
-                            patch.List.Add(new KeyDat<double, Patch>(tmp[j].Key, m_patches[tmp[j].Dat]));
+                            patch.List.Add(new KeyDat<double, Patch>(tmp[j].Key, mPatches[tmp[j].Dat]));
                         }
                         patch.ProcessList();
                         patch.NeedUpdate = false;
@@ -357,16 +357,16 @@ namespace Latino.Visualization
                     else // only new instances need to be considered
                     {
                         //if (i == 1347) { Console.WriteLine("partial update"); }
-                        SparseVector<double> sim_vec = ModelUtils.GetDotProductSimilarity(tr_new_inst, ds_new_inst.Count, vec, m_sim_thresh);
+                        SparseVector<double> simVec = ModelUtils.GetDotProductSimilarity(trNewInst, dsNewInst.Count, vec, mSimThresh);
                         // check if further processing is needed
-                        bool need_merge = false;
+                        bool needMerge = false;
                         if (test)
                         {
-                            foreach (IdxDat<double> item in sim_vec)
+                            foreach (IdxDat<double> item in simVec)
                             {
                                 if (item.Dat >= patch.MinSim) 
                                 {
-                                    need_merge = true;
+                                    needMerge = true;
                                     //Console.WriteLine("{0} {1}", item.Dat, patch.MinSim);
                                     break;
                                 }
@@ -374,33 +374,33 @@ namespace Latino.Visualization
                         }
                         else
                         {
-                            foreach (IdxDat<double> item in sim_vec)
+                            foreach (IdxDat<double> item in simVec)
                             {
                                 if (item.Dat > patch.MinSim) 
                                 {
-                                    need_merge = true;
+                                    needMerge = true;
                                     //Console.WriteLine("{0} {1}", item.Dat, patch.MinSim);
                                     break;
                                 }
                             }
                         }
-                        if (need_merge || patch.List.Count < m_k_nn)
+                        if (needMerge || patch.List.Count < mKNn)
                         {
                             //if (i == 1347) { Console.WriteLine("merge"); }
-                            int old_count = patch.List.Count;
+                            int oldCount = patch.List.Count;
                             ArrayList<KeyDat<double, Patch>> tmp = new ArrayList<KeyDat<double, Patch>>();
-                            foreach (IdxDat<double> item in sim_vec)
+                            foreach (IdxDat<double> item in simVec)
                             {
-                                tmp.Add(new KeyDat<double, Patch>(item.Dat, m_patches[item.Idx + pre_add_count]));
+                                tmp.Add(new KeyDat<double, Patch>(item.Dat, mPatches[item.Idx + preAddCount]));
                             }
                             // merge the two lists
                             // TODO: speed this up
                             patch.List.AddRange(tmp);
                             patch.List.Sort(new Comparer());
                             // trim list to size
-                            if (old_count >= m_k_nn)
+                            if (oldCount >= mKNn)
                             {
-                                patch.List.RemoveRange(old_count, patch.List.Count - old_count);
+                                patch.List.RemoveRange(oldCount, patch.List.Count - oldCount);
                             }
                             patch.ProcessList();
                         }
@@ -410,83 +410,83 @@ namespace Latino.Visualization
             /*prof*/sw.Save("knn.txt", _count);
             // *** Test ***
             sw.Reset();
-            ModelUtils.GetDotProductSimilarity(m_dataset, m_sim_thresh, /*full_matrix=*/true);
-            sw.Save("self_sim.txt", _count, m_dataset.Count.ToString());
+            ModelUtils.GetDotProductSimilarity(mDataset, mSimThresh, /*fullMatrix=*/true);
+            sw.Save("selfSim.txt", _count, mDataset.Count.ToString());
             if (test)
             {
-                sim_mtx = ModelUtils.GetDotProductSimilarity(m_dataset, m_sim_thresh, /*full_matrix=*/true);
+                simMtx = ModelUtils.GetDotProductSimilarity(mDataset, mSimThresh, /*fullMatrix=*/true);
                 ArrayList<Patch> patches = new ArrayList<Patch>();
-                for (int i = 0; i < m_dataset.Count; i++)
+                for (int i = 0; i < mDataset.Count; i++)
                 {
                     patches.Add(new Patch(i));
                 }
-                foreach (IdxDat<SparseVector<double>> sim_mtx_row in sim_mtx)
+                foreach (IdxDat<SparseVector<double>> simMtxRow in simMtx)
                 {
-                    if (sim_mtx_row.Dat.Count <= 1)
+                    if (simMtxRow.Dat.Count <= 1)
                     {
-                        Utils.VerboseLine("*** Warning: instance #{0} has no neighborhood.", sim_mtx_row.Idx);
+                        Utils.VerboseLine("*** Warning: instance #{0} has no neighborhood.", simMtxRow.Idx);
                     }
-                    ArrayList<KeyDat<double, int>> knn = new ArrayList<KeyDat<double, int>>(sim_mtx_row.Dat.Count);
-                    foreach (IdxDat<double> item in sim_mtx_row.Dat)
+                    ArrayList<KeyDat<double, int>> knn = new ArrayList<KeyDat<double, int>>(simMtxRow.Dat.Count);
+                    foreach (IdxDat<double> item in simMtxRow.Dat)
                     {
-                        if (item.Idx != sim_mtx_row.Idx)
+                        if (item.Idx != simMtxRow.Idx)
                         {
                             knn.Add(new KeyDat<double, int>(item.Dat, item.Idx));
                         }
                     }
                     knn.Sort(new Comparer2());
-                    int count = Math.Min(knn.Count, m_k_nn_ext);
+                    int count = Math.Min(knn.Count, mKNnExt);
                     for (int i = 0; i < count; i++)
                     {
-                        patches[sim_mtx_row.Idx].List.Add(new KeyDat<double, Patch>(knn[i].Key, patches[knn[i].Dat]));
+                        patches[simMtxRow.Idx].List.Add(new KeyDat<double, Patch>(knn[i].Key, patches[knn[i].Dat]));
                     }
-                    patches[sim_mtx_row.Idx].ProcessList();
+                    patches[simMtxRow.Idx].ProcessList();
                 }
                 // compare 
-                if (patches.Count != m_patches.Count) { throw new Exception("Count mismatch."); }
-                for (int i = 0; i < m_patches.Count; i++)
+                if (patches.Count != mPatches.Count) { throw new Exception("Count mismatch."); }
+                for (int i = 0; i < mPatches.Count; i++)
                 {
-                    if (patches[i].List.Count < m_k_nn && patches[i].List.Count != m_patches[i].List.Count)
+                    if (patches[i].List.Count < mKNn && patches[i].List.Count != mPatches[i].List.Count)
                     {
-                        Console.WriteLine(m_patches[i].List.Count);
+                        Console.WriteLine(mPatches[i].List.Count);
                         Console.WriteLine(patches[i].List.Count);
-                        Output(m_patches[i].List);
+                        Output(mPatches[i].List);
                         Output(patches[i].List);
                         Console.WriteLine(i);
                         throw new Exception("List count mismatch.");
                     }
-                    int count = Math.Min(m_patches[i].List.Count, m_k_nn);
+                    int count = Math.Min(mPatches[i].List.Count, mKNn);
                     for (int j = 0; j < count; j++)
                     {
-                        //Console.WriteLine("{4} {0}-{1} {2}-{3}", m_patches[i].List[j].Key, m_patches[i].List[j].Dat.Idx, patches[i].List[j].Key, patches[i].List[j].Dat.Idx, i);
-                        if (m_patches[i].List[j].Key != patches[i].List[j].Key || m_patches[i].List[j].Dat.Idx != patches[i].List[j].Dat.Idx)
+                        //Console.WriteLine("{4} {0}-{1} {2}-{3}", mPatches[i].List[j].Key, mPatches[i].List[j].Dat.Idx, patches[i].List[j].Key, patches[i].List[j].Dat.Idx, i);
+                        if (mPatches[i].List[j].Key != patches[i].List[j].Key || mPatches[i].List[j].Dat.Idx != patches[i].List[j].Dat.Idx)
                         {
-                            Console.WriteLine("i:{4} fast:{0}-{1} slow:{2}-{3}", m_patches[i].List[j].Key, m_patches[i].List[j].Dat.Idx, patches[i].List[j].Key, patches[i].List[j].Dat.Idx, i);
-                            int idx_fast = m_patches[i].List[j].Dat.Idx;
-                            int idx_slow = patches[i].List[j].Dat.Idx;
-                            Console.WriteLine("slow @ fast idx: {0}", GetKey(patches[i].List, idx_fast));
-                            Console.WriteLine("fast @ slow idx: {0}", GetKey(m_patches[i].List, idx_slow));
+                            Console.WriteLine("i:{4} fast:{0}-{1} slow:{2}-{3}", mPatches[i].List[j].Key, mPatches[i].List[j].Dat.Idx, patches[i].List[j].Key, patches[i].List[j].Dat.Idx, i);
+                            int idxFast = mPatches[i].List[j].Dat.Idx;
+                            int idxSlow = patches[i].List[j].Dat.Idx;
+                            Console.WriteLine("slow @ fast idx: {0}", GetKey(patches[i].List, idxFast));
+                            Console.WriteLine("fast @ slow idx: {0}", GetKey(mPatches[i].List, idxSlow));
                             throw new Exception("Patch item mismatch.");
                         }
                     }
                 }
             }
             // *** End of test ***
-            //Console.WriteLine("Number of patches: {0}", m_patches.Count);
+            //Console.WriteLine("Number of patches: {0}", mPatches.Count);
             //int waka = 0;
-            //foreach (Patch patch in m_patches)
+            //foreach (Patch patch in mPatches)
             //{
             //    waka += patch.List.Count;
             //}
-            //Console.WriteLine("Avg list size: {0}", (double)waka / (double)m_patches.Count);
+            //Console.WriteLine("Avg list size: {0}", (double)waka / (double)mPatches.Count);
             Console.WriteLine((DateTime.Now - t).TotalMilliseconds);
             /*prof*/sw.Reset();
             Utils.VerboseLine("Constructing system of linear equations ...");
-            LabeledDataset<double, SparseVector<double>.ReadOnly> lsqr_ds = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
-            Vector2D[] layout = new Vector2D[m_dataset.Count - m_k_clust];
-            foreach (Patch patch in m_patches)
+            LabeledDataset<double, SparseVector<double>.ReadOnly> lsqrDs = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
+            Vector2D[] layout = new Vector2D[mDataset.Count - mKClust];
+            foreach (Patch patch in mPatches)
             {
-                int count = Math.Min(patch.List.Count, m_k_nn);
+                int count = Math.Min(patch.List.Count, mKNn);
                 SparseVector<double> eq = new SparseVector<double>();
                 double wgt = 1.0 / (double)count;
                 for (int i = 0; i < count; i++)
@@ -496,26 +496,26 @@ namespace Latino.Visualization
                 }
                 eq.InnerIdx.Sort(); // *** sort only indices
                 eq[patch.Idx] = 1;
-                lsqr_ds.Add(0, eq);
+                lsqrDs.Add(0, eq);
             }
-            for (int i = m_dataset.Count - m_k_clust, j = 0; i < m_dataset.Count; i++, j++)
+            for (int i = mDataset.Count - mKClust, j = 0; i < mDataset.Count; i++, j++)
             {
                 SparseVector<double> eq = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(i, 1) });
-                lsqr_ds.Add(m_ref_pos[j].X, eq);
+                lsqrDs.Add(mRefPos[j].X, eq);
             }
             LSqrModel lsqr = new LSqrModel();
-            m_sol_x.RemoveRange(0, num_dequeue);
-            double[] aux = new double[m_k_clust];
-            m_sol_x.CopyTo(m_sol_x.Count - m_k_clust, aux, 0, m_k_clust);
-            m_sol_x.RemoveRange(m_sol_x.Count - m_k_clust, m_k_clust);
-            foreach (SparseVector<double>.ReadOnly new_vec in new_inst)
+            mSolX.RemoveRange(0, numDequeue);
+            double[] aux = new double[mKClust];
+            mSolX.CopyTo(mSolX.Count - mKClust, aux, 0, mKClust);
+            mSolX.RemoveRange(mSolX.Count - mKClust, mKClust);
+            foreach (SparseVector<double>.ReadOnly newVec in newInst)
             {
-                m_sol_x.Add(0);
+                mSolX.Add(0);
             }
-            m_sol_x.AddRange(aux);
-            lsqr.InitialSolution = m_sol_x.ToArray();
-            lsqr.Train(lsqr_ds);            
-            m_sol_x = lsqr.Solution.GetWritableCopy();
+            mSolX.AddRange(aux);
+            lsqr.InitialSolution = mSolX.ToArray();
+            lsqr.Train(lsqrDs);            
+            mSolX = lsqr.Solution.GetWritableCopy();
             //for (int i = 0; i < lsqr.InitialSolution.Length; i++) 
             //{
             //    Console.WriteLine("{0}\t{1}", lsqr.InitialSolution[i], lsqr.Solution[i]);
@@ -524,38 +524,38 @@ namespace Latino.Visualization
             {
                 layout[i].X = lsqr.Solution[i];
             }
-            for (int i = lsqr_ds.Count - m_k_clust, j = 0; i < lsqr_ds.Count; i++, j++)
+            for (int i = lsqrDs.Count - mKClust, j = 0; i < lsqrDs.Count; i++, j++)
             {
-                lsqr_ds[i].Label = m_ref_pos[j].Y;
+                lsqrDs[i].Label = mRefPos[j].Y;
             }
-            m_sol_y.RemoveRange(0, num_dequeue);
-            aux = new double[m_k_clust];
-            m_sol_y.CopyTo(m_sol_y.Count - m_k_clust, aux, 0, m_k_clust);
-            m_sol_y.RemoveRange(m_sol_y.Count - m_k_clust, m_k_clust);
-            foreach (SparseVector<double>.ReadOnly new_vec in new_inst)
+            mSolY.RemoveRange(0, numDequeue);
+            aux = new double[mKClust];
+            mSolY.CopyTo(mSolY.Count - mKClust, aux, 0, mKClust);
+            mSolY.RemoveRange(mSolY.Count - mKClust, mKClust);
+            foreach (SparseVector<double>.ReadOnly newVec in newInst)
             {
-                m_sol_y.Add(0);
+                mSolY.Add(0);
             }
-            m_sol_y.AddRange(aux);
-            lsqr.InitialSolution = m_sol_y.ToArray();
-            lsqr.Train(lsqr_ds);
-            m_sol_y = lsqr.Solution.GetWritableCopy();
+            mSolY.AddRange(aux);
+            lsqr.InitialSolution = mSolY.ToArray();
+            lsqr.Train(lsqrDs);
+            mSolY = lsqr.Solution.GetWritableCopy();
             for (int i = 0; i < layout.Length; i++)
             {
                 layout[i].Y = lsqr.Solution[i];
             }
             /*prof*/sw.Save("lsqr.txt", _count);
             // -----------------------------------------------------------------
-            // make pt_info
+            // make ptInfo
             // -----------------------------------------------------------------
-            pt_info = new PtInfo[layout.Length];
+            ptInfo = new PtInfo[layout.Length];
             int ii = 0;
             foreach (Vector2D pt in layout)
             {
-                pt_info[ii] = new PtInfo();
-                pt_info[ii].X = pt.X;
-                pt_info[ii].Y = pt.Y;
-                pt_info[ii].Vec = m_dataset[ii].GetWritableCopy();
+                ptInfo[ii] = new PtInfo();
+                ptInfo[ii].X = pt.X;
+                ptInfo[ii].Y = pt.Y;
+                ptInfo[ii].Vec = mDataset[ii].GetWritableCopy();
                 ii++;
             }
             // -----------------------------------------------------------------
@@ -596,17 +596,17 @@ namespace Latino.Visualization
         */
         private class DistFunc : IDistance<int>
         {
-            private SparseMatrix<double>.ReadOnly m_sim_mtx;
+            private SparseMatrix<double>.ReadOnly mSimMtx;
 
-            public DistFunc(SparseMatrix<double>.ReadOnly sim_mtx)
+            public DistFunc(SparseMatrix<double>.ReadOnly simMtx)
             {
-                m_sim_mtx = sim_mtx;
+                mSimMtx = simMtx;
             }
 
             public double GetDistance(int a, int b) 
             {
-                if (a > b) { return 1.0 - m_sim_mtx.TryGet(b, a, 0); }
-                else { return 1.0 - m_sim_mtx.TryGet(a, b, 0); }
+                if (a > b) { return 1.0 - mSimMtx.TryGet(b, a, 0); }
+                else { return 1.0 - mSimMtx.TryGet(a, b, 0); }
             }
 
             public void Save(BinarySerializer dummy)

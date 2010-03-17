@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,53 +26,53 @@ namespace Latino.Model
     */
     public class Prediction<LblT> : IEnumerableList<KeyDat<double, LblT>>
     {
-        private ArrayList<KeyDat<double, LblT>> m_class_scores
+        private ArrayList<KeyDat<double, LblT>> mClassScores
             = new ArrayList<KeyDat<double, LblT>>();
-        private static DescSort<KeyDat<double, LblT>> m_desc_sort
+        private static DescSort<KeyDat<double, LblT>> mDescSort
             = new DescSort<KeyDat<double, LblT>>();
 
         public Prediction()
         {
         }
 
-        public Prediction(IEnumerable<KeyDat<double, LblT>> class_scores)
+        public Prediction(IEnumerable<KeyDat<double, LblT>> classScores)
         {
-            Utils.ThrowException(class_scores == null ? new ArgumentNullException("class_scores") : null);
-            AddRange(class_scores);
+            Utils.ThrowException(classScores == null ? new ArgumentNullException("classScores") : null);
+            AddRange(classScores);
         }
 
-        public void AddRange(IEnumerable<KeyDat<double, LblT>> class_scores)
+        public void AddRange(IEnumerable<KeyDat<double, LblT>> classScores)
         {
-            foreach (KeyDat<double, LblT> class_score in class_scores)
+            foreach (KeyDat<double, LblT> classScore in classScores)
             {
-                m_class_scores.Add(class_score);
+                mClassScores.Add(classScore);
             }
-            m_class_scores.Sort(m_desc_sort);
+            mClassScores.Sort(mDescSort);
         }
 
         public ArrayList<KeyDat<double, LblT>> Items
         {
-            get { return m_class_scores; }
+            get { return mClassScores; }
         }
 
         public double GetScoreAt(int idx)
         {
-            Utils.ThrowException((idx < 0 || idx >= m_class_scores.Count) ? new ArgumentOutOfRangeException("idx") : null);
-            return m_class_scores[idx].Key;
+            Utils.ThrowException((idx < 0 || idx >= mClassScores.Count) ? new ArgumentOutOfRangeException("idx") : null);
+            return mClassScores[idx].Key;
         }
 
         public LblT GetClassLabelAt(int idx)
         {
-            Utils.ThrowException((idx < 0 || idx >= m_class_scores.Count) ? new ArgumentOutOfRangeException("idx") : null);
-            return m_class_scores[idx].Dat;
+            Utils.ThrowException((idx < 0 || idx >= mClassScores.Count) ? new ArgumentOutOfRangeException("idx") : null);
+            return mClassScores[idx].Dat;
         }
 
         public double BestScore
         {
             get
             {
-                Utils.ThrowException(m_class_scores.Count == 0 ? new InvalidOperationException() : null);
-                return m_class_scores[0].Key;
+                Utils.ThrowException(mClassScores.Count == 0 ? new InvalidOperationException() : null);
+                return mClassScores[0].Key;
             }
         }
 
@@ -80,29 +80,29 @@ namespace Latino.Model
         {
             get
             {
-                Utils.ThrowException(m_class_scores.Count == 0 ? new InvalidOperationException() : null);
-                return m_class_scores[0].Dat;
+                Utils.ThrowException(mClassScores.Count == 0 ? new InvalidOperationException() : null);
+                return mClassScores[0].Dat;
             }
         }
 
         public override string ToString()
         {
-            return m_class_scores.ToString();
+            return mClassScores.ToString();
         }
 
         // *** IEnumerableList<KeyDat<double, LblT>> interface implementation ***
 
         public int Count
         {
-            get { return m_class_scores.Count; }
+            get { return mClassScores.Count; }
         }
 
         public KeyDat<double, LblT> this[int idx]
         {
             get
             {
-                Utils.ThrowException((idx < 0 || idx >= m_class_scores.Count) ? new ArgumentOutOfRangeException("idx") : null);
-                return m_class_scores[idx];
+                Utils.ThrowException((idx < 0 || idx >= mClassScores.Count) ? new ArgumentOutOfRangeException("idx") : null);
+                return mClassScores[idx];
             }
         }
 

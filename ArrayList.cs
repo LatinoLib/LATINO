@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -118,29 +118,29 @@ namespace Latino
 
         public NewT[] ToArray<NewT>()
         {
-            return ToArray<NewT>(/*fmt_provider=*/null); // throws InvalidCastException, FormatException, OverflowException
+            return ToArray<NewT>(/*fmtProvider=*/null); // throws InvalidCastException, FormatException, OverflowException
         }
 
-        public NewT[] ToArray<NewT>(IFormatProvider fmt_provider)
+        public NewT[] ToArray<NewT>(IFormatProvider fmtProvider)
         { 
             NewT[] array = new NewT[Count];
             for (int i = 0; i < Count; i++)
             {
-                array[i] = (NewT)Utils.ChangeType(this[i], typeof(NewT), fmt_provider); // throws InvalidCastException, FormatException, OverflowException
+                array[i] = (NewT)Utils.ChangeType(this[i], typeof(NewT), fmtProvider); // throws InvalidCastException, FormatException, OverflowException
             }
             return array;
         }
 
         public override string ToString()
         {
-            StringBuilder str_bld = new StringBuilder("(");
+            StringBuilder strBld = new StringBuilder("(");
             foreach (T item in this)
             {
-                str_bld.Append(" ");
-                str_bld.Append(item.ToString());
+                strBld.Append(" ");
+                strBld.Append(item.ToString());
             }
-            str_bld.Append(" )");
-            return str_bld.ToString();
+            strBld.Append(" )");
+            return strBld.ToString();
         }
 
         // *** ICloneable interface implementation ***
@@ -162,7 +162,7 @@ namespace Latino
             ArrayList<T> clone = new ArrayList<T>(Capacity);
             foreach (T item in this)
             {
-                clone.Add((T)Utils.Clone(item, /*deep_clone=*/true));
+                clone.Add((T)Utils.Clone(item, /*deepClone=*/true));
             }
             return clone;
         }
@@ -179,7 +179,7 @@ namespace Latino
             if (other == null || Count != other.Count) { return false; }
             for (int i = 0; i < Count; i++)
             {
-                if (!Utils.ObjectEquals(this[i], other[i], /*deep_cmp=*/true)) { return false; }
+                if (!Utils.ObjectEquals(this[i], other[i], /*deepCmp=*/true)) { return false; }
             }
             return true;
         }
@@ -232,114 +232,114 @@ namespace Latino
         */
         public class ReadOnly : IReadOnlyAdapter<ArrayList<T>>, ICollection, IEnumerable<T>, IEnumerable, IContentEquatable<ArrayList<T>.ReadOnly>, ISerializable
         {
-            private ArrayList<T> m_list;
+            private ArrayList<T> mList;
 
             public ReadOnly(ArrayList<T> list)
             {
                 Utils.ThrowException(list == null ? new ArgumentNullException("list") : null);
-                m_list = list;
+                mList = list;
             }
 
             public ReadOnly(BinarySerializer reader)
             {
-                m_list = new ArrayList<T>(reader); 
+                mList = new ArrayList<T>(reader); 
             }
 
             public int BinarySearch(T item)
             {
-                return m_list.BinarySearch(item);
+                return mList.BinarySearch(item);
             }
 
             public void ConvertAll<NewT>(Converter<T, NewT> converter)
             {
-                m_list.ConvertAll<NewT>(converter);
+                mList.ConvertAll<NewT>(converter);
             }
 
             public bool Exists(Predicate<T> match)
             {
-                return m_list.Exists(match);
+                return mList.Exists(match);
             }
 
             public T Find(Predicate<T> match)
             {
-                return m_list.Find(match);
+                return mList.Find(match);
             }
 
             public ArrayList<T> FindAll(Predicate<T> match)
             {
-                return m_list.FindAll(match);
+                return mList.FindAll(match);
             }
 
             public int FindIndex(Predicate<T> match)
             {
-                return m_list.FindIndex(match);
+                return mList.FindIndex(match);
             }
 
             public T FindLast(Predicate<T> match)
             {
-                return m_list.FindLast(match);
+                return mList.FindLast(match);
             }
 
             public int FindLastIndex(Predicate<T> match)
             {
-                return m_list.FindLastIndex(match);
+                return mList.FindLastIndex(match);
             }
 
             public void ForEach(Action<T> action)
             {
-                m_list.ForEach(action);
+                mList.ForEach(action);
             }
 
             public ArrayList<T> GetRange(int index, int count)
             {
-                return m_list.GetRange(index, Count);
+                return mList.GetRange(index, Count);
             }
 
             public int LastIndexOf(T item)
             {
-                return m_list.LastIndexOf(item);
+                return mList.LastIndexOf(item);
             }
 
             public T[] ToArray()
             {
-                return m_list.ToArray();
+                return mList.ToArray();
             }
 
             public bool TrueForAll(Predicate<T> match)
             {
-                return m_list.TrueForAll(match);
+                return mList.TrueForAll(match);
             }
 
             public T First
             {
-                get { return m_list.First; }
+                get { return mList.First; }
             }
 
             public T Last
             {
-                get { return m_list.Last; }
+                get { return mList.Last; }
             }
 
             public NewT[] ToArray<NewT>()
             {
-                return m_list.ToArray<NewT>();
+                return mList.ToArray<NewT>();
             }
 
-            public NewT[] ToArray<NewT>(IFormatProvider fmt_provider)
+            public NewT[] ToArray<NewT>(IFormatProvider fmtProvider)
             {
-                return m_list.ToArray<NewT>(fmt_provider);
+                return mList.ToArray<NewT>(fmtProvider);
             }
 
             public override string ToString()
             {
-                return m_list.ToString();
+                return mList.ToString();
             }
 
             // *** IReadOnlyAdapter interface implementation ***
 
             public ArrayList<T> GetWritableCopy()
             {
-                return m_list.Clone();
+                return mList.Clone();
             }
 
             object IReadOnlyAdapter.GetWritableCopy()
@@ -354,36 +354,36 @@ namespace Latino
 #endif
             ArrayList<T> Inner
             {
-                get { return m_list; }
+                get { return mList; }
             }
 
             // *** Partial IList<T> interface implementation ***
 
             public int IndexOf(T item)
             {
-                return m_list.IndexOf(item);
+                return mList.IndexOf(item);
             }
 
             public T this[int index]
             {
-                get { return m_list[index]; }
+                get { return mList[index]; }
             }
 
             // *** Partial ICollection<T> interface implementation ***
 
             public bool Contains(T item)
             {
-                return m_list.Contains(item);
+                return mList.Contains(item);
             }
 
             public void CopyTo(T[] array, int index)
             {
-                m_list.CopyTo(array, index);
+                mList.CopyTo(array, index);
             }
 
             public int Count
             {
-                get { return m_list.Count; }
+                get { return mList.Count; }
             }
 
             public bool IsReadOnly
@@ -395,7 +395,7 @@ namespace Latino
 
             void ICollection.CopyTo(Array array, int index)
             {
-                ((ICollection)m_list).CopyTo(array, index);
+                ((ICollection)mList).CopyTo(array, index);
             }
 
             bool ICollection.IsSynchronized
@@ -412,7 +412,7 @@ namespace Latino
 
             public IEnumerator<T> GetEnumerator()
             {
-                return m_list.GetEnumerator();
+                return mList.GetEnumerator();
             }
 
             // *** IEnumerable interface implementation ***
@@ -426,7 +426,7 @@ namespace Latino
 
             public bool ContentEquals(ArrayList<T>.ReadOnly other)
             {
-                return other != null && m_list.ContentEquals(other.Inner);
+                return other != null && mList.ContentEquals(other.Inner);
             }
 
             bool IContentEquatable.ContentEquals(object other)
@@ -439,7 +439,7 @@ namespace Latino
 
             public void Save(BinarySerializer writer)
             {
-                m_list.Save(writer);
+                mList.Save(writer);
             }
 
             // *** Equality comparer ***

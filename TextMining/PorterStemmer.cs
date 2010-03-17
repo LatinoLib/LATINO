@@ -1,4 +1,4 @@
-/*==========================================================================;
+ï»¿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -23,20 +23,20 @@ namespace Latino.TextMining
        '-----------------------------------------------------------------------
     */
     // This code was originally written by Martin Porter in Java. The code was ported 
-    // to C# by André Hazelwood and Leif Azzopardi. Furthermore, it was slightly modified 
+    // to C# by Andrï¿½ Hazelwood and Leif Azzopardi. Furthermore, it was slightly modified 
     // to fit the LATINO coding style. See http://tartarus.org/~martin/PorterStemmer/    
     // This stemmer is for English and is faster than the Snowball equivalent for English.
     public class PorterStemmer : IStemmer
     {
         private char[] b;
-        private int i, i_end, j, k; 
+        private int i, iEnd, j, k; 
         private const int INC = 200;
 
         public PorterStemmer()
         {
             b = new char[INC];
             i = 0;
-            i_end = 0;
+            iEnd = 0;
         }
 
         public PorterStemmer(BinarySerializer reader) : this()
@@ -323,7 +323,7 @@ namespace Latino.TextMining
                 Step5();
                 Step6();
             }
-            i_end = k + 1;
+            iEnd = k + 1;
             i = 0;
         }
 
@@ -333,14 +333,14 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(word == null ? new ArgumentNullException("word") : null);
             i = word.Length;
-            char[] new_b = new char[i];
+            char[] newB = new char[i];
             for (int c = 0; c < i; c++)
             {
-                new_b[c] = word[c];
+                newB[c] = word[c];
             }
-            b = new_b;
+            b = newB;
             Stem();
-            return new string(b, 0, i_end);
+            return new string(b, 0, iEnd);
         }
 
         // *** ISerializable interface implementation ***

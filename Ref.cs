@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -33,9 +33,9 @@ namespace Latino
             Val = val;
         }
 
-        public static implicit operator T(Ref<T> ref_val)
+        public static implicit operator T(Ref<T> refVal)
         {
-            return ref_val.Val;
+            return refVal.Val;
         }
 
         public static implicit operator Ref<T>(T val)

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,9 +25,9 @@ namespace Latino.Visualization
     public interface IDrawableObject
     {
         void Draw(Graphics gfx, TransformParams tr);
-        void Draw(Graphics gfx, TransformParams tr, BoundingArea.ReadOnly bounding_area);
+        void Draw(Graphics gfx, TransformParams tr, BoundingArea.ReadOnly boundingArea);
         BoundingArea GetBoundingArea(TransformParams tr);
-        IDrawableObject[] GetObjectsAt(float x, float y, TransformParams tr, ref float[] dist_array);
+        IDrawableObject[] GetObjectsAt(float x, float y, TransformParams tr, ref float[] distArray);
         IDrawableObject[] GetObjectsIn(BoundingArea.ReadOnly area, TransformParams tr);
     }
 }

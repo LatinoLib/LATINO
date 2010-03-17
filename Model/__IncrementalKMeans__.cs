@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -19,55 +19,55 @@ namespace Latino.Model
 {
     public class IncrementalKMeans : IClustering<SparseVector<double>.ReadOnly> 
     {
-        private int m_k;
-        private static ISimilarity<SparseVector<double>.ReadOnly> m_similarity
+        private int mK;
+        private static ISimilarity<SparseVector<double>.ReadOnly> mSimilarity
             = new DotProductSimilarity();
-        private Random m_rnd
+        private Random mRnd
             = new Random();
-        private double m_eps
+        private double mEps
             = 0.0005;
-        private int m_trials
+        private int mTrials
             = 1;
-        private ArrayList<Centroid> m_centroids
+        private ArrayList<Centroid> mCentroids
             = null;
-        private ArrayList<KeyDat<double, int>> m_medoids
+        private ArrayList<KeyDat<double, int>> mMedoids
             = null;
-        private UnlabeledDataset<SparseVector<double>.ReadOnly> m_dataset
+        private UnlabeledDataset<SparseVector<double>.ReadOnly> mDataset
             = null;
 
         public IncrementalKMeans(int k)
         {
             Utils.ThrowException(k < 2 ? new ArgumentOutOfRangeException("k") : null);
-            m_k = k;
+            mK = k;
         }
 
         public Random Random
         {
-            get { return m_rnd; }
+            get { return mRnd; }
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Random") : null);
-                m_rnd = value;
+                mRnd = value;
             }
         }
 
         public double Eps
         {
-            get { return m_eps; }
+            get { return mEps; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("Eps") : null);
-                m_eps = value;
+                mEps = value;
             }
         }
 
         public int Trials
         {
-            get { return m_trials; }
+            get { return mTrials; }
             set
             {
                 Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("Trials") : null);
-                m_trials = value;
+                mTrials = value;
             }
         }
 
@@ -81,132 +81,132 @@ namespace Latino.Model
         public ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(dataset.Count < m_k ? new ArgumentValueException("dataset") : null);
-            m_dataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(dataset);            
+            Utils.ThrowException(dataset.Count < mK ? new ArgumentValueException("dataset") : null);
+            mDataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(dataset);            
             ClusteringResult clustering = null;
-            double global_best_clust_qual = 0;
-            for (int trial = 1; trial <= m_trials; trial++)
+            double globalBestClustQual = 0;
+            for (int trial = 1; trial <= mTrials; trial++)
             {
-                Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, m_trials);
-                ArrayList<Centroid> centroids = new ArrayList<Centroid>(m_k);
-                ArrayList<int> best_seeds = null;
-                centroids.Add(new Centroid(m_dataset));
-                int vec_len = centroids[0].VecLen;
-                for (int i = 1; i < m_k; i++)
+                Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, mTrials);
+                ArrayList<Centroid> centroids = new ArrayList<Centroid>(mK);
+                ArrayList<int> bestSeeds = null;
+                centroids.Add(new Centroid(mDataset));
+                int vecLen = centroids[0].VecLen;
+                for (int i = 1; i < mK; i++)
                 {
-                    centroids.Add(new Centroid(m_dataset, vec_len));
+                    centroids.Add(new Centroid(mDataset, vecLen));
                 }
                 // select seed items
-                double min_sim = double.MaxValue;
-                ArrayList<int> tmp = new ArrayList<int>(m_dataset.Count);
-                for (int i = 0; i < m_dataset.Count; i++) { tmp.Add(i); }
+                double minSim = double.MaxValue;
+                ArrayList<int> tmp = new ArrayList<int>(mDataset.Count);
+                for (int i = 0; i < mDataset.Count; i++) { tmp.Add(i); }
                 for (int k = 0; k < 3; k++)
                 {
-                    ArrayList<SparseVector<double>.ReadOnly> seeds = new ArrayList<SparseVector<double>.ReadOnly>(m_k);
-                    tmp.Shuffle(m_rnd);
-                    for (int i = 0; i < m_k; i++)
+                    ArrayList<SparseVector<double>.ReadOnly> seeds = new ArrayList<SparseVector<double>.ReadOnly>(mK);
+                    tmp.Shuffle(mRnd);
+                    for (int i = 0; i < mK; i++)
                     {
-                        seeds.Add(m_dataset[tmp[i]]);
+                        seeds.Add(mDataset[tmp[i]]);
                     }
                     // assess quality of seed items
-                    double sim_avg = 0;
-                    foreach (SparseVector<double>.ReadOnly seed_1 in seeds)
+                    double simAvg = 0;
+                    foreach (SparseVector<double>.ReadOnly seed1 in seeds)
                     {
-                        foreach (SparseVector<double>.ReadOnly seed_2 in seeds)
+                        foreach (SparseVector<double>.ReadOnly seed2 in seeds)
                         {
-                            if (seed_1 != seed_2)
+                            if (seed1 != seed2)
                             {
-                                sim_avg += m_similarity.GetSimilarity(seed_1, seed_2);
+                                simAvg += mSimilarity.GetSimilarity(seed1, seed2);
                             }
                         }
                     }
-                    sim_avg /= (double)(m_k * m_k - m_k);
-                    //Console.WriteLine(sim_avg);
-                    if (sim_avg < min_sim)
+                    simAvg /= (double)(mK * mK - mK);
+                    //Console.WriteLine(simAvg);
+                    if (simAvg < minSim)
                     {
-                        min_sim = sim_avg;
-                        best_seeds = new ArrayList<int>(m_k);
-                        for (int i = 0; i < m_k; i++) { best_seeds.Add(tmp[i]); }
+                        minSim = simAvg;
+                        bestSeeds = new ArrayList<int>(mK);
+                        for (int i = 0; i < mK; i++) { bestSeeds.Add(tmp[i]); }
                     }
                 }
-                ArrayList<KeyDat<double, int>> medoids = new ArrayList<KeyDat<double, int>>(m_k);
-                for (int i = 0; i < m_k; i++)
+                ArrayList<KeyDat<double, int>> medoids = new ArrayList<KeyDat<double, int>>(mK);
+                for (int i = 0; i < mK; i++)
                 {
-                    centroids[i].Items.Add(best_seeds[i]);
+                    centroids[i].Items.Add(bestSeeds[i]);
                     centroids[i].Update();
-                    medoids.Add(new KeyDat<double, int>(-1, best_seeds[i]));
+                    medoids.Add(new KeyDat<double, int>(-1, bestSeeds[i]));
                 }
                 // main loop
                 int iter = 0;
-                double best_clust_qual = 0;
-                double clust_qual;
+                double bestClustQual = 0;
+                double clustQual;
                 while (true)
                 {
                     iter++;
-                    clust_qual = 0;
+                    clustQual = 0;
                     // assign items to clusters
-                    for (int i = 0; i < m_dataset.Count; i++)
+                    for (int i = 0; i < mDataset.Count; i++)
                     {
-                        SparseVector<double>.ReadOnly example = m_dataset[i];
-                        double max_sim = double.MinValue;
+                        SparseVector<double>.ReadOnly example = mDataset[i];
+                        double maxSim = double.MinValue;
                         ArrayList<int> candidates = new ArrayList<int>();
-                        for (int j = 0; j < m_k; j++)
+                        for (int j = 0; j < mK; j++)
                         {
                             double sim = centroids[j].GetDotProduct(example);
-                            if (sim > max_sim)
+                            if (sim > maxSim)
                             {
-                                max_sim = sim;
+                                maxSim = sim;
                                 candidates.Clear();
                                 candidates.Add(j);
                             }
-                            else if (sim == max_sim)
+                            else if (sim == maxSim)
                             {
                                 candidates.Add(j);
                             }
                         }
                         if (candidates.Count > 1)
                         {
-                            candidates.Shuffle(m_rnd);
+                            candidates.Shuffle(mRnd);
                         }
                         if (candidates.Count > 0) // *** is this always true? 
                         {
                             centroids[candidates[0]].Items.Add(i);
-                            clust_qual += max_sim;
-                            if (medoids[candidates[0]].Key < max_sim)
+                            clustQual += maxSim;
+                            if (medoids[candidates[0]].Key < maxSim)
                             {
-                                medoids[candidates[0]] = new KeyDat<double, int>(max_sim, i);
+                                medoids[candidates[0]] = new KeyDat<double, int>(maxSim, i);
                             }
                         }
                     }
-                    clust_qual /= (double)m_dataset.Count;
+                    clustQual /= (double)mDataset.Count;
                     Utils.VerboseLine("*** Iteration {0} ***", iter);
-                    Utils.VerboseLine("Quality: {0:0.0000}", clust_qual);
+                    Utils.VerboseLine("Quality: {0:0.0000}", clustQual);
                     // compute new centroids
-                    for (int i = 0; i < m_k; i++)
+                    for (int i = 0; i < mK; i++)
                     {
                         centroids[i].ResetNrmL2();
                         centroids[i].Update();
                         centroids[i].NormalizeL2();
                     }
                     // check if done
-                    if (iter > 1 && clust_qual - best_clust_qual <= m_eps)
+                    if (iter > 1 && clustQual - bestClustQual <= mEps)
                     {
                         break;
                     }
-                    best_clust_qual = clust_qual;
+                    bestClustQual = clustQual;
                     for (int i = 0; i < medoids.Count; i++)
                     {
                         medoids[i] = new KeyDat<double, int>(-1, medoids[i].Dat);
                     }
                 }
-                if (trial == 1 || clust_qual > global_best_clust_qual)
+                if (trial == 1 || clustQual > globalBestClustQual)
                 {
-                    global_best_clust_qual = clust_qual;
-                    m_centroids = centroids;
-                    m_medoids = medoids;
+                    globalBestClustQual = clustQual;
+                    mCentroids = centroids;
+                    mMedoids = medoids;
                     // save the result
                     clustering = new ClusteringResult();
-                    for (int i = 0; i < m_k; i++)
+                    for (int i = 0; i < mK; i++)
                     {
                         clustering.AddRoot(new Cluster());
                         clustering.Roots.Last.Items.AddRange(centroids[i].Items);
@@ -219,8 +219,8 @@ namespace Latino.Model
         // TODO: exceptions
         public ArrayList<int> GetMedoids()
         {
-            ArrayList<int> medoids = new ArrayList<int>(m_medoids.Count);
-            foreach (KeyDat<double, int> item in m_medoids)
+            ArrayList<int> medoids = new ArrayList<int>(mMedoids.Count);
+            foreach (KeyDat<double, int> item in mMedoids)
             {
                 medoids.Add(item.Dat);
             }
@@ -231,7 +231,7 @@ namespace Latino.Model
         public ArrayList<SparseVector<double>> GetCentroids()
         {
             ArrayList<SparseVector<double>> centroids = new ArrayList<SparseVector<double>>();
-            foreach (Centroid centroid in m_centroids)
+            foreach (Centroid centroid in mCentroids)
             {
                 centroids.Add(centroid.GetSparseVector());
             }
@@ -240,97 +240,97 @@ namespace Latino.Model
 
         //private double GetQual()
         //{
-        //    double clust_qual = 0;
-        //    foreach (Centroid centroid in m_centroids)
+        //    double clustQual = 0;
+        //    foreach (Centroid centroid in mCentroids)
         //    {
-        //        foreach (int item_idx in centroid.CurrentItems)
+        //        foreach (int itemIdx in centroid.CurrentItems)
         //        {
-        //            clust_qual += centroid.GetDotProduct(m_dataset[item_idx]);
+        //            clustQual += centroid.GetDotProduct(mDataset[itemIdx]);
         //        }
         //    }
-        //    clust_qual /= (double)m_dataset.Count;
-        //    return clust_qual;
+        //    clustQual /= (double)mDataset.Count;
+        //    return clustQual;
         //}
 
         // TODO: exceptions
-        public ClusteringResult Update(int dequeue_n, IEnumerable<SparseVector<double>.ReadOnly> add_list, ref int iter)
+        public ClusteringResult Update(int dequeueN, IEnumerable<SparseVector<double>.ReadOnly> addList, ref int iter)
         {
             // update centroid data (1)
-            foreach (Centroid centroid in m_centroids)
+            foreach (Centroid centroid in mCentroids)
             {
                 foreach (int item in centroid.CurrentItems)
                 {
-                    if (item >= dequeue_n) { centroid.Items.Add(item); }
+                    if (item >= dequeueN) { centroid.Items.Add(item); }
                 }
                 centroid.ResetNrmL2();
                 centroid.Update();
                 centroid.NormalizeL2();
             }
             // update dataset
-            m_dataset.RemoveRange(0, dequeue_n);
-            int ofs = m_dataset.Count;
-            m_dataset.AddRange(add_list);
+            mDataset.RemoveRange(0, dequeueN);
+            int ofs = mDataset.Count;
+            mDataset.AddRange(addList);
             // update centroid data (2)
-            foreach (Centroid centroid in m_centroids)
+            foreach (Centroid centroid in mCentroids)
             {
-                Set<int> items_ofs = new Set<int>();
+                Set<int> itemsOfs = new Set<int>();
                 foreach (int item in centroid.CurrentItems)
                 {
-                    items_ofs.Add(item - dequeue_n);
+                    itemsOfs.Add(item - dequeueN);
                 }
-                centroid.CurrentItems.Inner.SetItems(items_ofs);
-                centroid.Items.SetItems(items_ofs);
+                centroid.CurrentItems.Inner.SetItems(itemsOfs);
+                centroid.Items.SetItems(itemsOfs);
             }
             // assign new instances
-            double best_clust_qual = 0;
+            double bestClustQual = 0;
             {
                 int i = 0;
-                foreach (SparseVector<double>.ReadOnly example in add_list)
+                foreach (SparseVector<double>.ReadOnly example in addList)
                 {
-                    double max_sim = double.MinValue;
+                    double maxSim = double.MinValue;
                     ArrayList<int> candidates = new ArrayList<int>();
-                    for (int j = 0; j < m_k; j++)
+                    for (int j = 0; j < mK; j++)
                     {
-                        double sim = m_centroids[j].GetDotProduct(example);
-                        if (sim > max_sim)
+                        double sim = mCentroids[j].GetDotProduct(example);
+                        if (sim > maxSim)
                         {
-                            max_sim = sim;
+                            maxSim = sim;
                             candidates.Clear();
                             candidates.Add(j);
                         }
-                        else if (sim == max_sim)
+                        else if (sim == maxSim)
                         {
                             candidates.Add(j);
                         }
                     }
                     if (candidates.Count > 1)
                     {
-                        candidates.Shuffle(m_rnd);
+                        candidates.Shuffle(mRnd);
                     }
                     if (candidates.Count > 0) // *** is this always true? 
                     {
-                        m_centroids[candidates[0]].Items.Add(ofs + i);
+                        mCentroids[candidates[0]].Items.Add(ofs + i);
                     }
                     i++;
                 }
                 // update centroids
-                foreach (Centroid centroid in m_centroids)
+                foreach (Centroid centroid in mCentroids)
                 {
                     centroid.ResetNrmL2();
                     centroid.Update();
                     centroid.NormalizeL2();
                 }
                 //Console.WriteLine(GetQual());
-                foreach (Centroid centroid in m_centroids)
+                foreach (Centroid centroid in mCentroids)
                 {
-                    foreach (int item_idx in centroid.CurrentItems)
+                    foreach (int itemIdx in centroid.CurrentItems)
                     {
-                        best_clust_qual += centroid.GetDotProduct(m_dataset[item_idx]);
+                        bestClustQual += centroid.GetDotProduct(mDataset[itemIdx]);
                     }
                 }
-                best_clust_qual /= (double)m_dataset.Count;
+                bestClustQual /= (double)mDataset.Count;
                 Utils.VerboseLine("*** Initialization ***");
-                Utils.VerboseLine("Quality: {0:0.0000}", best_clust_qual);
+                Utils.VerboseLine("Quality: {0:0.0000}", bestClustQual);
             }
             // main k-means loop
             iter = 0;
@@ -338,66 +338,66 @@ namespace Latino.Model
             {
                 iter++;
                 // assign items to clusters
-                for (int i = 0; i < m_dataset.Count; i++)
+                for (int i = 0; i < mDataset.Count; i++)
                 {
-                    SparseVector<double>.ReadOnly example = m_dataset[i];
-                    double max_sim = double.MinValue;
+                    SparseVector<double>.ReadOnly example = mDataset[i];
+                    double maxSim = double.MinValue;
                     ArrayList<int> candidates = new ArrayList<int>();
-                    for (int j = 0; j < m_k; j++)
+                    for (int j = 0; j < mK; j++)
                     {
-                        double sim = m_centroids[j].GetDotProduct(example);
-                        if (sim > max_sim)
+                        double sim = mCentroids[j].GetDotProduct(example);
+                        if (sim > maxSim)
                         {
-                            max_sim = sim;
+                            maxSim = sim;
                             candidates.Clear();
                             candidates.Add(j);
                         }
-                        else if (sim == max_sim)
+                        else if (sim == maxSim)
                         {
                             candidates.Add(j);
                         }
                     }
                     if (candidates.Count > 1)
                     {
-                        candidates.Shuffle(m_rnd);
+                        candidates.Shuffle(mRnd);
                     }
                     if (candidates.Count > 0) // *** is this always true? 
                     {
-                        m_centroids[candidates[0]].Items.Add(i);
+                        mCentroids[candidates[0]].Items.Add(i);
                     }
                 }
-                double clust_qual = 0;
+                double clustQual = 0;
                 // update centroids
-                foreach (Centroid centroid in m_centroids)
+                foreach (Centroid centroid in mCentroids)
                 {
                     centroid.ResetNrmL2();
                     centroid.Update();
                     centroid.NormalizeL2();
                 }
                 //Console.WriteLine(GetQual());
-                foreach (Centroid centroid in m_centroids)
+                foreach (Centroid centroid in mCentroids)
                 {
-                    foreach (int item_idx in centroid.CurrentItems)
+                    foreach (int itemIdx in centroid.CurrentItems)
                     {
-                        clust_qual += centroid.GetDotProduct(m_dataset[item_idx]);
+                        clustQual += centroid.GetDotProduct(mDataset[itemIdx]);
                     }
                 }
-                clust_qual /= (double)m_dataset.Count;
+                clustQual /= (double)mDataset.Count;
                 Utils.VerboseLine("*** Iteration {0} ***", iter);
-                Utils.VerboseLine("Quality: {0:0.0000} Diff: {1:0.0000}", clust_qual, clust_qual - best_clust_qual);
+                Utils.VerboseLine("Quality: {0:0.0000} Diff: {1:0.0000}", clustQual, clustQual - bestClustQual);
                 // check if done
-                if (clust_qual - best_clust_qual <= m_eps)
+                if (clustQual - bestClustQual <= mEps)
                 {
                     break;
                 }
-                best_clust_qual = clust_qual;
+                bestClustQual = clustQual;
             }
             // save the result
             ClusteringResult clustering = new ClusteringResult();
-            for (int i = 0; i < m_k; i++)
+            for (int i = 0; i < mK; i++)
             {
                 clustering.AddRoot(new Cluster());
-                clustering.Roots.Last.Items.AddRange(m_centroids[i].Items);
+                clustering.Roots.Last.Items.AddRange(mCentroids[i].Items);
             }
             return clustering;
         }

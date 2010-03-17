@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -49,21 +49,21 @@ namespace Latino.Visualization
     */
     public class LayoutSettings : ICloneable<LayoutSettings>
     {
-        private double m_width
+        private double mWidth
             = 1;
-        private double m_height
+        private double mHeight
             = 1;
-        private double m_margin_horiz
+        private double mMarginHoriz
             = 0;
-        private double m_margin_vert
+        private double mMarginVert
             = 0;
-        private LayoutAdjustmentType m_adjust_type
+        private LayoutAdjustmentType mAdjustType
             = LayoutAdjustmentType.Exact;
-        private double m_stdev_mult
+        private double mStdevMult
             = 2.5;
-        private bool m_fit_to_bounds
+        private bool mFitToBounds
             = false;
-        private LayoutBoundsType m_bounds_type
+        private LayoutBoundsType mBoundsType
             = LayoutBoundsType.Rectangular;
 
         public LayoutSettings()
@@ -74,86 +74,86 @@ namespace Latino.Visualization
         {
             Utils.ThrowException(width <= 0 ? new ArgumentOutOfRangeException("width") : null);
             Utils.ThrowException(height <= 0 ? new ArgumentOutOfRangeException("height") : null);
-            m_width = width;
-            m_height = height;
+            mWidth = width;
+            mHeight = height;
         }
 
         public double Width
         {
-            get { return m_width; }
+            get { return mWidth; }
             set
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("Width") : null);
-                m_width = value;
+                mWidth = value;
             }
         }
 
         public double Height
         {
-            get { return m_height; }
+            get { return mHeight; }
             set
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("Height") : null);
-                m_height = value;
+                mHeight = value;
             }
         }
 
         public double MarginHoriz
         {
-            get { return m_margin_horiz; }
+            get { return mMarginHoriz; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("MarginHoriz") : null);
-                m_margin_horiz = value;
+                mMarginHoriz = value;
             }
         }
 
         public double MarginVert
         {
-            get { return m_margin_vert; }
+            get { return mMarginVert; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("MarginVert") : null);
-                m_margin_vert = value;
+                mMarginVert = value;
             }
         }
 
         public LayoutAdjustmentType AdjustmentType
         {
-            get { return m_adjust_type; }
-            set { m_adjust_type = value; }
+            get { return mAdjustType; }
+            set { mAdjustType = value; }
         }
 
         public double StdDevMult
         {
-            get { return m_stdev_mult; }
+            get { return mStdevMult; }
             set 
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("StdDevMult") : null);
-                m_stdev_mult = value;
+                mStdevMult = value;
             }
         }
 
         public bool FitToBounds
         {
-            get { return m_fit_to_bounds; }
-            set { m_fit_to_bounds = value; }
+            get { return mFitToBounds; }
+            set { mFitToBounds = value; }
         }
 
         public LayoutBoundsType BoundsType
         {
-            get { return m_bounds_type; }
-            set { m_bounds_type = value; }
+            get { return mBoundsType; }
+            set { mBoundsType = value; }
         }
 
         public Vector2D[] AdjustLayout(IEnumerable<Vector2D> layout)
         {
             Utils.ThrowException(layout == null ? new ArgumentNullException("layout") : null);
-            int pt_count = 0;
-            foreach (Vector2D pt in layout) { pt_count++; }
-            if (pt_count == 0) { return new Vector2D[] { }; }
-            Vector2D[] new_layout = new Vector2D[pt_count];
-            if (m_adjust_type == LayoutAdjustmentType.Exact)
+            int ptCount = 0;
+            foreach (Vector2D pt in layout) { ptCount++; }
+            if (ptCount == 0) { return new Vector2D[] { }; }
+            Vector2D[] newLayout = new Vector2D[ptCount];
+            if (mAdjustType == LayoutAdjustmentType.Exact)
             {
                 Vector2D max = new Vector2D(double.MinValue, double.MinValue);
                 Vector2D min = new Vector2D(double.MaxValue, double.MaxValue);            
@@ -164,21 +164,21 @@ namespace Latino.Visualization
                     if (pt.Y > max.Y) { max.Y = pt.Y; }
                     if (pt.Y < min.Y) { min.Y = pt.Y; }
                 }
-                double inner_width = m_width - 2.0 * m_margin_horiz;
-                Utils.ThrowException(inner_width <= 0 ? new ArgumentOutOfRangeException("Width and/or MarginHoriz") : null);
-                double inner_height = m_height - 2.0 * m_margin_vert;
-                Utils.ThrowException(inner_height <= 0 ? new ArgumentOutOfRangeException("Height and/or MarginVert") : null);
-                double actual_width = max.X - min.X;
-                double actual_height = max.Y - min.Y;
+                double innerWidth = mWidth - 2.0 * mMarginHoriz;
+                Utils.ThrowException(innerWidth <= 0 ? new ArgumentOutOfRangeException("Width and/or MarginHoriz") : null);
+                double innerHeight = mHeight - 2.0 * mMarginVert;
+                Utils.ThrowException(innerHeight <= 0 ? new ArgumentOutOfRangeException("Height and/or MarginVert") : null);
+                double actualWidth = max.X - min.X;
+                double actualHeight = max.Y - min.Y;
                 int i = 0;
                 foreach (Vector2D pt in layout)
                 {
-                    double x = actual_width > 0 ? ((pt.X - min.X) / actual_width * inner_width + m_margin_horiz) : (m_width / 2.0);
-                    double y = actual_height > 0 ? ((pt.Y - min.Y) / actual_height * inner_height + m_margin_vert) : (m_height / 2.0);
-                    new_layout[i++] = new Vector2D(x, y);
+                    double x = actualWidth > 0 ? ((pt.X - min.X) / actualWidth * innerWidth + mMarginHoriz) : (mWidth / 2.0);
+                    double y = actualHeight > 0 ? ((pt.Y - min.Y) / actualHeight * innerHeight + mMarginVert) : (mHeight / 2.0);
+                    newLayout[i++] = new Vector2D(x, y);
                 }
             }
-            else // m_adjust_type == LayoutAdjustmentType.Soft
+            else // mAdjustType == LayoutAdjustmentType.Soft
             {
                 Vector2D avg = new Vector2D(0, 0);
                 foreach (Vector2D pt in layout)
@@ -186,65 +186,65 @@ namespace Latino.Visualization
                     avg.X += pt.X;
                     avg.Y += pt.Y;
                 }                
-                avg.X /= (double)pt_count;
-                avg.Y /= (double)pt_count;
+                avg.X /= (double)ptCount;
+                avg.Y /= (double)ptCount;
                 Vector2D stdev = new Vector2D(0, 0);
                 foreach (Vector2D pt in layout)
                 {
                     stdev.X += (avg.X - pt.X) * (avg.X - pt.X);
                     stdev.Y += (avg.Y - pt.Y) * (avg.Y - pt.Y);
                 }
-                stdev.X = Math.Sqrt(stdev.X / (double)pt_count);
-                stdev.Y = Math.Sqrt(stdev.Y / (double)pt_count);
-                double inner_width = m_width - 2.0 * m_margin_horiz;
-                Utils.ThrowException(inner_width <= 0 ? new ArgumentOutOfRangeException("Width and/or MarginHoriz") : null);
-                double inner_height = m_height - 2.0 * m_margin_vert;
-                Utils.ThrowException(inner_height <= 0 ? new ArgumentOutOfRangeException("Height and/or MarginVert") : null);
-                double actual_width = m_stdev_mult * stdev.X * 2.0;
-                double actual_height = m_stdev_mult * stdev.Y * 2.0;
-                Vector2D min = new Vector2D(avg.X - m_stdev_mult * stdev.X, avg.Y - m_stdev_mult * stdev.Y);
+                stdev.X = Math.Sqrt(stdev.X / (double)ptCount);
+                stdev.Y = Math.Sqrt(stdev.Y / (double)ptCount);
+                double innerWidth = mWidth - 2.0 * mMarginHoriz;
+                Utils.ThrowException(innerWidth <= 0 ? new ArgumentOutOfRangeException("Width and/or MarginHoriz") : null);
+                double innerHeight = mHeight - 2.0 * mMarginVert;
+                Utils.ThrowException(innerHeight <= 0 ? new ArgumentOutOfRangeException("Height and/or MarginVert") : null);
+                double actualWidth = mStdevMult * stdev.X * 2.0;
+                double actualHeight = mStdevMult * stdev.Y * 2.0;
+                Vector2D min = new Vector2D(avg.X - mStdevMult * stdev.X, avg.Y - mStdevMult * stdev.Y);
                 int i = 0;
                 foreach (Vector2D pt in layout)
                 {
-                    double x = actual_width > 0 ? ((pt.X - min.X) / actual_width * inner_width + m_margin_horiz) : (m_width / 2.0);
-                    double y = actual_height > 0 ? ((pt.Y - min.Y) / actual_height * inner_height + m_margin_vert) : (m_height / 2.0);
-                    new_layout[i++] = new Vector2D(x, y);
+                    double x = actualWidth > 0 ? ((pt.X - min.X) / actualWidth * innerWidth + mMarginHoriz) : (mWidth / 2.0);
+                    double y = actualHeight > 0 ? ((pt.Y - min.Y) / actualHeight * innerHeight + mMarginVert) : (mHeight / 2.0);
+                    newLayout[i++] = new Vector2D(x, y);
                 }                
             }
-            if (m_fit_to_bounds)
+            if (mFitToBounds)
             {
-                if (m_bounds_type == LayoutBoundsType.Rectangular && m_adjust_type == LayoutAdjustmentType.Soft)
+                if (mBoundsType == LayoutBoundsType.Rectangular && mAdjustType == LayoutAdjustmentType.Soft)
                 {
-                    Vector2D lower_right = new Vector2D(m_width - m_margin_horiz, m_height - m_margin_vert);
-                    for (int i = 0; i < new_layout.Length; i++)
+                    Vector2D lowerRight = new Vector2D(mWidth - mMarginHoriz, mHeight - mMarginVert);
+                    for (int i = 0; i < newLayout.Length; i++)
                     {
-                        Vector2D pt = new_layout[i];
-                        if (pt.X > lower_right.X) { pt.X = lower_right.X; }
-                        else if (pt.X < m_margin_horiz) { pt.X = m_margin_horiz; }
-                        if (pt.Y > lower_right.Y) { pt.Y = lower_right.Y; }
-                        else if (pt.Y < m_margin_vert) { pt.Y = m_margin_vert; }
-                        new_layout[i] = pt;
+                        Vector2D pt = newLayout[i];
+                        if (pt.X > lowerRight.X) { pt.X = lowerRight.X; }
+                        else if (pt.X < mMarginHoriz) { pt.X = mMarginHoriz; }
+                        if (pt.Y > lowerRight.Y) { pt.Y = lowerRight.Y; }
+                        else if (pt.Y < mMarginVert) { pt.Y = mMarginVert; }
+                        newLayout[i] = pt;
                     }
                 }
-                else if (m_bounds_type == LayoutBoundsType.Circular)
+                else if (mBoundsType == LayoutBoundsType.Circular)
                 {
-                    Vector2D center = new Vector2D(m_width / 2.0, m_height / 2.0);
-                    Vector2D size = center - new Vector2D(m_margin_horiz, m_margin_vert);
-                    for (int i = 0; i < new_layout.Length; i++)
+                    Vector2D center = new Vector2D(mWidth / 2.0, mHeight / 2.0);
+                    Vector2D size = center - new Vector2D(mMarginHoriz, mMarginVert);
+                    for (int i = 0; i < newLayout.Length; i++)
                     {
-                        Vector2D pt = new_layout[i];                        
-                        Vector2D pt_vec = pt - center;
-                        double angle = pt_vec.GetAngle();
-                        double r_bound = size.X * size.Y / Math.Sqrt(Math.Pow(size.Y * Math.Cos(angle), 2) + Math.Pow(size.X * Math.Sin(angle), 2));
-                        if (pt_vec.GetLength() > r_bound)
+                        Vector2D pt = newLayout[i];                        
+                        Vector2D ptVec = pt - center;
+                        double angle = ptVec.GetAngle();
+                        double rBound = size.X * size.Y / Math.Sqrt(Math.Pow(size.Y * Math.Cos(angle), 2) + Math.Pow(size.X * Math.Sin(angle), 2));
+                        if (ptVec.GetLength() > rBound)
                         {
-                            pt_vec.SetLength(r_bound);
-                            new_layout[i] = center + pt_vec;
+                            ptVec.SetLength(rBound);
+                            newLayout[i] = center + ptVec;
                         }
                     }
                 }
             }
-            return new_layout;
+            return newLayout;
         }
 
         // *** ICloneable<LayoutSettings> interface implementation ***
@@ -252,14 +252,14 @@ namespace Latino.Visualization
         public LayoutSettings Clone()
         {
             LayoutSettings clone = new LayoutSettings();
-            clone.m_adjust_type = m_adjust_type;
-            clone.m_bounds_type = m_bounds_type;
-            clone.m_fit_to_bounds = m_fit_to_bounds;
-            clone.m_height = m_height;
-            clone.m_width = m_width;
-            clone.m_margin_horiz = m_margin_horiz;
-            clone.m_margin_vert = m_margin_vert;
-            clone.m_stdev_mult = m_stdev_mult;
+            clone.mAdjustType = mAdjustType;
+            clone.mBoundsType = mBoundsType;
+            clone.mFitToBounds = mFitToBounds;
+            clone.mHeight = mHeight;
+            clone.mWidth = mWidth;
+            clone.mMarginHoriz = mMarginHoriz;
+            clone.mMarginVert = mMarginVert;
+            clone.mStdevMult = mStdevMult;
             return clone;
         }
 

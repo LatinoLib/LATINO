@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -28,7 +28,7 @@ namespace Latino
     public class SparseMatrix<T> : IEnumerable<IdxDat<SparseVector<T>>>, ICloneable<SparseMatrix<T>>, IDeeplyCloneable<SparseMatrix<T>>,
         IContentEquatable<SparseMatrix<T>>, ISerializable
     {
-        private ArrayList<SparseVector<T>> m_rows
+        private ArrayList<SparseVector<T>> mRows
             = new ArrayList<SparseVector<T>>();
 
         public SparseMatrix()
@@ -42,125 +42,125 @@ namespace Latino
 
         private void SetRowListSize(int size)
         {
-            //System.Diagnostics.Debug.Assert(size > m_rows.Count);
-            int add_rows = size - m_rows.Count;
-            for (int i = 0; i < add_rows; i++)
+            //System.Diagnostics.Debug.Assert(size > mRows.Count);
+            int addRows = size - mRows.Count;
+            for (int i = 0; i < addRows; i++)
             {
-                m_rows.Add(new SparseVector<T>());
+                mRows.Add(new SparseVector<T>());
             }
         }
 
         public void TrimRows()
         {
-            int row_idx = m_rows.Count - 1;
-            for (; row_idx >= 0; row_idx--)
+            int rowIdx = mRows.Count - 1;
+            for (; rowIdx >= 0; rowIdx--)
             {
-                if (m_rows[row_idx].Count > 0) { break; }
+                if (mRows[rowIdx].Count > 0) { break; }
             }
-            m_rows.RemoveRange(row_idx + 1, m_rows.Count - (row_idx + 1));
+            mRows.RemoveRange(rowIdx + 1, mRows.Count - (rowIdx + 1));
         }
 
-        public bool ContainsRowAt(int row_idx)
+        public bool ContainsRowAt(int rowIdx)
         {
-            Utils.ThrowException(row_idx < 0 ? new ArgumentOutOfRangeException("row_idx") : null);
-            return row_idx < m_rows.Count && m_rows[row_idx].Count > 0;
+            Utils.ThrowException(rowIdx < 0 ? new ArgumentOutOfRangeException("rowIdx") : null);
+            return rowIdx < mRows.Count && mRows[rowIdx].Count > 0;
         }
 
-        public bool ContainsColAt(int col_idx)
+        public bool ContainsColAt(int colIdx)
         {
-            Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
-            foreach (SparseVector<T> row in m_rows)
+            Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
+            foreach (SparseVector<T> row in mRows)
             {
-                if (row.ContainsAt(col_idx)) { return true; }
+                if (row.ContainsAt(colIdx)) { return true; }
             }
             return false;
         }
 
-        public bool ContainsAt(int row_idx, int col_idx)
+        public bool ContainsAt(int rowIdx, int colIdx)
         {
-            Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
-            if (!ContainsRowAt(row_idx)) { return false; } // throws ArgumentOutOfRangeException
-            return m_rows[row_idx].ContainsAt(col_idx);
+            Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
+            if (!ContainsRowAt(rowIdx)) { return false; } // throws ArgumentOutOfRangeException
+            return mRows[rowIdx].ContainsAt(colIdx);
         }
 
         public int GetFirstNonEmptyRowIdx()
         {
-            for (int row_idx = 0; row_idx < m_rows.Count; row_idx++)
+            for (int rowIdx = 0; rowIdx < mRows.Count; rowIdx++)
             {
-                if (m_rows[row_idx].Count > 0) { return row_idx; }
+                if (mRows[rowIdx].Count > 0) { return rowIdx; }
             }
             return -1;
         }
 
         public int GetLastNonEmptyRowIdx()
         {
-            for (int row_idx = m_rows.Count - 1; row_idx >= 0; row_idx--)
+            for (int rowIdx = mRows.Count - 1; rowIdx >= 0; rowIdx--)
             {
-                if (m_rows[row_idx].Count > 0) { return row_idx; }
+                if (mRows[rowIdx].Count > 0) { return rowIdx; }
             }
             return -1;
         }
 
         public int GetFirstNonEmptyColIdx()
         {
-            int min_idx = int.MaxValue;
-            foreach (SparseVector<T> row in m_rows)
+            int minIdx = int.MaxValue;
+            foreach (SparseVector<T> row in mRows)
             {
-                if (row.FirstNonEmptyIndex != -1 && row.FirstNonEmptyIndex < min_idx)
+                if (row.FirstNonEmptyIndex != -1 && row.FirstNonEmptyIndex < minIdx)
                 {
-                    min_idx = row.FirstNonEmptyIndex;
+                    minIdx = row.FirstNonEmptyIndex;
                 }
             }
-            return min_idx == int.MaxValue ? -1 : min_idx;
+            return minIdx == int.MaxValue ? -1 : minIdx;
         }
 
         public int GetLastNonEmptyColIdx()
         {
-            int max_idx = -1;
-            foreach (SparseVector<T> row in m_rows)
+            int maxIdx = -1;
+            foreach (SparseVector<T> row in mRows)
             {
-                if (row.LastNonEmptyIndex > max_idx)
+                if (row.LastNonEmptyIndex > maxIdx)
                 {
-                    max_idx = row.LastNonEmptyIndex;
+                    maxIdx = row.LastNonEmptyIndex;
                 }
             }
-            return max_idx;
+            return maxIdx;
         }
 
         public override string ToString()
         {
-            return m_rows.ToString();
+            return mRows.ToString();
         }
 
         public string ToString(string format)
         {
             if (format == "C") // compact format
             {
-                return m_rows.ToString();
+                return mRows.ToString();
             }
             else if (format.StartsWith("E")) // extended format
             {
-                StringBuilder str_bld = new StringBuilder();
-                int row_count = m_rows.Count; // this will show empty rows at the end if the matrix is not trimmed
-                int col_count = GetLastNonEmptyColIdx() + 1;
-                string val_fmt = format.Length == 1 ? "{0}" : "{0:" + format.Substring(1) + "}";
-                for (int row_idx = 0; row_idx < row_count; row_idx++)
+                StringBuilder strBld = new StringBuilder();
+                int rowCount = mRows.Count; // this will show empty rows at the end if the matrix is not trimmed
+                int colCount = GetLastNonEmptyColIdx() + 1;
+                string valFmt = format.Length == 1 ? "{0}" : "{0:" + format.Substring(1) + "}";
+                for (int rowIdx = 0; rowIdx < rowCount; rowIdx++)
                 {
-                    for (int col_idx = 0; col_idx < col_count; col_idx++)
+                    for (int colIdx = 0; colIdx < colCount; colIdx++)
                     {
-                        if (ContainsAt(row_idx, col_idx))
+                        if (ContainsAt(rowIdx, colIdx))
                         {
-                            str_bld.Append(string.Format(val_fmt, this[row_idx, col_idx])); // throws FormatException
+                            strBld.Append(string.Format(valFmt, this[rowIdx, colIdx])); // throws FormatException
                         }
                         else
                         {
-                            str_bld.Append("-");
+                            strBld.Append("-");
                         }
-                        if (col_idx != col_count - 1) { str_bld.Append("\t"); }
+                        if (colIdx != colCount - 1) { strBld.Append("\t"); }
                     }
-                    if (row_idx != row_count - 1) { str_bld.Append("\n"); }
+                    if (rowIdx != rowCount - 1) { strBld.Append("\n"); }
                 }
-                return str_bld.ToString();
+                return strBld.ToString();
             }
             else
             {
@@ -168,18 +168,18 @@ namespace Latino
             }
         }
 
-        public bool IndexOf(T val, ref int row_idx, ref int col_idx)
+        public bool IndexOf(T val, ref int rowIdx, ref int colIdx)
         {
             Utils.ThrowException(val == null ? new ArgumentNullException("val") : null);
-            for (int i = 0; i < m_rows.Count; i++)
+            for (int i = 0; i < mRows.Count; i++)
             {
-                SparseVector<T> row = m_rows[i];
+                SparseVector<T> row = mRows[i];
                 foreach (IdxDat<T> item in row)
                 {
                     if (item.Dat.Equals(val))
                     {
-                        row_idx = i;
-                        col_idx = item.Idx;
+                        rowIdx = i;
+                        colIdx = item.Idx;
                         return true;
                     }
                 }
@@ -201,7 +201,7 @@ namespace Latino
         public int GetRowCount()
         {
             int count = 0;
-            foreach (SparseVector<T> row in m_rows)
+            foreach (SparseVector<T> row in mRows)
             {
                 if (row.Count > 0) { count++; }
             }
@@ -211,326 +211,326 @@ namespace Latino
         public int CountValues()
         {
             int count = 0;
-            foreach (SparseVector<T> row in m_rows)
+            foreach (SparseVector<T> row in mRows)
             {
                 count += row.Count;
             }
             return count;
         }
 
-        public double GetSparseness(int num_rows, int num_cols)
+        public double GetSparseness(int numRows, int numCols)
         {
-            Utils.ThrowException(num_rows <= 0 ? new ArgumentException("num_rows") : null);
-            Utils.ThrowException(num_cols <= 0 ? new ArgumentException("num_cols") : null);
-            int all_values = num_rows * num_cols;
-            return (double)(all_values - CountValues()) / (double)all_values;
+            Utils.ThrowException(numRows <= 0 ? new ArgumentException("numRows") : null);
+            Utils.ThrowException(numCols <= 0 ? new ArgumentException("numCols") : null);
+            int allValues = numRows * numCols;
+            return (double)(allValues - CountValues()) / (double)allValues;
         }
 
-        public SparseVector<T> this[int row_idx]
+        public SparseVector<T> this[int rowIdx]
         {
             get
             {
-                Utils.ThrowException(row_idx < 0 ? new ArgumentOutOfRangeException("row_idx") : null);
-                if (row_idx >= m_rows.Count) { return null; }
-                return m_rows[row_idx].Count > 0 ? m_rows[row_idx] : null;
+                Utils.ThrowException(rowIdx < 0 ? new ArgumentOutOfRangeException("rowIdx") : null);
+                if (rowIdx >= mRows.Count) { return null; }
+                return mRows[rowIdx].Count > 0 ? mRows[rowIdx] : null;
             }
             set
             {
-                Utils.ThrowException(row_idx < 0 ? new ArgumentOutOfRangeException("row_idx") : null);
+                Utils.ThrowException(rowIdx < 0 ? new ArgumentOutOfRangeException("rowIdx") : null);
                 if (value != null)
                 {
-                    if (row_idx >= m_rows.Count) { SetRowListSize(row_idx + 1); }
-                    m_rows[row_idx] = value;
+                    if (rowIdx >= mRows.Count) { SetRowListSize(rowIdx + 1); }
+                    mRows[rowIdx] = value;
                 }
-                else if (row_idx < m_rows.Count)
+                else if (rowIdx < mRows.Count)
                 {
-                    m_rows[row_idx].Clear();
+                    mRows[rowIdx].Clear();
                 }
             }
         }
 
-        public T TryGet(int row_idx, int col_idx, T default_val)
+        public T TryGet(int rowIdx, int colIdx, T defaultVal)
         {
-            Utils.ThrowException(row_idx < 0 ? new ArgumentOutOfRangeException("row_idx") : null);
-            Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
-            Utils.ThrowException(row_idx >= m_rows.Count ? new ArgumentValueException("row_idx") : null);
-            return m_rows[row_idx].TryGet(col_idx, default_val);
+            Utils.ThrowException(rowIdx < 0 ? new ArgumentOutOfRangeException("rowIdx") : null);
+            Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
+            Utils.ThrowException(rowIdx >= mRows.Count ? new ArgumentValueException("rowIdx") : null);
+            return mRows[rowIdx].TryGet(colIdx, defaultVal);
         }
 
-        public T this[int row_idx, int col_idx]
+        public T this[int rowIdx, int colIdx]
         {
             get
             {
-                Utils.ThrowException(row_idx < 0 ? new ArgumentOutOfRangeException("row_idx") : null);
-                Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
-                Utils.ThrowException(row_idx >= m_rows.Count ? new ArgumentValueException("row_idx") : null);
-                return m_rows[row_idx][col_idx]; // throws ArgumentValueException
+                Utils.ThrowException(rowIdx < 0 ? new ArgumentOutOfRangeException("rowIdx") : null);
+                Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
+                Utils.ThrowException(rowIdx >= mRows.Count ? new ArgumentValueException("rowIdx") : null);
+                return mRows[rowIdx][colIdx]; // throws ArgumentValueException
             }
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("value") : null);
-                Utils.ThrowException(row_idx < 0 ? new ArgumentOutOfRangeException("row_idx") : null);
-                Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
-                if (row_idx >= m_rows.Count) { SetRowListSize(row_idx + 1); }
-                m_rows[row_idx][col_idx] = value;
+                Utils.ThrowException(rowIdx < 0 ? new ArgumentOutOfRangeException("rowIdx") : null);
+                Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
+                if (rowIdx >= mRows.Count) { SetRowListSize(rowIdx + 1); }
+                mRows[rowIdx][colIdx] = value;
             }
         }
 
-        public SparseVector<T> GetColCopy(int col_idx)
+        public SparseVector<T> GetColCopy(int colIdx)
         {
-            Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
+            Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
             SparseVector<T> col = new SparseVector<T>();
-            int row_idx = 0;
-            foreach (SparseVector<T> row in m_rows)
+            int rowIdx = 0;
+            foreach (SparseVector<T> row in mRows)
             {
-                int direct_idx = row.GetDirectIdx(col_idx);
-                if (direct_idx >= 0)
+                int directIdx = row.GetDirectIdx(colIdx);
+                if (directIdx >= 0)
                 {
-                    col.InnerIdx.Add(row_idx);
-                    col.InnerDat.Add(row.GetDirect(direct_idx).Dat);
+                    col.InnerIdx.Add(rowIdx);
+                    col.InnerDat.Add(row.GetDirect(directIdx).Dat);
                 }
-                row_idx++;
+                rowIdx++;
             }
             return col;
         }
 
         public SparseMatrix<T> GetTransposedCopy()
         {
-            SparseMatrix<T> tr_mat = new SparseMatrix<T>();
-            int row_idx = 0;
-            foreach (SparseVector<T> row in m_rows)
+            SparseMatrix<T> trMat = new SparseMatrix<T>();
+            int rowIdx = 0;
+            foreach (SparseVector<T> row in mRows)
             {
                 foreach (IdxDat<T> item in row)
                 {
-                    if (item.Idx >= tr_mat.m_rows.Count)
+                    if (item.Idx >= trMat.mRows.Count)
                     {
-                        tr_mat.SetRowListSize(item.Idx + 1);
+                        trMat.SetRowListSize(item.Idx + 1);
                     }
-                    tr_mat.m_rows[item.Idx].InnerIdx.Add(row_idx);
-                    tr_mat.m_rows[item.Idx].InnerDat.Add(item.Dat);
+                    trMat.mRows[item.Idx].InnerIdx.Add(rowIdx);
+                    trMat.mRows[item.Idx].InnerDat.Add(item.Dat);
                 }
-                row_idx++;
+                rowIdx++;
             }
-            return tr_mat;
+            return trMat;
         }
 
         public bool Remove(T val)
         {
             Utils.ThrowException(val == null ? new ArgumentNullException("val") : null);
-            bool val_found = false;
-            foreach (SparseVector<T> row in m_rows)
+            bool valFound = false;
+            foreach (SparseVector<T> row in mRows)
             {
-                val_found = row.Remove(val);
+                valFound = row.Remove(val);
             }
-            return val_found;
+            return valFound;
         }
 
-        public void RemoveAt(int row_idx, int col_idx)
+        public void RemoveAt(int rowIdx, int colIdx)
         {
-            Utils.ThrowException(row_idx < 0 ? new ArgumentOutOfRangeException("row_idx") : null);
-            Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
-            if (row_idx < m_rows.Count)
+            Utils.ThrowException(rowIdx < 0 ? new ArgumentOutOfRangeException("rowIdx") : null);
+            Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
+            if (rowIdx < mRows.Count)
             {
-                m_rows[row_idx].RemoveAt(col_idx);
-            }
-        }
-
-        public void RemoveRowAt(int row_idx)
-        {
-            this[row_idx] = null; // throws ArgumentOutOfRangeException
-        }
-
-        public void RemoveColAt(int col_idx)
-        {
-            Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
-            foreach (SparseVector<T> row in m_rows)
-            {
-                row.RemoveAt(col_idx);
+                mRows[rowIdx].RemoveAt(colIdx);
             }
         }
 
-        public void PurgeRowAt(int row_idx)
+        public void RemoveRowAt(int rowIdx)
         {
-            Utils.ThrowException(row_idx < 0 ? new ArgumentOutOfRangeException("row_idx") : null);
-            if (row_idx < m_rows.Count)
+            this[rowIdx] = null; // throws ArgumentOutOfRangeException
+        }
+
+        public void RemoveColAt(int colIdx)
+        {
+            Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
+            foreach (SparseVector<T> row in mRows)
             {
-                m_rows.RemoveAt(row_idx);
+                row.RemoveAt(colIdx);
             }
         }
 
-        public void PurgeColAt(int col_idx)
+        public void PurgeRowAt(int rowIdx)
         {
-            Utils.ThrowException(col_idx < 0 ? new ArgumentOutOfRangeException("col_idx") : null);
-            foreach (SparseVector<T> row in m_rows)
+            Utils.ThrowException(rowIdx < 0 ? new ArgumentOutOfRangeException("rowIdx") : null);
+            if (rowIdx < mRows.Count)
             {
-                row.PurgeAt(col_idx);
+                mRows.RemoveAt(rowIdx);
+            }
+        }
+
+        public void PurgeColAt(int colIdx)
+        {
+            Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
+            foreach (SparseVector<T> row in mRows)
+            {
+                row.PurgeAt(colIdx);
             }
         }
 
         public void Clear()
         {
-            m_rows.Clear();
+            mRows.Clear();
         }
 
-        public void AppendCols(SparseMatrix<T>.ReadOnly other_matrix, int this_matrix_num_cols)
+        public void AppendCols(SparseMatrix<T>.ReadOnly otherMatrix, int thisMatrixNumCols)
         {
-            Utils.ThrowException(this_matrix_num_cols < 0 ? new ArgumentOutOfRangeException("this_matrix_num_cols") : null);
-            int other_matrix_num_rows = other_matrix.GetLastNonEmptyRowIdx() + 1;
-            if (m_rows.Count < other_matrix_num_rows)
+            Utils.ThrowException(thisMatrixNumCols < 0 ? new ArgumentOutOfRangeException("thisMatrixNumCols") : null);
+            int otherMatrixNumRows = otherMatrix.GetLastNonEmptyRowIdx() + 1;
+            if (mRows.Count < otherMatrixNumRows)
             {
-                SetRowListSize(other_matrix_num_rows);
+                SetRowListSize(otherMatrixNumRows);
             }
-            for (int row_idx = 0; row_idx < other_matrix_num_rows; row_idx++)
+            for (int rowIdx = 0; rowIdx < otherMatrixNumRows; rowIdx++)
             {
-                m_rows[row_idx].Append(other_matrix.Inner.m_rows[row_idx], this_matrix_num_cols); // throws ArgumentOutOfRangeException
-                row_idx++;
-            }
-        }
-
-        public void Merge(SparseMatrix<T>.ReadOnly other_matrix, Utils.BinaryOperatorDelegate<T> binary_operator)
-        {
-            Utils.ThrowException(binary_operator == null ? new ArgumentNullException("binary_operator") : null);
-            int other_matrix_num_rows = other_matrix.GetLastNonEmptyRowIdx() + 1;
-            if (m_rows.Count < other_matrix_num_rows)
-            {
-                SetRowListSize(other_matrix_num_rows);
-            }
-            for (int row_idx = 0; row_idx < other_matrix_num_rows; row_idx++)
-            {
-                m_rows[row_idx].Merge(other_matrix.Inner.m_rows[row_idx], binary_operator);       
+                mRows[rowIdx].Append(otherMatrix.Inner.mRows[rowIdx], thisMatrixNumCols); // throws ArgumentOutOfRangeException
+                rowIdx++;
             }
         }
 
-        public void PerformUnaryOperation(Utils.UnaryOperatorDelegate<T> unary_operator)
+        public void Merge(SparseMatrix<T>.ReadOnly otherMatrix, Utils.BinaryOperatorDelegate<T> binaryOperator)
         {
-            Utils.ThrowException(unary_operator == null ? new ArgumentNullException("unary_operator") : null);
-            foreach (SparseVector<T> row in m_rows)
+            Utils.ThrowException(binaryOperator == null ? new ArgumentNullException("binaryOperator") : null);
+            int otherMatrixNumRows = otherMatrix.GetLastNonEmptyRowIdx() + 1;
+            if (mRows.Count < otherMatrixNumRows)
             {
-                row.PerformUnaryOperation(unary_operator); 
+                SetRowListSize(otherMatrixNumRows);
+            }
+            for (int rowIdx = 0; rowIdx < otherMatrixNumRows; rowIdx++)
+            {
+                mRows[rowIdx].Merge(otherMatrix.Inner.mRows[rowIdx], binaryOperator);       
             }
         }
 
-        public void Symmetrize(Utils.BinaryOperatorDelegate<T> bin_op)
+        public void PerformUnaryOperation(Utils.UnaryOperatorDelegate<T> unaryOperator)
         {
-            SparseMatrix<T> tr_mat = GetTransposedCopy();
-            tr_mat.RemoveDiagonal();
-            tr_mat.MergeSym(this, bin_op); // throws ArgumentNullException
-            m_rows = tr_mat.m_rows;
+            Utils.ThrowException(unaryOperator == null ? new ArgumentNullException("unaryOperator") : null);
+            foreach (SparseVector<T> row in mRows)
+            {
+                row.PerformUnaryOperation(unaryOperator); 
+            }
+        }
+
+        public void Symmetrize(Utils.BinaryOperatorDelegate<T> binOp)
+        {
+            SparseMatrix<T> trMat = GetTransposedCopy();
+            trMat.RemoveDiagonal();
+            trMat.MergeSym(this, binOp); // throws ArgumentNullException
+            mRows = trMat.mRows;
         }
 
         public bool IsSymmetric()
         {
-            int row_idx = 0;
-            foreach (SparseVector<T> row in m_rows)
+            int rowIdx = 0;
+            foreach (SparseVector<T> row in mRows)
             {
                 foreach (IdxDat<T> item in row)
                 {
-                    if (item.Idx >= m_rows.Count) { return false; }
-                    int direct_idx = m_rows[item.Idx].GetDirectIdx(row_idx);
-                    if (direct_idx < 0) { return false; }
-                    T val = m_rows[item.Idx].GetDirect(direct_idx).Dat;
+                    if (item.Idx >= mRows.Count) { return false; }
+                    int directIdx = mRows[item.Idx].GetDirectIdx(rowIdx);
+                    if (directIdx < 0) { return false; }
+                    T val = mRows[item.Idx].GetDirect(directIdx).Dat;
                     if (!item.Dat.Equals(val)) { return false; }
                 }
-                row_idx++;
+                rowIdx++;
             }
             return true;
         }
 
-        public void SetDiagonal(int mtx_size, T val)
+        public void SetDiagonal(int mtxSize, T val)
         {
-            Utils.ThrowException(mtx_size < 0 ? new ArgumentOutOfRangeException("mtx_size") : null);
+            Utils.ThrowException(mtxSize < 0 ? new ArgumentOutOfRangeException("mtxSize") : null);
             Utils.ThrowException(val == null ? new ArgumentNullException("val") : null);
-            if (mtx_size > m_rows.Count) { SetRowListSize(mtx_size); }
-            int row_idx = 0;
-            foreach (SparseVector<T> row in m_rows)
+            if (mtxSize > mRows.Count) { SetRowListSize(mtxSize); }
+            int rowIdx = 0;
+            foreach (SparseVector<T> row in mRows)
             {
-                row[row_idx++] = val;
+                row[rowIdx++] = val;
             }
         }
 
         public void RemoveDiagonal()
         {
-            int row_idx = 0;
-            foreach (SparseVector<T> row in m_rows)
+            int rowIdx = 0;
+            foreach (SparseVector<T> row in mRows)
             {
-                row.RemoveAt(row_idx++);
+                row.RemoveAt(rowIdx++);
             }
         }
 
         public bool ContainsDiagonalElement()
         {
-            int row_idx = 0;
-            foreach (SparseVector<T> row in m_rows)
+            int rowIdx = 0;
+            foreach (SparseVector<T> row in mRows)
             {
-                if (row.ContainsAt(row_idx++)) { return true; }
+                if (row.ContainsAt(rowIdx++)) { return true; }
             }
             return false;
         }
 
-        private void MergeSym(SparseMatrix<T>.ReadOnly other_matrix, Utils.BinaryOperatorDelegate<T> binary_operator)
+        private void MergeSym(SparseMatrix<T>.ReadOnly otherMatrix, Utils.BinaryOperatorDelegate<T> binaryOperator)
         {
-            int other_matrix_num_rows = other_matrix.GetLastNonEmptyRowIdx() + 1;
-            if (m_rows.Count < other_matrix_num_rows)
+            int otherMatrixNumRows = otherMatrix.GetLastNonEmptyRowIdx() + 1;
+            if (mRows.Count < otherMatrixNumRows)
             {
-                SetRowListSize(other_matrix_num_rows);
+                SetRowListSize(otherMatrixNumRows);
             }
-            for (int row_idx = 0; row_idx < other_matrix_num_rows; row_idx++)
+            for (int rowIdx = 0; rowIdx < otherMatrixNumRows; rowIdx++)
             {
-                m_rows[row_idx] = MergeRowsSym(m_rows[row_idx], other_matrix.Inner.m_rows[row_idx], binary_operator, row_idx);
+                mRows[rowIdx] = MergeRowsSym(mRows[rowIdx], otherMatrix.Inner.mRows[rowIdx], binaryOperator, rowIdx);
             }
         }
 
-        private SparseVector<T> MergeRowsSym(SparseVector<T> row, SparseVector<T> other_row, Utils.BinaryOperatorDelegate<T> binary_operator, int row_idx)
+        private SparseVector<T> MergeRowsSym(SparseVector<T> row, SparseVector<T> otherRow, Utils.BinaryOperatorDelegate<T> binaryOperator, int rowIdx)
         {
-            SparseVector<T> new_row = new SparseVector<T>();
+            SparseVector<T> newRow = new SparseVector<T>();
             ArrayList<int> idx = row.InnerIdx;
             ArrayList<T> dat = row.InnerDat;
-            ArrayList<int> other_idx = other_row.InnerIdx;
-            ArrayList<T> other_dat = other_row.InnerDat;
-            new_row.InnerIdx.Capacity = idx.Count + other_idx.Count;
-            new_row.InnerDat.Capacity = dat.Count + other_dat.Count;
-            ArrayList<int> new_idx = new_row.InnerIdx;
-            ArrayList<T> new_dat = new_row.InnerDat;
+            ArrayList<int> otherIdx = otherRow.InnerIdx;
+            ArrayList<T> otherDat = otherRow.InnerDat;
+            newRow.InnerIdx.Capacity = idx.Count + otherIdx.Count;
+            newRow.InnerDat.Capacity = dat.Count + otherDat.Count;
+            ArrayList<int> newIdx = newRow.InnerIdx;
+            ArrayList<T> newDat = newRow.InnerDat;
             int i = 0, j = 0;
-            while (i < idx.Count && j < other_idx.Count)
+            while (i < idx.Count && j < otherIdx.Count)
             {
-                int a_idx = idx[i];
-                int b_idx = other_idx[j];
-                if (a_idx == b_idx)
+                int aIdx = idx[i];
+                int bIdx = otherIdx[j];
+                if (aIdx == bIdx)
                 {
                     T value;
-                    if (a_idx < row_idx)
+                    if (aIdx < rowIdx)
                     {
-                        value = binary_operator(dat[i], other_dat[j]);
+                        value = binaryOperator(dat[i], otherDat[j]);
                     }
                     else
                     {
-                        value = binary_operator(other_dat[j], dat[i]);
+                        value = binaryOperator(otherDat[j], dat[i]);
                     }
-                    if (value != null) { new_idx.Add(a_idx); new_dat.Add(value); }
+                    if (value != null) { newIdx.Add(aIdx); newDat.Add(value); }
                     i++;
                     j++;
                 }
-                else if (a_idx < b_idx)
+                else if (aIdx < bIdx)
                 {
-                    new_idx.Add(a_idx); new_dat.Add(dat[i]);
+                    newIdx.Add(aIdx); newDat.Add(dat[i]);
                     i++;
                 }
                 else
                 {
-                    new_idx.Add(b_idx); new_dat.Add(other_dat[j]);
+                    newIdx.Add(bIdx); newDat.Add(otherDat[j]);
                     j++;
                 }
             }
             for (; i < idx.Count; i++)
             {
-                new_idx.Add(idx[i]); new_dat.Add(dat[i]);
+                newIdx.Add(idx[i]); newDat.Add(dat[i]);
             }
-            for (; j < other_idx.Count; j++)
+            for (; j < otherIdx.Count; j++)
             {
-                new_idx.Add(other_idx[j]); new_dat.Add(other_dat[j]);
+                newIdx.Add(otherIdx[j]); newDat.Add(otherDat[j]);
             }
-            return new_row;
+            return newRow;
         }
 
         // *** IEnumerable<IdxDat<SparseVector<T>>> interface implementation ***
@@ -552,9 +552,9 @@ namespace Latino
         public SparseMatrix<T> Clone()
         {
             SparseMatrix<T> clone = new SparseMatrix<T>();
-            foreach (SparseVector<T> row in m_rows)
+            foreach (SparseVector<T> row in mRows)
             {
-                clone.m_rows.Add(row.Clone());
+                clone.mRows.Add(row.Clone());
             }
             return clone;
         }
@@ -569,7 +569,7 @@ namespace Latino
         public SparseMatrix<T> DeepClone()
         {
             SparseMatrix<T> clone = new SparseMatrix<T>();
-            clone.m_rows = m_rows.DeepClone();
+            clone.mRows = mRows.DeepClone();
             return clone;
         }
 
@@ -583,11 +583,11 @@ namespace Latino
         public bool ContentEquals(SparseMatrix<T> other)
         {
             if (other == null) { return false; }
-            int row_count = GetLastNonEmptyRowIdx() + 1;
-            if (row_count != other.GetLastNonEmptyRowIdx() + 1) { return false; }
-            for (int row_idx = 0; row_idx < row_count; row_idx++)
+            int rowCount = GetLastNonEmptyRowIdx() + 1;
+            if (rowCount != other.GetLastNonEmptyRowIdx() + 1) { return false; }
+            for (int rowIdx = 0; rowIdx < rowCount; rowIdx++)
             {
-                if (!m_rows[row_idx].ContentEquals(other.m_rows[row_idx])) { return false; }
+                if (!mRows[rowIdx].ContentEquals(other.mRows[rowIdx])) { return false; }
             }
             return true;
         }
@@ -603,25 +603,25 @@ namespace Latino
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
-            int row_count = GetLastNonEmptyRowIdx() + 1;
+            int rowCount = GetLastNonEmptyRowIdx() + 1;
             // the following statements throw serialization-related exceptions            
-            writer.WriteInt(row_count);
-            for (int row_idx = 0; row_idx < row_count; row_idx++)
+            writer.WriteInt(rowCount);
+            for (int rowIdx = 0; rowIdx < rowCount; rowIdx++)
             {
-                m_rows[row_idx].Save(writer);
+                mRows[rowIdx].Save(writer);
             }
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            m_rows.Clear();
+            mRows.Clear();
             // the following statements throw serialization-related exceptions
-            int row_count = reader.ReadInt();
-            SetRowListSize(row_count);
-            for (int row_idx = 0; row_idx < row_count; row_idx++)
+            int rowCount = reader.ReadInt();
+            SetRowListSize(rowCount);
+            for (int rowIdx = 0; rowIdx < rowCount; rowIdx++)
             {
-                m_rows[row_idx] = new SparseVector<T>(reader);
+                mRows[rowIdx] = new SparseVector<T>(reader);
             }
         }
 
@@ -649,21 +649,21 @@ namespace Latino
         */
         private class MatrixEnumerator : IEnumerator<IdxDat<SparseVector<T>>>
         {
-            private SparseMatrix<T> m_matrix;
-            private int m_row_idx
+            private SparseMatrix<T> mMatrix;
+            private int mRowIdx
                 = -1;
 
             public MatrixEnumerator(SparseMatrix<T> matrix)
             {
                 Utils.ThrowException(matrix == null ? new ArgumentNullException("matrix") : null);
-                m_matrix = matrix;
+                mMatrix = matrix;
             }
 
             // *** IEnumerator<IdxDat<SparseVector<T>>> interface implementation ***
 
             public IdxDat<SparseVector<T>> Current
             {
-                get { return new IdxDat<SparseVector<T>>(m_row_idx, m_matrix.m_rows[m_row_idx]); } // throws ArgumentOutOfRangeException
+                get { return new IdxDat<SparseVector<T>>(mRowIdx, mMatrix.mRows[mRowIdx]); } // throws ArgumentOutOfRangeException
             }
 
             // *** IEnumerator interface implementation ***
@@ -675,12 +675,12 @@ namespace Latino
 
             public bool MoveNext()
             {
-                m_row_idx++;
-                while (m_row_idx < m_matrix.m_rows.Count && m_matrix.m_rows[m_row_idx].Count == 0)
+                mRowIdx++;
+                while (mRowIdx < mMatrix.mRows.Count && mMatrix.mRows[mRowIdx].Count == 0)
                 {
-                    m_row_idx++;
+                    mRowIdx++;
                 }
-                if (m_row_idx == m_matrix.m_rows.Count)
+                if (mRowIdx == mMatrix.mRows.Count)
                 {
                     Reset();
                     return false;
@@ -690,7 +690,7 @@ namespace Latino
 
             public void Reset()
             {
-                m_row_idx = -1;
+                mRowIdx = -1;
             }
 
             // *** IDisposable interface implementation ***
@@ -708,21 +708,21 @@ namespace Latino
         */
         private class ReadOnlyMatrixEnumerator : IEnumerator<IdxDat<SparseVector<T>.ReadOnly>>
         {
-            private SparseMatrix<T> m_matrix;
-            private int m_row_idx
+            private SparseMatrix<T> mMatrix;
+            private int mRowIdx
                 = -1;
 
             internal ReadOnlyMatrixEnumerator(SparseMatrix<T> matrix)
             {
                 Utils.ThrowException(matrix == null ? new ArgumentNullException("matrix") : null);
-                m_matrix = matrix;
+                mMatrix = matrix;
             }
 
             // *** IEnumerator<IdxDat<SparseVector<T>.ReadOnly>> interface implementation ***
 
             public IdxDat<SparseVector<T>.ReadOnly> Current
             {
-                get { return new IdxDat<SparseVector<T>.ReadOnly>(m_row_idx, m_matrix.m_rows[m_row_idx]); } // throws ArgumentOutOfRangeException
+                get { return new IdxDat<SparseVector<T>.ReadOnly>(mRowIdx, mMatrix.mRows[mRowIdx]); } // throws ArgumentOutOfRangeException
             }
 
             // *** IEnumerator interface implementation ***
@@ -734,12 +734,12 @@ namespace Latino
 
             public bool MoveNext()
             {
-                m_row_idx++;
-                while (m_row_idx < m_matrix.m_rows.Count && m_matrix.m_rows[m_row_idx].Count == 0)
+                mRowIdx++;
+                while (mRowIdx < mMatrix.mRows.Count && mMatrix.mRows[mRowIdx].Count == 0)
                 {
-                    m_row_idx++;
+                    mRowIdx++;
                 }
-                if (m_row_idx == m_matrix.m_rows.Count)
+                if (mRowIdx == mMatrix.mRows.Count)
                 {
                     Reset();
                     return false;
@@ -749,7 +749,7 @@ namespace Latino
 
             public void Reset()
             {
-                m_row_idx = -1;
+                mRowIdx = -1;
             }
 
             // *** IDisposable interface implementation ***
@@ -768,72 +768,72 @@ namespace Latino
         public class ReadOnly : IReadOnlyAdapter<SparseMatrix<T>>, IEnumerable<IdxDat<SparseVector<T>.ReadOnly>>, IContentEquatable<SparseMatrix<T>.ReadOnly>,
             ISerializable
         {
-            private SparseMatrix<T> m_matrix;
+            private SparseMatrix<T> mMatrix;
 
             public ReadOnly(SparseMatrix<T> matrix)
             {
                 Utils.ThrowException(matrix == null ? new ArgumentNullException("matrix") : null);
-                m_matrix = matrix;
+                mMatrix = matrix;
             }
 
             public ReadOnly(BinarySerializer reader)
             {
-                m_matrix = new SparseMatrix<T>(reader); // throws ArgumentNullException, serialization-related exceptions
+                mMatrix = new SparseMatrix<T>(reader); // throws ArgumentNullException, serialization-related exceptions
             }
 
-            public bool ContainsRowAt(int row_idx)
+            public bool ContainsRowAt(int rowIdx)
             {
-                return m_matrix.ContainsRowAt(row_idx);
+                return mMatrix.ContainsRowAt(rowIdx);
             }
 
-            public bool ContainsColAt(int col_idx)
+            public bool ContainsColAt(int colIdx)
             {
-                return m_matrix.ContainsColAt(col_idx);
+                return mMatrix.ContainsColAt(colIdx);
             }
 
-            public bool ContainsAt(int row_idx, int col_idx)
+            public bool ContainsAt(int rowIdx, int colIdx)
             {
-                return m_matrix.ContainsAt(row_idx, col_idx);
+                return mMatrix.ContainsAt(rowIdx, colIdx);
             }
 
             public int GetFirstNonEmptyRowIdx()
             {
-                return m_matrix.GetFirstNonEmptyRowIdx();
+                return mMatrix.GetFirstNonEmptyRowIdx();
             }
 
             public int GetLastNonEmptyRowIdx()
             {
-                return m_matrix.GetLastNonEmptyRowIdx();
+                return mMatrix.GetLastNonEmptyRowIdx();
             }
 
             public int GetFirstNonEmptyColIdx()
             {
-                return m_matrix.GetFirstNonEmptyColIdx();
+                return mMatrix.GetFirstNonEmptyColIdx();
             }
 
             public int GetLastNonEmptyColIdx()
             {
-                return m_matrix.GetLastNonEmptyColIdx();
+                return mMatrix.GetLastNonEmptyColIdx();
             }
 
             public override string ToString()
             {
-                return m_matrix.ToString();
+                return mMatrix.ToString();
             }
 
             public string ToString(string format)
             {
-                return m_matrix.ToString(format);
+                return mMatrix.ToString(format);
             }
 
-            public bool IndexOf(T val, ref int row_idx, ref int col_idx)
+            public bool IndexOf(T val, ref int rowIdx, ref int colIdx)
             {
-                return m_matrix.IndexOf(val, ref row_idx, ref col_idx);
+                return mMatrix.IndexOf(val, ref rowIdx, ref colIdx);
             }
 
             public bool Contains(T val)
             {
-                return m_matrix.Contains(val);
+                return mMatrix.Contains(val);
             }
 
             public bool IsReadOnly
@@ -843,59 +843,59 @@ namespace Latino
 
             public int GetRowCount()
             {
-                return m_matrix.GetRowCount();
+                return mMatrix.GetRowCount();
             }
 
             public int CountValues()
             {
-                return m_matrix.CountValues();
+                return mMatrix.CountValues();
             }
 
-            public double GetSparseness(int num_rows, int num_cols)
+            public double GetSparseness(int numRows, int numCols)
             {
-                return m_matrix.GetSparseness(num_rows, num_cols);
+                return mMatrix.GetSparseness(numRows, numCols);
             }
 
-            public SparseVector<T>.ReadOnly this[int row_idx]
+            public SparseVector<T>.ReadOnly this[int rowIdx]
             {
-                get { return m_matrix[row_idx]; }
+                get { return mMatrix[rowIdx]; }
             }
 
-            public T TryGet(int row_idx, int col_idx, T default_val)
+            public T TryGet(int rowIdx, int colIdx, T defaultVal)
             {
-                return m_matrix.TryGet(row_idx, col_idx, default_val);
+                return mMatrix.TryGet(rowIdx, colIdx, defaultVal);
             }
 
-            public T this[int row_idx, int col_idx]
+            public T this[int rowIdx, int colIdx]
             {
-                get { return m_matrix[row_idx, col_idx]; }
+                get { return mMatrix[rowIdx, colIdx]; }
             }
 
-            public SparseVector<T> GetColCopy(int col_idx)
+            public SparseVector<T> GetColCopy(int colIdx)
             {
-                return m_matrix.GetColCopy(col_idx);
+                return mMatrix.GetColCopy(colIdx);
             }
 
             public SparseMatrix<T> GetTransposedCopy()
             {
-                return m_matrix.GetTransposedCopy();
+                return mMatrix.GetTransposedCopy();
             }
 
             public bool IsSymmetric()
             {
-                return m_matrix.IsSymmetric();
+                return mMatrix.IsSymmetric();
             }
 
             public bool HasDiagonal()
             {
-                return m_matrix.ContainsDiagonalElement();
+                return mMatrix.ContainsDiagonalElement();
             }
 
             // *** IReadOnlyAdapter interface implementation ***
 
             public SparseMatrix<T> GetWritableCopy()
             {
-                return m_matrix.Clone();
+                return mMatrix.Clone();
             }
 
             object IReadOnlyAdapter.GetWritableCopy()
@@ -910,14 +910,14 @@ namespace Latino
 #endif
             SparseMatrix<T> Inner
             {
-                get { return m_matrix; }
+                get { return mMatrix; }
             }
 
             // *** IEnumerable<IdxDat<SparseVector<T>.ReadOnly>> interface implementation ***
 
             public IEnumerator<IdxDat<SparseVector<T>.ReadOnly>> GetEnumerator()
             {
-                return new ReadOnlyMatrixEnumerator(m_matrix);
+                return new ReadOnlyMatrixEnumerator(mMatrix);
             }
 
             // *** IEnumerable interface implementation ***
@@ -931,7 +931,7 @@ namespace Latino
 
             public bool ContentEquals(SparseMatrix<T>.ReadOnly other)
             {
-                return other != null && m_matrix.ContentEquals(other.Inner);
+                return other != null && mMatrix.ContentEquals(other.Inner);
             }
 
             bool IContentEquatable.ContentEquals(object other)
@@ -944,7 +944,7 @@ namespace Latino
 
             public void Save(BinarySerializer writer)
             {
-                m_matrix.Save(writer);
+                mMatrix.Save(writer);
             }
 
             // *** Equality comparer ***

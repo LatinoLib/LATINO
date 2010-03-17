@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -28,59 +28,59 @@ namespace Latino.Model
     */
     internal static class MaxEnt
     {
-        private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idx_to_lbl)
+        private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idxToLbl)
         {
-            Utils.BinaryOperatorDelegate<double> sum_operator = delegate(double a, double b) { return a + b; };
+            Utils.BinaryOperatorDelegate<double> sumOperator = delegate(double a, double b) { return a + b; };
             SparseMatrix<double> mtx = new SparseMatrix<double>();
             ArrayList<LblT> tmp = new ArrayList<LblT>();
-            Dictionary<LblT, int> lbl_to_idx = new Dictionary<LblT, int>();
-            foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeled_example in dataset)
+            Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>();
+            foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
             {
-                if (!lbl_to_idx.ContainsKey(labeled_example.Label))
+                if (!lblToIdx.ContainsKey(labeledExample.Label))
                 {
-                    lbl_to_idx.Add(labeled_example.Label, lbl_to_idx.Count);
-                    tmp.Add(labeled_example.Label);
+                    lblToIdx.Add(labeledExample.Label, lblToIdx.Count);
+                    tmp.Add(labeledExample.Label);
                 }
             }
             int i = 0;
-            foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeled_example in dataset)
+            foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
             {
                 Utils.Verbose("{0} / {1}\r", ++i, dataset.Count);
-                int lbl_idx = lbl_to_idx[labeled_example.Label];
-                if (!mtx.ContainsRowAt(lbl_idx))
+                int lblIdx = lblToIdx[labeledExample.Label];
+                if (!mtx.ContainsRowAt(lblIdx))
                 {
-                    mtx[lbl_idx] = ModelUtils.ConvertExample<SparseVector<double>>(labeled_example.Example);
+                    mtx[lblIdx] = ModelUtils.ConvertExample<SparseVector<double>>(labeledExample.Example);
                 }
                 else
                 {
-                    SparseVector<double> new_vec = ModelUtils.ConvertExample<SparseVector<double>>(labeled_example.Example);
-                    new_vec.Merge(mtx[lbl_idx], sum_operator); 
-                    mtx[lbl_idx] = new_vec;
+                    SparseVector<double> newVec = ModelUtils.ConvertExample<SparseVector<double>>(labeledExample.Example);
+                    newVec.Merge(mtx[lblIdx], sumOperator); 
+                    mtx[lblIdx] = newVec;
                 }
             }
             Utils.VerboseLine();
-            idx_to_lbl = tmp.ToArray();
+            idxToLbl = tmp.ToArray();
             return mtx;
         }
 
-        private static SparseMatrix<double> CutOff(SparseMatrix<double>.ReadOnly mtx, int cut_off)
+        private static SparseMatrix<double> CutOff(SparseMatrix<double>.ReadOnly mtx, int cutOff)
         {
-            SparseMatrix<double> new_mtx = new SparseMatrix<double>();
+            SparseMatrix<double> newMtx = new SparseMatrix<double>();
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in mtx)
             {
                 ArrayList<IdxDat<double>> tmp = new ArrayList<IdxDat<double>>();
                 foreach (IdxDat<double> item in row.Dat)
                 {
-                    if (item.Dat > cut_off) { tmp.Add(item); }
+                    if (item.Dat > cutOff) { tmp.Add(item); }
                 }
-                new_mtx[row.Idx] = new SparseVector<double>(tmp);
+                newMtx[row.Idx] = new SparseVector<double>(tmp);
             }
-            return new_mtx;
+            return newMtx;
         }
 
         private static SparseMatrix<double> CopyStructure(SparseMatrix<double>.ReadOnly mtx)
         {
-            SparseMatrix<double> new_mtx = new SparseMatrix<double>();
+            SparseMatrix<double> newMtx = new SparseMatrix<double>();
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in mtx)
             {
                 ArrayList<IdxDat<double>> tmp = new ArrayList<IdxDat<double>>();
@@ -88,9 +88,9 @@ namespace Latino.Model
                 {
                     tmp.Add(new IdxDat<double>(item.Idx, 0));
                 }
-                new_mtx[row.Idx] = new SparseVector<double>(tmp);
+                newMtx[row.Idx] = new SparseVector<double>(tmp);
             }
-            return new_mtx;
+            return newMtx;
         }
 
         private static void Reset(SparseMatrix<double> mtx)
@@ -111,8 +111,8 @@ namespace Latino.Model
                 int i = 0;
                 foreach (IdxDat<double> item in row.Dat)
                 {
-                    double new_val = lambda[row.Idx].GetDirect(i).Dat + 1.0 / f * Math.Log(observations[row.Idx].GetDirect(i).Dat / expectations[row.Idx].GetDirect(i).Dat);
-                    lambda[row.Idx].SetDirect(i, new_val);
+                    double newVal = lambda[row.Idx].GetDirect(i).Dat + 1.0 / f * Math.Log(observations[row.Idx].GetDirect(i).Dat / expectations[row.Idx].GetDirect(i).Dat);
+                    lambda[row.Idx].SetDirect(i, newVal);
                     i++;
                 }
             }
@@ -120,34 +120,34 @@ namespace Latino.Model
 
         private static double GisFindMaxF<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset)
         {
-            double max_val = 0;
+            double maxVal = 0;
             foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> item in dataset)
             {
-                if (item.Example.Count > max_val) { max_val = item.Example.Count; }
+                if (item.Example.Count > maxVal) { maxVal = item.Example.Count; }
             }
-            return max_val;
+            return maxVal;
         }
         
         private static void UpdateExpectationMatrixPass1(object _args)
         {
             object[] args = (object[])_args;
-            int start_idx = (int)args[0];
-            int end_idx = (int)args[1];
-            SparseMatrix<double>.ReadOnly train_mtx_tr = (SparseMatrix<double>.ReadOnly)args[2];
+            int startIdx = (int)args[0];
+            int endIdx = (int)args[1];
+            SparseMatrix<double>.ReadOnly trainMtxTr = (SparseMatrix<double>.ReadOnly)args[2];
             IdxDat<SparseVector<double>.ReadOnly>[] rows = (IdxDat<SparseVector<double>.ReadOnly>[])args[3];
             double[,] mtx = (double[,])args[4];
             Ref<int> progress = (Ref<int>)args[5];
-            for (int i = start_idx; i <= end_idx; i++)
+            for (int i = startIdx; i <= endIdx; i++)
             {
                 IdxDat<SparseVector<double>.ReadOnly> row = rows[i];                
                 foreach (IdxDat<double> item in row.Dat)
                 {
-                    if (train_mtx_tr.ContainsRowAt(item.Idx))
+                    if (trainMtxTr.ContainsRowAt(item.Idx))
                     {
-                        SparseVector<double>.ReadOnly train_mtx_row = train_mtx_tr[item.Idx];
-                        foreach (IdxDat<double> train_mtx_item in train_mtx_row)
+                        SparseVector<double>.ReadOnly trainMtxRow = trainMtxTr[item.Idx];
+                        foreach (IdxDat<double> trainMtxItem in trainMtxRow)
                         {
-                            mtx[row.Idx, train_mtx_item.Idx] += train_mtx_item.Dat * item.Dat;
+                            mtx[row.Idx, trainMtxItem.Idx] += trainMtxItem.Dat * item.Dat;
                         }
                     }
                 }
@@ -158,139 +158,139 @@ namespace Latino.Model
         private static void UpdateExpectationMatrixPass2(object _args)
         {
             object[] args = (object[])_args;
-            int start_idx = (int)args[0];
-            int end_idx = (int)args[1];
-            SparseMatrix<double>.ReadOnly train_mtx_tr = (SparseMatrix<double>.ReadOnly)args[2];
+            int startIdx = (int)args[0];
+            int endIdx = (int)args[1];
+            SparseMatrix<double>.ReadOnly trainMtxTr = (SparseMatrix<double>.ReadOnly)args[2];
             IdxDat<SparseVector<double>>[] rows = (IdxDat<SparseVector<double>>[])args[3];
             double[,] mtx = (double[,])args[4];
             double[] z = (double[])args[5];
             Ref<int> progress = (Ref<int>)args[6];
-            for (int i = start_idx; i <= end_idx; i++)
+            for (int i = startIdx; i <= endIdx; i++)
             {
                 IdxDat<SparseVector<double>> row = rows[i];     
-                int item_idx = 0;
+                int itemIdx = 0;
                 foreach (IdxDat<double> item in row.Dat)
                 {
-                    SparseVector<double>.ReadOnly pom = train_mtx_tr[item.Idx];
-                    foreach (IdxDat<double> pom_item in pom)
+                    SparseVector<double>.ReadOnly pom = trainMtxTr[item.Idx];
+                    foreach (IdxDat<double> pomItem in pom)
                     {
-                        row.Dat.SetDirect(item_idx, row.Dat.GetDatDirect(item_idx) + mtx[row.Idx, pom_item.Idx] / z[pom_item.Idx] * pom_item.Dat);
+                        row.Dat.SetDirect(itemIdx, row.Dat.GetDatDirect(itemIdx) + mtx[row.Idx, pomItem.Idx] / z[pomItem.Idx] * pomItem.Dat);
                     }
-                    item_idx++;
+                    itemIdx++;
                 }
                 progress++;
             }
         }
 
-        private static void UpdateExpectationMatrix(int num_classes, int train_set_size, SparseMatrix<double>.ReadOnly train_mtx_tr, SparseMatrix<double>.ReadOnly lambda, SparseMatrix<double> expectations, int num_threads)
+        private static void UpdateExpectationMatrix(int numClasses, int trainSetSize, SparseMatrix<double>.ReadOnly trainMtxTr, SparseMatrix<double>.ReadOnly lambda, SparseMatrix<double> expectations, int numThreads)
         {
-            double[,] mtx = new double[num_classes, train_set_size];
-            double[] z = new double[train_set_size];
-            Utils.VerboseLine("Initiating {0} threads ...", num_threads);
-            int lambda_row_count = lambda.GetRowCount();
-            IdxDat<SparseVector<double>.ReadOnly>[] aux = new IdxDat<SparseVector<double>.ReadOnly>[lambda_row_count];
+            double[,] mtx = new double[numClasses, trainSetSize];
+            double[] z = new double[trainSetSize];
+            Utils.VerboseLine("Initiating {0} threads ...", numThreads);
+            int lambdaRowCount = lambda.GetRowCount();
+            IdxDat<SparseVector<double>.ReadOnly>[] aux = new IdxDat<SparseVector<double>.ReadOnly>[lambdaRowCount];
             int i = 0;
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambda)
             {
                 aux[i++] = row;
             }
-            int chunk_sz = (int)Math.Round((double)lambda_row_count / (double)num_threads); // *** this load balancing is not so good; should I count values instead of rows?
-            Thread[] threads = new Thread[num_threads];
-            Ref<int>[] progress_info = new Ref<int>[num_threads];
-            int start_idx = 0;            
-            for (i = 0; i < num_threads; i++)
+            int chunkSz = (int)Math.Round((double)lambdaRowCount / (double)numThreads); // *** this load balancing is not so good; should I count values instead of rows?
+            Thread[] threads = new Thread[numThreads];
+            Ref<int>[] progressInfo = new Ref<int>[numThreads];
+            int startIdx = 0;            
+            for (i = 0; i < numThreads; i++)
             {
-                int end_idx = start_idx + chunk_sz - 1;
-                if (i == num_threads - 1) { end_idx = aux.Length - 1; }
-                progress_info[i] = new Ref<int>();
+                int endIdx = startIdx + chunkSz - 1;
+                if (i == numThreads - 1) { endIdx = aux.Length - 1; }
+                progressInfo[i] = new Ref<int>();
                 threads[i] = new Thread(new ParameterizedThreadStart(UpdateExpectationMatrixPass1));
-                threads[i].Start(new object[] { start_idx, end_idx, train_mtx_tr, aux, mtx, progress_info[i] });
-                start_idx += chunk_sz;
+                threads[i].Start(new object[] { startIdx, endIdx, trainMtxTr, aux, mtx, progressInfo[i] });
+                startIdx += chunkSz;
             }
-            bool is_alive = true;
-            while (is_alive)
+            bool isAlive = true;
+            while (isAlive)
             {
-                int aggr_progress = 0;
-                foreach (Ref<int> progress in progress_info)
+                int aggrProgress = 0;
+                foreach (Ref<int> progress in progressInfo)
                 {
-                    aggr_progress += progress;
+                    aggrProgress += progress;
                 }
-                Utils.Verbose("Pass 1: {0} / {1}\r", aggr_progress, lambda_row_count);
-                is_alive = false;
+                Utils.Verbose("Pass 1: {0} / {1}\r", aggrProgress, lambdaRowCount);
+                isAlive = false;
                 foreach (Thread thread in threads)
                 {
-                    is_alive = is_alive || thread.IsAlive;
+                    isAlive = isAlive || thread.IsAlive;
                 }
                 Thread.Sleep(100);               
             }
-            Utils.VerboseLine("Pass 1: {0} / {0}\r", lambda_row_count);
-            for (i = 0; i < num_classes; i++)
+            Utils.VerboseLine("Pass 1: {0} / {0}\r", lambdaRowCount);
+            for (i = 0; i < numClasses; i++)
             {
-                for (int j = 0; j < train_set_size; j++)
+                for (int j = 0; j < trainSetSize; j++)
                 {
                     mtx[i, j] = Math.Exp(mtx[i, j]);
                     z[j] += mtx[i, j];
                 }
             }
-            int expe_row_count = expectations.GetRowCount();
-            IdxDat<SparseVector<double>>[] aux2 = new IdxDat<SparseVector<double>>[expe_row_count];
+            int expeRowCount = expectations.GetRowCount();
+            IdxDat<SparseVector<double>>[] aux2 = new IdxDat<SparseVector<double>>[expeRowCount];
             i = 0;
             foreach (IdxDat<SparseVector<double>> row in expectations)
             {
                 aux2[i++] = row;
             }
-            start_idx = 0;
-            for (i = 0; i < num_threads; i++)
+            startIdx = 0;
+            for (i = 0; i < numThreads; i++)
             {
-                int end_idx = start_idx + chunk_sz - 1;
-                if (i == num_threads - 1) { end_idx = aux.Length - 1; }
-                progress_info[i] = 0;
+                int endIdx = startIdx + chunkSz - 1;
+                if (i == numThreads - 1) { endIdx = aux.Length - 1; }
+                progressInfo[i] = 0;
                 threads[i] = new Thread(new ParameterizedThreadStart(UpdateExpectationMatrixPass2));
-                threads[i].Start(new object[] { start_idx, end_idx, train_mtx_tr, aux2, mtx, z, progress_info[i] });
-                start_idx += chunk_sz;
+                threads[i].Start(new object[] { startIdx, endIdx, trainMtxTr, aux2, mtx, z, progressInfo[i] });
+                startIdx += chunkSz;
             }
-            is_alive = true;
-            while (is_alive)
+            isAlive = true;
+            while (isAlive)
             {
-                int aggr_progress = 0;
-                foreach (Ref<int> progress in progress_info)
+                int aggrProgress = 0;
+                foreach (Ref<int> progress in progressInfo)
                 {
-                    aggr_progress += progress;
+                    aggrProgress += progress;
                 }
-                Utils.Verbose("Pass 2: {0} / {1}\r", aggr_progress, expe_row_count);
-                is_alive = false;
+                Utils.Verbose("Pass 2: {0} / {1}\r", aggrProgress, expeRowCount);
+                isAlive = false;
                 foreach (Thread thread in threads)
                 {
-                    is_alive = is_alive || thread.IsAlive;
+                    isAlive = isAlive || thread.IsAlive;
                 }
                 Thread.Sleep(100);
             }
-            Utils.VerboseLine("Pass 2: {0} / {0}\r", expe_row_count);
+            Utils.VerboseLine("Pass 2: {0} / {0}\r", expeRowCount);
         }
 
-        private static void UpdateExpectationMatrix(int num_classes, int train_set_size, SparseMatrix<double>.ReadOnly train_mtx_tr, SparseMatrix<double>.ReadOnly lambda, SparseMatrix<double> expectations)
+        private static void UpdateExpectationMatrix(int numClasses, int trainSetSize, SparseMatrix<double>.ReadOnly trainMtxTr, SparseMatrix<double>.ReadOnly lambda, SparseMatrix<double> expectations)
         {
-            double[,] mtx = new double[num_classes, train_set_size];
-            double[] z = new double[train_set_size];
+            double[,] mtx = new double[numClasses, trainSetSize];
+            double[] z = new double[trainSetSize];
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambda)
             {
                 Utils.Verbose("Pass 1: {0} / {1}\r", row.Idx + 1, lambda.GetLastNonEmptyRowIdx() + 1);
                 foreach (IdxDat<double> item in row.Dat)
                 {
-                    if (train_mtx_tr.ContainsRowAt(item.Idx))
+                    if (trainMtxTr.ContainsRowAt(item.Idx))
                     {
-                        SparseVector<double>.ReadOnly train_mtx_row = train_mtx_tr[item.Idx];
-                        foreach (IdxDat<double> train_mtx_item in train_mtx_row)
+                        SparseVector<double>.ReadOnly trainMtxRow = trainMtxTr[item.Idx];
+                        foreach (IdxDat<double> trainMtxItem in trainMtxRow)
                         {
-                            mtx[row.Idx, train_mtx_item.Idx] += train_mtx_item.Dat * item.Dat;
+                            mtx[row.Idx, trainMtxItem.Idx] += trainMtxItem.Dat * item.Dat;
                         }
                     }
                 }
             }
             Utils.VerboseLine();
-            for (int i = 0; i < num_classes; i++)
+            for (int i = 0; i < numClasses; i++)
             {
-                for (int j = 0; j < train_set_size; j++)
+                for (int j = 0; j < trainSetSize; j++)
                 {
                     mtx[i, j] = Math.Exp(mtx[i, j]);
                     z[j] += mtx[i, j];
@@ -299,25 +299,25 @@ namespace Latino.Model
             foreach (IdxDat<SparseVector<double>> row in expectations)
             {
                 Utils.Verbose("Pass 2: {0} / {1}\r", row.Idx + 1, expectations.GetLastNonEmptyRowIdx() + 1);
-                int item_idx = 0;
+                int itemIdx = 0;
                 foreach (IdxDat<double> item in row.Dat)
                 {
-                    SparseVector<double>.ReadOnly pom = train_mtx_tr[item.Idx];
-                    foreach (IdxDat<double> pom_item in pom)
+                    SparseVector<double>.ReadOnly pom = trainMtxTr[item.Idx];
+                    foreach (IdxDat<double> pomItem in pom)
                     {
-                        row.Dat.SetDirect(item_idx, row.Dat.GetDatDirect(item_idx) + mtx[row.Idx, pom_item.Idx] / z[pom_item.Idx] * pom_item.Dat);
+                        row.Dat.SetDirect(itemIdx, row.Dat.GetDatDirect(itemIdx) + mtx[row.Idx, pomItem.Idx] / z[pomItem.Idx] * pomItem.Dat);
                     }
-                    item_idx++;
+                    itemIdx++;
                 }
             }
             Utils.VerboseLine();
         }
 
-        private static SparseMatrix<double> TransposeDataset<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, bool clear_dataset)
+        private static SparseMatrix<double> TransposeDataset<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, bool clearDataset)
         {
             SparseMatrix<double> aux = new SparseMatrix<double>();
             int i = 0;
-            if (clear_dataset)
+            if (clearDataset)
             {
                 foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> item in dataset)
                 {
@@ -335,78 +335,78 @@ namespace Latino.Model
             return aux.GetTransposedCopy();
         }
 
-        public static SparseMatrix<double> Gis<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, int cut_off, int num_iter, bool clear_dataset, string mtx_file_name, ref LblT[] idx_to_lbl, int num_threads, double allowed_diff) 
+        public static SparseMatrix<double> Gis<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, int cutOff, int numIter, bool clearDataset, string mtxFileName, ref LblT[] idxToLbl, int numThreads, double allowedDiff) 
         {
             Utils.VerboseLine("Creating observation matrix ...");
             SparseMatrix<double> observations = null;
-            if (Utils.VerifyFileNameOpen(mtx_file_name))
+            if (Utils.VerifyFileNameOpen(mtxFileName))
             {
-                BinarySerializer reader = new BinarySerializer(mtx_file_name, FileMode.Open);
-                idx_to_lbl = new ArrayList<LblT>(reader).ToArray();
+                BinarySerializer reader = new BinarySerializer(mtxFileName, FileMode.Open);
+                idxToLbl = new ArrayList<LblT>(reader).ToArray();
                 observations = new SparseMatrix<double>(reader);
                 reader.Close();
             }
             else
             {
-                observations = CreateObservationMatrix(dataset, ref idx_to_lbl);
-                if (Utils.VerifyFileNameCreate(mtx_file_name))
+                observations = CreateObservationMatrix(dataset, ref idxToLbl);
+                if (Utils.VerifyFileNameCreate(mtxFileName))
                 {
-                    BinarySerializer writer = new BinarySerializer(mtx_file_name, FileMode.Create);
-                    new ArrayList<LblT>(idx_to_lbl).Save(writer);
+                    BinarySerializer writer = new BinarySerializer(mtxFileName, FileMode.Create);
+                    new ArrayList<LblT>(idxToLbl).Save(writer);
                     observations.Save(writer);
                     writer.Close();
                 }
             }
-            int num_classes = observations.GetLastNonEmptyRowIdx() + 1;
-            int num_examples = dataset.Count;
-            if (cut_off > 0)
+            int numClasses = observations.GetLastNonEmptyRowIdx() + 1;
+            int numExamples = dataset.Count;
+            if (cutOff > 0)
             {
                 Utils.VerboseLine("Performing cut-off ...");
-                observations = CutOff(observations, cut_off);
+                observations = CutOff(observations, cutOff);
             }
             Utils.VerboseLine("Preparing structures ...");
             SparseMatrix<double> lambda = CopyStructure(observations);
             SparseMatrix<double> expectations = CopyStructure(observations);
             double f = GisFindMaxF(dataset);
-            SparseMatrix<double> train_mtx_tr = TransposeDataset(dataset, clear_dataset);            
+            SparseMatrix<double> trainMtxTr = TransposeDataset(dataset, clearDataset);            
             Utils.VerboseLine("Entering main loop ...");
-            double[] old_lambda = null;
-            if (allowed_diff > 0)
+            double[] oldLambda = null;
+            if (allowedDiff > 0)
             {
-                old_lambda = new double[lambda.CountValues()];
+                oldLambda = new double[lambda.CountValues()];
             }
-            for (int i = 0; i < num_iter; i++)
+            for (int i = 0; i < numIter; i++)
             {
-                Utils.VerboseLine("Iteration {0} / {1} ...", i + 1, num_iter);
+                Utils.VerboseLine("Iteration {0} / {1} ...", i + 1, numIter);
                 Utils.VerboseLine("Updating expectations ...");
-                if (num_threads > 1)
+                if (numThreads > 1)
                 {
-                    UpdateExpectationMatrix(num_classes, num_examples, train_mtx_tr, lambda, expectations, num_threads);
+                    UpdateExpectationMatrix(numClasses, numExamples, trainMtxTr, lambda, expectations, numThreads);
                 }
                 else
                 {
-                    UpdateExpectationMatrix(num_classes, num_examples, train_mtx_tr, lambda, expectations);
+                    UpdateExpectationMatrix(numClasses, numExamples, trainMtxTr, lambda, expectations);
                 }
                 Utils.VerboseLine("Updating lambdas ...");
                 GisUpdate(lambda, expectations, observations, f);
                 Reset(expectations);
                 // check lambda change
-                if (allowed_diff > 0)
+                if (allowedDiff > 0)
                 {
                     int j = 0;
-                    double max_diff = 0;
+                    double maxDiff = 0;
                     foreach (IdxDat<SparseVector<double>> row in lambda)
                     {
                         foreach (IdxDat<double> item in row.Dat)
                         {
-                            double diff = Math.Abs(item.Dat - old_lambda[j]);
-                            if (diff > max_diff) { max_diff = diff; }
-                            old_lambda[j] = item.Dat;
+                            double diff = Math.Abs(item.Dat - oldLambda[j]);
+                            if (diff > maxDiff) { maxDiff = diff; }
+                            oldLambda[j] = item.Dat;
                             j++;
                         }
                     }
-                    Utils.VerboseLine("Max lambda diff: {0:0.0000}", max_diff);
-                    if (max_diff <= allowed_diff)
+                    Utils.VerboseLine("Max lambda diff: {0:0.0000}", maxDiff);
+                    if (maxDiff <= allowedDiff)
                     {
                         Utils.VerboseLine("Max lambda diff is small enough. Exiting optimization loop.");
                         break;
@@ -416,16 +416,16 @@ namespace Latino.Model
             return lambda;
         }
 
-        public static Prediction<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly bin_vec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idx_to_lbl, bool normalize)
+        public static Prediction<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly binVec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idxToLbl, bool normalize)
         {
-            DotProductSimilarity dot_prod = new DotProductSimilarity();
-            SparseVector<double> vec = ModelUtils.ConvertExample<SparseVector<double>>(bin_vec);
+            DotProductSimilarity dotProd = new DotProductSimilarity();
+            SparseVector<double> vec = ModelUtils.ConvertExample<SparseVector<double>>(binVec);
             Prediction<LblT> scores = new Prediction<LblT>();
             double sum = 0;
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambdas)
             {
-                double score = Math.Exp(dot_prod.GetSimilarity(row.Dat, vec));
-                scores.Items.Add(new KeyDat<double, LblT>(score, idx_to_lbl[row.Idx]));
+                double score = Math.Exp(dotProd.GetSimilarity(row.Dat, vec));
+                scores.Items.Add(new KeyDat<double, LblT>(score, idxToLbl[row.Idx]));
                 sum += score;
             }
             if (normalize && sum > 0)

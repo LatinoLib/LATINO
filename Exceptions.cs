@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -24,7 +24,7 @@ namespace Latino
     */
     public class ArgumentNotSupportedException : ArgumentException
     {
-        public ArgumentNotSupportedException(string param_name) : base("The argument is not supported.", param_name)
+        public ArgumentNotSupportedException(string paramName) : base("The argument is not supported.", paramName)
         {
         }
     }
@@ -37,7 +37,7 @@ namespace Latino
     */
     public class ArgumentTypeException : ArgumentException
     {
-        public ArgumentTypeException(string param_name) : base("The argument is not of one of the expected types.", param_name)
+        public ArgumentTypeException(string paramName) : base("The argument is not of one of the expected types.", paramName)
         {
         }
     }
@@ -50,7 +50,7 @@ namespace Latino
     */
     public class ArgumentValueException : ArgumentException
     {
-        public ArgumentValueException(string param_name) : base("The argument value or state is not valid.", param_name)
+        public ArgumentValueException(string paramName) : base("The argument value or state is not valid.", paramName)
         {
         }
     }

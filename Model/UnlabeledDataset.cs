@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,7 +26,7 @@ namespace Latino.Model
     */
     public class UnlabeledDataset<ExT> : IUnlabeledDataset<ExT>
     {
-        private ArrayList<ExT> m_items
+        private ArrayList<ExT> mItems
             = new ArrayList<ExT>();
 
         public UnlabeledDataset()
@@ -35,14 +35,14 @@ namespace Latino.Model
 
         public UnlabeledDataset(IEnumerable<ExT> examples)
         {
-            m_items.AddRange(examples); // throws ArgumentNullException
+            mItems.AddRange(examples); // throws ArgumentNullException
         }
 
         private UnlabeledDataset(IEnumerable<object> examples)
         {
             foreach (object example in examples)
             {
-                m_items.Add((ExT)example);
+                mItems.Add((ExT)example);
             }
         }
 
@@ -54,7 +54,7 @@ namespace Latino.Model
         public void Add(ExT example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            m_items.Add(example);
+            mItems.Add(example);
         }
 
         public void AddRange(IEnumerable<ExT> examples)
@@ -63,23 +63,23 @@ namespace Latino.Model
             foreach (ExT example in examples)
             {
                 Utils.ThrowException(example == null ? new ArgumentNullException("examples item") : null);
-                m_items.Add(example);
+                mItems.Add(example);
             }
         }
 
         public void RemoveAt(int index)
         {
-            m_items.RemoveAt(index); // throws ArgumentOutOfRangeException
+            mItems.RemoveAt(index); // throws ArgumentOutOfRangeException
         }
 
         public void RemoveRange(int index, int count)
         {
-            m_items.RemoveRange(index, count); // throws ArgumentOutOfRangeException, ArgumentException
+            mItems.RemoveRange(index, count); // throws ArgumentOutOfRangeException, ArgumentException
         }
 
         public void Clear()
         {
-            m_items.Clear();
+            mItems.Clear();
         }
 
         // *** IUnlabeledDataset<ExT> interface implementation ***
@@ -91,12 +91,12 @@ namespace Latino.Model
 
         public int Count
         {
-            get { return m_items.Count; }
+            get { return mItems.Count; }
         }
 
         public ExT this[int index]
         {
-            get { return m_items[index]; } // throws ArgumentOutOfRangeException
+            get { return mItems[index]; } // throws ArgumentOutOfRangeException
         }
 
         object IEnumerableList.this[int index]
@@ -106,7 +106,7 @@ namespace Latino.Model
 
         public IEnumerator<ExT> GetEnumerator()
         {
-            return m_items.GetEnumerator();
+            return mItems.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -119,39 +119,39 @@ namespace Latino.Model
             return (IUnlabeledDataset<NewExT>)ConvertDataset(typeof(NewExT), move); // throws ArgumentNotSupportedException
         }
 
-        public IUnlabeledDataset ConvertDataset(Type new_ex_type, bool move)
+        public IUnlabeledDataset ConvertDataset(Type newExType, bool move)
         {
-            Utils.ThrowException(new_ex_type == null ? new ArgumentNullException("new_ex_type") : null);
-            Utils.ThrowException(move && typeof(ExT).IsValueType ? new ArgumentValueException("new_ex_type") : null);
-            IUnlabeledDataset new_dataset = null;
-            ArrayList<object> tmp = new ArrayList<object>(m_items.Count);
-            for (int i = 0; i < m_items.Count; i++)
+            Utils.ThrowException(newExType == null ? new ArgumentNullException("newExType") : null);
+            Utils.ThrowException(move && typeof(ExT).IsValueType ? new ArgumentValueException("newExType") : null);
+            IUnlabeledDataset newDataset = null;
+            ArrayList<object> tmp = new ArrayList<object>(mItems.Count);
+            for (int i = 0; i < mItems.Count; i++)
             {
-                tmp.Add(ModelUtils.ConvertExample(m_items[i], new_ex_type)); // throws ArgumentValueException
-                if (move) { m_items[i] = default(ExT); } // *** this is guaranteed to be null by the second assertion
+                tmp.Add(ModelUtils.ConvertExample(mItems[i], newExType)); // throws ArgumentValueException
+                if (move) { mItems[i] = default(ExT); } // *** this is guaranteed to be null by the second assertion
             }
-            if (move) { m_items.Clear(); }
-            if (new_ex_type == typeof(SparseVector<double>))
+            if (move) { mItems.Clear(); }
+            if (newExType == typeof(SparseVector<double>))
             {
-                new_dataset = new UnlabeledDataset<SparseVector<double>>(tmp);
+                newDataset = new UnlabeledDataset<SparseVector<double>>(tmp);
             }
-            else if (new_ex_type == typeof(SparseVector<double>.ReadOnly))
+            else if (newExType == typeof(SparseVector<double>.ReadOnly))
             {
-                new_dataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(tmp);
+                newDataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(tmp);
             }
-            else if (new_ex_type == typeof(BinaryVector<int>))
+            else if (newExType == typeof(BinaryVector<int>))
             {
-                new_dataset = new UnlabeledDataset<BinaryVector<int>>(tmp);
+                newDataset = new UnlabeledDataset<BinaryVector<int>>(tmp);
             }
-            else if (new_ex_type == typeof(BinaryVector<int>.ReadOnly))
+            else if (newExType == typeof(BinaryVector<int>.ReadOnly))
             {
-                new_dataset = new UnlabeledDataset<BinaryVector<int>.ReadOnly>(tmp);
+                newDataset = new UnlabeledDataset<BinaryVector<int>.ReadOnly>(tmp);
             }
-            //else if (new_ex_type == typeof(SvmFeatureVector))
+            //else if (newExType == typeof(SvmFeatureVector))
             //{
-            //    new_dataset = new UnlabeledDataset<SvmFeatureVector>(tmp);
+            //    newDataset = new UnlabeledDataset<SvmFeatureVector>(tmp);
             //}
-            return new_dataset;
+            return newDataset;
         }
 
         // *** ISerializable interface implementation ***
@@ -159,13 +159,13 @@ namespace Latino.Model
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
-            m_items.Save(writer); // throws serialization-related exceptions
+            mItems.Save(writer); // throws serialization-related exceptions
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            m_items.Load(reader); // throws serialization-related exceptions
+            mItems.Load(reader); // throws serialization-related exceptions
         }
     }
 }

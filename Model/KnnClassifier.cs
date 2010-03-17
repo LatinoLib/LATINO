@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,15 +25,15 @@ namespace Latino.Model
     */
     public class KnnClassifier<LblT, ExT> : IModel<LblT, ExT>
     {
-        private ArrayList<LabeledExample<LblT, ExT>> m_examples
+        private ArrayList<LabeledExample<LblT, ExT>> mExamples
             = null;
-        private IEqualityComparer<LblT> m_lbl_cmp
+        private IEqualityComparer<LblT> mLblCmp
             = null;
-        private ISimilarity<ExT> m_similarity
+        private ISimilarity<ExT> mSimilarity
             = null;
-        private int m_k
+        private int mK
             = 10;
-        private bool m_soft_voting
+        private bool mSoftVoting
             = true;
 
         public KnnClassifier(ISimilarity<ExT> similarity)
@@ -48,34 +48,34 @@ namespace Latino.Model
 
         public IEqualityComparer<LblT> LabelEqualityComparer
         {
-            get { return m_lbl_cmp; }
-            set { m_lbl_cmp = value; }
+            get { return mLblCmp; }
+            set { mLblCmp = value; }
         }
 
         public ISimilarity<ExT> Similarity
         {
-            get { return m_similarity; }
+            get { return mSimilarity; }
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Similarity") : null);
-                m_similarity = value;
+                mSimilarity = value;
             }
         }
 
         public int K
         {
-            get { return m_k; }
+            get { return mK; }
             set
             {
                 Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("K") : null);
-                m_k = value;
+                mK = value;
             }
         }
 
         public bool SoftVoting
         {
-            get { return m_soft_voting; }
-            set { m_soft_voting = value; }
+            get { return mSoftVoting; }
+            set { mSoftVoting = value; }
         }
 
         // *** IModel<LblT, ExT> interface implementation ***
@@ -87,14 +87,14 @@ namespace Latino.Model
 
         public bool IsTrained
         {
-            get { return m_examples != null; }
+            get { return mExamples != null; }
         }
 
         public void Train(ILabeledExampleCollection<LblT, ExT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
-            m_examples = new ArrayList<LabeledExample<LblT, ExT>>(dataset);
+            mExamples = new ArrayList<LabeledExample<LblT, ExT>>(dataset);
         }
 
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
@@ -106,19 +106,19 @@ namespace Latino.Model
 
         public Prediction<LblT> Predict(ExT example)
         {
-            Utils.ThrowException((m_examples == null || m_similarity == null) ? new InvalidOperationException() : null);
+            Utils.ThrowException((mExamples == null || mSimilarity == null) ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            ArrayList<KeyDat<double, LabeledExample<LblT, ExT>>> tmp = new ArrayList<KeyDat<double, LabeledExample<LblT, ExT>>>(m_examples.Count);
-            foreach (LabeledExample<LblT, ExT> labeled_example in m_examples)
+            ArrayList<KeyDat<double, LabeledExample<LblT, ExT>>> tmp = new ArrayList<KeyDat<double, LabeledExample<LblT, ExT>>>(mExamples.Count);
+            foreach (LabeledExample<LblT, ExT> labeledExample in mExamples)
             {
-                double sim = m_similarity.GetSimilarity(example, labeled_example.Example);
-                tmp.Add(new KeyDat<double, LabeledExample<LblT, ExT>>(sim, labeled_example));
+                double sim = mSimilarity.GetSimilarity(example, labeledExample.Example);
+                tmp.Add(new KeyDat<double, LabeledExample<LblT, ExT>>(sim, labeledExample));
             }
             tmp.Sort(new DescSort<KeyDat<double, LabeledExample<LblT, ExT>>>());
-            Dictionary<LblT, double> voting = new Dictionary<LblT, double>(m_lbl_cmp);
-            int n = Math.Min(m_k, tmp.Count);
+            Dictionary<LblT, double> voting = new Dictionary<LblT, double>(mLblCmp);
+            int n = Math.Min(mK, tmp.Count);
             double value;
-            if (m_soft_voting) // "soft" voting
+            if (mSoftVoting) // "soft" voting
             {
                 for (int i = 0; i < n; i++)
                 {
@@ -148,13 +148,13 @@ namespace Latino.Model
                     }
                 }
             }
-            Prediction<LblT> classifier_result = new Prediction<LblT>();
+            Prediction<LblT> classifierResult = new Prediction<LblT>();
             foreach (KeyValuePair<LblT, double> item in voting)
             {
-                classifier_result.Items.Add(new KeyDat<double, LblT>(item.Value, item.Key));
+                classifierResult.Items.Add(new KeyDat<double, LblT>(item.Value, item.Key));
             }
-            classifier_result.Items.Sort(new DescSort<KeyDat<double, LblT>>());
-            return classifier_result;
+            classifierResult.Items.Sort(new DescSort<KeyDat<double, LblT>>());
+            return classifierResult;
         }
 
         Prediction<LblT> IModel<LblT>.Predict(object example)
@@ -170,20 +170,20 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            m_examples.Save(writer);
-            writer.WriteObject<ISimilarity<ExT>>(m_similarity);
-            writer.WriteInt(m_k);
-            writer.WriteBool(m_soft_voting);
+            mExamples.Save(writer);
+            writer.WriteObject<ISimilarity<ExT>>(mSimilarity);
+            writer.WriteInt(mK);
+            writer.WriteBool(mSoftVoting);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            m_examples = new ArrayList<LabeledExample<LblT, ExT>>(reader);
-            m_similarity = reader.ReadObject<ISimilarity<ExT>>();
-            m_k = reader.ReadInt();
-            m_soft_voting = reader.ReadBool();
+            mExamples = new ArrayList<LabeledExample<LblT, ExT>>(reader);
+            mSimilarity = reader.ReadObject<ISimilarity<ExT>>();
+            mK = reader.ReadInt();
+            mSoftVoting = reader.ReadBool();
         }
     }
 }

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -42,11 +42,11 @@ namespace Latino.TextMining
     // This tokenizer (partially) follows the rules defined at http://www.unicode.org/reports/tr29/#Word_Boundaries
     public class UnicodeTokenizer : ITokenizer 
     {
-        private string m_text
+        private string mText
             = "";
-        private TokenizerFilter m_filter
+        private TokenizerFilter mFilter
             = TokenizerFilter.None;    
-        private int m_min_token_len
+        private int mMinTokenLen
             = 1;
 
         public UnicodeTokenizer()
@@ -56,7 +56,7 @@ namespace Latino.TextMining
         public UnicodeTokenizer(string text)
         {
             Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
-            m_text = text;
+            mText = text;
         }
 
         public UnicodeTokenizer(BinarySerializer reader)
@@ -66,17 +66,17 @@ namespace Latino.TextMining
 
         public TokenizerFilter Filter
         {
-            get { return m_filter; }
-            set { m_filter = value; }
+            get { return mFilter; }
+            set { mFilter = value; }
         }
 
         public int MinTokenLen
         {
-            get { return m_min_token_len; }
+            get { return mMinTokenLen; }
             set
             {
                 Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("MinTokenLen") : null);
-                m_min_token_len = value;
+                mMinTokenLen = value;
             }
         }
 
@@ -84,22 +84,22 @@ namespace Latino.TextMining
 
         public string Text
         {
-            get { return m_text; }
+            get { return mText; }
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Text") : null);
-                m_text = value;
+                mText = value;
             }
         }
 
         public IEnumerator<string> GetEnumerator()
         {
-            return new Enumerator(m_text, m_filter, m_min_token_len);
+            return new Enumerator(mText, mFilter, mMinTokenLen);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new Enumerator(m_text, m_filter, m_min_token_len);
+            return new Enumerator(mText, mFilter, mMinTokenLen);
         }
 
         // *** ISerializable interface implementation ***
@@ -108,16 +108,16 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteInt((int)m_filter);
-            writer.WriteInt(m_min_token_len);
+            writer.WriteInt((int)mFilter);
+            writer.WriteInt(mMinTokenLen);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            m_filter = (TokenizerFilter)reader.ReadInt();
-            m_min_token_len = reader.ReadInt();
+            mFilter = (TokenizerFilter)reader.ReadInt();
+            mMinTokenLen = reader.ReadInt();
         }
 
         /* .-----------------------------------------------------------------------
@@ -136,20 +136,20 @@ namespace Latino.TextMining
                 ContainsOther = 4
             }
 
-            private FilterFlags m_ff;
-            private string m_text;
-            private TokenizerFilter m_filter;            
-            private int m_min_token_len;
-            private int m_start_idx
+            private FilterFlags mFf;
+            private string mText;
+            private TokenizerFilter mFilter;            
+            private int mMinTokenLen;
+            private int mStartIdx
                 = 0;
-            private int m_end_idx
+            private int mEndIdx
                 = 0;
 
-            internal Enumerator(string text, TokenizerFilter filter, int min_token_len)
+            internal Enumerator(string text, TokenizerFilter filter, int minTokenLen)
             {
-                m_filter = filter;
-                m_text = text;
-                m_min_token_len = min_token_len;
+                mFilter = filter;
+                mText = text;
+                mMinTokenLen = minTokenLen;
             }
 
             private static bool IsNewline(char ch)
@@ -195,72 +195,72 @@ namespace Latino.TextMining
 
             private bool AcceptToken()
             {
-                return ((m_filter == TokenizerFilter.AlphanumLoose && (m_ff & (FilterFlags.ContainsAlpha | FilterFlags.ContainsNumeric)) != 0) ||
-                    (m_filter == TokenizerFilter.AlphanumStrict && (m_ff & FilterFlags.ContainsOther) == 0) ||
-                    (m_filter == TokenizerFilter.AlphaLoose && (m_ff & FilterFlags.ContainsAlpha) != 0) ||
-                    (m_filter == TokenizerFilter.AlphaStrict && m_ff == FilterFlags.ContainsAlpha) ||
-                    m_filter == TokenizerFilter.None) && m_end_idx - m_start_idx >= m_min_token_len;
+                return ((mFilter == TokenizerFilter.AlphanumLoose && (mFf & (FilterFlags.ContainsAlpha | FilterFlags.ContainsNumeric)) != 0) ||
+                    (mFilter == TokenizerFilter.AlphanumStrict && (mFf & FilterFlags.ContainsOther) == 0) ||
+                    (mFilter == TokenizerFilter.AlphaLoose && (mFf & FilterFlags.ContainsAlpha) != 0) ||
+                    (mFilter == TokenizerFilter.AlphaStrict && mFf == FilterFlags.ContainsAlpha) ||
+                    mFilter == TokenizerFilter.None) && mEndIdx - mStartIdx >= mMinTokenLen;
             }
 
             private void GetNextToken()
             {
-                m_ff = 0;
-                for (int i = m_start_idx; i < m_text.Length - 1; i++)
+                mFf = 0;
+                for (int i = mStartIdx; i < mText.Length - 1; i++)
                 {
-                    char ch_1 = m_text[i];
-                    char ch_2 = m_text[i + 1];
-                    if (IsALetter(ch_1)) { m_ff |= FilterFlags.ContainsAlpha; }
-                    else if (IsNumeric(ch_1)) { m_ff |= FilterFlags.ContainsNumeric; }
-                    else { m_ff |= FilterFlags.ContainsOther; }
-                    if (ch_1 == '\r' && ch_2 == '\n') // WB3
+                    char ch1 = mText[i];
+                    char ch2 = mText[i + 1];
+                    if (IsALetter(ch1)) { mFf |= FilterFlags.ContainsAlpha; }
+                    else if (IsNumeric(ch1)) { mFf |= FilterFlags.ContainsNumeric; }
+                    else { mFf |= FilterFlags.ContainsOther; }
+                    if (ch1 == '\r' && ch2 == '\n') // WB3
                     {
                     }
-                    else if (IsNewline(ch_1) || IsNewline(ch_2)) // WB3a, WB3b
+                    else if (IsNewline(ch1) || IsNewline(ch2)) // WB3a, WB3b
                     {
-                        m_end_idx = i + 1;
+                        mEndIdx = i + 1;
                         return;
                     }
-                    else if (IsALetter(ch_1) && IsALetter(ch_2)) // WB5
+                    else if (IsALetter(ch1) && IsALetter(ch2)) // WB5
                     {
                     }
-                    else if (i <= m_text.Length - 3 && IsALetter(ch_1) && (IsMidLetter(ch_2) || IsMidNumLet(ch_2)) && IsALetter(m_text[i + 2])) // WB6
+                    else if (i <= mText.Length - 3 && IsALetter(ch1) && (IsMidLetter(ch2) || IsMidNumLet(ch2)) && IsALetter(mText[i + 2])) // WB6
                     {
                     }
-                    else if (i >= 1 && IsALetter(m_text[i - 1]) && (IsMidLetter(ch_1) || IsMidNumLet(ch_1)) && IsALetter(ch_2)) // WB7
+                    else if (i >= 1 && IsALetter(mText[i - 1]) && (IsMidLetter(ch1) || IsMidNumLet(ch1)) && IsALetter(ch2)) // WB7
                     {
                     }
-                    else if ((IsNumeric(ch_1) && IsNumeric(ch_2)) || (IsALetter(ch_1) && IsNumeric(ch_2)) || (IsNumeric(ch_1) && IsALetter(ch_2))) // WB8, WB9, WB10
+                    else if ((IsNumeric(ch1) && IsNumeric(ch2)) || (IsALetter(ch1) && IsNumeric(ch2)) || (IsNumeric(ch1) && IsALetter(ch2))) // WB8, WB9, WB10
                     {
                     }
-                    else if (i >= 1 && IsNumeric(m_text[i - 1]) && (IsMidNum(ch_1) || IsMidNumLet(ch_1)) && IsNumeric(ch_2)) // WB11
+                    else if (i >= 1 && IsNumeric(mText[i - 1]) && (IsMidNum(ch1) || IsMidNumLet(ch1)) && IsNumeric(ch2)) // WB11
                     {
                     }
-                    else if (i <= m_text.Length - 3 && IsNumeric(ch_1) && (IsMidNum(ch_2) || IsMidNumLet(ch_2)) && IsNumeric(m_text[i + 2])) // WB12
+                    else if (i <= mText.Length - 3 && IsNumeric(ch1) && (IsMidNum(ch2) || IsMidNumLet(ch2)) && IsNumeric(mText[i + 2])) // WB12
                     {
                     }
-                    else if ((IsALetter(ch_1) || IsNumeric(ch_1) || IsExtendNumLet(ch_1)) && IsExtendNumLet(ch_2)) // WB13a
+                    else if ((IsALetter(ch1) || IsNumeric(ch1) || IsExtendNumLet(ch1)) && IsExtendNumLet(ch2)) // WB13a
                     {
                     }
-                    else if (IsExtendNumLet(ch_1) && (IsALetter(ch_2) || IsNumeric(ch_2))) // WB13b
+                    else if (IsExtendNumLet(ch1) && (IsALetter(ch2) || IsNumeric(ch2))) // WB13b
                     {
                     }
                     else // WB14
                     {
-                        m_end_idx = i + 1;
+                        mEndIdx = i + 1;
                         return;
                     }
                 }
-                if (m_end_idx == m_text.Length)
+                if (mEndIdx == mText.Length)
                 {
-                    m_end_idx = -1;
+                    mEndIdx = -1;
                 }
                 else
                 {
-                    char last_ch = m_text[m_text.Length - 1];
-                    if (IsALetter(last_ch)) { m_ff |= FilterFlags.ContainsAlpha; }
-                    else if (IsNumeric(last_ch)) { m_ff |= FilterFlags.ContainsNumeric; }
-                    else { m_ff |= FilterFlags.ContainsOther; }
-                    m_end_idx = m_text.Length;
+                    char lastCh = mText[mText.Length - 1];
+                    if (IsALetter(lastCh)) { mFf |= FilterFlags.ContainsAlpha; }
+                    else if (IsNumeric(lastCh)) { mFf |= FilterFlags.ContainsNumeric; }
+                    else { mFf |= FilterFlags.ContainsOther; }
+                    mEndIdx = mText.Length;
                 }
             }
 
@@ -270,8 +270,8 @@ namespace Latino.TextMining
             {
                 get
                 {
-                    Utils.ThrowException(m_start_idx == m_end_idx ? new InvalidOperationException() : null);
-                    return m_text.Substring(m_start_idx, m_end_idx - m_start_idx);
+                    Utils.ThrowException(mStartIdx == mEndIdx ? new InvalidOperationException() : null);
+                    return mText.Substring(mStartIdx, mEndIdx - mStartIdx);
                 }
             }
 
@@ -284,11 +284,11 @@ namespace Latino.TextMining
             {
                 do
                 {
-                    m_start_idx = m_end_idx;
+                    mStartIdx = mEndIdx;
                     GetNextToken();
                 }
-                while (!AcceptToken() && m_end_idx != -1);
-                if (m_end_idx == -1)
+                while (!AcceptToken() && mEndIdx != -1);
+                if (mEndIdx == -1)
                 {
                     Reset();
                     return false;
@@ -298,8 +298,8 @@ namespace Latino.TextMining
 
             public void Reset()
             {
-                m_start_idx = 0;
-                m_end_idx = 0;
+                mStartIdx = 0;
+                mEndIdx = 0;
             }
 
             public void Dispose()

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -29,7 +29,7 @@ namespace Latino
         {
         }
 
-        public WeightedNetwork(IEqualityComparer<VtxT> vtx_cmp) : base(vtx_cmp)
+        public WeightedNetwork(IEqualityComparer<VtxT> vtxCmp) : base(vtxCmp)
         {
         }
 
@@ -37,7 +37,7 @@ namespace Latino
         {
         }
 
-        public WeightedNetwork(BinarySerializer reader, IEqualityComparer<VtxT> vtx_cmp) : base(reader, vtx_cmp) // throws ArgumentNullException, serialization-related exceptions
+        public WeightedNetwork(BinarySerializer reader, IEqualityComparer<VtxT> vtxCmp) : base(reader, vtxCmp) // throws ArgumentNullException, serialization-related exceptions
         {
         }
 
@@ -45,7 +45,7 @@ namespace Latino
 
         public bool HasPositiveEdges()
         {
-            foreach (IdxDat<SparseVector<double>> row in m_mtx)
+            foreach (IdxDat<SparseVector<double>> row in mMtx)
             {
                 foreach (IdxDat<double> item in row.Dat)
                 {
@@ -57,7 +57,7 @@ namespace Latino
 
         public bool HasNonNegativeEdges()
         {
-            foreach (IdxDat<SparseVector<double>> row in m_mtx)
+            foreach (IdxDat<SparseVector<double>> row in mMtx)
             {
                 foreach (IdxDat<double> item in row.Dat)
                 {
@@ -70,7 +70,7 @@ namespace Latino
         public bool ContainsZeroEdge(double eps)
         {
             Utils.ThrowException(eps < 0 ? new ArgumentOutOfRangeException("eps") : null);
-            foreach (IdxDat<SparseVector<double>> row in m_mtx)
+            foreach (IdxDat<SparseVector<double>> row in mMtx)
             {
                 foreach (IdxDat<double> item in row.Dat)
                 {
@@ -83,38 +83,38 @@ namespace Latino
         public bool IsUndirected(double eps)
         {
             Utils.ThrowException(eps < 0 ? new ArgumentOutOfRangeException("eps") : null);
-            foreach (IdxDat<SparseVector<double>> row in m_mtx)
+            foreach (IdxDat<SparseVector<double>> row in mMtx)
             {
                 foreach (IdxDat<double> item in row.Dat)
                 {
-                    if (m_mtx[item.Idx] == null) { return false; }
-                    int direct_idx = m_mtx[item.Idx].GetDirectIdx(row.Idx);
-                    if (direct_idx < 0) { return false; }
-                    double val = m_mtx[item.Idx].GetDirect(direct_idx).Dat;
+                    if (mMtx[item.Idx] == null) { return false; }
+                    int directIdx = mMtx[item.Idx].GetDirectIdx(row.Idx);
+                    if (directIdx < 0) { return false; }
+                    double val = mMtx[item.Idx].GetDirect(directIdx).Dat;
                     if (Math.Abs(item.Dat - val) > eps) { return false; }
                 }
             }
             return true;
         }
 
-        private KeyDat<int, int>[] GetShortestPaths(IEnumerable<int> src_vtx)
+        private KeyDat<int, int>[] GetShortestPaths(IEnumerable<int> srcVtx)
         {
             Set<KeyDat<int, int>> visited = new Set<KeyDat<int, int>>();
-            foreach (int item in src_vtx) { visited.Add(new KeyDat<int, int>(item, 0)); }
+            foreach (int item in srcVtx) { visited.Add(new KeyDat<int, int>(item, 0)); }
             Queue<KeyDat<int, int>> queue = new Queue<KeyDat<int, int>>(visited);
             while (queue.Count > 0)
             {
-                KeyDat<int, int> vtx_kd = queue.Dequeue();
-                SparseVector<double> vtx_info = m_mtx[vtx_kd.Key];
-                if (vtx_info != null)
+                KeyDat<int, int> vtxKd = queue.Dequeue();
+                SparseVector<double> vtxInfo = mMtx[vtxKd.Key];
+                if (vtxInfo != null)
                 {
-                    foreach (IdxDat<double> item in vtx_info)
+                    foreach (IdxDat<double> item in vtxInfo)
                     {
                         if (!visited.Contains(new KeyDat<int, int>(item.Idx)))
                         {
-                            KeyDat<int, int> new_vtx_kd = new KeyDat<int, int>(item.Idx, vtx_kd.Dat + 1);
-                            visited.Add(new_vtx_kd);
-                            queue.Enqueue(new_vtx_kd);
+                            KeyDat<int, int> newVtxKd = new KeyDat<int, int>(item.Idx, vtxKd.Dat + 1);
+                            visited.Add(newVtxKd);
+                            queue.Enqueue(newVtxKd);
                         }
                     }
                 }
@@ -124,148 +124,148 @@ namespace Latino
 
         public double[] PageRank()
         {
-            return PageRank(/*src_vtx_list=*/null, /*damping=*/0.85); // throws InvalidOperationException, ArgumentOutOfRangeException
+            return PageRank(/*srcVtxList=*/null, /*damping=*/0.85); // throws InvalidOperationException, ArgumentOutOfRangeException
         }
 
-        public double[] PageRank(IEnumerable<int> src_vtx_list)
+        public double[] PageRank(IEnumerable<int> srcVtxList)
         {
-            return PageRank(src_vtx_list, /*damping=*/0.85); // throws InvalidOperationException, ArgumentOutOfRangeException
+            return PageRank(srcVtxList, /*damping=*/0.85); // throws InvalidOperationException, ArgumentOutOfRangeException
         }
 
-        public double[] PageRank(IEnumerable<int> src_vtx_list, double damping)
+        public double[] PageRank(IEnumerable<int> srcVtxList, double damping)
         {
-            return PageRank(src_vtx_list, damping, /*max_steps=*/10000, /*eps=*/0.00001); // throws InvalidOperationException, ArgumentOutOfRangeException
+            return PageRank(srcVtxList, damping, /*maxSteps=*/10000, /*eps=*/0.00001); // throws InvalidOperationException, ArgumentOutOfRangeException
         }
 
-        public double[] PageRank(IEnumerable<int> src_vtx_list, double damping, int max_steps, double eps)
+        public double[] PageRank(IEnumerable<int> srcVtxList, double damping, int maxSteps, double eps)
         {
-            return PageRank(src_vtx_list, damping, max_steps, eps, /*init_pr=*/null, /*no_bounding=*/true, /*inlinks=*/null); // throws InvalidOperationException, ArgumentOutOfRangeException
+            return PageRank(srcVtxList, damping, maxSteps, eps, /*initPr=*/null, /*noBounding=*/true, /*inlinks=*/null); // throws InvalidOperationException, ArgumentOutOfRangeException
         }
 
-        public SparseMatrix<double> SimRank(double damping, int max_steps/*, double eps*/)
+        public SparseMatrix<double> SimRank(double damping, int maxSteps/*, double eps*/)
         {
-            Utils.ThrowException(m_vtx.Count == 0 ? new InvalidOperationException() : null);            
+            Utils.ThrowException(mVtx.Count == 0 ? new InvalidOperationException() : null);            
             Utils.ThrowException((damping < 0 || damping >= 1) ? new ArgumentOutOfRangeException("damping") : null);
-            Utils.ThrowException(max_steps <= 0 ? new ArgumentOutOfRangeException("max_steps") : null);
+            Utils.ThrowException(maxSteps <= 0 ? new ArgumentOutOfRangeException("maxSteps") : null);
             //Utils.ThrowException(eps < 0 ? new ArgumentOutOfRangeException("eps") : null);
-            SparseMatrix<double> sim_rank = new SparseMatrix<double>();
+            SparseMatrix<double> simRank = new SparseMatrix<double>();
             // initialize SimRank
-            for (int i = 0; i < m_vtx.Count; i++)
+            for (int i = 0; i < mVtx.Count; i++)
             {
-                sim_rank[i] = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(i, 1) });
+                simRank[i] = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(i, 1) });
             }
             // main loop
             int step = 0;            
             do
             {
-                for (int i = 0; i < m_vtx.Count; i++)
+                for (int i = 0; i < mVtx.Count; i++)
                 {
-                    for (int j = 0; j < m_vtx.Count; j++)
+                    for (int j = 0; j < mVtx.Count; j++)
                     {
-                        if (i != j && m_mtx[i] != null && m_mtx[j] != null)
+                        if (i != j && mMtx[i] != null && mMtx[j] != null)
                         {
-                            SparseVector<double> mtx_i = m_mtx[i];
-                            SparseVector<double> mtx_j = m_mtx[j];
-                            double sum_sum = 0;
-                            foreach (IdxDat<double> item_i in mtx_i)
+                            SparseVector<double> mtxI = mMtx[i];
+                            SparseVector<double> mtxJ = mMtx[j];
+                            double sumSum = 0;
+                            foreach (IdxDat<double> itemI in mtxI)
                             {
-                                if (sim_rank.ContainsRowAt(item_i.Idx))
+                                if (simRank.ContainsRowAt(itemI.Idx))
                                 {
-                                    foreach (IdxDat<double> item_j in mtx_j)
+                                    foreach (IdxDat<double> itemJ in mtxJ)
                                     {
-                                        int idx = sim_rank[item_i.Idx].GetDirectIdx(item_j.Idx);
+                                        int idx = simRank[itemI.Idx].GetDirectIdx(itemJ.Idx);
                                         if (idx >= 0)
                                         {
-                                            sum_sum += sim_rank[item_i.Idx].GetDatDirect(idx);
+                                            sumSum += simRank[itemI.Idx].GetDatDirect(idx);
                                         }
                                     }
                                 }
                             }
-                            double sim = damping / (double)(mtx_i.Count * mtx_j.Count) * sum_sum;
-                            if (sim > 0) { sim_rank[i, j] = sim; } // threshold!!!
+                            double sim = damping / (double)(mtxI.Count * mtxJ.Count) * sumSum;
+                            if (sim > 0) { simRank[i, j] = sim; } // threshold!!!
                         }
                     }
                 }
                 step++;
-            } while (step < max_steps /*&& diff > eps*/);
-            return sim_rank;
+            } while (step < maxSteps /*&& diff > eps*/);
+            return simRank;
         }
 
-        public double[] PageRank(IEnumerable<int> src_vtx_list, double damping, int max_steps, double eps, double[] init_pr, bool no_bounding, SparseMatrix<double>.ReadOnly inlinks)
+        public double[] PageRank(IEnumerable<int> srcVtxList, double damping, int maxSteps, double eps, double[] initPr, bool noBounding, SparseMatrix<double>.ReadOnly inlinks)
         {            
-            Utils.ThrowException((m_vtx.Count == 0 || !HasPositiveEdges()) ? new InvalidOperationException() : null);
+            Utils.ThrowException((mVtx.Count == 0 || !HasPositiveEdges()) ? new InvalidOperationException() : null);
             Utils.ThrowException((damping < 0 || damping >= 1) ? new ArgumentOutOfRangeException("damping") : null);
-            Utils.ThrowException(max_steps <= 0 ? new ArgumentOutOfRangeException("max_steps") : null);
+            Utils.ThrowException(maxSteps <= 0 ? new ArgumentOutOfRangeException("maxSteps") : null);
             Utils.ThrowException(eps < 0 ? new ArgumentOutOfRangeException("eps") : null);
-            Utils.ThrowException((init_pr != null && init_pr.Length != m_vtx.Count) ? new ArgumentValueException("init_pr") : null);
+            Utils.ThrowException((initPr != null && initPr.Length != mVtx.Count) ? new ArgumentValueException("initPr") : null);
             // *** inlinks needs to be the transposed form of this.Edges; to check if this is true, uncomment the following line            
-            //Utils.ThrowException((inlinks != null && !((SparseMatrix<double>.ReadOnly)m_mtx.GetTransposedCopy()).ContentEquals(inlinks)) ? new ArgumentValueException("inlinks") : null);            
-            int src_vtx_count = 0; 
-            if (src_vtx_list != null)
+            //Utils.ThrowException((inlinks != null && !((SparseMatrix<double>.ReadOnly)mMtx.GetTransposedCopy()).ContentEquals(inlinks)) ? new ArgumentValueException("inlinks") : null);            
+            int srcVtxCount = 0; 
+            if (srcVtxList != null)
             {
-                foreach (int src_vtx_idx in src_vtx_list)
+                foreach (int srcVtxIdx in srcVtxList)
                 {
-                    src_vtx_count++;
-                    Utils.ThrowException((src_vtx_idx < 0 || src_vtx_idx >= m_vtx.Count) ? new ArgumentOutOfRangeException("src_vtx_list item") : null);
+                    srcVtxCount++;
+                    Utils.ThrowException((srcVtxIdx < 0 || srcVtxIdx >= mVtx.Count) ? new ArgumentOutOfRangeException("srcVtxList item") : null);
                 }
             }
             // precompute weight sums
-            double[] wgt_sum = new double[m_vtx.Count];
-            for (int i = 0; i < m_vtx.Count; i++)
+            double[] wgtSum = new double[mVtx.Count];
+            for (int i = 0; i < mVtx.Count; i++)
             {
-                wgt_sum[i] = 0;
-                if (m_mtx[i] != null)
+                wgtSum[i] = 0;
+                if (mMtx[i] != null)
                 {
-                    foreach (IdxDat<double> other_vtx in m_mtx[i])
+                    foreach (IdxDat<double> otherVtx in mMtx[i])
                     {
-                        wgt_sum[i] += other_vtx.Dat;
+                        wgtSum[i] += otherVtx.Dat;
                     }
                 }
             }
-            // initialize rank_vec
-            double[] rank_vec = new double[m_vtx.Count];            
-            if (init_pr != null)
+            // initialize rankVec
+            double[] rankVec = new double[mVtx.Count];            
+            if (initPr != null)
             {
-                double rank_sum = 0;
-                foreach (double val in init_pr) 
+                double rankSum = 0;
+                foreach (double val in initPr) 
                 { 
-                    rank_sum += val;
-                    Utils.ThrowException(val < 0 ? new ArgumentOutOfRangeException("init_pr item") : null);
+                    rankSum += val;
+                    Utils.ThrowException(val < 0 ? new ArgumentOutOfRangeException("initPr item") : null);
                 }
-                Utils.ThrowException(rank_sum == 0 ? new ArgumentValueException("init_pr") : null);
-                for (int vtx_idx = 0; vtx_idx < m_vtx.Count; vtx_idx++)
+                Utils.ThrowException(rankSum == 0 ? new ArgumentValueException("initPr") : null);
+                for (int vtxIdx = 0; vtxIdx < mVtx.Count; vtxIdx++)
                 {
-                    rank_vec[vtx_idx] = init_pr[vtx_idx] / rank_sum; 
+                    rankVec[vtxIdx] = initPr[vtxIdx] / rankSum; 
                 }
             }
             else
             {
-                if (src_vtx_count == 0)
+                if (srcVtxCount == 0)
                 {
-                    double init_rank = 1.0 / (double)m_vtx.Count;
-                    for (int vtx_idx = 0; vtx_idx < m_vtx.Count; vtx_idx++) { rank_vec[vtx_idx] = init_rank; }
+                    double initRank = 1.0 / (double)mVtx.Count;
+                    for (int vtxIdx = 0; vtxIdx < mVtx.Count; vtxIdx++) { rankVec[vtxIdx] = initRank; }
                 }
                 else
                 {
-                    double init_rank = 1.0 / (double)src_vtx_count;
-                    for (int vtx_idx = 0; vtx_idx < m_vtx.Count; vtx_idx++) { rank_vec[vtx_idx] = 0; }
-                    foreach (int src_vtx_idx in src_vtx_list) { rank_vec[src_vtx_idx] = init_rank; }
+                    double initRank = 1.0 / (double)srcVtxCount;
+                    for (int vtxIdx = 0; vtxIdx < mVtx.Count; vtxIdx++) { rankVec[vtxIdx] = 0; }
+                    foreach (int srcVtxIdx in srcVtxList) { rankVec[srcVtxIdx] = initRank; }
                 }
             }
             // transpose adjacency matrix
             if (inlinks == null)
             {
-                inlinks = m_mtx.GetTransposedCopy();
+                inlinks = mMtx.GetTransposedCopy();
             }
             // compute shortest paths
-            KeyDat<int, int>[] vtx_info = null;
-            if (src_vtx_count > 0 && !no_bounding)
+            KeyDat<int, int>[] vtxInfo = null;
+            if (srcVtxCount > 0 && !noBounding)
             {
-                KeyDat<int, int>[] tmp = GetShortestPaths(src_vtx_list);
-                vtx_info = new KeyDat<int, int>[tmp.Length];
+                KeyDat<int, int>[] tmp = GetShortestPaths(srcVtxList);
+                vtxInfo = new KeyDat<int, int>[tmp.Length];
                 int i = 0;
-                foreach (KeyDat<int, int> item in tmp) { vtx_info[i++] = new KeyDat<int, int>(item.Dat, item.Key); }
-                Array.Sort(vtx_info);
+                foreach (KeyDat<int, int> item in tmp) { vtxInfo[i++] = new KeyDat<int, int>(item.Dat, item.Key); }
+                Array.Sort(vtxInfo);
             }
             // main loop
             int step = 0;
@@ -274,77 +274,77 @@ namespace Latino
             {
                 //DateTime then = DateTime.Now;
                 // compute new Page Rank for each vertex
-                double[] new_rank_vec = new double[m_vtx.Count];
-                if (src_vtx_count == 0 || no_bounding)
+                double[] newRankVec = new double[mVtx.Count];
+                if (srcVtxCount == 0 || noBounding)
                 {
-                    for (int vtx_idx = 0; vtx_idx < m_vtx.Count; vtx_idx++)
+                    for (int vtxIdx = 0; vtxIdx < mVtx.Count; vtxIdx++)
                     {
-                        double new_rank = 0;
-                        if (inlinks.ContainsRowAt(vtx_idx))
+                        double newRank = 0;
+                        if (inlinks.ContainsRowAt(vtxIdx))
                         {
-                            foreach (IdxDat<double> other_vtx in inlinks[vtx_idx])
+                            foreach (IdxDat<double> otherVtx in inlinks[vtxIdx])
                             {
-                                new_rank += other_vtx.Dat / wgt_sum[other_vtx.Idx] * (double)rank_vec[other_vtx.Idx];
+                                newRank += otherVtx.Dat / wgtSum[otherVtx.Idx] * (double)rankVec[otherVtx.Idx];
                             }
                         }
-                        new_rank_vec[vtx_idx] = new_rank;
+                        newRankVec[vtxIdx] = newRank;
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < vtx_info.Length && (init_pr != null || vtx_info[i].Key <= step + 1); i++)
+                    for (int i = 0; i < vtxInfo.Length && (initPr != null || vtxInfo[i].Key <= step + 1); i++)
                     {
-                        int vtx_idx = vtx_info[i].Dat;
-                        double new_rank = 0;
-                        if (inlinks.ContainsRowAt(vtx_idx))
+                        int vtxIdx = vtxInfo[i].Dat;
+                        double newRank = 0;
+                        if (inlinks.ContainsRowAt(vtxIdx))
                         {
-                            foreach (IdxDat<double> other_vtx in inlinks[vtx_idx])
+                            foreach (IdxDat<double> otherVtx in inlinks[vtxIdx])
                             {
-                                new_rank += other_vtx.Dat / wgt_sum[other_vtx.Idx] * (double)rank_vec[other_vtx.Idx];
+                                newRank += otherVtx.Dat / wgtSum[otherVtx.Idx] * (double)rankVec[otherVtx.Idx];
                             }
                         }
-                        new_rank_vec[vtx_idx] = new_rank;
+                        newRankVec[vtxIdx] = newRank;
                     }
                 }
-                // normalize new_rank_vec by distributing (1.0 - rank_sum) to source vertices
-                double rank_sum = 0;
-                for (int i = 0; i < new_rank_vec.Length; i++) { rank_sum += new_rank_vec[i]; }
-                if (rank_sum <= 0.999999)
+                // normalize newRankVec by distributing (1.0 - rankSum) to source vertices
+                double rankSum = 0;
+                for (int i = 0; i < newRankVec.Length; i++) { rankSum += newRankVec[i]; }
+                if (rankSum <= 0.999999)
                 {
-                    if (src_vtx_count == 0)
+                    if (srcVtxCount == 0)
                     {
-                        double distr_rank = (1.0 - rank_sum) / (double)m_vtx.Count;
-                        for (int i = 0; i < new_rank_vec.Length; i++) { new_rank_vec[i] += distr_rank; }
+                        double distrRank = (1.0 - rankSum) / (double)mVtx.Count;
+                        for (int i = 0; i < newRankVec.Length; i++) { newRankVec[i] += distrRank; }
                     }
                     else
                     {
-                        double distr_rank = (1.0 - rank_sum) / (double)src_vtx_count;
-                        foreach (int src_vtx_idx in src_vtx_list) { new_rank_vec[src_vtx_idx] += distr_rank; }
+                        double distrRank = (1.0 - rankSum) / (double)srcVtxCount;
+                        foreach (int srcVtxIdx in srcVtxList) { newRankVec[srcVtxIdx] += distrRank; }
                     }
                 }
                 // incorporate damping factor
-                if (src_vtx_count == 0)
+                if (srcVtxCount == 0)
                 {
-                    double distr_rank = (1.0 - damping) / (double)m_vtx.Count;
-                    for (int i = 0; i < new_rank_vec.Length; i++) { new_rank_vec[i] = damping * new_rank_vec[i] + distr_rank; }
+                    double distrRank = (1.0 - damping) / (double)mVtx.Count;
+                    for (int i = 0; i < newRankVec.Length; i++) { newRankVec[i] = damping * newRankVec[i] + distrRank; }
                 }
                 else
                 {
-                    double distr_rank = (1.0 - damping) / (double)src_vtx_count;
-                    for (int i = 0; i < new_rank_vec.Length; i++) { new_rank_vec[i] = damping * new_rank_vec[i]; }
-                    foreach (int src_vtx_idx in src_vtx_list) { new_rank_vec[src_vtx_idx] += distr_rank; }
+                    double distrRank = (1.0 - damping) / (double)srcVtxCount;
+                    for (int i = 0; i < newRankVec.Length; i++) { newRankVec[i] = damping * newRankVec[i]; }
+                    foreach (int srcVtxIdx in srcVtxList) { newRankVec[srcVtxIdx] += distrRank; }
                 }
                 // compute difference
                 diff = 0;
-                for (int i = 0; i < m_vtx.Count; i++)
+                for (int i = 0; i < mVtx.Count; i++)
                 {
-                    diff += Math.Abs(rank_vec[i] - new_rank_vec[i]);
+                    diff += Math.Abs(rankVec[i] - newRankVec[i]);
                 }
-                rank_vec = new_rank_vec;
+                rankVec = newRankVec;
                 step++;
                 //Console.WriteLine("Step {0}\tTime {1}", step, (DateTime.Now - then).TotalMilliseconds);
-            } while (step < max_steps && diff > eps);
-            return rank_vec;
+            } while (step < maxSteps && diff > eps);
+            return rankVec;
         }
 
         // *** ICloneable<Network<VtxT, EdgeT>> interface adaptation ***
@@ -352,14 +352,14 @@ namespace Latino
         new public WeightedNetwork<VtxT> Clone()
         {
             WeightedNetwork<VtxT> clone = new WeightedNetwork<VtxT>();
-            clone.m_vtx = m_vtx.Clone();
-            clone.m_mtx = m_mtx.Clone();
+            clone.mVtx = mVtx.Clone();
+            clone.mMtx = mMtx.Clone();
             int i = 0;
-            foreach (VtxT vtx in clone.m_vtx)
+            foreach (VtxT vtx in clone.mVtx)
             {
                 if (vtx != null)
                 {
-                    clone.m_vtx_to_idx.Add(vtx, i++);
+                    clone.mVtxToIdx.Add(vtx, i++);
                 }
             }
             return clone;
@@ -370,14 +370,14 @@ namespace Latino
         new public WeightedNetwork<VtxT> DeepClone()
         {
             WeightedNetwork<VtxT> clone = new WeightedNetwork<VtxT>();
-            clone.m_vtx = m_vtx.DeepClone();
-            clone.m_mtx = m_mtx.DeepClone();
+            clone.mVtx = mVtx.DeepClone();
+            clone.mMtx = mMtx.DeepClone();
             int i = 0;
-            foreach (VtxT vtx in clone.m_vtx)
+            foreach (VtxT vtx in clone.mVtx)
             {
                 if (vtx != null)
                 {
-                    clone.m_vtx_to_idx.Add(vtx, i++);
+                    clone.mVtxToIdx.Add(vtx, i++);
                 }
             }
             return clone;

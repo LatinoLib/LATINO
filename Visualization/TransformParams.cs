@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,84 +25,84 @@ namespace Latino.Visualization
     */
     public struct TransformParams
     {
-        private float m_translate_x;
-        private float m_translate_y;
-        private float m_scale_factor;
-        private static TransformParams m_identity
+        private float mTranslateX;
+        private float mTranslateY;
+        private float mScaleFactor;
+        private static TransformParams mIdentity
             = new TransformParams(0, 0, 1);
-        public TransformParams(float translate_x, float translate_y, float scale_factor)
+        public TransformParams(float translateX, float translateY, float scaleFactor)
         {
-            Utils.ThrowException(scale_factor <= 0 ? new ArgumentOutOfRangeException("scale_factor") : null);
-            m_translate_x = translate_x;
-            m_translate_y = translate_y;
-            m_scale_factor = scale_factor;
+            Utils.ThrowException(scaleFactor <= 0 ? new ArgumentOutOfRangeException("scaleFactor") : null);
+            mTranslateX = translateX;
+            mTranslateY = translateY;
+            mScaleFactor = scaleFactor;
         }
-        public TransformParams(float scale_factor) : this(0, 0, scale_factor) // throws ArgumentOutOfRangeException
+        public TransformParams(float scaleFactor) : this(0, 0, scaleFactor) // throws ArgumentOutOfRangeException
         {
         }
-        public TransformParams(float translate_x, float translate_y) : this(translate_x, translate_y, 1)
+        public TransformParams(float translateX, float translateY) : this(translateX, translateY, 1)
         {
         }
         public float TranslateX
         {
-            get { return m_translate_x; }
-            set { m_translate_x = value; }
+            get { return mTranslateX; }
+            set { mTranslateX = value; }
         }
         public float TranslateY
         {
-            get { return m_translate_y; }
-            set { m_translate_y = value; }
+            get { return mTranslateY; }
+            set { mTranslateY = value; }
         }
         public float ScaleFactor
         {
-            get { return m_scale_factor; }
+            get { return mScaleFactor; }
             set
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("ScaleFactor") : null);
-                m_scale_factor = value;
+                mScaleFactor = value;
             }
         }
         public bool NotSet
         {
-            get { return m_scale_factor == 0; }
+            get { return mScaleFactor == 0; }
         }
         public TransformParams Inverse
         {
             get
             {
-                Utils.ThrowException(m_scale_factor == 0 ? new InvalidOperationException() : null);
-                return new TransformParams(-m_translate_x, -m_translate_y, 1f / m_scale_factor);
+                Utils.ThrowException(mScaleFactor == 0 ? new InvalidOperationException() : null);
+                return new TransformParams(-mTranslateX, -mTranslateY, 1f / mScaleFactor);
             }
         }
         public static TransformParams Identity
         {
-            get { return m_identity; }
+            get { return mIdentity; }
         }
         public RectangleF Transform(RectangleF rect)
         {
             // scale
-            rect.X *= m_scale_factor;
-            rect.Y *= m_scale_factor;
-            rect.Width *= m_scale_factor;
-            rect.Height *= m_scale_factor;
+            rect.X *= mScaleFactor;
+            rect.Y *= mScaleFactor;
+            rect.Width *= mScaleFactor;
+            rect.Height *= mScaleFactor;
             // translate
-            rect.X += m_translate_x;
-            rect.Y += m_translate_y;
+            rect.X += mTranslateX;
+            rect.Y += mTranslateY;
             return rect;
         }
         public VectorF Transform(VectorF vec)
         {
             // scale
-            vec.X *= m_scale_factor;
-            vec.Y *= m_scale_factor;
+            vec.X *= mScaleFactor;
+            vec.Y *= mScaleFactor;
             // translate
-            vec.X += m_translate_x;
-            vec.Y += m_translate_y;
+            vec.X += mTranslateX;
+            vec.Y += mTranslateY;
             return vec;
         }
         public float Transform(float len)
         {
-            return len * m_scale_factor;
+            return len * mScaleFactor;
         }
     }
 }

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,72 +25,72 @@ namespace Latino
     */
     public struct VectorF : IEquatable<VectorF>, ISerializable
     {
-        private float m_x;
-        private float m_y;
+        private float mX;
+        private float mY;
         public VectorF(BinarySerializer reader) : this()
         {
             Load(reader); // throws ArgumentNullException
         }
         public VectorF(float x, float y)
         {
-            m_x = x;
-            m_y = y;
+            mX = x;
+            mY = y;
         }
         public VectorF(PointF pt) : this(pt.X, pt.Y) 
         {
         }
-        public VectorF(float x, float y, float x_2, float y_2) : this(x_2 - x, y_2 - y) 
+        public VectorF(float x, float y, float x2, float y2) : this(x2 - x, y2 - y) 
         {
         }
-        public VectorF(VectorF vec_1, VectorF vec_2) : this(vec_2.X - vec_1.X, vec_2.Y - vec_1.Y) 
+        public VectorF(VectorF vec1, VectorF vec2) : this(vec2.X - vec1.X, vec2.Y - vec1.Y) 
         {
         }
-        public VectorF(PointF pt_1, PointF pt_2) : this(pt_2.X - pt_1.X, pt_2.Y - pt_1.Y)
+        public VectorF(PointF pt1, PointF pt2) : this(pt2.X - pt1.X, pt2.Y - pt1.Y)
         {
         }
         public float X
         {
-            get { return m_x; }
-            set { m_x = value; }
+            get { return mX; }
+            set { mX = value; }
         }
         public float Y
         {
-            get { return m_y; }
-            set { m_y = value; }
+            get { return mY; }
+            set { mY = value; }
         }
         public void Set(float x, float y)
         {
-            m_x = x;
-            m_y = y;
+            mX = x;
+            mY = y;
         }
         public float GetLength()
         {
-            return (float)Math.Sqrt(m_x * m_x + m_y * m_y);
+            return (float)Math.Sqrt(mX * mX + mY * mY);
         }
-        public void SetLength(float new_len)
+        public void SetLength(float newLen)
         {
             float len = GetLength(); 
             Utils.ThrowException(len == 0 ? new InvalidOperationException() : null);
-            m_x = m_x / len * new_len;
-            m_y = m_y / len * new_len;
+            mX = mX / len * newLen;
+            mY = mY / len * newLen;
         }
         public VectorF UnitVector()
         {
-            VectorF unit_vec = this;
-            unit_vec.SetLength(1); // throws InvalidOperationException
-            return unit_vec;
+            VectorF unitVec = this;
+            unitVec.SetLength(1); // throws InvalidOperationException
+            return unitVec;
         }
         public VectorF Normal() // returns an orthogonal clockwise-oriented vector of the same length
         {
             Utils.ThrowException(GetLength() == 0 ? new InvalidOperationException() : null);
-            return new VectorF(m_y, -m_x);
+            return new VectorF(mY, -mX);
         }
         public float GetAngle() // returns a value within [0, 2PI)
         {
-            VectorF unit_vec = UnitVector(); // throws InvalidOperationException
+            VectorF unitVec = UnitVector(); // throws InvalidOperationException
             float angle;
-            if (m_x >= 0) { angle = (float)Math.Asin(unit_vec.Y); }
-            else { angle = (float)(Math.PI - Math.Asin(unit_vec.Y)); }
+            if (mX >= 0) { angle = (float)Math.Asin(unitVec.Y); }
+            else { angle = (float)(Math.PI - Math.Asin(unitVec.Y)); }
             if (angle < 0) { angle += (float)(2.0 * Math.PI); }
             return angle;
         }
@@ -98,72 +98,72 @@ namespace Latino
         {
             Utils.ThrowException(len < 0 ? new ArgumentOutOfRangeException("len") : null);
             Utils.ThrowException(rnd == null ? new ArgumentNullException("rnd") : null);
-            VectorF rnd_vec;
+            VectorF rndVec;
             do
             {
-                rnd_vec = new VectorF((float)rnd.NextDouble(), (float)rnd.NextDouble());
+                rndVec = new VectorF((float)rnd.NextDouble(), (float)rnd.NextDouble());
             }
-            while (rnd_vec.GetLength() == 0);
-            rnd_vec.SetLength(len);
-            return rnd_vec;
+            while (rndVec.GetLength() == 0);
+            rndVec.SetLength(len);
+            return rndVec;
         }
         public static VectorF GetFromAngleAndLength(float angle, float len)
         {
             Utils.ThrowException(len < 0 ? new ArgumentOutOfRangeException("length") : null);
             return new VectorF((float)Math.Cos(angle) * len, (float)Math.Sin(angle) * len); 
         }
-        public static bool Intersect(VectorF A, VectorF a, VectorF B, VectorF b, ref float x, ref float y, ref bool seg_intersect)
+        public static bool Intersect(VectorF A, VectorF a, VectorF B, VectorF b, ref float x, ref float y, ref bool segIntersect)
         {
             Utils.ThrowException(a.GetLength() == 0 ? new ArgumentOutOfRangeException("a") : null);
             Utils.ThrowException(b.GetLength() == 0 ? new ArgumentOutOfRangeException("b") : null);
-            float x_1 = A.X;
-            float y_1 = A.Y;
-            float x_2 = A.X + a.X;
-            float y_2 = A.Y + a.Y;
-            float x_3 = B.X;
-            float y_3 = B.Y;
-            float x_4 = B.X + b.X;
-            float y_4 = B.Y + b.Y;
-            float div = (y_4 - y_3) * (x_2 - x_1) - (x_4 - x_3) * (y_2 - y_1);
+            float x1 = A.X;
+            float y1 = A.Y;
+            float x2 = A.X + a.X;
+            float y2 = A.Y + a.Y;
+            float x3 = B.X;
+            float y3 = B.Y;
+            float x4 = B.X + b.X;
+            float y4 = B.Y + b.Y;
+            float div = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
             if (div == 0) { return false; } // the two vectors are parallel or coincident
-            float ua = ((x_4 - x_3) * (y_1 - y_3) - (y_4 - y_3) * (x_1 - x_3)) / div;
-            float ub = ((x_2 - x_1) * (y_1 - y_3) - (y_2 - y_1) * (x_1 - x_3)) / div;
-            x = x_1 + ua * (x_2 - x_1);
-            y = y_1 + ua * (y_2 - y_1);
-            seg_intersect = ua >= 0.0 && ua <= 1.0 && ub >= 0.0 && ub <= 1.0;
+            float ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / div;
+            float ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / div;
+            x = x1 + ua * (x2 - x1);
+            y = y1 + ua * (y2 - y1);
+            segIntersect = ua >= 0.0 && ua <= 1.0 && ub >= 0.0 && ub <= 1.0;
             return true;
         }
         public static bool Intersect(VectorF A, VectorF a, VectorF B, VectorF b, ref float x, ref float y, ref float ua, ref float ub)
         {
             Utils.ThrowException(a.GetLength() == 0 ? new ArgumentOutOfRangeException("a") : null);
             Utils.ThrowException(b.GetLength() == 0 ? new ArgumentOutOfRangeException("b") : null);
-            float x_1 = A.X;
-            float y_1 = A.Y;
-            float x_2 = A.X + a.X;
-            float y_2 = A.Y + a.Y;
-            float x_3 = B.X;
-            float y_3 = B.Y;
-            float x_4 = B.X + b.X;
-            float y_4 = B.Y + b.Y;
-            float div = (y_4 - y_3) * (x_2 - x_1) - (x_4 - x_3) * (y_2 - y_1);
+            float x1 = A.X;
+            float y1 = A.Y;
+            float x2 = A.X + a.X;
+            float y2 = A.Y + a.Y;
+            float x3 = B.X;
+            float y3 = B.Y;
+            float x4 = B.X + b.X;
+            float y4 = B.Y + b.Y;
+            float div = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
             if (div == 0) { return false; } // the two vectors are parallel or coincident
-            ua = ((x_4 - x_3) * (y_1 - y_3) - (y_4 - y_3) * (x_1 - x_3)) / div;
-            ub = ((x_2 - x_1) * (y_1 - y_3) - (y_2 - y_1) * (x_1 - x_3)) / div;
-            x = x_1 + ua * (x_2 - x_1);
-            y = y_1 + ua * (y_2 - y_1);
+            ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / div;
+            ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / div;
+            x = x1 + ua * (x2 - x1);
+            y = y1 + ua * (y2 - y1);
             return true;
         }
-        public static float DotProduct(VectorF vec_1, VectorF vec_2)
+        public static float DotProduct(VectorF vec1, VectorF vec2)
         {
-            return vec_1.X * vec_2.X + vec_1.Y * vec_2.Y;
+            return vec1.X * vec2.X + vec1.Y * vec2.Y;
         }
-        public static VectorF operator +(VectorF vec_1, VectorF vec_2)
+        public static VectorF operator +(VectorF vec1, VectorF vec2)
         {
-            return new VectorF(vec_1.X + vec_2.X, vec_1.Y + vec_2.Y);
+            return new VectorF(vec1.X + vec2.X, vec1.Y + vec2.Y);
         }
-        public static VectorF operator -(VectorF vec_1, VectorF vec_2)
+        public static VectorF operator -(VectorF vec1, VectorF vec2)
         {
-            return new VectorF(vec_1.X - vec_2.X, vec_1.Y - vec_2.Y); 
+            return new VectorF(vec1.X - vec2.X, vec1.Y - vec2.Y); 
         }
         public static VectorF operator *(VectorF vec, float scalar)
         {
@@ -182,17 +182,17 @@ namespace Latino
         {
             return new VectorF(-vec.X, -vec.Y);
         }
-        public static bool operator ==(VectorF vec_1, VectorF vec_2)
+        public static bool operator ==(VectorF vec1, VectorF vec2)
         {
-            return vec_1.m_x == vec_2.m_x && vec_1.m_y == vec_2.m_y;
+            return vec1.mX == vec2.mX && vec1.mY == vec2.mY;
         }
-        public static bool operator !=(VectorF vec_1, VectorF vec_2)
+        public static bool operator !=(VectorF vec1, VectorF vec2)
         {
-            return !(vec_1 == vec_2);
+            return !(vec1 == vec2);
         }
         public static implicit operator PointF(VectorF vec)
         {
-            return new PointF(vec.m_x, vec.m_y);
+            return new PointF(vec.mX, vec.mY);
         }
         public static implicit operator VectorF(PointF pt)
         {
@@ -200,16 +200,16 @@ namespace Latino
         }
         public override string ToString()
         {
-            return string.Format("( {0} {1} )", m_x, m_y);
+            return string.Format("( {0} {1} )", mX, mY);
         }
         public override int GetHashCode()
         {
-            return m_x.GetHashCode() ^ m_y.GetHashCode();
+            return mX.GetHashCode() ^ mY.GetHashCode();
         }
         // *** IEquatable<VectorF> interface implementation ***
         public bool Equals(VectorF other)
         {
-            return m_x == other.m_x && m_y == other.m_y;
+            return mX == other.mX && mY == other.mY;
         }
         public override bool Equals(object obj)
         {
@@ -220,14 +220,14 @@ namespace Latino
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
-            writer.WriteFloat(m_x);
-            writer.WriteFloat(m_y);
+            writer.WriteFloat(mX);
+            writer.WriteFloat(mY);
         }
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            m_x = reader.ReadFloat();
-            m_y = reader.ReadFloat();
+            mX = reader.ReadFloat();
+            mY = reader.ReadFloat();
         }
     }
 }

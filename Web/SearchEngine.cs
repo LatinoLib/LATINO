@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  (c) 2006-08 JSI.  All rights reserved.
  *
@@ -84,79 +84,79 @@ namespace Latino.Web
     */
     public struct SearchEngineResult : ISerializable, IXmlSerializable
     {
-        private string m_title;
-        private string m_snippet;
-        private string m_url;
-        private double m_relevance;
-        private string m_raw_text;
+        private string mTitle;
+        private string mSnippet;
+        private string mUrl;
+        private double mRelevance;
+        private string mRawText;
 
-        public SearchEngineResult(string title, string snippet, string url, double relevance, string raw_text)
+        public SearchEngineResult(string title, string snippet, string url, double relevance, string rawText)
         {
-            m_title = title;
-            m_snippet = snippet;
-            m_url = url;
-            m_relevance = relevance;
-            m_raw_text = raw_text;
+            mTitle = title;
+            mSnippet = snippet;
+            mUrl = url;
+            mRelevance = relevance;
+            mRawText = rawText;
         }
 
         public SearchEngineResult(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            m_title = reader.ReadString();
-            m_snippet = reader.ReadString();
-            m_url = reader.ReadString();
-            m_relevance = reader.ReadDouble();
-            m_raw_text = reader.ReadString();
+            mTitle = reader.ReadString();
+            mSnippet = reader.ReadString();
+            mUrl = reader.ReadString();
+            mRelevance = reader.ReadDouble();
+            mRawText = reader.ReadString();
         }
 
-        public SearchEngineResult(XmlReader xml_reader)
+        public SearchEngineResult(XmlReader xmlReader)
         {
-            Utils.ThrowException(xml_reader == null ? new ArgumentNullException("xml_reader") : null);
-            m_title = null;
-            m_snippet = null;
-            m_url = null;
-            m_relevance = -1;
-            m_raw_text = null;
-            while (xml_reader.Read()) // throws XmlException
+            Utils.ThrowException(xmlReader == null ? new ArgumentNullException("xmlReader") : null);
+            mTitle = null;
+            mSnippet = null;
+            mUrl = null;
+            mRelevance = -1;
+            mRawText = null;
+            while (xmlReader.Read()) // throws XmlException
             {
-                if (xml_reader.NodeType == XmlNodeType.Element)
+                if (xmlReader.NodeType == XmlNodeType.Element)
                 {
-                    if (xml_reader.Name == "Result")
+                    if (xmlReader.Name == "Result")
                     {
-                        string relevance_str = xml_reader.GetAttribute("relevance");
-                        if (relevance_str != null) { m_relevance = XmlConvert.ToDouble(relevance_str); } // throws OverflowException, FormatException
-                        m_url = xml_reader.GetAttribute("url");
+                        string relevanceStr = xmlReader.GetAttribute("relevance");
+                        if (relevanceStr != null) { mRelevance = XmlConvert.ToDouble(relevanceStr); } // throws OverflowException, FormatException
+                        mUrl = xmlReader.GetAttribute("url");
                     }
-                    else if (xml_reader.Name == "Title")
+                    else if (xmlReader.Name == "Title")
                     {
-                        if (!xml_reader.IsEmptyElement)
+                        if (!xmlReader.IsEmptyElement)
                         {
-                            xml_reader.Read(); // throws XmlException
-                            Utils.ThrowException((xml_reader.NodeType != XmlNodeType.Text && xml_reader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
-                            m_title = xml_reader.Value;
+                            xmlReader.Read(); // throws XmlException
+                            Utils.ThrowException((xmlReader.NodeType != XmlNodeType.Text && xmlReader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
+                            mTitle = xmlReader.Value;
                         }
                     }
-                    else if (xml_reader.Name == "Snippet")
+                    else if (xmlReader.Name == "Snippet")
                     {
-                        if (!xml_reader.IsEmptyElement)
+                        if (!xmlReader.IsEmptyElement)
                         {
-                            xml_reader.Read(); // throws XmlException
-                            Utils.ThrowException((xml_reader.NodeType != XmlNodeType.Text && xml_reader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
-                            m_snippet = xml_reader.Value;
+                            xmlReader.Read(); // throws XmlException
+                            Utils.ThrowException((xmlReader.NodeType != XmlNodeType.Text && xmlReader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
+                            mSnippet = xmlReader.Value;
                         }
                     }
-                    else if (xml_reader.Name == "RawText")
+                    else if (xmlReader.Name == "RawText")
                     {
-                        if (!xml_reader.IsEmptyElement)
+                        if (!xmlReader.IsEmptyElement)
                         {
-                            xml_reader.Read(); // throws XmlException
-                            Utils.ThrowException((xml_reader.NodeType != XmlNodeType.Text && xml_reader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
-                            m_raw_text = xml_reader.Value;
+                            xmlReader.Read(); // throws XmlException
+                            Utils.ThrowException((xmlReader.NodeType != XmlNodeType.Text && xmlReader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
+                            mRawText = xmlReader.Value;
                         }
                     }
                 }
-                else if (xml_reader.NodeType == XmlNodeType.EndElement && xml_reader.Name == "Result")
+                else if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "Result")
                 {
                     break;
                 }
@@ -165,53 +165,53 @@ namespace Latino.Web
 
         public string Title
         {
-            get { return m_title; }
+            get { return mTitle; }
         }
 
         public string Snippet
         {
-            get { return m_snippet; }
+            get { return mSnippet; }
         }
 
         public string Url
         {
-            get { return m_url; }
+            get { return mUrl; }
         }
 
         internal void SetUrl(string url)
         {
-            m_url = url;
+            mUrl = url;
         }
 
         public double Relevance
         {
-            get { return m_relevance; }
+            get { return mRelevance; }
         }
 
         public string RawText
         {
-            get { return m_raw_text; }
+            get { return mRawText; }
         }
 
         // *** IXmlSerializable interface implementation ***
 
-        public void SaveXml(XmlWriter xml_writer)
+        public void SaveXml(XmlWriter xmlWriter)
         {
-            Utils.ThrowException(xml_writer == null ? new ArgumentNullException("xml_writer") : null);
+            Utils.ThrowException(xmlWriter == null ? new ArgumentNullException("xmlWriter") : null);
             // the following statements throw InvalidOperationException if the writer is closed
-            xml_writer.WriteStartElement("Result");
-            xml_writer.WriteAttributeString("relevance", XmlConvert.ToString(m_relevance));
-            xml_writer.WriteAttributeString("url", m_url);
-            xml_writer.WriteStartElement("Title");
-            xml_writer.WriteString(m_title);
-            xml_writer.WriteEndElement();
-            xml_writer.WriteStartElement("Snippet");
-            xml_writer.WriteString(m_snippet);
-            xml_writer.WriteEndElement();
-            xml_writer.WriteStartElement("RawText");
-            xml_writer.WriteString(m_raw_text);
-            xml_writer.WriteEndElement();
-            xml_writer.WriteEndElement();
+            xmlWriter.WriteStartElement("Result");
+            xmlWriter.WriteAttributeString("relevance", XmlConvert.ToString(mRelevance));
+            xmlWriter.WriteAttributeString("url", mUrl);
+            xmlWriter.WriteStartElement("Title");
+            xmlWriter.WriteString(mTitle);
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteStartElement("Snippet");
+            xmlWriter.WriteString(mSnippet);
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteStartElement("RawText");
+            xmlWriter.WriteString(mRawText);
+            xmlWriter.WriteEndElement();
+            xmlWriter.WriteEndElement();
         }
 
         // *** ISerializable interface implementation ***
@@ -220,11 +220,11 @@ namespace Latino.Web
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteString(m_title);
-            writer.WriteString(m_snippet);
-            writer.WriteString(m_url);
-            writer.WriteDouble(m_relevance);
-            writer.WriteString(m_raw_text);
+            writer.WriteString(mTitle);
+            writer.WriteString(mSnippet);
+            writer.WriteString(mUrl);
+            writer.WriteDouble(mRelevance);
+            writer.WriteString(mRawText);
         }
     }
 
@@ -236,7 +236,7 @@ namespace Latino.Web
     */
     public class SearchEngineResultSet : IEnumerableList<SearchEngineResult>, ISerializable, IXmlSerializable, ICloneable
     {
-        private ArrayList<SearchEngineResult> m_items
+        private ArrayList<SearchEngineResult> mItems
             = new ArrayList<SearchEngineResult>();
 
         public SearchEngineResultSet()
@@ -245,31 +245,31 @@ namespace Latino.Web
 
         public SearchEngineResultSet(BinarySerializer reader)
         {
-            m_items.Load(reader); // throws serialization-related exceptions
+            mItems.Load(reader); // throws serialization-related exceptions
         }
 
-        public SearchEngineResultSet(XmlReader xml_reader) : this(xml_reader, int.MaxValue) // throws ArgumentNullException, ArgumentOutOfRangeException, XmlFormatException, XmlException, OverflowException, FormatException
+        public SearchEngineResultSet(XmlReader xmlReader) : this(xmlReader, int.MaxValue) // throws ArgumentNullException, ArgumentOutOfRangeException, XmlFormatException, XmlException, OverflowException, FormatException
         {            
         }
 
-        public SearchEngineResultSet(XmlReader xml_reader, int size_limit)
+        public SearchEngineResultSet(XmlReader xmlReader, int sizeLimit)
         {
-            Utils.ThrowException(xml_reader == null ? new ArgumentNullException("xml_reader") : null);
-            Utils.ThrowException(size_limit < 0 ? new ArgumentOutOfRangeException("size_limit") : null);
-            if (size_limit != 0)
+            Utils.ThrowException(xmlReader == null ? new ArgumentNullException("xmlReader") : null);
+            Utils.ThrowException(sizeLimit < 0 ? new ArgumentOutOfRangeException("sizeLimit") : null);
+            if (sizeLimit != 0)
             {
-                while (xml_reader.Read()) // throws XmlException
+                while (xmlReader.Read()) // throws XmlException
                 {
-                    if (xml_reader.NodeType == XmlNodeType.Element && xml_reader.Name == "ResultSet")
+                    if (xmlReader.NodeType == XmlNodeType.Element && xmlReader.Name == "ResultSet")
                     {
-                        int size = XmlConvert.ToInt32(xml_reader.GetAttribute("size")); // throws ArgumentNullException, OverflowException, FormatException
+                        int size = XmlConvert.ToInt32(xmlReader.GetAttribute("size")); // throws ArgumentNullException, OverflowException, FormatException
                         for (int i = 0; i < size; i++)
                         {
-                            m_items.Add(new SearchEngineResult(xml_reader)); // throws XmlFormatException, XmlException, OverflowException, FormatException
-                            if (m_items.Count == size_limit) { return; }
+                            mItems.Add(new SearchEngineResult(xmlReader)); // throws XmlFormatException, XmlException, OverflowException, FormatException
+                            if (mItems.Count == sizeLimit) { return; }
                         }
                     }
-                    else if (xml_reader.NodeType == XmlNodeType.EndElement && xml_reader.Name == "ResultSet")
+                    else if (xmlReader.NodeType == XmlNodeType.EndElement && xmlReader.Name == "ResultSet")
                     {
                         break;
                     }
@@ -279,22 +279,22 @@ namespace Latino.Web
 
         internal ArrayList<SearchEngineResult> Items
         {
-            get { return m_items; }
+            get { return mItems; }
         }
 
         // *** IEnumerableList<SearchEngineResult> interface implementation ***
 
         public int Count
         {
-            get { return m_items.Count; }
+            get { return mItems.Count; }
         }
 
         public SearchEngineResult this[int index]
         {
             get
             {
-                Utils.ThrowException((index < 0 || index >= m_items.Count) ? new ArgumentOutOfRangeException("index") : null);
-                return m_items[index];
+                Utils.ThrowException((index < 0 || index >= mItems.Count) ? new ArgumentOutOfRangeException("index") : null);
+                return mItems[index];
             }
         }
 
@@ -305,7 +305,7 @@ namespace Latino.Web
 
         public IEnumerator<SearchEngineResult> GetEnumerator()
         {
-            return m_items.GetEnumerator();
+            return mItems.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -315,17 +315,17 @@ namespace Latino.Web
 
         // *** IXmlSerializable interface implementation ***
 
-        public void SaveXml(XmlWriter xml_writer)
+        public void SaveXml(XmlWriter xmlWriter)
         {
-            Utils.ThrowException(xml_writer == null ? new ArgumentNullException("xml_writer") : null);
+            Utils.ThrowException(xmlWriter == null ? new ArgumentNullException("xmlWriter") : null);
             // the following statements throw InvalidOperationException if the writer is closed
-            xml_writer.WriteStartElement("ResultSet");
-            xml_writer.WriteAttributeString("size", XmlConvert.ToString(Count));
-            foreach (SearchEngineResult result in m_items)
+            xmlWriter.WriteStartElement("ResultSet");
+            xmlWriter.WriteAttributeString("size", XmlConvert.ToString(Count));
+            foreach (SearchEngineResult result in mItems)
             {
-                result.SaveXml(xml_writer);
+                result.SaveXml(xmlWriter);
             }
-            xml_writer.WriteEndElement();
+            xmlWriter.WriteEndElement();
         }
 
         // *** ICloneable interface implementation ***
@@ -333,7 +333,7 @@ namespace Latino.Web
         public object Clone()
         {
             SearchEngineResultSet clone = new SearchEngineResultSet();
-            clone.m_items = m_items.Clone();
+            clone.mItems = mItems.Clone();
             return clone;
         }
 
@@ -341,7 +341,7 @@ namespace Latino.Web
 
         public void Save(BinarySerializer writer)
         {
-            m_items.Save(writer); // throws serialization-related exceptions
+            mItems.Save(writer); // throws serialization-related exceptions
         }
     }
 
@@ -355,64 +355,64 @@ namespace Latino.Web
     {
         protected const int RAW_TEXT_MAX_LEN
             = 600;
-        protected string m_query;
-        protected int m_result_set_max_sz
+        protected string mQuery;
+        protected int mResultSetMaxSz
             = 10;
-        protected long m_total_hits
+        protected long mTotalHits
             = -1;
-        protected SearchEngineLanguage m_language
+        protected SearchEngineLanguage mLanguage
             = SearchEngineLanguage.Any;
-        protected ISearchEngineCache m_cache
+        protected ISearchEngineCache mCache
             = null;
-        protected SearchEngineResultSet m_result_set
+        protected SearchEngineResultSet mResultSet
             = new SearchEngineResultSet();
 
         public SearchEngine(string query)
         {
             Utils.ThrowException(query == null ? new ArgumentNullException("query") : null);
-            m_query = query;
+            mQuery = query;
         }
 
         public string Query
         {
-            get { return m_query; }
+            get { return mQuery; }
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Query") : null);
-                m_query = value;
+                mQuery = value;
             }
         }
 
         public int ResultSetMaxSize
         {
-            get { return m_result_set_max_sz; }
+            get { return mResultSetMaxSz; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("ResultSetMaxSize") : null);
-                m_result_set_max_sz = value;
+                mResultSetMaxSz = value;
             }
         }
 
         public long TotalHits
         {
-            get { return m_total_hits; }
+            get { return mTotalHits; }
         }
 
         public SearchEngineLanguage Language
         {
-            get { return m_language; }
-            set { m_language = value; }
+            get { return mLanguage; }
+            set { mLanguage = value; }
         }
 
         public ISearchEngineCache Cache
         {
-            get { return m_cache; }
-            set { m_cache = value; }
+            get { return mCache; }
+            set { mCache = value; }
         }
 
         public SearchEngineResultSet ResultSet
         {
-            get { return m_result_set; }
+            get { return mResultSet; }
         }
 
         // the following function is implemented in derived classes
@@ -433,37 +433,37 @@ namespace Latino.Web
 
         public override void Search()
         {
-            m_result_set.Items.Clear();
-            if (m_cache == null || !m_cache.GetFromCache("GoogleDefine", m_language, m_query, m_result_set_max_sz, ref m_total_hits, ref m_result_set))
+            mResultSet.Items.Clear();
+            if (mCache == null || !mCache.GetFromCache("GoogleDefine", mLanguage, mQuery, mResultSetMaxSz, ref mTotalHits, ref mResultSet))
             {
                 int i = 0;
-                string def_html = WebUtils.GetWebPage(string.Format("http://www.google.com/search?hl={0}&q=define%3A{1}", m_language == SearchEngineLanguage.Any ? "" : m_language.ToString().ToLower(), HttpUtility.UrlEncode(m_query))); // throws WebException
-                Match def_match = new Regex("<li>(?<def>[^<]*)(<br><a href=\"(?<href>[^\"]*))?", RegexOptions.Singleline).Match(def_html);
-                while (def_match.Success)
+                string defHtml = WebUtils.GetWebPage(string.Format("http://www.google.com/search?hl={0}&q=define%3A{1}", mLanguage == SearchEngineLanguage.Any ? "" : mLanguage.ToString().ToLower(), HttpUtility.UrlEncode(mQuery))); // throws WebException
+                Match defMatch = new Regex("<li>(?<def>[^<]*)(<br><a href=\"(?<href>[^\"]*))?", RegexOptions.Singleline).Match(defHtml);
+                while (defMatch.Success)
                 {
-                    string def = HttpUtility.HtmlDecode(def_match.Result("${def}").Trim());
-                    string href = def_match.Result("${href}");
+                    string def = HttpUtility.HtmlDecode(defMatch.Result("${def}").Trim());
+                    string href = defMatch.Result("${href}");
                     string url = null;
-                    Match match_url = new Regex("&q=(?<url>[^&]*)").Match(href);
-                    if (match_url.Success) { url = HttpUtility.UrlDecode(match_url.Result("${url}")); }
-                    int raw_txt_max_len = Math.Min(def_match.Value.Length, RAW_TEXT_MAX_LEN);
-                    m_result_set.Items.Add(new SearchEngineResult(m_query, def, url, ++i, def_match.Value.Substring(0, raw_txt_max_len)));
-                    def_match = def_match.NextMatch();
+                    Match matchUrl = new Regex("&q=(?<url>[^&]*)").Match(href);
+                    if (matchUrl.Success) { url = HttpUtility.UrlDecode(matchUrl.Result("${url}")); }
+                    int rawTxtMaxLen = Math.Min(defMatch.Value.Length, RAW_TEXT_MAX_LEN);
+                    mResultSet.Items.Add(new SearchEngineResult(mQuery, def, url, ++i, defMatch.Value.Substring(0, rawTxtMaxLen)));
+                    defMatch = defMatch.NextMatch();
                 }
-                string last_url = null;
-                for (int j = m_result_set.Count - 1; j >= 0; j--)
+                string lastUrl = null;
+                for (int j = mResultSet.Count - 1; j >= 0; j--)
                 {
-                    if (m_result_set[j].Url == null) { m_result_set[j].SetUrl(last_url); }
-                    else { last_url = m_result_set[j].Url; }
+                    if (mResultSet[j].Url == null) { mResultSet[j].SetUrl(lastUrl); }
+                    else { lastUrl = mResultSet[j].Url; }
                 }
-                m_total_hits = m_result_set.Count;
-                if (m_cache != null)
+                mTotalHits = mResultSet.Count;
+                if (mCache != null)
                 {
-                    m_cache.PutIntoCache("GoogleDefine", m_language, m_query, m_total_hits, m_result_set);
+                    mCache.PutIntoCache("GoogleDefine", mLanguage, mQuery, mTotalHits, mResultSet);
                 }
-                if (m_result_set_max_sz < m_result_set.Count)
+                if (mResultSetMaxSz < mResultSet.Count)
                 {
-                    m_result_set.Items.RemoveRange(m_result_set_max_sz, m_result_set.Count - m_result_set_max_sz);
+                    mResultSet.Items.RemoveRange(mResultSetMaxSz, mResultSet.Count - mResultSetMaxSz);
                 }
             }
         }
@@ -490,11 +490,11 @@ namespace Latino.Web
     */
     public class YahooSearch : SearchEngine
     {
-        private string m_app_id
+        private string mAppId
             = "YahooDemo";
-        private bool m_retry
+        private bool mRetry
             = true;
-        private static Regex m_regex
+        private static Regex mRegex
             = new Regex(@"\<Result\>((\<Title\>(?<title>[^<]*)\</Title\>)|(\<Title /\>))" +
                 @"((\<Summary\>(?<summary>[^<]*)\</Summary\>)|(\<Summary /\>))" +
                 @"((\<Url\>(?<url>[^<]*)\</Url\>)|(\<Url /\>))", RegexOptions.Singleline | RegexOptions.Compiled);
@@ -505,34 +505,34 @@ namespace Latino.Web
 
         public string AppId
         {
-            get { return m_app_id; }
+            get { return mAppId; }
             set
             {
-                Utils.ThrowException(m_app_id == null ? new ArgumentNullException("AppId") : null);
-                m_app_id = value;
+                Utils.ThrowException(mAppId == null ? new ArgumentNullException("AppId") : null);
+                mAppId = value;
             }
         }
 
         public bool Retry
         {
-            get { return m_retry; }
-            set { m_retry = value; }
+            get { return mRetry; }
+            set { mRetry = value; }
         }
 
         public override void Search()
         {
-            Utils.ThrowException(m_result_set_max_sz > 1000 ? new InvalidOperationException() : null);
-            m_result_set.Items.Clear();
-            if (m_cache == null || !m_cache.GetFromCache("YahooSearch", m_language, m_query, m_result_set_max_sz, ref m_total_hits, ref m_result_set))
+            Utils.ThrowException(mResultSetMaxSz > 1000 ? new InvalidOperationException() : null);
+            mResultSet.Items.Clear();
+            if (mCache == null || !mCache.GetFromCache("YahooSearch", mLanguage, mQuery, mResultSetMaxSz, ref mTotalHits, ref mResultSet))
             {
-                int results_per_page = m_result_set_max_sz > 100 ? 100 : m_result_set_max_sz;
-                for (int i = 0; i < m_result_set_max_sz; )
+                int resultsPerPage = mResultSetMaxSz > 100 ? 100 : mResultSetMaxSz;
+                for (int i = 0; i < mResultSetMaxSz; )
                 {
                     string request = string.Format("http://search.yahooapis.com/WebSearchService/V1/webSearch?appid={0}&query={1}&results={2}&start={3}{4}",
-                        HttpUtility.UrlEncode(m_app_id), HttpUtility.UrlEncode(m_query), results_per_page, i + 1,
-                        m_language == SearchEngineLanguage.Any ? "" : string.Format("&language={0}", m_language.ToString().ToLower()));
-                    Regex regex = new Regex(@"\<ResultSet [^>]*totalResultsAvailable=""(?<total_results>\d+)"" " +
-                        @"totalResultsReturned=""(?<results_returned>\d+)"" firstResultPosition=""(?<first_result>\d+)""");
+                        HttpUtility.UrlEncode(mAppId), HttpUtility.UrlEncode(mQuery), resultsPerPage, i + 1,
+                        mLanguage == SearchEngineLanguage.Any ? "" : string.Format("&language={0}", mLanguage.ToString().ToLower()));
+                    Regex regex = new Regex(@"\<ResultSet [^>]*totalResultsAvailable=""(?<totalResults>\d+)"" " +
+                        @"totalResultsReturned=""(?<resultsReturned>\d+)"" firstResultPosition=""(?<firstResult>\d+)""");
                     string response;
                     try
                     {
@@ -540,16 +540,16 @@ namespace Latino.Web
                     }
                     catch (WebException) // *** Yahoo sometimes returns gateway timeout error (do a retry on a WebException)
                     {
-                        if (!m_retry) { throw; } // throws WebException
+                        if (!mRetry) { throw; } // throws WebException
                         Thread.Sleep(2000); // delay for 2 seconds
                         response = WebUtils.GetWebPage(request); // throws WebException
                     }
                     if (response.Contains("</Error>")) { throw new QuotaExceededException(); }
-                    Match regex_match = regex.Match(response);
-                    m_total_hits = Convert.ToInt64(regex_match.Result("${total_results}"));
-                    int first_result = Convert.ToInt32(regex_match.Result("${first_result}"));
-                    int results_returned = Convert.ToInt32(regex_match.Result("${results_returned}"));
-                    if (m_retry && m_total_hits == 0) // *** Yahoo sometimes returns 0 results even if this is not the case (do a retry)
+                    Match regexMatch = regex.Match(response);
+                    mTotalHits = Convert.ToInt64(regexMatch.Result("${totalResults}"));
+                    int firstResult = Convert.ToInt32(regexMatch.Result("${firstResult}"));
+                    int resultsReturned = Convert.ToInt32(regexMatch.Result("${resultsReturned}"));
+                    if (mRetry && mTotalHits == 0) // *** Yahoo sometimes returns 0 results even if this is not the case (do a retry)
                     {
                         Thread.Sleep(2000); // delay for 2 seconds
                         try
@@ -558,48 +558,48 @@ namespace Latino.Web
                         }
                         catch (WebException) // *** Yahoo sometimes returns gateway timeout error (do a retry on a WebException)
                         {
-                            if (!m_retry) { throw; } // throws WebException
+                            if (!mRetry) { throw; } // throws WebException
                             Thread.Sleep(2000); // delay for 2 seconds
                             response = WebUtils.GetWebPage(request); // throws WebException
                         }
                         if (response.Contains("</Error>")) { throw new QuotaExceededException(); }
-                        regex_match = regex.Match(response);
-                        m_total_hits = Convert.ToInt64(regex_match.Result("${total_results}"));
-                        first_result = Convert.ToInt32(regex_match.Result("${first_result}"));
-                        results_returned = Convert.ToInt32(regex_match.Result("${results_returned}"));
+                        regexMatch = regex.Match(response);
+                        mTotalHits = Convert.ToInt64(regexMatch.Result("${totalResults}"));
+                        firstResult = Convert.ToInt32(regexMatch.Result("${firstResult}"));
+                        resultsReturned = Convert.ToInt32(regexMatch.Result("${resultsReturned}"));
                     }
                     #region Debug code
-                    //StreamWriter writer = new StreamWriter(string.Format("C:\\Test\\{0}.{1}.txt", m_query, i + 1));
+                    //StreamWriter writer = new StreamWriter(string.Format("C:\\Test\\{0}.{1}.txt", mQuery, i + 1));
                     //writer.WriteLine("Request: {0}", request);
                     //writer.WriteLine(response);
                     //writer.Close();
                     #endregion
-                    if (first_result != i + 1)
+                    if (firstResult != i + 1)
                     {
-                        m_total_hits = i;
+                        mTotalHits = i;
                         break;
                     }
-                    regex_match = m_regex.Match(response);
-                    while (regex_match.Success)
+                    regexMatch = mRegex.Match(response);
+                    while (regexMatch.Success)
                     {
-                        string title = HttpUtility.HtmlDecode(regex_match.Result("${title}"));
-                        string snippet = HttpUtility.HtmlDecode(regex_match.Result("${summary}"));
-                        string url = HttpUtility.HtmlDecode(regex_match.Result("${url}"));
-                        m_result_set.Items.Add(new SearchEngineResult(title, snippet, url, m_result_set.Count + 1, /*raw_text=*/""));
-                        regex_match = regex_match.NextMatch();
+                        string title = HttpUtility.HtmlDecode(regexMatch.Result("${title}"));
+                        string snippet = HttpUtility.HtmlDecode(regexMatch.Result("${summary}"));
+                        string url = HttpUtility.HtmlDecode(regexMatch.Result("${url}"));
+                        mResultSet.Items.Add(new SearchEngineResult(title, snippet, url, mResultSet.Count + 1, /*rawText=*/""));
+                        regexMatch = regexMatch.NextMatch();
                         i++;
-                        if (i == m_result_set_max_sz) { break; }
+                        if (i == mResultSetMaxSz) { break; }
                     }
-                    if (results_returned < results_per_page)
+                    if (resultsReturned < resultsPerPage)
                     {
-                        m_total_hits = first_result + results_returned - 1;
+                        mTotalHits = firstResult + resultsReturned - 1;
                         break;
                     }
                 }
-                m_total_hits = Math.Max(m_total_hits, (long)m_result_set.Count); // just to make sure ...
-                if (m_cache != null)
+                mTotalHits = Math.Max(mTotalHits, (long)mResultSet.Count); // just to make sure ...
+                if (mCache != null)
                 {
-                    m_cache.PutIntoCache("YahooSearch", m_language, m_query, m_total_hits, m_result_set);
+                    mCache.PutIntoCache("YahooSearch", mLanguage, mQuery, mTotalHits, mResultSet);
                 }
             }
         }

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -24,20 +24,20 @@ namespace Latino.Model
     */
     public class LSqrModel : IModel<double, SparseVector<double>.ReadOnly>
     {
-        private ArrayList<double> m_sol
+        private ArrayList<double> mSol
             = null;
-        private int m_num_iter
+        private int mNumIter
             = -1;
-        private double[] m_init_sol
+        private double[] mInitSol
             = null;
 
         public LSqrModel()
         {
         }
 
-        public LSqrModel(int num_iter)
+        public LSqrModel(int numIter)
         {
-            m_num_iter = num_iter;
+            mNumIter = numIter;
         }
 
         public LSqrModel(BinarySerializer reader)
@@ -49,25 +49,25 @@ namespace Latino.Model
         {
             get
             {
-                Utils.ThrowException(m_sol == null ? new InvalidOperationException() : null);
-                return m_sol;
+                Utils.ThrowException(mSol == null ? new InvalidOperationException() : null);
+                return mSol;
             }
         }
 
         public int NumIter
         {
-            get { return m_num_iter; }
+            get { return mNumIter; }
             set
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("NumIter") : null);
-                m_num_iter = value;
+                mNumIter = value;
             }
         }
 
         public double[] InitialSolution
         {
-            get { return m_init_sol; }
-            set { m_init_sol = value; }
+            get { return mInitSol; }
+            set { mInitSol = value; }
         }
 
         // *** IModel<double, SparseVector<double>.ReadOnly> interface implementation ***
@@ -79,7 +79,7 @@ namespace Latino.Model
 
         public bool IsTrained
         {
-            get { return m_sol != null; }
+            get { return mSol != null; }
         }
 
         public void Train(ILabeledExampleCollection<double, SparseVector<double>.ReadOnly> dataset)
@@ -88,35 +88,35 @@ namespace Latino.Model
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             LSqrSparseMatrix mat = new LSqrSparseMatrix(dataset.Count);
             double[] rhs = new double[dataset.Count];
-            int sol_size = -1;
+            int solSize = -1;
             int i = 0;
-            foreach (LabeledExample<double, SparseVector<double>.ReadOnly> labeled_example in dataset)
+            foreach (LabeledExample<double, SparseVector<double>.ReadOnly> labeledExample in dataset)
             {
-                if (labeled_example.Example.LastNonEmptyIndex + 1 > sol_size) 
+                if (labeledExample.Example.LastNonEmptyIndex + 1 > solSize) 
                 { 
-                    sol_size = labeled_example.Example.LastNonEmptyIndex + 1; 
+                    solSize = labeledExample.Example.LastNonEmptyIndex + 1; 
                 }
-                foreach (IdxDat<double> item in labeled_example.Example)
+                foreach (IdxDat<double> item in labeledExample.Example)
                 {
                     mat.InsertValue(i, item.Idx, item.Dat);
                 }
-                rhs[i++] = labeled_example.Label;
+                rhs[i++] = labeledExample.Label;
             }
-            Utils.ThrowException((m_init_sol != null && m_init_sol.Length != sol_size) ? new ArgumentValueException("InitialSolution") : null);
-            LSqrSparseMatrix mat_t = new LSqrSparseMatrix(sol_size);
+            Utils.ThrowException((mInitSol != null && mInitSol.Length != solSize) ? new ArgumentValueException("InitialSolution") : null);
+            LSqrSparseMatrix matT = new LSqrSparseMatrix(solSize);
             i = 0;
-            foreach (LabeledExample<double, SparseVector<double>.ReadOnly> labeled_example in dataset)
+            foreach (LabeledExample<double, SparseVector<double>.ReadOnly> labeledExample in dataset)
             {
-                foreach (IdxDat<double> item in labeled_example.Example)
+                foreach (IdxDat<double> item in labeledExample.Example)
                 {
-                    mat_t.InsertValue(item.Idx, i, item.Dat);
+                    matT.InsertValue(item.Idx, i, item.Dat);
                 }
                 i++;
             }
-            int num_iter = m_num_iter < 0 ? sol_size + dataset.Count + 50 : m_num_iter;
-            m_sol = new ArrayList<double>(LSqrDll.DoLSqr(sol_size, mat, mat_t, m_init_sol, rhs, num_iter));
+            int numIter = mNumIter < 0 ? solSize + dataset.Count + 50 : mNumIter;
+            mSol = new ArrayList<double>(LSqrDll.DoLSqr(solSize, mat, matT, mInitSol, rhs, numIter));
             mat.Dispose();
-            mat_t.Dispose();
+            matT.Dispose();
         }
 
         void IModel<double>.Train(ILabeledExampleCollection<double> dataset)
@@ -128,12 +128,12 @@ namespace Latino.Model
 
         public Prediction<double> Predict(SparseVector<double>.ReadOnly example)
         {
-            Utils.ThrowException(m_sol == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(mSol == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             double result = 0;
             foreach (IdxDat<double> item in example)
             {
-                result += m_sol[item.Idx] * item.Dat;
+                result += mSol[item.Idx] * item.Dat;
             }
             return new Prediction<double>(new KeyDat<double, double>[] { new KeyDat<double, double>(result, result) });
         }
@@ -151,16 +151,16 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions  
-            writer.WriteInt(m_num_iter);
-            writer.WriteObject(m_sol);
+            writer.WriteInt(mNumIter);
+            writer.WriteObject(mSol);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            m_num_iter = reader.ReadInt();
-            m_sol = reader.ReadObject<ArrayList<double>>();
+            mNumIter = reader.ReadInt();
+            mSol = reader.ReadObject<ArrayList<double>>();
         }
     }
 }

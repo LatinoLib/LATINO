@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,37 +26,37 @@ namespace Latino
     public struct Pair<FirstT, SecondT> : IPair<FirstT, SecondT>, IDeeplyCloneable<Pair<FirstT, SecondT>>, IContentEquatable<Pair<FirstT, SecondT>>,
         IComparable<Pair<FirstT, SecondT>>, IComparable, ISerializable
     {
-        private FirstT m_first;
-        private SecondT m_second;
+        private FirstT mFirst;
+        private SecondT mSecond;
 
         public Pair(BinarySerializer reader)
         {
-            m_first = default(FirstT);
-            m_second = default(SecondT);
+            mFirst = default(FirstT);
+            mSecond = default(SecondT);
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
         public Pair(FirstT first, SecondT second)
         {
-            m_first = first;
-            m_second = second;
+            mFirst = first;
+            mSecond = second;
         }
 
         public FirstT First
         {
-            get { return m_first; }
-            set { m_first = value; }
+            get { return mFirst; }
+            set { mFirst = value; }
         }
 
         public SecondT Second
         {
-            get { return m_second; }
-            set { m_second = value; }
+            get { return mSecond; }
+            set { mSecond = value; }
         }
 
         public override string ToString()
         {
-            return string.Format("( {0} {1} )", m_first, m_second);
+            return string.Format("( {0} {1} )", mFirst, mSecond);
         }
 
         public override bool Equals(object obj)
@@ -83,7 +83,7 @@ namespace Latino
 
         public Pair<FirstT, SecondT> DeepClone()
         {
-            return new Pair<FirstT, SecondT>((FirstT)Utils.Clone(m_first, /*deep_clone=*/true), (SecondT)Utils.Clone(m_second, /*deep_clone=*/true));
+            return new Pair<FirstT, SecondT>((FirstT)Utils.Clone(mFirst, /*deepClone=*/true), (SecondT)Utils.Clone(mSecond, /*deepClone=*/true));
         }
 
         object IDeeplyCloneable.DeepClone()
@@ -95,7 +95,7 @@ namespace Latino
 
         public bool ContentEquals(Pair<FirstT, SecondT> other)
         {
-            return Utils.ObjectEquals(m_first, other.m_first, /*deep_cmp=*/true) && Utils.ObjectEquals(m_second, other.m_second, /*deep_cmp=*/true);
+            return Utils.ObjectEquals(mFirst, other.mFirst, /*deepCmp=*/true) && Utils.ObjectEquals(mSecond, other.mSecond, /*deepCmp=*/true);
         }
 
         bool IContentEquatable.ContentEquals(object other)
@@ -109,17 +109,17 @@ namespace Latino
 
         public int CompareTo(Pair<FirstT, SecondT> other)
         {
-            if (m_first == null && other.m_first == null) { return 0; }
-            else if (m_first == null) { return 1; }
-            else if (other.m_first == null) { return -1; }
+            if (mFirst == null && other.mFirst == null) { return 0; }
+            else if (mFirst == null) { return 1; }
+            else if (other.mFirst == null) { return -1; }
             else
             {
-                int val = ((IComparable<FirstT>)m_first).CompareTo(other.m_first); // throws InvalidCastException
+                int val = ((IComparable<FirstT>)mFirst).CompareTo(other.mFirst); // throws InvalidCastException
                 if (val != 0) { return val; }
-                else if (m_second == null && other.m_second == null) { return 0; }
-                else if (m_second == null) { return 1; }
-                else if (other.m_second == null) { return -1; }
-                else { return ((IComparable<SecondT>)m_second).CompareTo(other.m_second); } // throws InvalidCastException
+                else if (mSecond == null && other.mSecond == null) { return 0; }
+                else if (mSecond == null) { return 1; }
+                else if (other.mSecond == null) { return -1; }
+                else { return ((IComparable<SecondT>)mSecond).CompareTo(other.mSecond); } // throws InvalidCastException
             }
         }
 
@@ -137,16 +137,16 @@ namespace Latino
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteValueOrObject<FirstT>(m_first); 
-            writer.WriteValueOrObject<SecondT>(m_second); 
+            writer.WriteValueOrObject<FirstT>(mFirst); 
+            writer.WriteValueOrObject<SecondT>(mSecond); 
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            m_first = reader.ReadValueOrObject<FirstT>(); 
-            m_second = reader.ReadValueOrObject<SecondT>(); 
+            mFirst = reader.ReadValueOrObject<FirstT>(); 
+            mSecond = reader.ReadValueOrObject<SecondT>(); 
         }
 
         // *** Equality comparer ***

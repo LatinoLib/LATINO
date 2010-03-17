@@ -1,4 +1,4 @@
-/*==========================================================================
+﻿/*==========================================================================
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -33,7 +33,7 @@ namespace Latino.TextMining
 
         public void ReadCorpus(string dir)
         {
-            Utils.ThrowException(!Utils.VerifyPathName(dir, /*must_exist=*/true) ? new ArgumentValueException("dir") : null);
+            Utils.ThrowException(!Utils.VerifyPathName(dir, /*mustExist=*/true) ? new ArgumentValueException("dir") : null);
 
             if (languageProfiles != null)
                 languageProfiles.Clear();

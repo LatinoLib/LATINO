@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -24,7 +24,7 @@ namespace Latino.Model
     */
     public interface ILabeledDataset<LblT> : ILabeledExampleCollection<LblT>, ISerializable
     {
-        ILabeledDataset<LblT> ConvertDataset(Type new_ex_type, bool move);
+        ILabeledDataset<LblT> ConvertDataset(Type newExType, bool move);
         ILabeledDataset<LblT, ExT> ConvertDataset<ExT>(bool move);
     }
 

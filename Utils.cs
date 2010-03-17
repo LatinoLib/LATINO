@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -29,28 +29,28 @@ namespace Latino
     */
     public static class Utils
     {
-        private static bool m_verbose
+        private static bool mVerbose
             = true;
 
         public static bool VerboseEnabled
         {
-            get { return m_verbose; }
-            set { m_verbose = value; }
+            get { return mVerbose; }
+            set { mVerbose = value; }
         }
 
         public static void Verbose(string format, params object[] args)
         {
-            if (m_verbose) { Console.Write(String.Format("{0}", format), args); } // throws ArgumentNullException, FormatException
+            if (mVerbose) { Console.Write(String.Format("{0}", format), args); } // throws ArgumentNullException, FormatException
         }
 
         public static void VerboseLine(string format, params object[] args)
         {
-            if (m_verbose) { Console.WriteLine(String.Format("{0}", format), args); } // throws ArgumentNullException, FormatException
+            if (mVerbose) { Console.WriteLine(String.Format("{0}", format), args); } // throws ArgumentNullException, FormatException
         }
 
         public static void VerboseLine()
         {
-            if (m_verbose) { Console.WriteLine(); } 
+            if (mVerbose) { Console.WriteLine(); } 
         }
 
         [Conditional("THROW_EXCEPTIONS")]
@@ -69,12 +69,12 @@ namespace Latino
             return !double.IsInfinity(val) && !double.IsNaN(val);
         }
 
-        public static bool VerifyFileNameCreate(string file_name)
+        public static bool VerifyFileNameCreate(string fileName)
         {
             try
             {
-                FileInfo file_info = new FileInfo(file_name);
-                FileAttributes attributes = file_info.Attributes; 
+                FileInfo fileInfo = new FileInfo(fileName);
+                FileAttributes attributes = fileInfo.Attributes; 
                 if ((int)attributes == -1) { attributes = (FileAttributes)0; }
                 return (attributes & FileAttributes.Directory) != FileAttributes.Directory && (attributes & FileAttributes.Offline) != FileAttributes.Offline &&
                     (attributes & FileAttributes.ReadOnly) != FileAttributes.ReadOnly /*&& (attributes & FileAttributes.System) != FileAttributes.System*/;
@@ -85,12 +85,12 @@ namespace Latino
             }
         }
 
-        public static bool VerifyFileNameOpen(string file_name)
+        public static bool VerifyFileNameOpen(string fileName)
         {
             try
             {
-                FileInfo file_info = new FileInfo(file_name);
-                FileAttributes attributes = file_info.Attributes;
+                FileInfo fileInfo = new FileInfo(fileName);
+                FileAttributes attributes = fileInfo.Attributes;
                 if ((int)attributes == -1) { return false; }
                 return (attributes & FileAttributes.Directory) != FileAttributes.Directory && (attributes & FileAttributes.Offline) != FileAttributes.Offline;
             }
@@ -100,12 +100,12 @@ namespace Latino
             }
         }
 
-        public static bool VerifyPathName(string path_name, bool must_exist)
+        public static bool VerifyPathName(string pathName, bool mustExist)
         {
             try
             {
-                DirectoryInfo dir_info = new DirectoryInfo(path_name);
-                return must_exist ? dir_info.Exists : true;
+                DirectoryInfo dirInfo = new DirectoryInfo(pathName);
+                return mustExist ? dirInfo.Exists : true;
             }
             catch
             {
@@ -113,9 +113,9 @@ namespace Latino
             }
         }
 
-        public static object Clone(object obj, bool deep_clone)
+        public static object Clone(object obj, bool deepClone)
         {
-            if (deep_clone && obj is IDeeplyCloneable)
+            if (deepClone && obj is IDeeplyCloneable)
             {
                 return ((IDeeplyCloneable)obj).DeepClone();
             }
@@ -129,18 +129,18 @@ namespace Latino
             }
         }
 
-        public static bool ObjectEquals(object obj_1, object obj_2, bool deep_cmp)
+        public static bool ObjectEquals(object obj1, object obj2, bool deepCmp)
         {
-            if (obj_1 == null && obj_2 == null) { return true; }
-            else if (obj_1 == null || obj_2 == null) { return false; }
-            else if (!obj_1.GetType().Equals(obj_2.GetType())) { return false; }
-            else if (deep_cmp && obj_1 is IContentEquatable)
+            if (obj1 == null && obj2 == null) { return true; }
+            else if (obj1 == null || obj2 == null) { return false; }
+            else if (!obj1.GetType().Equals(obj2.GetType())) { return false; }
+            else if (deepCmp && obj1 is IContentEquatable)
             {
-                return ((IContentEquatable)obj_1).ContentEquals(obj_2);
+                return ((IContentEquatable)obj1).ContentEquals(obj2);
             }
             else
             {
-                return obj_1.Equals(obj_2);
+                return obj1.Equals(obj2);
             }
         }
 
@@ -149,12 +149,12 @@ namespace Latino
             ThrowException(obj == null ? new ArgumentNullException("obj") : null);
             if (obj is ISerializable)
             {
-                BinarySerializer mem_ser = new BinarySerializer();
-                ((ISerializable)obj).Save(mem_ser); // throws serialization-related exceptions   
-                byte[] buffer = ((MemoryStream)mem_ser.Stream).GetBuffer();
-                MD5CryptoServiceProvider hash_algo = new MD5CryptoServiceProvider();
-                Guid md5_hash = new Guid(hash_algo.ComputeHash(buffer));
-                return md5_hash.GetHashCode();
+                BinarySerializer memSer = new BinarySerializer();
+                ((ISerializable)obj).Save(memSer); // throws serialization-related exceptions   
+                byte[] buffer = ((MemoryStream)memSer.Stream).GetBuffer();
+                MD5CryptoServiceProvider hashAlgo = new MD5CryptoServiceProvider();
+                Guid md5Hash = new Guid(hashAlgo.ComputeHash(buffer));
+                return md5Hash.GetHashCode();
             }
             else
             {
@@ -195,16 +195,16 @@ namespace Latino
             return dict;
         }
 
-        public static object ChangeType(object obj, Type new_type, IFormatProvider fmt_provider)
+        public static object ChangeType(object obj, Type newType, IFormatProvider fmtProvider)
         {
-            ThrowException(new_type == null ? new ArgumentNullException("new_type") : null);            
-            if (new_type.IsAssignableFrom(obj.GetType()))
+            ThrowException(newType == null ? new ArgumentNullException("newType") : null);            
+            if (newType.IsAssignableFrom(obj.GetType()))
             {              
                 return obj;
             }
             else 
             {
-                return Convert.ChangeType(obj, new_type, fmt_provider); // throws InvalidCastException, FormatException, OverflowException
+                return Convert.ChangeType(obj, newType, fmtProvider); // throws InvalidCastException, FormatException, OverflowException
             }
         }
 
@@ -214,8 +214,8 @@ namespace Latino
         {
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = 0;
-            ArrayList<double> dat_inner = vec.Inner.InnerDat;
-            foreach (double val in dat_inner)
+            ArrayList<double> datInner = vec.Inner.InnerDat;
+            foreach (double val in datInner)
             {
                 len += val * val;
             }
@@ -232,10 +232,10 @@ namespace Latino
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = GetVecLenL2(vec);
             Utils.ThrowException(len == 0 ? new InvalidOperationException() : null);
-            ArrayList<double> dat_inner = vec.InnerDat;
+            ArrayList<double> datInner = vec.InnerDat;
             for (int i = 0; i < vec.Count; i++)
             {
-                vec.SetDirect(i, dat_inner[i] / len);
+                vec.SetDirect(i, datInner[i] / len);
             }
         }
 
@@ -244,10 +244,10 @@ namespace Latino
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = GetVecLenL2(vec);
             if (len == 0) { return false; }
-            ArrayList<double> dat_inner = vec.InnerDat;
+            ArrayList<double> datInner = vec.InnerDat;
             for (int i = 0; i < vec.Count; i++)
             {
-                vec.SetDirect(i, dat_inner[i] / len);
+                vec.SetDirect(i, datInner[i] / len);
             }
             return true;
         }

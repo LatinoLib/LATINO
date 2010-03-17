@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -31,234 +31,234 @@ namespace SF.Snowball.Ext
 		}
 		private void  InitBlock()
 		{
-			a_0 = new Among[]{new Among("", - 1, 4, "", this), new Among("I", 0, 1, "", this), new Among("U", 0, 2, "", this), new Among("Y", 0, 3, "", this)};
-			a_1 = new Among[]{new Among("iqU", - 1, 3, "", this), new Among("abl", - 1, 3, "", this), new Among("I\u00E8r", - 1, 4, "", this), new Among("i\u00E8r", - 1, 4, "", this), new Among("eus", - 1, 2, "", this), new Among("iv", - 1, 1, "", this)};
-			a_2 = new Among[]{new Among("ic", - 1, 2, "", this), new Among("abil", - 1, 1, "", this), new Among("iv", - 1, 3, "", this)};
-			a_3 = new Among[]{new Among("iqUe", - 1, 1, "", this), new Among("atrice", - 1, 2, "", this), new Among("ance", - 1, 1, "", this), new Among("ence", - 1, 5, "", this), new Among("logie", - 1, 3, "", this), new Among("able", - 1, 1, "", this), new Among("isme", - 1, 1, "", this), new Among("euse", - 1, 11, "", this), new Among("iste", - 1, 1, "", this), new Among("ive", - 1, 8, "", this), new Among("if", - 1, 8, "", this), new Among("usion", - 1, 4, "", this), new Among("ation", - 1, 2, "", this), new Among("ution", - 1, 4, "", this), new Among("ateur", - 1, 2, "", this), new Among("iqUes", - 1, 1, "", this), new Among("atrices", - 1, 2, "", this), new Among("ances", - 1, 1, "", this), new Among("ences", - 1, 5, "", this), new Among("logies", - 1, 3, "", this), new Among("ables", - 1, 1, "", this), new Among("ismes", - 1, 1, "", this), new Among("euses", - 1, 11, "", this), new Among("istes", - 1, 1, "", this), new Among("ives", - 1, 8, "", this), new Among("ifs", - 1, 8, "", this), new Among("usions", - 1, 4, "", this), new Among("ations", - 1, 2, "", this), new Among("utions", - 1, 4, "", this), new Among("ateurs", - 1, 2, "", this), new Among("ments", - 1, 15, "", this), new Among("ements", 30, 6, "", this), new Among("issements", 31, 12, "", this), new Among("it\u00E9s", - 1, 7, "", this), new Among("ment", - 1, 15, "", this), new Among("ement", 34, 6, "", this), new Among("issement", 35, 12, "", this), new Among("amment", 34, 13, "", this), new Among("emment", 34, 14, "", this), new Among("aux", - 1, 10, "", this), new Among("eaux", 39, 9, "", this), new Among("eux", - 1, 1, "", this), new Among("it\u00E9", - 1, 7, "", this)};
-			a_4 = new Among[]{new Among("ira", - 1, 1, "", this), new Among("ie", - 1, 1, "", this), new Among("isse", - 1, 1, "", this), new Among("issante", - 1, 1, "", this), new Among("i", - 1, 1, "", this), new Among("irai", 4, 1, "", this), new Among("ir", - 1, 1, "", this), new Among("iras", - 1, 1, "", this), new Among("ies", - 1, 1, "", this), new Among("\u00EEmes", - 1, 1, "", this), new Among("isses", - 1, 1, "", this), new Among("issantes", - 1, 1, "", this), new Among("\u00EEtes", - 1, 1, "", this), new Among("is", - 1, 1, "", this), new Among("irais", 13, 1, "", this), new Among("issais", 13, 1, "", this), new Among("irions", - 1, 1, "", this), new Among("issions", - 1, 1, "", this), new Among("irons", - 1, 1, "", this), new Among("issons", - 1, 1, "", this), new Among("issants", - 1, 1, "", this), new Among("it", - 1, 1, "", this), new Among("irait", 21, 1, "", this), new Among("issait", 21, 1, "", this), new Among("issant", - 1, 1, "", this), new Among("iraIent", - 1, 1, "", this), new Among("issaIent", - 1, 1, "", this), new Among("irent", - 1, 1, "", this), new Among("issent", - 1, 1, "", this), new Among("iront", - 1, 1, "", this), new Among("\u00EEt", - 1, 1, "", this), new Among("iriez", - 1, 1, "", this), new Among("issiez", - 1, 1, "", this), new Among("irez", - 1, 1, "", this), new Among("issez", - 1, 1, "", this)};
-			a_5 = new Among[]{new Among("a", - 1, 3, "", this), new Among("era", 0, 2, "", this), new Among("asse", - 1, 3, "", this), new Among("ante", - 1, 3, "", this), new Among("\u00E9e", - 1, 2, "", this), new Among("ai", - 1, 3, "", this), new Among("erai", 5, 2, "", this), new Among("er", - 1, 2, "", this), new Among("as", - 1, 3, "", this), new Among("eras", 8, 2, "", this), new Among("\u00E2mes", - 1, 3, "", this), new Among("asses", - 1, 3, "", this), new Among("antes", - 1, 3, "", this), new Among("\u00E2tes", - 1, 3, "", this), new Among("\u00E9es", - 1, 2, "", this), new Among("ais", - 1, 3, "", this), new Among("erais", 15, 2, "", this), new Among("ions", - 1, 1, "", this), new Among("erions", 17, 2, "", this), new Among("assions", 17, 3, "", this), new Among("erons", - 1, 2, "", this), new Among("ants", - 1, 3, "", this), new Among("\u00E9s", - 1, 2, "", this), new Among("ait", - 1, 3, "", this), new Among("erait", 23, 2, "", this), new Among("ant", - 1, 3, "", this), new Among("aIent", - 1, 3, "", this), new Among("eraIent", 26, 2, "", this), new Among("\u00E8rent", - 1, 2, "", this), new Among("assent", - 1, 3, "", this), new Among("eront", - 1, 2, "", this), new Among("\u00E2t", - 1, 3, "", this), new Among("ez", - 1, 2, "", this), new Among("iez", 32, 2, "", this), new Among("eriez", 33, 2, "", this), new Among("assiez", 33, 3, "", this), new Among("erez", 32, 2, "", this), new Among("\u00E9", - 1, 2, "", this)};
-			a_6 = new Among[]{new Among("e", - 1, 3, "", this), new Among("I\u00E8re", 0, 2, "", this), new Among("i\u00E8re", 0, 2, "", this), new Among("ion", - 1, 1, "", this), new Among("Ier", - 1, 2, "", this), new Among("ier", - 1, 2, "", this), new Among("\u00EB", - 1, 4, "", this)};
-			a_7 = new Among[]{new Among("ell", - 1, - 1, "", this), new Among("eill", - 1, - 1, "", this), new Among("enn", - 1, - 1, "", this), new Among("onn", - 1, - 1, "", this), new Among("ett", - 1, - 1, "", this)};
+			a0 = new Among[]{new Among("", - 1, 4, "", this), new Among("I", 0, 1, "", this), new Among("U", 0, 2, "", this), new Among("Y", 0, 3, "", this)};
+			a1 = new Among[]{new Among("iqU", - 1, 3, "", this), new Among("abl", - 1, 3, "", this), new Among("I\u00E8r", - 1, 4, "", this), new Among("i\u00E8r", - 1, 4, "", this), new Among("eus", - 1, 2, "", this), new Among("iv", - 1, 1, "", this)};
+			a2 = new Among[]{new Among("ic", - 1, 2, "", this), new Among("abil", - 1, 1, "", this), new Among("iv", - 1, 3, "", this)};
+			a3 = new Among[]{new Among("iqUe", - 1, 1, "", this), new Among("atrice", - 1, 2, "", this), new Among("ance", - 1, 1, "", this), new Among("ence", - 1, 5, "", this), new Among("logie", - 1, 3, "", this), new Among("able", - 1, 1, "", this), new Among("isme", - 1, 1, "", this), new Among("euse", - 1, 11, "", this), new Among("iste", - 1, 1, "", this), new Among("ive", - 1, 8, "", this), new Among("if", - 1, 8, "", this), new Among("usion", - 1, 4, "", this), new Among("ation", - 1, 2, "", this), new Among("ution", - 1, 4, "", this), new Among("ateur", - 1, 2, "", this), new Among("iqUes", - 1, 1, "", this), new Among("atrices", - 1, 2, "", this), new Among("ances", - 1, 1, "", this), new Among("ences", - 1, 5, "", this), new Among("logies", - 1, 3, "", this), new Among("ables", - 1, 1, "", this), new Among("ismes", - 1, 1, "", this), new Among("euses", - 1, 11, "", this), new Among("istes", - 1, 1, "", this), new Among("ives", - 1, 8, "", this), new Among("ifs", - 1, 8, "", this), new Among("usions", - 1, 4, "", this), new Among("ations", - 1, 2, "", this), new Among("utions", - 1, 4, "", this), new Among("ateurs", - 1, 2, "", this), new Among("ments", - 1, 15, "", this), new Among("ements", 30, 6, "", this), new Among("issements", 31, 12, "", this), new Among("it\u00E9s", - 1, 7, "", this), new Among("ment", - 1, 15, "", this), new Among("ement", 34, 6, "", this), new Among("issement", 35, 12, "", this), new Among("amment", 34, 13, "", this), new Among("emment", 34, 14, "", this), new Among("aux", - 1, 10, "", this), new Among("eaux", 39, 9, "", this), new Among("eux", - 1, 1, "", this), new Among("it\u00E9", - 1, 7, "", this)};
+			a4 = new Among[]{new Among("ira", - 1, 1, "", this), new Among("ie", - 1, 1, "", this), new Among("isse", - 1, 1, "", this), new Among("issante", - 1, 1, "", this), new Among("i", - 1, 1, "", this), new Among("irai", 4, 1, "", this), new Among("ir", - 1, 1, "", this), new Among("iras", - 1, 1, "", this), new Among("ies", - 1, 1, "", this), new Among("\u00EEmes", - 1, 1, "", this), new Among("isses", - 1, 1, "", this), new Among("issantes", - 1, 1, "", this), new Among("\u00EEtes", - 1, 1, "", this), new Among("is", - 1, 1, "", this), new Among("irais", 13, 1, "", this), new Among("issais", 13, 1, "", this), new Among("irions", - 1, 1, "", this), new Among("issions", - 1, 1, "", this), new Among("irons", - 1, 1, "", this), new Among("issons", - 1, 1, "", this), new Among("issants", - 1, 1, "", this), new Among("it", - 1, 1, "", this), new Among("irait", 21, 1, "", this), new Among("issait", 21, 1, "", this), new Among("issant", - 1, 1, "", this), new Among("iraIent", - 1, 1, "", this), new Among("issaIent", - 1, 1, "", this), new Among("irent", - 1, 1, "", this), new Among("issent", - 1, 1, "", this), new Among("iront", - 1, 1, "", this), new Among("\u00EEt", - 1, 1, "", this), new Among("iriez", - 1, 1, "", this), new Among("issiez", - 1, 1, "", this), new Among("irez", - 1, 1, "", this), new Among("issez", - 1, 1, "", this)};
+			a5 = new Among[]{new Among("a", - 1, 3, "", this), new Among("era", 0, 2, "", this), new Among("asse", - 1, 3, "", this), new Among("ante", - 1, 3, "", this), new Among("\u00E9e", - 1, 2, "", this), new Among("ai", - 1, 3, "", this), new Among("erai", 5, 2, "", this), new Among("er", - 1, 2, "", this), new Among("as", - 1, 3, "", this), new Among("eras", 8, 2, "", this), new Among("\u00E2mes", - 1, 3, "", this), new Among("asses", - 1, 3, "", this), new Among("antes", - 1, 3, "", this), new Among("\u00E2tes", - 1, 3, "", this), new Among("\u00E9es", - 1, 2, "", this), new Among("ais", - 1, 3, "", this), new Among("erais", 15, 2, "", this), new Among("ions", - 1, 1, "", this), new Among("erions", 17, 2, "", this), new Among("assions", 17, 3, "", this), new Among("erons", - 1, 2, "", this), new Among("ants", - 1, 3, "", this), new Among("\u00E9s", - 1, 2, "", this), new Among("ait", - 1, 3, "", this), new Among("erait", 23, 2, "", this), new Among("ant", - 1, 3, "", this), new Among("aIent", - 1, 3, "", this), new Among("eraIent", 26, 2, "", this), new Among("\u00E8rent", - 1, 2, "", this), new Among("assent", - 1, 3, "", this), new Among("eront", - 1, 2, "", this), new Among("\u00E2t", - 1, 3, "", this), new Among("ez", - 1, 2, "", this), new Among("iez", 32, 2, "", this), new Among("eriez", 33, 2, "", this), new Among("assiez", 33, 3, "", this), new Among("erez", 32, 2, "", this), new Among("\u00E9", - 1, 2, "", this)};
+			a6 = new Among[]{new Among("e", - 1, 3, "", this), new Among("I\u00E8re", 0, 2, "", this), new Among("i\u00E8re", 0, 2, "", this), new Among("ion", - 1, 1, "", this), new Among("Ier", - 1, 2, "", this), new Among("ier", - 1, 2, "", this), new Among("\u00EB", - 1, 4, "", this)};
+			a7 = new Among[]{new Among("ell", - 1, - 1, "", this), new Among("eill", - 1, - 1, "", this), new Among("enn", - 1, - 1, "", this), new Among("onn", - 1, - 1, "", this), new Among("ett", - 1, - 1, "", this)};
 		}
 		
-		private Among[] a_0;
-		private Among[] a_1;
-		private Among[] a_2;
-		private Among[] a_3;
-		private Among[] a_4;
-		private Among[] a_5;
-		private Among[] a_6;
-		private Among[] a_7;
-		private static readonly char[] g_v = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128), (char) (130), (char) (103), (char) (8), (char) (5)};
-		private static readonly char[] g_keep_with_s = new char[]{(char) (1), (char) (65), (char) (20), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
+		private Among[] a0;
+		private Among[] a1;
+		private Among[] a2;
+		private Among[] a3;
+		private Among[] a4;
+		private Among[] a5;
+		private Among[] a6;
+		private Among[] a7;
+		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128), (char) (130), (char) (103), (char) (8), (char) (5)};
+		private static readonly char[] gKeepWithS = new char[]{(char) (1), (char) (65), (char) (20), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
 		
 		private int I_p2;
 		private int I_p1;
 		private int I_pV;
-		protected internal virtual void  copy_from(FrenchStemmer other)
+		protected internal virtual void  copyFrom(FrenchStemmer other)
 		{
 			I_p2 = other.I_p2;
 			I_p1 = other.I_p1;
 			I_pV = other.I_pV;
-			base.copy_from(other);
+			base.copyFrom(other);
 		}
 		
-		private bool r_prelude()
+		private bool rPrelude()
 		{
-			int v_1;
-			int v_2;
-			int v_3;
-			int v_4;
+			int v1;
+			int v2;
+			int v3;
+			int v4;
 			// repeat, line 38
 			while (true)
 			{
-				v_1 = cursor;
+				v1 = cursor;
 				do 
 				{
 					// goto, line 38
 					while (true)
 					{
-						v_2 = cursor;
+						v2 = cursor;
 						do 
 						{
 							// (, line 38
 							// or, line 44
 							do 
 							{
-								v_3 = cursor;
+								v3 = cursor;
 								do 
 								{
 									// (, line 40
-									if (!(in_grouping(g_v, 97, 251)))
+									if (!(inGrouping(gV, 97, 251)))
 									{
-										goto lab5_brk;
+										goto lab5Brk;
 									}
 									// [, line 40
 									bra = cursor;
 									// or, line 40
 									do 
 									{
-										v_4 = cursor;
+										v4 = cursor;
 										do 
 										{
 											// (, line 40
 											// literal, line 40
-											if (!(eq_s(1, "u")))
+											if (!(eqS(1, "u")))
 											{
-												goto lab7_brk;
+												goto lab7Brk;
 											}
 											// ], line 40
 											ket = cursor;
-											if (!(in_grouping(g_v, 97, 251)))
+											if (!(inGrouping(gV, 97, 251)))
 											{
-												goto lab7_brk;
+												goto lab7Brk;
 											}
 											// <-, line 40
-											slice_from("U");
-											goto lab6_brk;
+											sliceFrom("U");
+											goto lab6Brk;
 										}
 										while (false);
 
-lab7_brk: ;
+lab7Brk: ;
 										
-										cursor = v_4;
+										cursor = v4;
 										do 
 										{
 											// (, line 41
 											// literal, line 41
-											if (!(eq_s(1, "i")))
+											if (!(eqS(1, "i")))
 											{
-												goto lab8_brk;
+												goto lab8Brk;
 											}
 											// ], line 41
 											ket = cursor;
-											if (!(in_grouping(g_v, 97, 251)))
+											if (!(inGrouping(gV, 97, 251)))
 											{
-												goto lab8_brk;
+												goto lab8Brk;
 											}
 											// <-, line 41
-											slice_from("I");
-											goto lab6_brk;
+											sliceFrom("I");
+											goto lab6Brk;
 										}
 										while (false);
 
-lab8_brk: ;
+lab8Brk: ;
 										
-										cursor = v_4;
+										cursor = v4;
 										// (, line 42
 										// literal, line 42
-										if (!(eq_s(1, "y")))
+										if (!(eqS(1, "y")))
 										{
-											goto lab5_brk;
+											goto lab5Brk;
 										}
 										// ], line 42
 										ket = cursor;
 										// <-, line 42
-										slice_from("Y");
+										sliceFrom("Y");
 									}
 									while (false);
 
-lab6_brk: ;
+lab6Brk: ;
 									
-									goto lab4_brk;
+									goto lab4Brk;
 								}
 								while (false);
 
-lab5_brk: ;
+lab5Brk: ;
 								
-								cursor = v_3;
+								cursor = v3;
 								do 
 								{
 									// (, line 45
 									// [, line 45
 									bra = cursor;
 									// literal, line 45
-									if (!(eq_s(1, "y")))
+									if (!(eqS(1, "y")))
 									{
-										goto lab9_brk;
+										goto lab9Brk;
 									}
 									// ], line 45
 									ket = cursor;
-									if (!(in_grouping(g_v, 97, 251)))
+									if (!(inGrouping(gV, 97, 251)))
 									{
-										goto lab9_brk;
+										goto lab9Brk;
 									}
 									// <-, line 45
-									slice_from("Y");
-									goto lab4_brk;
+									sliceFrom("Y");
+									goto lab4Brk;
 								}
 								while (false);
 
-lab9_brk: ;
+lab9Brk: ;
 								
-								cursor = v_3;
+								cursor = v3;
 								// (, line 47
 								// literal, line 47
-								if (!(eq_s(1, "q")))
+								if (!(eqS(1, "q")))
 								{
-									goto lab3_brk;
+									goto lab3Brk;
 								}
 								// [, line 47
 								bra = cursor;
 								// literal, line 47
-								if (!(eq_s(1, "u")))
+								if (!(eqS(1, "u")))
 								{
-									goto lab3_brk;
+									goto lab3Brk;
 								}
 								// ], line 47
 								ket = cursor;
 								// <-, line 47
-								slice_from("U");
+								sliceFrom("U");
 							}
 							while (false);
 
-lab4_brk: ;
+lab4Brk: ;
 							
-							cursor = v_2;
-							goto golab2_brk;
+							cursor = v2;
+							goto golab2Brk;
 						}
 						while (false);
 
-lab3_brk: ;
+lab3Brk: ;
 						
-						cursor = v_2;
+						cursor = v2;
 						if (cursor >= limit)
 						{
-							goto lab1_brk;
+							goto lab1Brk;
 						}
 						cursor++;
 					}
 
-golab2_brk: ;
+golab2Brk: ;
 					
 					goto replab0;
 				}
 				while (false);
 
-lab1_brk: ;
+lab1Brk: ;
 				
-				cursor = v_1;
-				goto replab0_brk;
+				cursor = v1;
+				goto replab0Brk;
 
 replab0: ;
 			}
 
-replab0_brk: ;
+replab0Brk: ;
 			
 			return true;
 		}
 		
-		private bool r_mark_regions()
+		private bool rMarkRegions()
 		{
-			int v_1;
-			int v_2;
-			int v_4;
+			int v1;
+			int v2;
+			int v4;
 			// (, line 50
 			I_pV = limit;
 			I_p1 = limit;
 			I_p2 = limit;
 			// do, line 56
-			v_1 = cursor;
+			v1 = cursor;
 			do 
 			{
 				// (, line 56
@@ -266,36 +266,36 @@ replab0_brk: ;
 
 				do 
 				{
-					v_2 = cursor;
+					v2 = cursor;
 					do 
 					{
 						// (, line 57
-						if (!(in_grouping(g_v, 97, 251)))
+						if (!(inGrouping(gV, 97, 251)))
 						{
-							goto lab2_brk;
+							goto lab2Brk;
 						}
-						if (!(in_grouping(g_v, 97, 251)))
+						if (!(inGrouping(gV, 97, 251)))
 						{
-							goto lab2_brk;
+							goto lab2Brk;
 						}
 						// next, line 57
 						if (cursor >= limit)
 						{
-							goto lab2_brk;
+							goto lab2Brk;
 						}
 						cursor++;
-						goto lab1_brk;
+						goto lab1Brk;
 					}
 					while (false);
 
-lab2_brk: ;
+lab2Brk: ;
 					
-					cursor = v_2;
+					cursor = v2;
 					// (, line 57
 					// next, line 57
 					if (cursor >= limit)
 					{
-						goto lab0_brk;
+						goto lab0Brk;
 					}
 					cursor++;
 					// gopast, line 57
@@ -303,39 +303,39 @@ lab2_brk: ;
 					{
 						do 
 						{
-							if (!(in_grouping(g_v, 97, 251)))
+							if (!(inGrouping(gV, 97, 251)))
 							{
-								goto lab4_brk;
+								goto lab4Brk;
 							}
-							goto golab3_brk;
+							goto golab3Brk;
 						}
 						while (false);
 
-lab4_brk: ;
+lab4Brk: ;
 						
 						if (cursor >= limit)
 						{
-							goto lab0_brk;
+							goto lab0Brk;
 						}
 						cursor++;
 					}
 
-golab3_brk: ;
+golab3Brk: ;
 					
 				}
 				while (false);
 
-lab1_brk: ;
+lab1Brk: ;
 				// setmark pV, line 58
 				I_pV = cursor;
 			}
 			while (false);
 
-lab0_brk: ;
+lab0Brk: ;
 			
-			cursor = v_1;
+			cursor = v1;
 			// do, line 60
-			v_4 = cursor;
+			v4 = cursor;
 			do 
 			{
 				// (, line 60
@@ -344,48 +344,48 @@ lab0_brk: ;
 				{
 					do 
 					{
-						if (!(in_grouping(g_v, 97, 251)))
+						if (!(inGrouping(gV, 97, 251)))
 						{
-							goto lab7_brk;
+							goto lab7Brk;
 						}
-						goto golab6_brk;
+						goto golab6Brk;
 					}
 					while (false);
 
-lab7_brk: ;
+lab7Brk: ;
 					
 					if (cursor >= limit)
 					{
-						goto lab5_brk;
+						goto lab5Brk;
 					}
 					cursor++;
 				}
 
-golab6_brk: ;
+golab6Brk: ;
 				
 				// gopast, line 61
 				while (true)
 				{
 					do 
 					{
-						if (!(out_grouping(g_v, 97, 251)))
+						if (!(outGrouping(gV, 97, 251)))
 						{
-							goto lab9_brk;
+							goto lab9Brk;
 						}
-						goto golab8_brk;
+						goto golab8Brk;
 					}
 					while (false);
 
-lab9_brk: ;
+lab9Brk: ;
 					
 					if (cursor >= limit)
 					{
-						goto lab5_brk;
+						goto lab5Brk;
 					}
 					cursor++;
 				}
 
-golab8_brk: ;
+golab8Brk: ;
 				
 				// setmark p1, line 61
 				I_p1 = cursor;
@@ -394,103 +394,103 @@ golab8_brk: ;
 				{
 					do 
 					{
-						if (!(in_grouping(g_v, 97, 251)))
+						if (!(inGrouping(gV, 97, 251)))
 						{
-							goto lab11_brk;
+							goto lab11Brk;
 						}
-						goto golab10_brk;
+						goto golab10Brk;
 					}
 					while (false);
 
-lab11_brk: ;
+lab11Brk: ;
 					
 					if (cursor >= limit)
 					{
-						goto lab5_brk;
+						goto lab5Brk;
 					}
 					cursor++;
 				}
 
-golab10_brk: ;
+golab10Brk: ;
 				
 				// gopast, line 62
 				while (true)
 				{
 					do 
 					{
-						if (!(out_grouping(g_v, 97, 251)))
+						if (!(outGrouping(gV, 97, 251)))
 						{
-							goto lab13_brk;
+							goto lab13Brk;
 						}
-						goto golab12_brk;
+						goto golab12Brk;
 					}
 					while (false);
 
-lab13_brk: ;
+lab13Brk: ;
 					
 					if (cursor >= limit)
 					{
-						goto lab5_brk;
+						goto lab5Brk;
 					}
 					cursor++;
 				}
 
-golab12_brk: ;
+golab12Brk: ;
 				
 				// setmark p2, line 62
 				I_p2 = cursor;
 			}
 			while (false);
 
-lab5_brk: ;
+lab5Brk: ;
 			
-			cursor = v_4;
+			cursor = v4;
 			return true;
 		}
 		
-		private bool r_postlude()
+		private bool rPostlude()
 		{
-			int among_var;
-			int v_1;
+			int amongVar;
+			int v1;
 			// repeat, line 66
 			while (true)
 			{
-				v_1 = cursor;
+				v1 = cursor;
 				do 
 				{
 					// (, line 66
 					// [, line 68
 					bra = cursor;
 					// substring, line 68
-					among_var = find_among(a_0, 4);
-					if (among_var == 0)
+					amongVar = findAmong(a0, 4);
+					if (amongVar == 0)
 					{
-						goto lab10_brk;
+						goto lab10Brk;
 					}
 					// ], line 68
 					ket = cursor;
-					switch (among_var)
+					switch (amongVar)
 					{
 						
 						case 0: 
-							goto lab10_brk;
+							goto lab10Brk;
 						
 						case 1: 
 							// (, line 69
 							// <-, line 69
-							slice_from("i");
+							sliceFrom("i");
 							break;
 						
 						case 2: 
 							// (, line 70
 							// <-, line 70
-							slice_from("u");
+							sliceFrom("u");
 							break;
 						
 						case 3: 
 							// (, line 71
 							// <-, line 71
-							slice_from("y");
+							sliceFrom("y");
 							break;
 						
 						case 4: 
@@ -498,7 +498,7 @@ lab5_brk: ;
 							// next, line 72
 							if (cursor >= limit)
 							{
-								goto lab10_brk;
+								goto lab10Brk;
 							}
 							cursor++;
 							break;
@@ -507,15 +507,15 @@ lab5_brk: ;
 				}
 				while (false);
 
-lab10_brk: ;
+lab10Brk: ;
 				
-				cursor = v_1;
-				goto replab1_brk;
+				cursor = v1;
+				goto replab1Brk;
 
 replab1: ;
 			}
 
-replab1_brk: ;
+replab1Brk: ;
 			
 			return true;
 		}
@@ -547,32 +547,32 @@ replab1_brk: ;
 			return true;
 		}
 		
-		private bool r_standard_suffix()
+		private bool rStandardSuffix()
 		{
-			int among_var;
-			int v_1;
-			int v_2;
-			int v_3;
-			int v_4;
-			int v_5;
-			int v_6;
-			int v_7;
-			int v_8;
-			int v_9;
-			int v_10;
-			int v_11;
+			int amongVar;
+			int v1;
+			int v2;
+			int v3;
+			int v4;
+			int v5;
+			int v6;
+			int v7;
+			int v8;
+			int v9;
+			int v10;
+			int v11;
 			// (, line 82
 			// [, line 83
 			ket = cursor;
 			// substring, line 83
-			among_var = find_among_b(a_3, 43);
-			if (among_var == 0)
+			amongVar = findAmongB(a3, 43);
+			if (amongVar == 0)
 			{
 				return false;
 			}
 			// ], line 83
 			bra = cursor;
-			switch (among_var)
+			switch (amongVar)
 			{
 				
 				case 0: 
@@ -586,7 +586,7 @@ replab1_brk: ;
 						return false;
 					}
 					// delete, line 87
-					slice_del();
+					sliceDel();
 					break;
 				
 				case 2: 
@@ -597,53 +597,53 @@ replab1_brk: ;
 						return false;
 					}
 					// delete, line 90
-					slice_del();
+					sliceDel();
 					// try, line 91
-					v_1 = limit - cursor;
+					v1 = limit - cursor;
 					do 
 					{
 						// (, line 91
 						// [, line 91
 						ket = cursor;
 						// literal, line 91
-						if (!(eq_s_b(2, "ic")))
+						if (!(eqSB(2, "ic")))
 						{
-							cursor = limit - v_1;
-							goto lab0_brk;
+							cursor = limit - v1;
+							goto lab0Brk;
 						}
 						// ], line 91
 						bra = cursor;
 						// or, line 91
 						do 
 						{
-							v_2 = limit - cursor;
+							v2 = limit - cursor;
 							do 
 							{
 								// (, line 91
 								// call R2, line 91
 								if (!r_R2())
 								{
-									goto lab2_brk;
+									goto lab2Brk;
 								}
 								// delete, line 91
-								slice_del();
-								goto lab1_brk;
+								sliceDel();
+								goto lab1Brk;
 							}
 							while (false);
 
-lab2_brk: ;
+lab2Brk: ;
 							
-							cursor = limit - v_2;
+							cursor = limit - v2;
 							// <-, line 91
-							slice_from("iqU");
+							sliceFrom("iqU");
 						}
 						while (false);
 
-lab1_brk: ;
+lab1Brk: ;
 					}
 					while (false);
 
-lab0_brk: ;
+lab0Brk: ;
 					
 					break;
 				
@@ -655,7 +655,7 @@ lab0_brk: ;
 						return false;
 					}
 					// <-, line 95
-					slice_from("log");
+					sliceFrom("log");
 					break;
 				
 				case 4: 
@@ -666,7 +666,7 @@ lab0_brk: ;
 						return false;
 					}
 					// <-, line 98
-					slice_from("u");
+					sliceFrom("u");
 					break;
 				
 				case 5: 
@@ -677,7 +677,7 @@ lab0_brk: ;
 						return false;
 					}
 					// <-, line 101
-					slice_from("ent");
+					sliceFrom("ent");
 					break;
 				
 				case 6: 
@@ -688,58 +688,58 @@ lab0_brk: ;
 						return false;
 					}
 					// delete, line 105
-					slice_del();
+					sliceDel();
 					// try, line 106
-					v_3 = limit - cursor;
+					v3 = limit - cursor;
 					do 
 					{
 						// (, line 106
 						// [, line 107
 						ket = cursor;
 						// substring, line 107
-						among_var = find_among_b(a_1, 6);
-						if (among_var == 0)
+						amongVar = findAmongB(a1, 6);
+						if (amongVar == 0)
 						{
-							cursor = limit - v_3;
-							goto lab3_brk;
+							cursor = limit - v3;
+							goto lab3Brk;
 						}
 						// ], line 107
 						bra = cursor;
-						switch (among_var)
+						switch (amongVar)
 						{
 							
 							case 0: 
-								cursor = limit - v_3;
-								goto lab3_brk;
+								cursor = limit - v3;
+								goto lab3Brk;
 							
 							case 1: 
 								// (, line 108
 								// call R2, line 108
 								if (!r_R2())
 								{
-									cursor = limit - v_3;
-									goto lab3_brk;
+									cursor = limit - v3;
+									goto lab3Brk;
 								}
 								// delete, line 108
-								slice_del();
+								sliceDel();
 								// [, line 108
 								ket = cursor;
 								// literal, line 108
-								if (!(eq_s_b(2, "at")))
+								if (!(eqSB(2, "at")))
 								{
-									cursor = limit - v_3;
-									goto lab3_brk;
+									cursor = limit - v3;
+									goto lab3Brk;
 								}
 								// ], line 108
 								bra = cursor;
 								// call R2, line 108
 								if (!r_R2())
 								{
-									cursor = limit - v_3;
-									goto lab3_brk;
+									cursor = limit - v3;
+									goto lab3Brk;
 								}
 								// delete, line 108
-								slice_del();
+								sliceDel();
 								break;
 							
 							case 2: 
@@ -747,37 +747,37 @@ lab0_brk: ;
 								// or, line 109
 								do 
 								{
-									v_4 = limit - cursor;
+									v4 = limit - cursor;
 									do 
 									{
 										// (, line 109
 										// call R2, line 109
 										if (!r_R2())
 										{
-											goto lab5_brk;
+											goto lab5Brk;
 										}
 										// delete, line 109
-										slice_del();
-										goto lab4_brk;
+										sliceDel();
+										goto lab4Brk;
 									}
 									while (false);
 
-lab5_brk: ;
+lab5Brk: ;
 									
-									cursor = limit - v_4;
+									cursor = limit - v4;
 									// (, line 109
 									// call R1, line 109
 									if (!r_R1())
 									{
-										cursor = limit - v_3;
-										goto lab3_brk;
+										cursor = limit - v3;
+										goto lab3Brk;
 									}
 									// <-, line 109
-									slice_from("eux");
+									sliceFrom("eux");
 								}
 								while (false);
 
-lab4_brk: ;
+lab4Brk: ;
 								
 								break;
 							
@@ -786,11 +786,11 @@ lab4_brk: ;
 								// call R2, line 111
 								if (!r_R2())
 								{
-									cursor = limit - v_3;
-									goto lab3_brk;
+									cursor = limit - v3;
+									goto lab3Brk;
 								}
 								// delete, line 111
-								slice_del();
+								sliceDel();
 								break;
 							
 							case 4: 
@@ -798,17 +798,17 @@ lab4_brk: ;
 								// call RV, line 113
 								if (!r_RV())
 								{
-									cursor = limit - v_3;
-									goto lab3_brk;
+									cursor = limit - v3;
+									goto lab3Brk;
 								}
 								// <-, line 113
-								slice_from("i");
+								sliceFrom("i");
 								break;
 							}
 					}
 					while (false);
 
-lab3_brk: ;
+lab3Brk: ;
 					
 					break;
 				
@@ -820,29 +820,29 @@ lab3_brk: ;
 						return false;
 					}
 					// delete, line 120
-					slice_del();
+					sliceDel();
 					// try, line 121
-					v_5 = limit - cursor;
+					v5 = limit - cursor;
 					do 
 					{
 						// (, line 121
 						// [, line 122
 						ket = cursor;
 						// substring, line 122
-						among_var = find_among_b(a_2, 3);
-						if (among_var == 0)
+						amongVar = findAmongB(a2, 3);
+						if (amongVar == 0)
 						{
-							cursor = limit - v_5;
-							goto lab6_brk;
+							cursor = limit - v5;
+							goto lab6Brk;
 						}
 						// ], line 122
 						bra = cursor;
-						switch (among_var)
+						switch (amongVar)
 						{
 							
 							case 0: 
-								cursor = limit - v_5;
-								goto lab6_brk;
+								cursor = limit - v5;
+								goto lab6Brk;
 							
 							case 1: 
 								// (, line 123
@@ -850,30 +850,30 @@ lab3_brk: ;
 
 								do 
 								{
-									v_6 = limit - cursor;
+									v6 = limit - cursor;
 									do 
 									{
 										// (, line 123
 										// call R2, line 123
 										if (!r_R2())
 										{
-											goto lab8_brk;
+											goto lab8Brk;
 										}
 										// delete, line 123
-										slice_del();
-										goto lab7_brk;
+										sliceDel();
+										goto lab7Brk;
 									}
 									while (false);
 
-lab8_brk: ;
+lab8Brk: ;
 									
-									cursor = limit - v_6;
+									cursor = limit - v6;
 									// <-, line 123
-									slice_from("abl");
+									sliceFrom("abl");
 								}
 								while (false);
 
-lab7_brk: ;
+lab7Brk: ;
 								break;
 							
 							case 2: 
@@ -881,30 +881,30 @@ lab7_brk: ;
 								// or, line 124
 								do 
 								{
-									v_7 = limit - cursor;
+									v7 = limit - cursor;
 									do 
 									{
 										// (, line 124
 										// call R2, line 124
 										if (!r_R2())
 										{
-											goto lab10_brk;
+											goto lab10Brk;
 										}
 										// delete, line 124
-										slice_del();
-										goto lab9_brk;
+										sliceDel();
+										goto lab9Brk;
 									}
 									while (false);
 
-lab10_brk: ;
+lab10Brk: ;
 									
-									cursor = limit - v_7;
+									cursor = limit - v7;
 									// <-, line 124
-									slice_from("iqU");
+									sliceFrom("iqU");
 								}
 								while (false);
 
-lab9_brk: ;
+lab9Brk: ;
 
 								break;
 							
@@ -913,17 +913,17 @@ lab9_brk: ;
 								// call R2, line 125
 								if (!r_R2())
 								{
-									cursor = limit - v_5;
-									goto lab6_brk;
+									cursor = limit - v5;
+									goto lab6Brk;
 								}
 								// delete, line 125
-								slice_del();
+								sliceDel();
 								break;
 							}
 					}
 					while (false);
 
-lab6_brk: ;
+lab6Brk: ;
 					
 					break;
 				
@@ -935,79 +935,79 @@ lab6_brk: ;
 						return false;
 					}
 					// delete, line 132
-					slice_del();
+					sliceDel();
 					// try, line 133
-					v_8 = limit - cursor;
+					v8 = limit - cursor;
 					do 
 					{
 						// (, line 133
 						// [, line 133
 						ket = cursor;
 						// literal, line 133
-						if (!(eq_s_b(2, "at")))
+						if (!(eqSB(2, "at")))
 						{
-							cursor = limit - v_8;
-							goto lab11_brk;
+							cursor = limit - v8;
+							goto lab11Brk;
 						}
 						// ], line 133
 						bra = cursor;
 						// call R2, line 133
 						if (!r_R2())
 						{
-							cursor = limit - v_8;
-							goto lab11_brk;
+							cursor = limit - v8;
+							goto lab11Brk;
 						}
 						// delete, line 133
-						slice_del();
+						sliceDel();
 						// [, line 133
 						ket = cursor;
 						// literal, line 133
-						if (!(eq_s_b(2, "ic")))
+						if (!(eqSB(2, "ic")))
 						{
-							cursor = limit - v_8;
-							goto lab11_brk;
+							cursor = limit - v8;
+							goto lab11Brk;
 						}
 						// ], line 133
 						bra = cursor;
 						// or, line 133
 						do 
 						{
-							v_9 = limit - cursor;
+							v9 = limit - cursor;
 							do 
 							{
 								// (, line 133
 								// call R2, line 133
 								if (!r_R2())
 								{
-									goto lab13_brk;
+									goto lab13Brk;
 								}
 								// delete, line 133
-								slice_del();
-								goto lab12_brk;
+								sliceDel();
+								goto lab12Brk;
 							}
 							while (false);
 
-lab13_brk: ;
+lab13Brk: ;
 							
-							cursor = limit - v_9;
+							cursor = limit - v9;
 							// <-, line 133
-							slice_from("iqU");
+							sliceFrom("iqU");
 						}
 						while (false);
 
-lab12_brk: ;
+lab12Brk: ;
 						
 					}
 					while (false);
 
-lab11_brk: ;
+lab11Brk: ;
 					
 					break;
 				
 				case 9: 
 					// (, line 135
 					// <-, line 135
-					slice_from("eau");
+					sliceFrom("eau");
 					break;
 				
 				case 10: 
@@ -1018,7 +1018,7 @@ lab11_brk: ;
 						return false;
 					}
 					// <-, line 136
-					slice_from("al");
+					sliceFrom("al");
 					break;
 				
 				case 11: 
@@ -1026,24 +1026,24 @@ lab11_brk: ;
 					// or, line 138
 					do 
 					{
-						v_10 = limit - cursor;
+						v10 = limit - cursor;
 						do 
 						{
 							// (, line 138
 							// call R2, line 138
 							if (!r_R2())
 							{
-								goto lab15_brk;
+								goto lab15Brk;
 							}
 							// delete, line 138
-							slice_del();
-							goto lab14_brk;
+							sliceDel();
+							goto lab14Brk;
 						}
 						while (false);
 
-lab15_brk: ;
+lab15Brk: ;
 						
-						cursor = limit - v_10;
+						cursor = limit - v10;
 						// (, line 138
 						// call R1, line 138
 						if (!r_R1())
@@ -1051,11 +1051,11 @@ lab15_brk: ;
 							return false;
 						}
 						// <-, line 138
-						slice_from("eux");
+						sliceFrom("eux");
 					}
 					while (false);
 
-lab14_brk: ;
+lab14Brk: ;
 					
 					break;
 				
@@ -1066,12 +1066,12 @@ lab14_brk: ;
 					{
 						return false;
 					}
-					if (!(out_grouping_b(g_v, 97, 251)))
+					if (!(outGroupingB(gV, 97, 251)))
 					{
 						return false;
 					}
 					// delete, line 141
-					slice_del();
+					sliceDel();
 					break;
 				
 				case 13: 
@@ -1084,7 +1084,7 @@ lab14_brk: ;
 					// fail, line 146
 					// (, line 146
 					// <-, line 146
-					slice_from("ant");
+					sliceFrom("ant");
 					return false;
 				
 				case 14: 
@@ -1097,15 +1097,15 @@ lab14_brk: ;
 					// fail, line 147
 					// (, line 147
 					// <-, line 147
-					slice_from("ent");
+					sliceFrom("ent");
 					return false;
 				
 				case 15: 
 					// (, line 149
 					// test, line 149
-					v_11 = limit - cursor;
+					v11 = limit - cursor;
 					// (, line 149
-					if (!(in_grouping_b(g_v, 97, 251)))
+					if (!(inGroupingB(gV, 97, 251)))
 					{
 						return false;
 					}
@@ -1114,100 +1114,100 @@ lab14_brk: ;
 					{
 						return false;
 					}
-					cursor = limit - v_11;
+					cursor = limit - v11;
 					// fail, line 149
 					// (, line 149
 					// delete, line 149
-					slice_del();
+					sliceDel();
 					return false;
 				}
 			return true;
 		}
 		
-		private bool r_i_verb_suffix()
+		private bool rIVerbSuffix()
 		{
-			int among_var;
-			int v_1;
-			int v_2;
+			int amongVar;
+			int v1;
+			int v2;
 			// setlimit, line 154
-			v_1 = limit - cursor;
+			v1 = limit - cursor;
 			// tomark, line 154
 			if (cursor < I_pV)
 			{
 				return false;
 			}
 			cursor = I_pV;
-			v_2 = limit_backward;
-			limit_backward = cursor;
-			cursor = limit - v_1;
+			v2 = limitBackward;
+			limitBackward = cursor;
+			cursor = limit - v1;
 			// (, line 154
 			// [, line 155
 			ket = cursor;
 			// substring, line 155
-			among_var = find_among_b(a_4, 35);
-			if (among_var == 0)
+			amongVar = findAmongB(a4, 35);
+			if (amongVar == 0)
 			{
-				limit_backward = v_2;
+				limitBackward = v2;
 				return false;
 			}
 			// ], line 155
 			bra = cursor;
-			switch (among_var)
+			switch (amongVar)
 			{
 				
 				case 0: 
-					limit_backward = v_2;
+					limitBackward = v2;
 					return false;
 				
 				case 1: 
 					// (, line 161
-					if (!(out_grouping_b(g_v, 97, 251)))
+					if (!(outGroupingB(gV, 97, 251)))
 					{
-						limit_backward = v_2;
+						limitBackward = v2;
 						return false;
 					}
 					// delete, line 161
-					slice_del();
+					sliceDel();
 					break;
 				}
-			limit_backward = v_2;
+			limitBackward = v2;
 			return true;
 		}
 		
-		private bool r_verb_suffix()
+		private bool rVerbSuffix()
 		{
-			int among_var;
-			int v_1;
-			int v_2;
-			int v_3;
+			int amongVar;
+			int v1;
+			int v2;
+			int v3;
 			// setlimit, line 165
-			v_1 = limit - cursor;
+			v1 = limit - cursor;
 			// tomark, line 165
 			if (cursor < I_pV)
 			{
 				return false;
 			}
 			cursor = I_pV;
-			v_2 = limit_backward;
-			limit_backward = cursor;
-			cursor = limit - v_1;
+			v2 = limitBackward;
+			limitBackward = cursor;
+			cursor = limit - v1;
 			// (, line 165
 			// [, line 166
 			ket = cursor;
 			// substring, line 166
-			among_var = find_among_b(a_5, 38);
-			if (among_var == 0)
+			amongVar = findAmongB(a5, 38);
+			if (amongVar == 0)
 			{
-				limit_backward = v_2;
+				limitBackward = v2;
 				return false;
 			}
 			// ], line 166
 			bra = cursor;
-			switch (among_var)
+			switch (amongVar)
 			{
 				
 				case 0: 
-					limit_backward = v_2;
+					limitBackward = v2;
 					return false;
 				
 				case 1: 
@@ -1215,118 +1215,118 @@ lab14_brk: ;
 					// call R2, line 168
 					if (!r_R2())
 					{
-						limit_backward = v_2;
+						limitBackward = v2;
 						return false;
 					}
 					// delete, line 168
-					slice_del();
+					sliceDel();
 					break;
 				
 				case 2: 
 					// (, line 176
 					// delete, line 176
-					slice_del();
+					sliceDel();
 					break;
 				
 				case 3: 
 					// (, line 181
 					// delete, line 181
-					slice_del();
+					sliceDel();
 					// try, line 182
-					v_3 = limit - cursor;
+					v3 = limit - cursor;
 					do 
 					{
 						// (, line 182
 						// [, line 182
 						ket = cursor;
 						// literal, line 182
-						if (!(eq_s_b(1, "e")))
+						if (!(eqSB(1, "e")))
 						{
-							cursor = limit - v_3;
-							goto lab16_brk;
+							cursor = limit - v3;
+							goto lab16Brk;
 						}
 						// ], line 182
 						bra = cursor;
 						// delete, line 182
-						slice_del();
+						sliceDel();
 					}
 					while (false);
 
-lab16_brk: ;
+lab16Brk: ;
 					
 					break;
 				}
-			limit_backward = v_2;
+			limitBackward = v2;
 			return true;
 		}
 		
-		private bool r_residual_suffix()
+		private bool rResidualSuffix()
 		{
-			int among_var;
-			int v_1;
-			int v_2;
-			int v_3;
-			int v_4;
-			int v_5;
+			int amongVar;
+			int v1;
+			int v2;
+			int v3;
+			int v4;
+			int v5;
 			// (, line 189
 			// try, line 190
-			v_1 = limit - cursor;
+			v1 = limit - cursor;
 			do 
 			{
 				// (, line 190
 				// [, line 190
 				ket = cursor;
 				// literal, line 190
-				if (!(eq_s_b(1, "s")))
+				if (!(eqSB(1, "s")))
 				{
-					cursor = limit - v_1;
-					goto lab0_brk;
+					cursor = limit - v1;
+					goto lab0Brk;
 				}
 				// ], line 190
 				bra = cursor;
 				// test, line 190
-				v_2 = limit - cursor;
-				if (!(out_grouping_b(g_keep_with_s, 97, 232)))
+				v2 = limit - cursor;
+				if (!(outGroupingB(gKeepWithS, 97, 232)))
 				{
-					cursor = limit - v_1;
-					goto lab0_brk;
+					cursor = limit - v1;
+					goto lab0Brk;
 				}
-				cursor = limit - v_2;
+				cursor = limit - v2;
 				// delete, line 190
-				slice_del();
+				sliceDel();
 			}
 			while (false);
 
-lab0_brk: ;
+lab0Brk: ;
 			
 			// setlimit, line 191
-			v_3 = limit - cursor;
+			v3 = limit - cursor;
 			// tomark, line 191
 			if (cursor < I_pV)
 			{
 				return false;
 			}
 			cursor = I_pV;
-			v_4 = limit_backward;
-			limit_backward = cursor;
-			cursor = limit - v_3;
+			v4 = limitBackward;
+			limitBackward = cursor;
+			cursor = limit - v3;
 			// (, line 191
 			// [, line 192
 			ket = cursor;
 			// substring, line 192
-			among_var = find_among_b(a_6, 7);
-			if (among_var == 0)
+			amongVar = findAmongB(a6, 7);
+			if (amongVar == 0)
 			{
-				limit_backward = v_4;
+				limitBackward = v4;
 				return false;
 			}
 			// ], line 192
 			bra = cursor;
-			switch (among_var)
+			switch (amongVar)
 			{
 				
 				case 0: 
-					limit_backward = v_4;
+					limitBackward = v4;
 					return false;
 				
 				case 1: 
@@ -1334,86 +1334,86 @@ lab0_brk: ;
 					// call R2, line 193
 					if (!r_R2())
 					{
-						limit_backward = v_4;
+						limitBackward = v4;
 						return false;
 					}
 					// or, line 193
 					do 
 					{
-						v_5 = limit - cursor;
+						v5 = limit - cursor;
 						do 
 						{
 							// literal, line 193
-							if (!(eq_s_b(1, "s")))
+							if (!(eqSB(1, "s")))
 							{
-								goto lab2_brk;
+								goto lab2Brk;
 							}
-							goto lab1_brk;
+							goto lab1Brk;
 						}
 						while (false);
 
-lab2_brk: ;
+lab2Brk: ;
 						
-						cursor = limit - v_5;
+						cursor = limit - v5;
 						// literal, line 193
-						if (!(eq_s_b(1, "t")))
+						if (!(eqSB(1, "t")))
 						{
-							limit_backward = v_4;
+							limitBackward = v4;
 							return false;
 						}
 					}
 					while (false);
 
-lab1_brk: ;
+lab1Brk: ;
 
 					// delete, line 193
-					slice_del();
+					sliceDel();
 					break;
 				
 				case 2: 
 					// (, line 195
 					// <-, line 195
-					slice_from("i");
+					sliceFrom("i");
 					break;
 				
 				case 3: 
 					// (, line 196
 					// delete, line 196
-					slice_del();
+					sliceDel();
 					break;
 				
 				case 4: 
 					// (, line 197
 					// literal, line 197
-					if (!(eq_s_b(2, "gu")))
+					if (!(eqSB(2, "gu")))
 					{
-						limit_backward = v_4;
+						limitBackward = v4;
 						return false;
 					}
 					// delete, line 197
-					slice_del();
+					sliceDel();
 					break;
 				}
-			limit_backward = v_4;
+			limitBackward = v4;
 			return true;
 		}
 		
-		private bool r_un_double()
+		private bool rUnDouble()
 		{
-			int v_1;
+			int v1;
 			// (, line 202
 			// test, line 203
-			v_1 = limit - cursor;
+			v1 = limit - cursor;
 			// among, line 203
-			if (find_among_b(a_7, 5) == 0)
+			if (findAmongB(a7, 5) == 0)
 			{
 				return false;
 			}
-			cursor = limit - v_1;
+			cursor = limit - v1;
 			// [, line 203
 			ket = cursor;
 			// next, line 203
-			if (cursor <= limit_backward)
+			if (cursor <= limitBackward)
 			{
 				return false;
 			}
@@ -1421,41 +1421,41 @@ lab1_brk: ;
 			// ], line 203
 			bra = cursor;
 			// delete, line 203
-			slice_del();
+			sliceDel();
 			return true;
 		}
 		
-		private bool r_un_accent()
+		private bool rUnAccent()
 		{
-			int v_3;
+			int v3;
 			// (, line 206
 			// atleast, line 207
 			{
-				int v_1 = 1;
+				int v1 = 1;
 				// atleast, line 207
 				while (true)
 				{
 					do 
 					{
-						if (!(out_grouping_b(g_v, 97, 251)))
+						if (!(outGroupingB(gV, 97, 251)))
 						{
-							goto lab16_brk;
+							goto lab16Brk;
 						}
-						v_1--;
+						v1--;
 						goto replab1;
 					}
 					while (false);
 
-lab16_brk: ;
+lab16Brk: ;
 					
-					goto replab1_brk;
+					goto replab1Brk;
 
 replab1: ;
 				}
 
-replab1_brk: ;
+replab1Brk: ;
 				
-				if (v_1 > 0)
+				if (v1 > 0)
 				{
 					return false;
 				}
@@ -1467,23 +1467,23 @@ replab1_brk: ;
 lab16: 
 			do 
 			{
-				v_3 = limit - cursor;
+				v3 = limit - cursor;
 				do 
 				{
 					// literal, line 208
-					if (!(eq_s_b(1, "\u00E9")))
+					if (!(eqSB(1, "\u00E9")))
 					{
-						goto lab16_brk;
+						goto lab16Brk;
 					}
-					goto lab16_brk;
+					goto lab16Brk;
 				}
 				while (false);
 
-lab16_brk: ;
+lab16Brk: ;
 				
-				cursor = limit - v_3;
+				cursor = limit - v3;
 				// literal, line 208
-				if (!(eq_s_b(1, "\u00E8")))
+				if (!(eqSB(1, "\u00E8")))
 				{
 					return false;
 				}
@@ -1492,59 +1492,59 @@ lab16_brk: ;
 			// ], line 208
 			bra = cursor;
 			// <-, line 208
-			slice_from("e");
+			sliceFrom("e");
 			return true;
 		}
 		
 		public virtual bool Stem()
 		{
-			int v_1;
-			int v_2;
-			int v_3;
-			int v_4;
-			int v_5;
-			int v_6;
-			int v_7;
-			int v_8;
-			int v_9;
-			int v_10;
-			int v_11;
+			int v1;
+			int v2;
+			int v3;
+			int v4;
+			int v5;
+			int v6;
+			int v7;
+			int v8;
+			int v9;
+			int v10;
+			int v11;
 			// (, line 212
 			// do, line 214
-			v_1 = cursor;
+			v1 = cursor;
 			do 
 			{
 				// call prelude, line 214
-				if (!r_prelude())
+				if (!rPrelude())
 				{
-					goto lab0_brk;
+					goto lab0Brk;
 				}
 			}
 			while (false);
 
-lab0_brk: ;
+lab0Brk: ;
 			
-			cursor = v_1;
+			cursor = v1;
 			// do, line 215
-			v_2 = cursor;
+			v2 = cursor;
 			do 
 			{
-				// call mark_regions, line 215
-				if (!r_mark_regions())
+				// call markRegions, line 215
+				if (!rMarkRegions())
 				{
-					goto lab1_brk;
+					goto lab1Brk;
 				}
 			}
 			while (false);
 
-lab1_brk: ;
+lab1Brk: ;
 			
-			cursor = v_2;
+			cursor = v2;
 			// backwards, line 216
-			limit_backward = cursor; cursor = limit;
+			limitBackward = cursor; cursor = limit;
 			// (, line 216
 			// do, line 218
-			v_3 = limit - cursor;
+			v3 = limit - cursor;
 
 			do 
 			{
@@ -1552,58 +1552,58 @@ lab1_brk: ;
 				// or, line 228
 				do 
 				{
-					v_4 = limit - cursor;
+					v4 = limit - cursor;
 					do 
 					{
 						// (, line 219
 						// and, line 224
-						v_5 = limit - cursor;
+						v5 = limit - cursor;
 						// (, line 220
 						// or, line 220
 						do 
 						{
-							v_6 = limit - cursor;
+							v6 = limit - cursor;
 							do 
 							{
-								// call standard_suffix, line 220
-								if (!r_standard_suffix())
+								// call standardSuffix, line 220
+								if (!rStandardSuffix())
 								{
-									goto lab6_brk;
+									goto lab6Brk;
 								}
-								goto lab5_brk;
+								goto lab5Brk;
 							}
 							while (false);
 
-lab6_brk: ;
+lab6Brk: ;
 							
-							cursor = limit - v_6;
+							cursor = limit - v6;
 							do 
 							{
-								// call i_verb_suffix, line 221
-								if (!r_i_verb_suffix())
+								// call iVerbSuffix, line 221
+								if (!rIVerbSuffix())
 								{
-									goto lab7_brk;
+									goto lab7Brk;
 								}
-								goto lab5_brk;
+								goto lab5Brk;
 							}
 							while (false);
 
-lab7_brk: ;
+lab7Brk: ;
 							
-							cursor = limit - v_6;
-							// call verb_suffix, line 222
-							if (!r_verb_suffix())
+							cursor = limit - v6;
+							// call verbSuffix, line 222
+							if (!rVerbSuffix())
 							{
-								goto lab4_brk;
+								goto lab4Brk;
 							}
 						}
 						while (false);
 
-lab5_brk: ;
+lab5Brk: ;
 						
-						cursor = limit - v_5;
+						cursor = limit - v5;
 						// try, line 225
-						v_7 = limit - cursor;
+						v7 = limit - cursor;
 						do 
 						{
 							// (, line 225
@@ -1612,115 +1612,115 @@ lab5_brk: ;
 							// or, line 225
 							do 
 							{
-								v_8 = limit - cursor;
+								v8 = limit - cursor;
 								do 
 								{
 									// (, line 225
 									// literal, line 225
-									if (!(eq_s_b(1, "Y")))
+									if (!(eqSB(1, "Y")))
 									{
-										goto lab10_brk;
+										goto lab10Brk;
 									}
 									// ], line 225
 									bra = cursor;
 									// <-, line 225
-									slice_from("i");
-									goto lab9_brk;
+									sliceFrom("i");
+									goto lab9Brk;
 								}
 								while (false);
 
-lab10_brk: ;
+lab10Brk: ;
 								
-								cursor = limit - v_8;
+								cursor = limit - v8;
 								// (, line 226
 								// literal, line 226
-								if (!(eq_s_b(1, "\u00E7")))
+								if (!(eqSB(1, "\u00E7")))
 								{
-									cursor = limit - v_7;
-									goto lab8_brk;
+									cursor = limit - v7;
+									goto lab8Brk;
 								}
 								// ], line 226
 								bra = cursor;
 								// <-, line 226
-								slice_from("c");
+								sliceFrom("c");
 							}
 							while (false);
 
-lab9_brk: ;
+lab9Brk: ;
 							
 						}
 						while (false);
 
-lab8_brk: ;
+lab8Brk: ;
 
-						goto lab3_brk;
+						goto lab3Brk;
 					}
 					while (false);
 
-lab4_brk: ;
+lab4Brk: ;
 					
-					cursor = limit - v_4;
-					// call residual_suffix, line 229
-					if (!r_residual_suffix())
+					cursor = limit - v4;
+					// call residualSuffix, line 229
+					if (!rResidualSuffix())
 					{
-						goto lab2_brk;
+						goto lab2Brk;
 					}
 				}
 				while (false);
 
-lab3_brk: ;
+lab3Brk: ;
 				
 			}
 			while (false);
 
-lab2_brk: ;
+lab2Brk: ;
 
-			cursor = limit - v_3;
+			cursor = limit - v3;
 			// do, line 234
-			v_9 = limit - cursor;
+			v9 = limit - cursor;
 			do 
 			{
-				// call un_double, line 234
-				if (!r_un_double())
+				// call unDouble, line 234
+				if (!rUnDouble())
 				{
-					goto lab11_brk;
+					goto lab11Brk;
 				}
 			}
 			while (false);
 
-lab11_brk: ;
+lab11Brk: ;
 			
-			cursor = limit - v_9;
+			cursor = limit - v9;
 			// do, line 235
-			v_10 = limit - cursor;
+			v10 = limit - cursor;
 			do 
 			{
-				// call un_accent, line 235
-				if (!r_un_accent())
+				// call unAccent, line 235
+				if (!rUnAccent())
 				{
-					goto lab12_brk;
+					goto lab12Brk;
 				}
 			}
 			while (false);
 
-lab12_brk: ;
+lab12Brk: ;
 			
-			cursor = limit - v_10;
-			cursor = limit_backward; // do, line 237
-			v_11 = cursor;
+			cursor = limit - v10;
+			cursor = limitBackward; // do, line 237
+			v11 = cursor;
 			do 
 			{
 				// call postlude, line 237
-				if (!r_postlude())
+				if (!rPostlude())
 				{
-					goto lab13_brk;
+					goto lab13Brk;
 				}
 			}
 			while (false);
 
-lab13_brk: ;
+lab13Brk: ;
 			
-			cursor = v_11;
+			cursor = v11;
 			return true;
 		}
 	}

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -27,7 +27,7 @@ namespace Latino
     {
         public bool Equals(T x, T y)
         {
-            return Utils.ObjectEquals(x, y, /*deep_cmp=*/true);
+            return Utils.ObjectEquals(x, y, /*deepCmp=*/true);
         }
 
         public int GetHashCode(T obj)

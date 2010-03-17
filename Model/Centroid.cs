@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,155 +25,155 @@ namespace Latino.Model
     */
     internal class Centroid
     {
-        private IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> m_dataset;
-        private Set<int> m_current_items
+        private IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> mDataset;
+        private Set<int> mCurrentItems
             = new Set<int>();
-        private Set<int> m_items
+        private Set<int> mItems
             = new Set<int>();
-        private Set<int> m_non_zero_idx
+        private Set<int> mNonZeroIdx
             = new Set<int>();
-        private double m_div
+        private double mDiv
             = 1;
-        private double[] m_vec;
+        private double[] mVec;
 
-        public Centroid(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, int vec_len)
+        public Centroid(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, int vecLen)
         {
-            m_vec = new double[vec_len];
-            m_dataset = dataset;
+            mVec = new double[vecLen];
+            mDataset = dataset;
         }
 
         public Centroid(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
-            int max_idx = -1;
+            int maxIdx = -1;
             foreach (SparseVector<double>.ReadOnly example in dataset)
             {
-                int last_idx = example.LastNonEmptyIndex;
-                if (last_idx > max_idx) { max_idx = last_idx; }
+                int lastIdx = example.LastNonEmptyIndex;
+                if (lastIdx > maxIdx) { maxIdx = lastIdx; }
             }
-            m_vec = new double[max_idx + 1];
-            m_dataset = dataset;
+            mVec = new double[maxIdx + 1];
+            mDataset = dataset;
         }
 
         public Set<int> Items
         {
-            get { return m_items; }
+            get { return mItems; }
         }
 
         public Set<int>.ReadOnly CurrentItems
         {
-            get { return m_current_items; }
+            get { return mCurrentItems; }
         }
 
         public int VecLen
         {
-            get { return m_vec.Length; }
+            get { return mVec.Length; }
         }
 
         public void Update()
         { 
-            Set<int> add_idx = Set<int>.Difference(m_items, m_current_items);
-            Set<int> rmv_idx = Set<int>.Difference(m_current_items, m_items);
-            foreach (int item_idx in add_idx)
+            Set<int> addIdx = Set<int>.Difference(mItems, mCurrentItems);
+            Set<int> rmvIdx = Set<int>.Difference(mCurrentItems, mItems);
+            foreach (int itemIdx in addIdx)
             {
-                SparseVector<double>.ReadOnly vec = m_dataset[item_idx];
+                SparseVector<double>.ReadOnly vec = mDataset[itemIdx];
                 foreach (IdxDat<double> item in vec)
                 {
                     if (item.Dat != 0)
                     {
-                        if (item.Idx >= m_vec.Length)
+                        if (item.Idx >= mVec.Length)
                         { 
                             // extend vector
-                            double[] new_vec = new double[item.Idx + 1];
-                            foreach (int idx in m_non_zero_idx)
+                            double[] newVec = new double[item.Idx + 1];
+                            foreach (int idx in mNonZeroIdx)
                             {
-                                new_vec[idx] = m_vec[idx];
+                                newVec[idx] = mVec[idx];
                             }
-                            m_vec = new_vec;
+                            mVec = newVec;
                         }
-                        if (Math.Abs(m_vec[item.Idx]) < 1E-6) { m_non_zero_idx.Add(item.Idx); }
-                        else if (Math.Abs(m_vec[item.Idx] + item.Dat) < 1E-6) { m_non_zero_idx.Remove(item.Idx); }
-                        m_vec[item.Idx] += item.Dat;
+                        if (Math.Abs(mVec[item.Idx]) < 1E-6) { mNonZeroIdx.Add(item.Idx); }
+                        else if (Math.Abs(mVec[item.Idx] + item.Dat) < 1E-6) { mNonZeroIdx.Remove(item.Idx); }
+                        mVec[item.Idx] += item.Dat;
                     }
                 }
             }
-            foreach (int item_idx in rmv_idx)
+            foreach (int itemIdx in rmvIdx)
             {
-                SparseVector<double>.ReadOnly vec = m_dataset[item_idx];
+                SparseVector<double>.ReadOnly vec = mDataset[itemIdx];
                 foreach (IdxDat<double> item in vec)
                 {
                     if (item.Dat != 0)
                     {
-                        if (Math.Abs(m_vec[item.Idx]) < 1E-6) { m_non_zero_idx.Add(item.Idx); }
-                        else if (Math.Abs(m_vec[item.Idx] - item.Dat) < 1E-6) { m_non_zero_idx.Remove(item.Idx); }
-                        m_vec[item.Idx] -= item.Dat;
+                        if (Math.Abs(mVec[item.Idx]) < 1E-6) { mNonZeroIdx.Add(item.Idx); }
+                        else if (Math.Abs(mVec[item.Idx] - item.Dat) < 1E-6) { mNonZeroIdx.Remove(item.Idx); }
+                        mVec[item.Idx] -= item.Dat;
                     }
                 }
             }
-            m_current_items = m_items;
-            m_items = new Set<int>();
+            mCurrentItems = mItems;
+            mItems = new Set<int>();
         }
 
         public void NormalizeL2()
         {
-            if (m_div == 1)
+            if (mDiv == 1)
             {
                 double len = 0;
-                foreach (int idx in m_non_zero_idx)
+                foreach (int idx in mNonZeroIdx)
                 {
-                    len += m_vec[idx] * m_vec[idx];
+                    len += mVec[idx] * mVec[idx];
                 }
                 len = Math.Sqrt(len);
-                foreach (int idx in m_non_zero_idx)
+                foreach (int idx in mNonZeroIdx)
                 {
-                    m_vec[idx] /= len;
+                    mVec[idx] /= len;
                 }
-                m_div = len;
+                mDiv = len;
             }
         }
 
         public void ResetNrmL2()
         {
-            if (m_div != 1)
+            if (mDiv != 1)
             {
-                foreach (int idx in m_non_zero_idx)
+                foreach (int idx in mNonZeroIdx)
                 {
-                    m_vec[idx] *= m_div;
+                    mVec[idx] *= mDiv;
                 }
-                m_div = 1;
+                mDiv = 1;
             }
         }
 
         public void Clear()
         {
-            foreach (int idx in m_non_zero_idx)
+            foreach (int idx in mNonZeroIdx)
             {
-                m_vec[idx] = 0;
+                mVec[idx] = 0;
             }
-            m_non_zero_idx.Clear();            
+            mNonZeroIdx.Clear();            
         }
 
         public SparseVector<double> GetSparseVector()
         {
             SparseVector<double> vec = new SparseVector<double>();
-            foreach (int idx in m_non_zero_idx)
+            foreach (int idx in mNonZeroIdx)
             {
                 vec.InnerIdx.Add(idx);
-                vec.InnerDat.Add(m_vec[idx]);
+                vec.InnerDat.Add(mVec[idx]);
             }
             return vec;
         }
 
         public double GetDotProduct(SparseVector<double>.ReadOnly vec)
         {
-            double dot_prod = 0;
+            double dotProd = 0;
             foreach (IdxDat<double> item in vec)
             {
-                if (item.Idx < m_vec.Length)
+                if (item.Idx < mVec.Length)
                 {
-                    dot_prod += item.Dat * m_vec[item.Idx];
+                    dotProd += item.Dat * mVec[item.Idx];
                 }
             }
-            return dot_prod;
+            return dotProd;
         }
     }
 }

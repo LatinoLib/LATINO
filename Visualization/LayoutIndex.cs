@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,29 +25,29 @@ namespace Latino.Visualization
     */
     public class LayoutIndex
     {
-        private KdTreeNode m_root_node
+        private KdTreeNode mRootNode
             = null;
-        private static PointComparerX m_pt_cmp_x
+        private static PointComparerX mPtCmpX
             = new PointComparerX();
-        private static PointComparerY m_pt_cmp_y
+        private static PointComparerY mPtCmpY
             = new PointComparerY();
-        private int m_max_pts_per_leaf
+        private int mMaxPtsPerLeaf
             = 1;
-        private int m_num_changes
+        private int mNumChanges
             = 0;
 
         public int NumChanges
         {
-            get { return m_num_changes; }
+            get { return mNumChanges; }
         }
 
         public int MaxPointsPerLeaf
         {
-            get { return m_max_pts_per_leaf; }
+            get { return mMaxPtsPerLeaf; }
             set 
             {
                 Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("MaxPointsPerLeaf") : null);
-                m_max_pts_per_leaf = value; 
+                mMaxPtsPerLeaf = value; 
             }
         }
 
@@ -61,33 +61,33 @@ namespace Latino.Visualization
             return dim == 0 ? vec.X : vec.Y;
         }
 
-        private double ComputeBound(ArrayList<IdxDat<Vector2D>> points, ref ArrayList<IdxDat<Vector2D>> points_right, int dim)
+        private double ComputeBound(ArrayList<IdxDat<Vector2D>> points, ref ArrayList<IdxDat<Vector2D>> pointsRight, int dim)
         {
-            points.Sort(dim == 0 ? (IComparer<IdxDat<Vector2D>>)m_pt_cmp_x : (IComparer<IdxDat<Vector2D>>)m_pt_cmp_y);
-            int bound_idx = (int)Math.Floor((double)points.Count / 2.0);
-            double bound = GetVectCoord(points[bound_idx].Dat, dim);
-            points_right = new ArrayList<IdxDat<Vector2D>>(points.Count - bound_idx);
-            for (int i = bound_idx; i < points.Count; i++) { points_right.Add(points[i]); }
-            points.RemoveRange(bound_idx, points_right.Count);
+            points.Sort(dim == 0 ? (IComparer<IdxDat<Vector2D>>)mPtCmpX : (IComparer<IdxDat<Vector2D>>)mPtCmpY);
+            int boundIdx = (int)Math.Floor((double)points.Count / 2.0);
+            double bound = GetVectCoord(points[boundIdx].Dat, dim);
+            pointsRight = new ArrayList<IdxDat<Vector2D>>(points.Count - boundIdx);
+            for (int i = boundIdx; i < points.Count; i++) { pointsRight.Add(points[i]); }
+            points.RemoveRange(boundIdx, pointsRight.Count);
             return bound;
         }
 
-        private KdTreeNode BuildSubTree(KdTreeNode parent_node, ArrayList<IdxDat<Vector2D>> points, int level)
+        private KdTreeNode BuildSubTree(KdTreeNode parentNode, ArrayList<IdxDat<Vector2D>> points, int level)
         {
-            if (points.Count <= m_max_pts_per_leaf) // terminal node
+            if (points.Count <= mMaxPtsPerLeaf) // terminal node
             {
-                KdTreeNodeTerminal terminal_node = new KdTreeNodeTerminal(points);
-                terminal_node.ParentNode = parent_node;
-                return terminal_node;
+                KdTreeNodeTerminal terminalNode = new KdTreeNodeTerminal(points);
+                terminalNode.ParentNode = parentNode;
+                return terminalNode;
             }
             else // non-terminal node
             {
-                ArrayList<IdxDat<Vector2D>> points_right = null;
-                double bound = ComputeBound(points, ref points_right, level % 2);
+                ArrayList<IdxDat<Vector2D>> pointsRight = null;
+                double bound = ComputeBound(points, ref pointsRight, level % 2);
                 KdTreeNodeNonTerminal node = new KdTreeNodeNonTerminal(bound);
-                node.ParentNode = parent_node;
+                node.ParentNode = parentNode;
                 node.LeftNode = BuildSubTree(node, points, level + 1);
-                node.RightNode = BuildSubTree(node, points_right, level + 1);
+                node.RightNode = BuildSubTree(node, pointsRight, level + 1);
                 return node;
             }
         }
@@ -96,26 +96,26 @@ namespace Latino.Visualization
 
         public void BuildIndex(IEnumerable<Vector2D> points)
         {
-            ArrayList<IdxDat<Vector2D>> indexed_points = new ArrayList<IdxDat<Vector2D>>();
+            ArrayList<IdxDat<Vector2D>> indexedPoints = new ArrayList<IdxDat<Vector2D>>();
             int idx = 0;
-            foreach (Vector2D point in points) { indexed_points.Add(new IdxDat<Vector2D>(idx++, point)); }
-            m_root_node = BuildSubTree(null, indexed_points, 0);
-            m_num_changes = 0;
+            foreach (Vector2D point in points) { indexedPoints.Add(new IdxDat<Vector2D>(idx++, point)); }
+            mRootNode = BuildSubTree(null, indexedPoints, 0);
+            mNumChanges = 0;
         }
 
         //public bool RemovePoint(int idx, Vector2D point)
         //{
-        //    ArrayList<KdTreeNode> terminal_nodes = new ArrayList<KdTreeNode>();
-        //    GetTreeNodes(point, new Vector2D(), m_root_node, 0, terminal_nodes);
+        //    ArrayList<KdTreeNode> terminalNodes = new ArrayList<KdTreeNode>();
+        //    GetTreeNodes(point, new Vector2D(), mRootNode, 0, terminalNodes);
         //    bool success = false;
-        //    foreach (KdTreeNodeTerminal terminal_node in terminal_nodes)
+        //    foreach (KdTreeNodeTerminal terminalNode in terminalNodes)
         //    {
-        //        int old_count = terminal_node.Points.Count;
-        //        terminal_node.Points.Remove(new IdxDat<Vector2D>(idx));
-        //        success = old_count > terminal_node.Points.Count;
+        //        int oldCount = terminalNode.Points.Count;
+        //        terminalNode.Points.Remove(new IdxDat<Vector2D>(idx));
+        //        success = oldCount > terminalNode.Points.Count;
         //        if (success)
         //        {
-        //            m_num_changes++;
+        //            mNumChanges++;
         //            // *** the index is not updated here; it should be rebuilt manually after enough points have been removed/inserted
         //            break;
         //        }
@@ -125,102 +125,102 @@ namespace Latino.Visualization
 
         //public void InsertPoint(int idx, Vector2D point)
         //{
-        //    ArrayList<KdTreeNode> terminal_nodes = new ArrayList<KdTreeNode>();
-        //    GetTreeNodes(point, new Vector2D(), m_root_node, 0, terminal_nodes);
+        //    ArrayList<KdTreeNode> terminalNodes = new ArrayList<KdTreeNode>();
+        //    GetTreeNodes(point, new Vector2D(), mRootNode, 0, terminalNodes);
         //    int min = int.MaxValue;
-        //    int min_idx = -1;
+        //    int minIdx = -1;
         //    int i = 0;
-        //    foreach (KdTreeNodeTerminal terminal_node in terminal_nodes)
+        //    foreach (KdTreeNodeTerminal terminalNode in terminalNodes)
         //    {
-        //        if (terminal_node.Points.Count < min) { min_idx = i; min = terminal_node.Points.Count; }
+        //        if (terminalNode.Points.Count < min) { minIdx = i; min = terminalNode.Points.Count; }
         //        i++;
         //    }
-        //    ((KdTreeNodeTerminal)terminal_nodes[min_idx]).Points.Add(new IdxDat<Vector2D>(idx, point));            
-        //    m_num_changes++;
+        //    ((KdTreeNodeTerminal)terminalNodes[minIdx]).Points.Add(new IdxDat<Vector2D>(idx, point));            
+        //    mNumChanges++;
         //    // *** the index is not updated here; it should be rebuilt manually after enough points have been removed/inserted
         //}
 
-        private void GetTreeNodes(Vector2D ref_point, Vector2D size, KdTreeNode node, int level, ArrayList<KdTreeNode> tree_nodes) // ref_point and size define a rectangle
+        private void GetTreeNodes(Vector2D refPoint, Vector2D size, KdTreeNode node, int level, ArrayList<KdTreeNode> treeNodes) // refPoint and size define a rectangle
         {
             int dim = level % 2;
             if (node is KdTreeNodeNonTerminal)
             {
-                KdTreeNodeNonTerminal non_terminal_node = (KdTreeNodeNonTerminal)node;
-                double bound = non_terminal_node.Bound;
-                double ref_point_coord = GetVectCoord(ref_point, dim);
-                double size_coord = GetVectCoord(size, dim);
-                if (bound < ref_point_coord)
+                KdTreeNodeNonTerminal nonTerminalNode = (KdTreeNodeNonTerminal)node;
+                double bound = nonTerminalNode.Bound;
+                double refPointCoord = GetVectCoord(refPoint, dim);
+                double sizeCoord = GetVectCoord(size, dim);
+                if (bound < refPointCoord)
                 {
-                    GetTreeNodes(ref_point, size, non_terminal_node.RightNode, level + 1, tree_nodes);
+                    GetTreeNodes(refPoint, size, nonTerminalNode.RightNode, level + 1, treeNodes);
                 }
-                else if (bound > ref_point_coord + size_coord)
+                else if (bound > refPointCoord + sizeCoord)
                 {
-                    GetTreeNodes(ref_point, size, non_terminal_node.LeftNode, level + 1, tree_nodes);
+                    GetTreeNodes(refPoint, size, nonTerminalNode.LeftNode, level + 1, treeNodes);
                 }
                 else
                 {
                     // split the rectangle at the bound
-                    Vector2D right_ref_point = ref_point;
-                    Vector2D right_size = size;
-                    SetVectCoord(ref size, dim, bound - ref_point_coord);
-                    GetTreeNodes(ref_point, size, non_terminal_node.LeftNode, level + 1, tree_nodes);
-                    double right_ref_point_coord = GetVectCoord(right_ref_point, dim);
-                    double right_size_coord = GetVectCoord(right_size, dim);
-                    SetVectCoord(ref right_size, dim, right_ref_point_coord + right_size_coord - bound);
-                    SetVectCoord(ref right_ref_point, dim, bound);
-                    GetTreeNodes(right_ref_point, right_size, non_terminal_node.RightNode, level + 1, tree_nodes);
+                    Vector2D rightRefPoint = refPoint;
+                    Vector2D rightSize = size;
+                    SetVectCoord(ref size, dim, bound - refPointCoord);
+                    GetTreeNodes(refPoint, size, nonTerminalNode.LeftNode, level + 1, treeNodes);
+                    double rightRefPointCoord = GetVectCoord(rightRefPoint, dim);
+                    double rightSizeCoord = GetVectCoord(rightSize, dim);
+                    SetVectCoord(ref rightSize, dim, rightRefPointCoord + rightSizeCoord - bound);
+                    SetVectCoord(ref rightRefPoint, dim, bound);
+                    GetTreeNodes(rightRefPoint, rightSize, nonTerminalNode.RightNode, level + 1, treeNodes);
                 }
             }
             else
             {
-                tree_nodes.Add(node);
+                treeNodes.Add(node);
             }
         }
 
-        public ArrayList<IdxDat<Vector2D>> GetPoints(Vector2D ref_point, Vector2D size) // get points inside a rectangle
+        public ArrayList<IdxDat<Vector2D>> GetPoints(Vector2D refPoint, Vector2D size) // get points inside a rectangle
         {
-            ArrayList<IdxDat<Vector2D>> ret_val = new ArrayList<IdxDat<Vector2D>>();
-            ArrayList<KdTreeNode> tree_nodes = new ArrayList<KdTreeNode>();
-            GetTreeNodes(ref_point, size, m_root_node, 0, tree_nodes);
-            foreach (KdTreeNodeTerminal terminal_node in tree_nodes)
+            ArrayList<IdxDat<Vector2D>> retVal = new ArrayList<IdxDat<Vector2D>>();
+            ArrayList<KdTreeNode> treeNodes = new ArrayList<KdTreeNode>();
+            GetTreeNodes(refPoint, size, mRootNode, 0, treeNodes);
+            foreach (KdTreeNodeTerminal terminalNode in treeNodes)
             {
-                foreach (IdxDat<Vector2D> point in terminal_node.Points)
+                foreach (IdxDat<Vector2D> point in terminalNode.Points)
                 {
-                    bool add_point = true;
+                    bool addPoint = true;
                     for (int dim = 0; dim < 2; dim++)
                     {
-                        double point_coord = GetVectCoord(point.Dat, dim);
-                        double ref_point_coord = GetVectCoord(ref_point, dim);
-                        double size_coord = GetVectCoord(size, dim);
-                        if (point_coord > ref_point_coord + size_coord || point_coord < ref_point_coord)
+                        double pointCoord = GetVectCoord(point.Dat, dim);
+                        double refPointCoord = GetVectCoord(refPoint, dim);
+                        double sizeCoord = GetVectCoord(size, dim);
+                        if (pointCoord > refPointCoord + sizeCoord || pointCoord < refPointCoord)
                         {
-                            add_point = false;
+                            addPoint = false;
                             break;
                         }
                     }
-                    if (add_point) { ret_val.Add(new IdxDat<Vector2D>(point.Idx, point.Dat)); }
+                    if (addPoint) { retVal.Add(new IdxDat<Vector2D>(point.Idx, point.Dat)); }
                 }
             }
-            return ret_val;
+            return retVal;
         }
 
         public ArrayList<IdxDat<Vector2D>> GetPoints(Vector2D center, double radius) // get points inside a circle
         {
-            Vector2D radius_vec = new Vector2D(radius, radius);
-            ArrayList<IdxDat<Vector2D>> ret_val = new ArrayList<IdxDat<Vector2D>>();
-            ArrayList<KdTreeNode> tree_nodes = new ArrayList<KdTreeNode>();
-            GetTreeNodes(center - radius_vec, 2.0 * radius_vec, m_root_node, 0, tree_nodes);
-            foreach (KdTreeNodeTerminal terminal_node in tree_nodes)
+            Vector2D radiusVec = new Vector2D(radius, radius);
+            ArrayList<IdxDat<Vector2D>> retVal = new ArrayList<IdxDat<Vector2D>>();
+            ArrayList<KdTreeNode> treeNodes = new ArrayList<KdTreeNode>();
+            GetTreeNodes(center - radiusVec, 2.0 * radiusVec, mRootNode, 0, treeNodes);
+            foreach (KdTreeNodeTerminal terminalNode in treeNodes)
             {
-                foreach (IdxDat<Vector2D> point in terminal_node.Points)
+                foreach (IdxDat<Vector2D> point in terminalNode.Points)
                 {
                     if ((point.Dat - center).GetLength() <= radius)
                     {
-                        ret_val.Add(new IdxDat<Vector2D>(point.Idx, point.Dat));
+                        retVal.Add(new IdxDat<Vector2D>(point.Idx, point.Dat));
                     }
                 }
             }
-            return ret_val;
+            return retVal;
         }
 
         /* .-----------------------------------------------------------------------
@@ -231,13 +231,13 @@ namespace Latino.Visualization
         */
         private class KdTreeNode
         {
-            protected KdTreeNode m_parent_node
+            protected KdTreeNode mParentNode
                 = null;
 
             public KdTreeNode ParentNode
             {
-                get { return m_parent_node; }
-                set { m_parent_node = value; }
+                get { return mParentNode; }
+                set { mParentNode = value; }
             }
         }
 
@@ -249,32 +249,32 @@ namespace Latino.Visualization
         */
         private class KdTreeNodeNonTerminal : KdTreeNode
         {
-            private double m_bound;
-            private KdTreeNode m_left_node
+            private double mBound;
+            private KdTreeNode mLeftNode
                 = null;
-            private KdTreeNode m_right_node
+            private KdTreeNode mRightNode
                 = null;
 
             public KdTreeNodeNonTerminal(double bound)
             {
-                m_bound = bound;
+                mBound = bound;
             }
 
             public double Bound
             {
-                get { return m_bound; }
+                get { return mBound; }
             }
 
             public KdTreeNode LeftNode
             {
-                get { return m_left_node; }
-                set { m_left_node = value; }
+                get { return mLeftNode; }
+                set { mLeftNode = value; }
             }
 
             public KdTreeNode RightNode
             {
-                get { return m_right_node; }
-                set { m_right_node = value; }
+                get { return mRightNode; }
+                set { mRightNode = value; }
             }
         }
 
@@ -286,16 +286,16 @@ namespace Latino.Visualization
         */
         private class KdTreeNodeTerminal : KdTreeNode
         {
-            private ArrayList<IdxDat<Vector2D>> m_points;
+            private ArrayList<IdxDat<Vector2D>> mPoints;
 
             public KdTreeNodeTerminal(ArrayList<IdxDat<Vector2D>> points)
             {
-                m_points = points;
+                mPoints = points;
             }
 
             public ArrayList<IdxDat<Vector2D>> Points
             {
-                get { return m_points; }
+                get { return mPoints; }
             }
         }
 

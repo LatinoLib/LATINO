@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -29,26 +29,26 @@ namespace Latino
     */
     public class BinarySerializer
     {
-        private static Dictionary<string, string> m_full_to_short_type_name
+        private static Dictionary<string, string> mFullToShortTypeName
             = new Dictionary<string, string>();
-        private static Dictionary<string, string> m_short_to_full_type_name
+        private static Dictionary<string, string> mShortToFullTypeName
             = new Dictionary<string, string>();
-        private Stream m_stream;
+        private Stream mStream;
 
-        private static void RegisterTypeName(string full_type_name, string short_type_name)
+        private static void RegisterTypeName(string fullTypeName, string shortTypeName)
         {
-            m_full_to_short_type_name.Add(full_type_name, short_type_name);
-            m_short_to_full_type_name.Add(short_type_name, full_type_name);
+            mFullToShortTypeName.Add(fullTypeName, shortTypeName);
+            mShortToFullTypeName.Add(shortTypeName, fullTypeName);
         }
 
-        private static string GetFullTypeName(string short_type_name)
+        private static string GetFullTypeName(string shortTypeName)
         {
-            return m_short_to_full_type_name.ContainsKey(short_type_name) ? m_short_to_full_type_name[short_type_name] : short_type_name;
+            return mShortToFullTypeName.ContainsKey(shortTypeName) ? mShortToFullTypeName[shortTypeName] : shortTypeName;
         }
 
-        private static string GetShortTypeName(string full_type_name)
+        private static string GetShortTypeName(string fullTypeName)
         {
-            return m_full_to_short_type_name.ContainsKey(full_type_name) ? m_full_to_short_type_name[full_type_name] : full_type_name;
+            return mFullToShortTypeName.ContainsKey(fullTypeName) ? mFullToShortTypeName[fullTypeName] : fullTypeName;
         }
 
         static BinarySerializer()
@@ -71,17 +71,17 @@ namespace Latino
         public BinarySerializer(Stream stream)
         {
             Utils.ThrowException(stream == null ? new ArgumentNullException("stream") : null);
-            m_stream = stream;
+            mStream = stream;
         }
 
         public BinarySerializer()
         {
-            m_stream = new MemoryStream();
+            mStream = new MemoryStream();
         }
 
-        public BinarySerializer(string file_name, FileMode file_mode)
+        public BinarySerializer(string fileName, FileMode fileMode)
         {
-            m_stream = new FileStream(file_name, file_mode); // throws ArgumentException, NotSupportedException, ArgumentNullException, SecurityException, FileNotFoundException, IOException, DirectoryNotFoundException, PathTooLongException, ArgumentOutOfRangeException
+            mStream = new FileStream(fileName, fileMode); // throws ArgumentException, NotSupportedException, ArgumentNullException, SecurityException, FileNotFoundException, IOException, DirectoryNotFoundException, PathTooLongException, ArgumentOutOfRangeException
         }
 
         // *** Reading ***
@@ -90,8 +90,8 @@ namespace Latino
         {
             int sz = Marshal.SizeOf(typeof(T));
             byte[] buffer = new byte[sz];
-            int num_bytes = m_stream.Read(buffer, 0, sz); // throws IOException, NotSupportedException, ObjectDisposedException
-            Utils.ThrowException(num_bytes < sz ? new EndOfStreamException() : null);
+            int numBytes = mStream.Read(buffer, 0, sz); // throws IOException, NotSupportedException, ObjectDisposedException
+            Utils.ThrowException(numBytes < sz ? new EndOfStreamException() : null);
             return buffer;
         }
 
@@ -102,7 +102,7 @@ namespace Latino
 
         public byte ReadByte() // ReadByte() is directly or indirectly called from several methods thus exceptions thrown here can also be thrown in all those methods
         {
-            int val = m_stream.ReadByte(); // throws NotSupportedException, ObjectDisposedException
+            int val = mStream.ReadByte(); // throws NotSupportedException, ObjectDisposedException
             Utils.ThrowException(val < 0 ? new EndOfStreamException() : null);
             return (byte)val;
         }
@@ -172,7 +172,7 @@ namespace Latino
             int len = ReadInt();
             if (len < 0) { return null; }
             byte[] buffer = new byte[len];
-            m_stream.Read(buffer, 0, len); // throws IOException, NotSupportedException, ObjectDisposedException
+            mStream.Read(buffer, 0, len); // throws IOException, NotSupportedException, ObjectDisposedException
             return Encoding.ASCII.GetString(buffer);
         }
 
@@ -181,7 +181,7 @@ namespace Latino
             int len = ReadInt();
             if (len < 0) { return null; }
             byte[] buffer = new byte[len * 2];
-            m_stream.Read(buffer, 0, len * 2); // throws IOException, NotSupportedException, ObjectDisposedException
+            mStream.Read(buffer, 0, len * 2); // throws IOException, NotSupportedException, ObjectDisposedException
             return Encoding.Unicode.GetString(buffer);
         }
 
@@ -190,7 +190,7 @@ namespace Latino
             int len = ReadInt();
             if (len < 0) { return null; }
             byte[] buffer = new byte[len];
-            m_stream.Read(buffer, 0, len); // throws IOException, NotSupportedException, ObjectDisposedException
+            mStream.Read(buffer, 0, len); // throws IOException, NotSupportedException, ObjectDisposedException
             return Encoding.UTF8.GetString(buffer);
         }
 
@@ -201,9 +201,9 @@ namespace Latino
 
         public Type ReadType()
         {
-            string type_name = ReadString8(); // throws exceptions (see ReadString8())
-            Utils.ThrowException(type_name == null ? new InvalidDataException() : null);
-            return Type.GetType(GetFullTypeName(type_name)); // throws TargetInvocationException, ArgumentException, TypeLoadException, FileNotFoundException, FileLoadException, BadImageFormatException
+            string typeName = ReadString8(); // throws exceptions (see ReadString8())
+            Utils.ThrowException(typeName == null ? new InvalidDataException() : null);
+            return Type.GetType(GetFullTypeName(typeName)); // throws TargetInvocationException, ArgumentException, TypeLoadException, FileNotFoundException, FileLoadException, BadImageFormatException
         }
 
         public ValueType ReadValue(Type type)
@@ -285,10 +285,10 @@ namespace Latino
                 case 1:
                     break;
                 case 2:
-                    Type type_0 = ReadType(); // throws exceptions (see ReadType())
-                    Utils.ThrowException(type_0 == null ? new TypeLoadException() : null); 
-                    Utils.ThrowException(!type.IsAssignableFrom(type_0) ? new ArgumentValueException("type") : null);
-                    type = type_0;
+                    Type type0 = ReadType(); // throws exceptions (see ReadType())
+                    Utils.ThrowException(type0 == null ? new TypeLoadException() : null); 
+                    Utils.ThrowException(!type.IsAssignableFrom(type0) ? new ArgumentValueException("type") : null);
+                    type = type0;
                     break;
                 default:
                     throw new InvalidDataException();
@@ -340,7 +340,7 @@ namespace Latino
 
         private void Write(byte[] data) // Write(byte[] data) is directly or indirectly called from several methods thus exceptions thrown here can also be thrown in all those methods
         {
-            m_stream.Write(data, 0, data.Length); // throws IOException, NotSupportedException, ObjectDisposedException
+            mStream.Write(data, 0, data.Length); // throws IOException, NotSupportedException, ObjectDisposedException
         }
 
         public void WriteBool(bool val)
@@ -350,7 +350,7 @@ namespace Latino
 
         public void WriteByte(byte val) // WriteByte(byte val) is directly or indirectly called from several methods thus exceptions thrown here can also be thrown in all those methods
         {
-            m_stream.WriteByte(val); // throws IOException, NotSupportedException, ObjectDisposedException
+            mStream.WriteByte(val); // throws IOException, NotSupportedException, ObjectDisposedException
         }
 
         public void WriteSByte(sbyte val)
@@ -510,15 +510,15 @@ namespace Latino
             }
             else
             {
-                Type obj_type = obj.GetType();
-                if (obj_type == type)
+                Type objType = obj.GetType();
+                if (objType == type)
                 {
                     WriteByte(1);
                 }
                 else
                 {
                     WriteByte(2);
-                    WriteType(obj_type);
+                    WriteType(objType);
                 }
                 if (obj is string)
                 {
@@ -573,17 +573,17 @@ namespace Latino
 
         public void Close()
         {
-            m_stream.Close();
+            mStream.Close();
         }
 
         public void Flush()
         {
-            m_stream.Flush(); // throws IOException
+            mStream.Flush(); // throws IOException
         }
 
         public Stream Stream
         {
-            get { return m_stream; }
+            get { return mStream; }
         }
     }
 }

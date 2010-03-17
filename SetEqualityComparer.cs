@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -36,9 +36,9 @@ namespace Latino
         public int GetHashCode(Set<T> obj)
         {
             Utils.ThrowException(obj == null ? new ArgumentNullException("obj") : null);
-            int hash_code = 0;
-            foreach (T item in obj) { hash_code ^= item.GetHashCode(); }
-            return hash_code;
+            int hashCode = 0;
+            foreach (T item in obj) { hashCode ^= item.GetHashCode(); }
+            return hashCode;
         }
 
         bool IEqualityComparer.Equals(object x, object y)

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -24,8 +24,8 @@ namespace Latino.Model
     */
     public class LabeledExample<LblT, ExT> : ISerializable
     {
-        private LblT m_lbl;
-        private ExT m_ex;
+        private LblT mLbl;
+        private ExT mEx;
 
         public LabeledExample(BinarySerializer reader)
         {
@@ -36,33 +36,33 @@ namespace Latino.Model
         {
             Utils.ThrowException(lbl == null ? new ArgumentNullException("Label") : null); // *** allow unlabeled examples?
             Utils.ThrowException(ex == null ? new ArgumentNullException("Example") : null);
-            m_lbl = lbl;
-            m_ex = ex;
+            mLbl = lbl;
+            mEx = ex;
         }
 
         public LblT Label
         {
-            get { return m_lbl; }
+            get { return mLbl; }
             set 
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Label") : null); // *** allow unlabeled examples?
-                m_lbl = value; 
+                mLbl = value; 
             }
         }
 
         public ExT Example
         {
-            get { return m_ex; }
+            get { return mEx; }
             set 
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Example") : null);
-                m_ex = value; 
+                mEx = value; 
             }
         }
 
         public override string ToString()
         {
-            return string.Format("( {0}, {1} )", m_lbl, m_ex);
+            return string.Format("( {0}, {1} )", mLbl, mEx);
         }
 
         // *** ISerializable interface implementation ***
@@ -71,16 +71,16 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteValueOrObject<LblT>(m_lbl);
-            writer.WriteValueOrObject<ExT>(m_ex);
+            writer.WriteValueOrObject<LblT>(mLbl);
+            writer.WriteValueOrObject<ExT>(mEx);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            m_lbl = reader.ReadValueOrObject<LblT>();
-            m_ex = reader.ReadValueOrObject<ExT>();
+            mLbl = reader.ReadValueOrObject<LblT>();
+            mEx = reader.ReadValueOrObject<ExT>();
         }
     }
 }

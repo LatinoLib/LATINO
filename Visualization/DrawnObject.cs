@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,37 +25,37 @@ namespace Latino.Visualization
     */
     public abstract class DrawnObject : IDrawableObject
     {
-        protected Pen m_pen
+        protected Pen mPen
             = Pens.Black;
-        protected BoundingArea m_bounding_area
+        protected BoundingArea mBoundingArea
             = null;
         public Pen Pen
         {
-            get { return m_pen; }
+            get { return mPen; }
             set 
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Pen") : null);
-                m_pen = value; 
+                mPen = value; 
             }
         }
         protected void InvalidateBoundingArea()
         {
-            m_bounding_area = null;
+            mBoundingArea = null;
         }
         // *** IDrawableObject interface implementation ***
-        public virtual IDrawableObject[] GetObjectsAt(float x, float y, TransformParams tr, ref float[] dist_array)
+        public virtual IDrawableObject[] GetObjectsAt(float x, float y, TransformParams tr, ref float[] distArray)
         {
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
             float dist = 0;
-            IDrawableObject drawable_object = GetObjectAt(x, y, tr, ref dist);
-            if (drawable_object != null)
+            IDrawableObject drawableObject = GetObjectAt(x, y, tr, ref dist);
+            if (drawableObject != null)
             {
-                dist_array = new float[] { dist };
-                return new IDrawableObject[] { drawable_object };
+                distArray = new float[] { dist };
+                return new IDrawableObject[] { drawableObject };
             }
             else
             {
-                dist_array = new float[] { };
+                distArray = new float[] { };
                 return new IDrawableObject[] { };
             }
         }
@@ -75,13 +75,13 @@ namespace Latino.Visualization
         public virtual BoundingArea GetBoundingArea(TransformParams tr)
         {
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
-            if (m_bounding_area == null) { m_bounding_area = GetBoundingArea(); }
-            BoundingArea bounding_area = m_bounding_area.Clone();
-            bounding_area.Transform(tr);
-            lock (m_pen) { bounding_area.Inflate(m_pen.Width / 2f + 5f, m_pen.Width / 2f + 5f); }
-            return bounding_area;
+            if (mBoundingArea == null) { mBoundingArea = GetBoundingArea(); }
+            BoundingArea boundingArea = mBoundingArea.Clone();
+            boundingArea.Transform(tr);
+            lock (mPen) { boundingArea.Inflate(mPen.Width / 2f + 5f, mPen.Width / 2f + 5f); }
+            return boundingArea;
         }
-        public virtual void Draw(Graphics gfx, TransformParams tr, BoundingArea.ReadOnly bounding_area)
+        public virtual void Draw(Graphics gfx, TransformParams tr, BoundingArea.ReadOnly boundingArea)
         {
             Draw(gfx, tr);
         }

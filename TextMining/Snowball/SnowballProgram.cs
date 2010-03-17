@@ -1,4 +1,4 @@
-/* 
+﻿/* 
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -39,7 +39,7 @@ namespace SF.Snowball
             current.Append(value_Renamed);
 			cursor = 0;
 			limit = current.Length;
-			limit_backward = 0;
+			limitBackward = 0;
 			bra = cursor;
 			ket = limit;
 		}
@@ -49,21 +49,21 @@ namespace SF.Snowball
 		
 		protected internal int cursor;
 		protected internal int limit;
-		protected internal int limit_backward;
+		protected internal int limitBackward;
 		protected internal int bra;
 		protected internal int ket;
 		
-		protected internal virtual void  copy_from(SnowballProgram other)
+		protected internal virtual void  copyFrom(SnowballProgram other)
 		{
 			current = other.current;
 			cursor = other.cursor;
 			limit = other.limit;
-			limit_backward = other.limit_backward;
+			limitBackward = other.limitBackward;
 			bra = other.bra;
 			ket = other.ket;
 		}
 		
-		protected internal virtual bool in_grouping(char[] s, int min, int max)
+		protected internal virtual bool inGrouping(char[] s, int min, int max)
 		{
 			if (cursor >= limit)
 				return false;
@@ -77,9 +77,9 @@ namespace SF.Snowball
 			return true;
 		}
 		
-		protected internal virtual bool in_grouping_b(char[] s, int min, int max)
+		protected internal virtual bool inGroupingB(char[] s, int min, int max)
 		{
-			if (cursor <= limit_backward)
+			if (cursor <= limitBackward)
 				return false;
 			char ch = current[cursor - 1];
 			if (ch > max || ch < min)
@@ -91,7 +91,7 @@ namespace SF.Snowball
 			return true;
 		}
 		
-		protected internal virtual bool out_grouping(char[] s, int min, int max)
+		protected internal virtual bool outGrouping(char[] s, int min, int max)
 		{
 			if (cursor >= limit)
 				return false;
@@ -110,9 +110,9 @@ namespace SF.Snowball
 			return false;
 		}
 		
-		protected internal virtual bool out_grouping_b(char[] s, int min, int max)
+		protected internal virtual bool outGroupingB(char[] s, int min, int max)
 		{
-			if (cursor <= limit_backward)
+			if (cursor <= limitBackward)
 				return false;
 			char ch = current[cursor - 1];
 			if (ch > max || ch < min)
@@ -129,7 +129,7 @@ namespace SF.Snowball
 			return false;
 		}
 		
-		protected internal virtual bool in_range(int min, int max)
+		protected internal virtual bool inRange(int min, int max)
 		{
 			if (cursor >= limit)
 				return false;
@@ -140,9 +140,9 @@ namespace SF.Snowball
 			return true;
 		}
 		
-		protected internal virtual bool in_range_b(int min, int max)
+		protected internal virtual bool inRangeB(int min, int max)
 		{
-			if (cursor <= limit_backward)
+			if (cursor <= limitBackward)
 				return false;
 			char ch = current[cursor - 1];
 			if (ch > max || ch < min)
@@ -151,7 +151,7 @@ namespace SF.Snowball
 			return true;
 		}
 		
-		protected internal virtual bool out_range(int min, int max)
+		protected internal virtual bool outRange(int min, int max)
 		{
 			if (cursor >= limit)
 				return false;
@@ -162,9 +162,9 @@ namespace SF.Snowball
 			return true;
 		}
 		
-		protected internal virtual bool out_range_b(int min, int max)
+		protected internal virtual bool outRangeB(int min, int max)
 		{
-			if (cursor <= limit_backward)
+			if (cursor <= limitBackward)
 				return false;
 			char ch = current[cursor - 1];
 			if (!(ch > max || ch < min))
@@ -173,65 +173,65 @@ namespace SF.Snowball
 			return true;
 		}
 		
-		protected internal virtual bool eq_s(int s_size, System.String s)
+		protected internal virtual bool eqS(int sSize, System.String s)
 		{
-			if (limit - cursor < s_size)
+			if (limit - cursor < sSize)
 				return false;
 			int i;
-			for (i = 0; i != s_size; i++)
+			for (i = 0; i != sSize; i++)
 			{
 				if (current[cursor + i] != s[i])
 					return false;
 			}
-			cursor += s_size;
+			cursor += sSize;
 			return true;
 		}
 		
-		protected internal virtual bool eq_s_b(int s_size, System.String s)
+		protected internal virtual bool eqSB(int sSize, System.String s)
 		{
-			if (cursor - limit_backward < s_size)
+			if (cursor - limitBackward < sSize)
 				return false;
 			int i;
-			for (i = 0; i != s_size; i++)
+			for (i = 0; i != sSize; i++)
 			{
-				if (current[cursor - s_size + i] != s[i])
+				if (current[cursor - sSize + i] != s[i])
 					return false;
 			}
-			cursor -= s_size;
+			cursor -= sSize;
 			return true;
 		}
 		
-		protected internal virtual bool eq_v(System.Text.StringBuilder s)
+		protected internal virtual bool eqV(System.Text.StringBuilder s)
 		{
-			return eq_s(s.Length, s.ToString());
+			return eqS(s.Length, s.ToString());
 		}
 		
-		protected internal virtual bool eq_v_b(System.Text.StringBuilder s)
+		protected internal virtual bool eqVB(System.Text.StringBuilder s)
 		{
-			return eq_s_b(s.Length, s.ToString());
+			return eqSB(s.Length, s.ToString());
 		}
 		
-		protected internal virtual int find_among(Among[] v, int v_size)
+		protected internal virtual int findAmong(Among[] v, int vSize)
 		{
 			int i = 0;
-			int j = v_size;
+			int j = vSize;
 			
 			int c = cursor;
 			int l = limit;
 			
-			int common_i = 0;
-			int common_j = 0;
+			int commonI = 0;
+			int commonJ = 0;
 			
-			bool first_key_inspected = false;
+			bool firstKeyInspected = false;
 			
 			while (true)
 			{
 				int k = i + ((j - i) >> 1);
 				int diff = 0;
-				int common = common_i < common_j?common_i:common_j; // smaller
+				int common = commonI < commonJ?commonI:commonJ; // smaller
 				Among w = v[k];
 				int i2;
-				for (i2 = common; i2 < w.s_size; i2++)
+				for (i2 = common; i2 < w.sSize; i2++)
 				{
 					if (c + common == l)
 					{
@@ -246,12 +246,12 @@ namespace SF.Snowball
 				if (diff < 0)
 				{
 					j = k;
-					common_j = common;
+					commonJ = common;
 				}
 				else
 				{
 					i = k;
-					common_i = common;
+					commonI = common;
 				}
 				if (j - i <= 1)
 				{
@@ -264,24 +264,24 @@ namespace SF.Snowball
 					// v->s inspected. This looks messy, but is actually
 					// the optimal approach.
 					
-					if (first_key_inspected)
+					if (firstKeyInspected)
 						break;
-					first_key_inspected = true;
+					firstKeyInspected = true;
 				}
 			}
 			while (true)
 			{
 				Among w = v[i];
-				if (common_i >= w.s_size)
+				if (commonI >= w.sSize)
 				{
-					cursor = c + w.s_size;
+					cursor = c + w.sSize;
 					if (w.method == null)
 						return w.result;
 					bool res;
 					try
 					{
 						System.Object resobj = w.method.Invoke(w.methodobject, (System.Object[]) new System.Object[0]);
-						// {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043_3"'
+						// {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca10433"'
 						res = resobj.ToString().Equals("true");
 					}
 					catch (System.Reflection.TargetInvocationException e)
@@ -294,38 +294,38 @@ namespace SF.Snowball
 						res = false;
 						// FIXME - debug message
 					}
-					cursor = c + w.s_size;
+					cursor = c + w.sSize;
 					if (res)
 						return w.result;
 				}
-				i = w.substring_i;
+				i = w.substringI;
 				if (i < 0)
 					return 0;
 			}
 		}
 		
-		// find_among_b is for backwards processing. Same comments apply
-		protected internal virtual int find_among_b(Among[] v, int v_size)
+		// findAmongB is for backwards processing. Same comments apply
+		protected internal virtual int findAmongB(Among[] v, int vSize)
 		{
 			int i = 0;
-			int j = v_size;
+			int j = vSize;
 			
 			int c = cursor;
-			int lb = limit_backward;
+			int lb = limitBackward;
 			
-			int common_i = 0;
-			int common_j = 0;
+			int commonI = 0;
+			int commonJ = 0;
 			
-			bool first_key_inspected = false;
+			bool firstKeyInspected = false;
 			
 			while (true)
 			{
 				int k = i + ((j - i) >> 1);
 				int diff = 0;
-				int common = common_i < common_j?common_i:common_j;
+				int common = commonI < commonJ?commonI:commonJ;
 				Among w = v[k];
 				int i2;
-				for (i2 = w.s_size - 1 - common; i2 >= 0; i2--)
+				for (i2 = w.sSize - 1 - common; i2 >= 0; i2--)
 				{
 					if (c - common == lb)
 					{
@@ -340,12 +340,12 @@ namespace SF.Snowball
 				if (diff < 0)
 				{
 					j = k;
-					common_j = common;
+					commonJ = common;
 				}
 				else
 				{
 					i = k;
-					common_i = common;
+					commonI = common;
 				}
 				if (j - i <= 1)
 				{
@@ -353,17 +353,17 @@ namespace SF.Snowball
 						break;
 					if (j == i)
 						break;
-					if (first_key_inspected)
+					if (firstKeyInspected)
 						break;
-					first_key_inspected = true;
+					firstKeyInspected = true;
 				}
 			}
 			while (true)
 			{
 				Among w = v[i];
-				if (common_i >= w.s_size)
+				if (commonI >= w.sSize)
 				{
-					cursor = c - w.s_size;
+					cursor = c - w.sSize;
 					if (w.method == null)
 						return w.result;
 					
@@ -371,7 +371,7 @@ namespace SF.Snowball
 					try
 					{
 						System.Object resobj = w.method.Invoke(w.methodobject, (System.Object[]) new System.Object[0]);
-						// {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca1043_3"'
+						// {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca10433"'
 						res = resobj.ToString().Equals("true");
 					}
 					catch (System.Reflection.TargetInvocationException e)
@@ -384,35 +384,35 @@ namespace SF.Snowball
 						res = false;
 						// FIXME - debug message
 					}
-					cursor = c - w.s_size;
+					cursor = c - w.sSize;
 					if (res)
 						return w.result;
 				}
-				i = w.substring_i;
+				i = w.substringI;
 				if (i < 0)
 					return 0;
 			}
 		}
 		
-		/* to replace chars between c_bra and c_ket in current by the
+		/* to replace chars between cBra and cKet in current by the
 		* chars in s.
 		*/
-		protected internal virtual int replace_s(int c_bra, int c_ket, System.String s)
+		protected internal virtual int replaceS(int cBra, int cKet, System.String s)
 		{
-			int adjustment = s.Length - (c_ket - c_bra);
+			int adjustment = s.Length - (cKet - cBra);
             if (current.Length > bra)
     			current.Replace(current.ToString(bra, ket - bra), s, bra, ket - bra);
             else
                 current.Append(s);
 			limit += adjustment;
-			if (cursor >= c_ket)
+			if (cursor >= cKet)
 				cursor += adjustment;
-			else if (cursor > c_bra)
-				cursor = c_bra;
+			else if (cursor > cBra)
+				cursor = cBra;
 			return adjustment;
 		}
 		
-		protected internal virtual void  slice_check()
+		protected internal virtual void  sliceCheck()
 		{
 			if (bra < 0 || bra > ket || ket > limit || limit > current.Length)
 			// this line could be removed
@@ -427,40 +427,40 @@ namespace SF.Snowball
 			}
 		}
 		
-		protected internal virtual void  slice_from(System.String s)
+		protected internal virtual void  sliceFrom(System.String s)
 		{
-			slice_check();
-			replace_s(bra, ket, s);
+			sliceCheck();
+			replaceS(bra, ket, s);
 		}
 		
-		protected internal virtual void  slice_from(System.Text.StringBuilder s)
+		protected internal virtual void  sliceFrom(System.Text.StringBuilder s)
 		{
-			slice_from(s.ToString());
+			sliceFrom(s.ToString());
 		}
 		
-		protected internal virtual void  slice_del()
+		protected internal virtual void  sliceDel()
 		{
-			slice_from("");
+			sliceFrom("");
 		}
 		
-		protected internal virtual void  insert(int c_bra, int c_ket, System.String s)
+		protected internal virtual void  insert(int cBra, int cKet, System.String s)
 		{
-			int adjustment = replace_s(c_bra, c_ket, s);
-			if (c_bra <= bra)
+			int adjustment = replaceS(cBra, cKet, s);
+			if (cBra <= bra)
 				bra += adjustment;
-			if (c_bra <= ket)
+			if (cBra <= ket)
 				ket += adjustment;
 		}
 		
-		protected internal virtual void  insert(int c_bra, int c_ket, System.Text.StringBuilder s)
+		protected internal virtual void  insert(int cBra, int cKet, System.Text.StringBuilder s)
 		{
-			insert(c_bra, c_ket, s.ToString());
+			insert(cBra, cKet, s.ToString());
 		}
 		
 		/* Copy the slice into the supplied StringBuffer */
-		protected internal virtual System.Text.StringBuilder slice_to(System.Text.StringBuilder s)
+		protected internal virtual System.Text.StringBuilder sliceTo(System.Text.StringBuilder s)
 		{
-			slice_check();
+			sliceCheck();
 			int len = ket - bra;
 			//// s.Replace(s.ToString(0, s.Length - 0), current.ToString(bra, ket), 0, s.Length - 0);
 			s.Remove(0, s.Length);
@@ -468,7 +468,7 @@ namespace SF.Snowball
 			return s;
 		}
 		
-		protected internal virtual System.Text.StringBuilder assign_to(System.Text.StringBuilder s)
+		protected internal virtual System.Text.StringBuilder assignTo(System.Text.StringBuilder s)
 		{
 			//// s.Replace(s.ToString(0, s.Length - 0), current.ToString(0, limit), 0, s.Length - 0);
 			s.Remove(0, s.Length);
@@ -477,11 +477,11 @@ namespace SF.Snowball
 		}
 		
 		/*
-		extern void debug(struct SN_env * z, int number, int line_count)
+		extern void debug(struct SN_env * z, int number, int lineCount)
 		{   int i;
 		int limit = SIZE(z->p);
-		//if (number >= 0) printf("%3d (line %4d): '", number, line_count);
-		if (number >= 0) printf("%3d (line %4d): [%d]'", number, line_count,limit);
+		//if (number >= 0) printf("%3d (line %4d): '", number, lineCount);
+		if (number >= 0) printf("%3d (line %4d): [%d]'", number, lineCount,limit);
 		for (i = 0; i <= limit; i++)
 		{   if (z->lb == i) printf("{");
 		if (z->bra == i) printf("[");

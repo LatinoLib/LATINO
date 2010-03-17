@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -24,52 +24,52 @@ namespace Latino.Visualization
     */
     public class DrawableObjectEventArgs : MouseEventArgs
     {
-        private ArrayList<IDrawableObject> m_drawable_objects
+        private ArrayList<IDrawableObject> mDrawableObjects
             = null;
         new public static readonly DrawableObjectEventArgs Empty
             = new DrawableObjectEventArgs(MouseButtons.None, 0, 0, 0, 0);
-        private ContextMenuStrip m_context_menu
+        private ContextMenuStrip mContextMenu
             = null;
-        private string m_tool_tip_text
+        private string mToolTipText
             = null;
 
-        public DrawableObjectEventArgs(MouseEventArgs mouse_args) : base(mouse_args.Button, mouse_args.Clicks, mouse_args.X, mouse_args.Y, mouse_args.Delta)
+        public DrawableObjectEventArgs(MouseEventArgs mouseArgs) : base(mouseArgs.Button, mouseArgs.Clicks, mouseArgs.X, mouseArgs.Y, mouseArgs.Delta)
         { 
         }
 
-        public DrawableObjectEventArgs(MouseEventArgs mouse_args, ArrayList<IDrawableObject> drawable_objects) : this(mouse_args)
+        public DrawableObjectEventArgs(MouseEventArgs mouseArgs, ArrayList<IDrawableObject> drawableObjects) : this(mouseArgs)
         {
-            m_drawable_objects = drawable_objects;
+            mDrawableObjects = drawableObjects;
         }
 
         public DrawableObjectEventArgs(MouseButtons buttons, int clicks, int x, int y, int delta) : base(buttons, clicks, x, y, delta)
         {
         }
 
-        public DrawableObjectEventArgs(MouseButtons buttons, int clicks, int x, int y, int delta, ArrayList<IDrawableObject> drawable_objects) : base(buttons, clicks, x, y, delta) 
+        public DrawableObjectEventArgs(MouseButtons buttons, int clicks, int x, int y, int delta, ArrayList<IDrawableObject> drawableObjects) : base(buttons, clicks, x, y, delta) 
         {
-            m_drawable_objects = drawable_objects;
+            mDrawableObjects = drawableObjects;
         }
 
-        public DrawableObjectEventArgs(ArrayList<IDrawableObject> drawable_objects) : this(MouseButtons.None, 0, 0, 0, 0, drawable_objects)
+        public DrawableObjectEventArgs(ArrayList<IDrawableObject> drawableObjects) : this(MouseButtons.None, 0, 0, 0, 0, drawableObjects)
         {
         }
 
         public ArrayList<IDrawableObject>.ReadOnly DrawableObjects
         {
-            get { return m_drawable_objects; }
+            get { return mDrawableObjects; }
         }
 
         public ContextMenuStrip ContextMenuStrip
         {
-            get { return m_context_menu; }
-            set { m_context_menu = value; }
+            get { return mContextMenu; }
+            set { mContextMenu = value; }
         }
 
         public string ToolTipText
         {
-            get { return m_tool_tip_text; }
-            set { m_tool_tip_text = value; }
+            get { return mToolTipText; }
+            set { mToolTipText = value; }
         }
     }
 }

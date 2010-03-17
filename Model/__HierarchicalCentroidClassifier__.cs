@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,13 +25,13 @@ namespace Latino.Model
     */
     public class HierarchicalCentroidClassifier : IHierarchicalModel<SparseVector<double>.ReadOnly>
     {
-        private ClassifierType m_classifier_type
+        private ClassifierType mClassifierType
             = ClassifierType.Flat;
-        private Dictionary<Cluster, ClusterInfo> m_model
+        private Dictionary<Cluster, ClusterInfo> mModel
             = null;
-        private IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> m_dataset
+        private IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> mDataset
             = null;
-        private bool m_remove_duplicates
+        private bool mRemoveDuplicates
             = true;
 
         public HierarchicalCentroidClassifier()
@@ -45,8 +45,8 @@ namespace Latino.Model
 
         public ClassifierType Type
         {
-            get { return m_classifier_type; }
-            set { m_classifier_type = value; }
+            get { return mClassifierType; }
+            set { mClassifierType = value; }
         }
 
         // *** IHierarchicalModel<SparseVector<double>.ReadOnly> interface implementation ***
@@ -58,16 +58,16 @@ namespace Latino.Model
 
         public bool IsTrained
         {
-            get { return m_model != null; }
+            get { return mModel != null; }
         }
 
         private Set<int> ComputeCentroid(Cluster cluster)
         {
             if (cluster.Children.Count == 0)
             {
-                ClusterInfo cluster_info = new ClusterInfo();
-                cluster_info.Centroid = ModelUtils.ComputeCentroid(cluster.Items, m_dataset, CentroidType.Sum);
-                m_model.Add(cluster, cluster_info);
+                ClusterInfo clusterInfo = new ClusterInfo();
+                clusterInfo.Centroid = ModelUtils.ComputeCentroid(cluster.Items, mDataset, CentroidType.Sum);
+                mModel.Add(cluster, clusterInfo);
                 return cluster.Items;
             }
             else
@@ -77,10 +77,10 @@ namespace Latino.Model
                 {
                     items.AddRange(ComputeCentroid(child));
                 }
-                if (m_remove_duplicates) { items = Set<int>.Difference(cluster.Items, items); }
-                ClusterInfo cluster_info = new ClusterInfo();
-                cluster_info.Centroid = ModelUtils.ComputeCentroid(items, m_dataset, CentroidType.Sum);
-                m_model.Add(cluster, cluster_info);
+                if (mRemoveDuplicates) { items = Set<int>.Difference(cluster.Items, items); }
+                ClusterInfo clusterInfo = new ClusterInfo();
+                clusterInfo.Centroid = ModelUtils.ComputeCentroid(items, mDataset, CentroidType.Sum);
+                mModel.Add(cluster, clusterInfo);
                 return items;
             }
         }
@@ -91,13 +91,13 @@ namespace Latino.Model
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             Utils.ThrowException(hierarchy == null ? new ArgumentNullException("hierarchy") : null);
             Utils.ThrowException(hierarchy.Roots.Count == 0 ? new ArgumentValueException("hierarchy") : null);
-            m_model = new Dictionary<Cluster, ClusterInfo>();
-            m_dataset = dataset;
+            mModel = new Dictionary<Cluster, ClusterInfo>();
+            mDataset = dataset;
             foreach (Cluster root in hierarchy.Roots)
             {
                 ComputeCentroid(root);
             }
-            m_dataset = null;
+            mDataset = null;
         }
 
         void IHierarchicalModel.Train(IUnlabeledExampleCollection dataset, ClusteringResult hierarchy)
@@ -109,7 +109,7 @@ namespace Latino.Model
 
         public Prediction<Cluster> Predict(SparseVector<double>.ReadOnly example)
         {
-            Utils.ThrowException(m_model == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(mModel == null ? new InvalidOperationException() : null);
             // ...
             return null;
         }

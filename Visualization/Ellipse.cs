@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,99 +26,99 @@ namespace Latino.Visualization
     */
     public class Ellipse : FilledDrawnObject
     {
-        private float m_x;
-        private float m_y;
-        private float m_r_x;
-        private float m_r_y;
-        public Ellipse(float x, float y, float r_x, float r_y)
+        private float mX;
+        private float mY;
+        private float mRX;
+        private float mRY;
+        public Ellipse(float x, float y, float rX, float rY)
         {
-            m_x = x;
-            m_y = y;
-            m_r_x = r_x;
-            m_r_y = r_y;
+            mX = x;
+            mY = y;
+            mRX = rX;
+            mRY = rY;
         }
-        public static void Draw(float x, float y, float r_x, float r_y, Graphics gfx, Pen pen, Brush brush, TransformParams tr)
+        public static void Draw(float x, float y, float rX, float rY, Graphics gfx, Pen pen, Brush brush, TransformParams tr)
         {
             Utils.ThrowException(gfx == null ? new ArgumentNullException("gfx") : null);
             Utils.ThrowException(pen == null ? new ArgumentNullException("pen") : null);
             Utils.ThrowException(brush == null ? new ArgumentNullException("brush") : null);
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
-            x -= r_x;
-            y -= r_y;
+            x -= rX;
+            y -= rY;
             VectorF center = tr.Transform(new VectorF(x, y));
-            float d_x = tr.Transform(2f * r_x);
-            float d_y = tr.Transform(2f * r_y);
-            lock (brush) { gfx.FillEllipse(brush, center.X, center.Y, d_x, d_y); }
-            lock (pen) { gfx.DrawEllipse(pen, center.X, center.Y, d_x, d_y); }
+            float dX = tr.Transform(2f * rX);
+            float dY = tr.Transform(2f * rY);
+            lock (brush) { gfx.FillEllipse(brush, center.X, center.Y, dX, dY); }
+            lock (pen) { gfx.DrawEllipse(pen, center.X, center.Y, dX, dY); }
         }
-        public static BoundingArea GetBoundingArea(float x, float y, float r_x, float r_y)
+        public static BoundingArea GetBoundingArea(float x, float y, float rX, float rY)
         {
-            float left = x - r_x;
-            float top = y - r_y;
-            float d_x = 2f * r_x;
-            float d_y = 2f * r_y;
-            return new BoundingArea(left, top, d_x, d_y);
+            float left = x - rX;
+            float top = y - rY;
+            float dX = 2f * rX;
+            float dY = 2f * rY;
+            return new BoundingArea(left, top, dX, dY);
         }
-        public static bool IsObjectAt(float pt_x, float pt_y, TransformParams tr, float c_x, float c_y, float r_x, float r_y)
+        public static bool IsObjectAt(float ptX, float ptY, TransformParams tr, float cX, float cY, float rX, float rY)
         {
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
-            VectorF center = tr.Transform(new VectorF(c_x, c_y));
-            VectorF pt = new VectorF(pt_x, pt_y);
+            VectorF center = tr.Transform(new VectorF(cX, cY));
+            VectorF pt = new VectorF(ptX, ptY);
             if (pt == center) { return true; }
             float angle = (pt - center).GetAngle();
-            float x = (float)Math.Cos(angle) * tr.Transform(r_x);
-            float y = (float)Math.Sin(angle) * tr.Transform(r_y);
+            float x = (float)Math.Cos(angle) * tr.Transform(rX);
+            float y = (float)Math.Sin(angle) * tr.Transform(rY);
             float r = new VectorF(x, y).GetLength();
             return (center - pt).GetLength() <= r;            
         }
         public float X
         {
-            get { return m_x; }
+            get { return mX; }
             set 
             { 
-                m_x = value; 
+                mX = value; 
                 InvalidateBoundingArea(); 
             }
         }
         public float Y
         {
-            get { return m_y; }
+            get { return mY; }
             set 
             { 
-                m_y = value; 
+                mY = value; 
                 InvalidateBoundingArea(); 
             }
         }
         public float RadiusX
         {
-            get { return m_r_x; }
+            get { return mRX; }
             set 
             { 
-                m_r_x = value; 
+                mRX = value; 
                 InvalidateBoundingArea(); 
             }
         }
         public float RadiusY
         {
-            get { return m_r_y; }
+            get { return mRY; }
             set 
             { 
-                m_r_y = value; 
+                mRY = value; 
                 InvalidateBoundingArea(); 
             }
         }
         public override void Draw(Graphics gfx, TransformParams tr)
         {
-            Draw(m_x, m_y, m_r_x, m_r_y, gfx, m_pen, m_brush, tr); // throws ArgumentNullException, ArgumentValueException
+            Draw(mX, mY, mRX, mRY, gfx, mPen, mBrush, tr); // throws ArgumentNullException, ArgumentValueException
         }
         public override IDrawableObject GetObjectAt(float x, float y, TransformParams tr, ref float dist)
         {
             dist = 0;
-            return IsObjectAt(x, y, tr, m_x, m_y, m_r_x, m_r_y) ? this : null; // throws ArgumentValueException
+            return IsObjectAt(x, y, tr, mX, mY, mRX, mRY) ? this : null; // throws ArgumentValueException
         }
         public override BoundingArea GetBoundingArea()
         {
-            return GetBoundingArea(m_x, m_y, m_r_x, m_r_y);
+            return GetBoundingArea(mX, mY, mRX, mRY);
         }
     }
 }

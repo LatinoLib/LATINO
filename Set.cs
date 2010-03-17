@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -27,7 +27,7 @@ namespace Latino
     */
     public class Set<T> : ICollection<T>, ICollection, IEnumerable<T>, ICloneable<Set<T>>, IDeeplyCloneable<Set<T>>, IContentEquatable<Set<T>>, ISerializable
     {
-        private Dictionary<T, object> m_items
+        private Dictionary<T, object> mItems
             = new Dictionary<T, object>();
 
         public Set()
@@ -36,7 +36,7 @@ namespace Latino
 
         public Set(IEqualityComparer<T> comparer)
         {
-            m_items = new Dictionary<T, object>(comparer);
+            mItems = new Dictionary<T, object>(comparer);
         }
 
         public Set(BinarySerializer reader)
@@ -46,7 +46,7 @@ namespace Latino
 
         public Set(BinarySerializer reader, IEqualityComparer<T> comparer)
         {
-            m_items = new Dictionary<T, object>(comparer);
+            mItems = new Dictionary<T, object>(comparer);
             Load(reader); // throws ArgumentNullException
         }
 
@@ -57,13 +57,13 @@ namespace Latino
 
         public Set(IEnumerable<T> items, IEqualityComparer<T> comparer)
         {
-            m_items = new Dictionary<T, object>(comparer);
+            mItems = new Dictionary<T, object>(comparer);
             AddRange(items); // throws ArgumentNullException
         }
 
         public void SetItems(IEnumerable<T> items)
         {
-            m_items.Clear();
+            mItems.Clear();
             AddRange(items); // throws ArgumentNullException
         }
 
@@ -72,9 +72,9 @@ namespace Latino
             Utils.ThrowException(items == null ? new ArgumentNullException("items") : null);
             foreach (T item in items)
             {
-                if (!m_items.ContainsKey(item)) // throws ArgumentNullException
+                if (!mItems.ContainsKey(item)) // throws ArgumentNullException
                 {
-                    m_items.Add(item, null);
+                    mItems.Add(item, null);
                 }
             }
         }
@@ -125,7 +125,7 @@ namespace Latino
 
         public T[] ToArray()
         {
-            T[] array = new T[m_items.Count];
+            T[] array = new T[mItems.Count];
             CopyTo(array, 0);
             return array;
         }
@@ -134,7 +134,7 @@ namespace Latino
         { 
             get
             {
-                foreach (KeyValuePair<T, object> item in m_items)
+                foreach (KeyValuePair<T, object> item in mItems)
                 {
                     return item.Key;
                 }
@@ -144,16 +144,16 @@ namespace Latino
 
         public NewT[] ToArray<NewT>()
         {
-            return ToArray<NewT>(/*fmt_provider=*/null); // throws InvalidCastException, FormatException, OverflowException
+            return ToArray<NewT>(/*fmtProvider=*/null); // throws InvalidCastException, FormatException, OverflowException
         }
 
-        public NewT[] ToArray<NewT>(IFormatProvider fmt_provider)
+        public NewT[] ToArray<NewT>(IFormatProvider fmtProvider)
         {
-            NewT[] array = new NewT[m_items.Count];
+            NewT[] array = new NewT[mItems.Count];
             int i = 0;
-            foreach (T item in m_items.Keys)
+            foreach (T item in mItems.Keys)
             {
-                array[i++] = (NewT)Utils.ChangeType(item, typeof(NewT), fmt_provider); // throws InvalidCastException, FormatException, OverflowException
+                array[i++] = (NewT)Utils.ChangeType(item, typeof(NewT), fmtProvider); // throws InvalidCastException, FormatException, OverflowException
             }
             return array;
         }
@@ -163,47 +163,47 @@ namespace Latino
             Utils.ThrowException(items == null ? new ArgumentNullException("items") : null);
             foreach (T item in items)
             {
-                m_items.Remove(item); // throws ArgumentNullException
+                mItems.Remove(item); // throws ArgumentNullException
             }
         }
 
         public override string ToString()
         {
-            StringBuilder str_bld = new StringBuilder("{");
-            foreach (T item in m_items.Keys)
+            StringBuilder strBld = new StringBuilder("{");
+            foreach (T item in mItems.Keys)
             {
-                str_bld.Append(" ");
-                str_bld.Append(item);
+                strBld.Append(" ");
+                strBld.Append(item);
             }
-            str_bld.Append(" }");
-            return str_bld.ToString();
+            strBld.Append(" }");
+            return strBld.ToString();
         }
 
         // *** ICollection<T> interface implementation ***
 
         public void Add(T item)
         {
-            if (!m_items.ContainsKey(item)) // throws ArgumentNullException
+            if (!mItems.ContainsKey(item)) // throws ArgumentNullException
             {
-                m_items.Add(item, null);
+                mItems.Add(item, null);
             }
         }
 
         public void Clear()
         {
-            m_items.Clear();
+            mItems.Clear();
         }
 
         public bool Contains(T item)
         {
-            return m_items.ContainsKey(item); // throws ArgumentNullException
+            return mItems.ContainsKey(item); // throws ArgumentNullException
         }
 
         public void CopyTo(T[] array, int index)
         {
             Utils.ThrowException(array == null ? new ArgumentNullException("array") : null);
-            Utils.ThrowException(index + m_items.Count > array.Length ? new ArgumentOutOfRangeException("index") : null);
-            foreach (T item in m_items.Keys)
+            Utils.ThrowException(index + mItems.Count > array.Length ? new ArgumentOutOfRangeException("index") : null);
+            foreach (T item in mItems.Keys)
             {
                 array.SetValue(item, index++);
             }
@@ -211,7 +211,7 @@ namespace Latino
 
         public int Count
         {
-            get { return m_items.Count; }
+            get { return mItems.Count; }
         }
 
         public bool IsReadOnly
@@ -221,7 +221,7 @@ namespace Latino
 
         public bool Remove(T item)
         {
-            return m_items.Remove(item); // throws ArgumentNullException
+            return mItems.Remove(item); // throws ArgumentNullException
         }
 
         // *** ICollection interface implementation ***
@@ -229,8 +229,8 @@ namespace Latino
         void ICollection.CopyTo(Array array, int index)
         {
             Utils.ThrowException(array == null ? new ArgumentNullException("array") : null);
-            Utils.ThrowException(index + m_items.Count > array.Length ? new ArgumentOutOfRangeException("index") : null);
-            foreach (T item in m_items.Keys)
+            Utils.ThrowException(index + mItems.Count > array.Length ? new ArgumentOutOfRangeException("index") : null);
+            foreach (T item in mItems.Keys)
             {
                 array.SetValue(item, index++);
             }
@@ -250,7 +250,7 @@ namespace Latino
 
         public IEnumerator<T> GetEnumerator()
         {
-            return m_items.Keys.GetEnumerator();
+            return mItems.Keys.GetEnumerator();
         }
 
         // *** IEnumerable interface implementation ***
@@ -264,7 +264,7 @@ namespace Latino
 
         public Set<T> Clone()
         {
-            return new Set<T>(m_items.Keys);
+            return new Set<T>(mItems.Keys);
         }
 
         object ICloneable.Clone()
@@ -277,9 +277,9 @@ namespace Latino
         public Set<T> DeepClone()
         {
             Set<T> clone = new Set<T>();
-            foreach (T item in m_items.Keys)
+            foreach (T item in mItems.Keys)
             {
-                clone.Add((T)Utils.Clone(item, /*deep_clone=*/true));
+                clone.Add((T)Utils.Clone(item, /*deepClone=*/true));
             }
             return clone;
         }
@@ -294,7 +294,7 @@ namespace Latino
         public bool ContentEquals(Set<T> other)
         {
             if (other == null || Count != other.Count) { return false; }
-            foreach (T item in m_items.Keys)
+            foreach (T item in mItems.Keys)
             {
                 if (!other.Contains(item)) { return false; }
             }
@@ -313,8 +313,8 @@ namespace Latino
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions 
-            writer.WriteInt(m_items.Count); 
-            foreach (KeyValuePair<T, object> item in m_items)
+            writer.WriteInt(mItems.Count); 
+            foreach (KeyValuePair<T, object> item in mItems)
             {
                 writer.WriteValueOrObject<T>(item.Key); 
             }
@@ -323,12 +323,12 @@ namespace Latino
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            m_items.Clear();
+            mItems.Clear();
             // the following statements throw serialization-related exceptions 
             int count = reader.ReadInt();
             for (int i = 0; i < count; i++)
             {
-                m_items.Add(reader.ReadValueOrObject<T>(), null); 
+                mItems.Add(reader.ReadValueOrObject<T>(), null); 
             }
         }
 
@@ -348,49 +348,49 @@ namespace Latino
         */
         public class ReadOnly : IReadOnlyAdapter<Set<T>>, ICollection, IEnumerable<T>, IEnumerable, IContentEquatable<Set<T>.ReadOnly>, ISerializable
         {
-            private Set<T> m_set;
+            private Set<T> mSet;
 
             public ReadOnly(Set<T> set)
             {
                 Utils.ThrowException(set == null ? new ArgumentNullException("set") : null);
-                m_set = set;
+                mSet = set;
             }
 
             public ReadOnly(BinarySerializer reader)
             {
-                m_set = new Set<T>(reader); // throws ArgumentNullException, serialization-related exceptions
+                mSet = new Set<T>(reader); // throws ArgumentNullException, serialization-related exceptions
             }
 
             public T[] ToArray()
             {
-                return m_set.ToArray();
+                return mSet.ToArray();
             }
 
             public T Any
             {
-                get { return m_set.Any; }
+                get { return mSet.Any; }
             }
 
             public NewT[] ToArray<NewT>()
             {
-                return m_set.ToArray<NewT>();
+                return mSet.ToArray<NewT>();
             }
 
-            public NewT[] ToArray<NewT>(IFormatProvider fmt_provider)
+            public NewT[] ToArray<NewT>(IFormatProvider fmtProvider)
             {
-                return m_set.ToArray<NewT>(fmt_provider);
+                return mSet.ToArray<NewT>(fmtProvider);
             }
 
             public override string ToString()
             {
-                return m_set.ToString();
+                return mSet.ToString();
             }
 
             // *** IReadOnlyAdapter interface implementation ***
 
             public Set<T> GetWritableCopy()
             {
-                return m_set.Clone();
+                return mSet.Clone();
             }
 
             object IReadOnlyAdapter.GetWritableCopy()
@@ -405,24 +405,24 @@ namespace Latino
 #endif
             Set<T> Inner
             {
-                get { return m_set; }
+                get { return mSet; }
             }
 
             // *** Partial ICollection<T> interface implementation ***
 
             public bool Contains(T item)
             {
-                return m_set.Contains(item);
+                return mSet.Contains(item);
             }
 
             public void CopyTo(T[] array, int index)
             {
-                m_set.CopyTo(array, index);
+                mSet.CopyTo(array, index);
             }
 
             public int Count
             {
-                get { return m_set.Count; }
+                get { return mSet.Count; }
             }
 
             public bool IsReadOnly
@@ -434,7 +434,7 @@ namespace Latino
 
             void ICollection.CopyTo(Array array, int index)
             {
-                ((ICollection)m_set).CopyTo(array, index);
+                ((ICollection)mSet).CopyTo(array, index);
             }
 
             bool ICollection.IsSynchronized
@@ -451,21 +451,21 @@ namespace Latino
 
             public IEnumerator<T> GetEnumerator()
             {
-                return m_set.GetEnumerator();
+                return mSet.GetEnumerator();
             }
 
             // *** IEnumerable interface implementation ***
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return ((IEnumerable)m_set).GetEnumerator();
+                return ((IEnumerable)mSet).GetEnumerator();
             }
 
             // *** IContentEquatable<Set<T>.ReadOnly> interface implementation ***
 
             public bool ContentEquals(Set<T>.ReadOnly other)
             {
-                return other != null && m_set.ContentEquals(other.Inner);
+                return other != null && mSet.ContentEquals(other.Inner);
             }
 
             bool IContentEquatable.ContentEquals(object other)
@@ -478,7 +478,7 @@ namespace Latino
 
             public void Save(BinarySerializer writer)
             {
-                m_set.Save(writer);
+                mSet.Save(writer);
             }
         }
     }

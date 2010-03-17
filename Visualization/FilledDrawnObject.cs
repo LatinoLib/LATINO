@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,15 +25,15 @@ namespace Latino.Visualization
     */
     public abstract class FilledDrawnObject : DrawnObject
     {
-        protected Brush m_brush
+        protected Brush mBrush
             = Brushes.White;
         public Brush Brush
         {
-            get { return m_brush; }
+            get { return mBrush; }
             set 
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Brush") : null);
-                m_brush = value; 
+                mBrush = value; 
             }
         }
     }

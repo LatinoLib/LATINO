@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  (c) 2007-08 JSI.  All rights reserved.
  *
@@ -28,9 +28,9 @@ namespace Latino.Web
     */
     public interface ISearchEngineCache
     {
-        bool GetFromCache(string source, SearchEngineLanguage language, string query, int max_size, ref long total_hits,
-            ref SearchEngineResultSet result_set);
-        void PutIntoCache(string source, SearchEngineLanguage language, string query, long total_hits, SearchEngineResultSet result_set);
+        bool GetFromCache(string source, SearchEngineLanguage language, string query, int maxSize, ref long totalHits,
+            ref SearchEngineResultSet resultSet);
+        void PutIntoCache(string source, SearchEngineLanguage language, string query, long totalHits, SearchEngineResultSet resultSet);
     }
 
     /* .-----------------------------------------------------------------------
@@ -51,45 +51,45 @@ namespace Latino.Web
         }
         private static string StringOfChars(int num, char ch)
         {
-            string ret_val = "";
-            for (int i = 0; i < num; i++) { ret_val += ch; }
-            return ret_val;
+            string retVal = "";
+            for (int i = 0; i < num; i++) { retVal += ch; }
+            return retVal;
         }
         public static string NormalizeQuery(string query)
         {
             ArrayList<string> terms = new ArrayList<string>();
-            Match regex_match = new Regex(@"(?<sign>(\+|-)?)""(?<term>[^""]+)""").Match(query); // extract terms in quotes
-            while (regex_match.Success)
+            Match regexMatch = new Regex(@"(?<sign>(\+|-)?)""(?<term>[^""]+)""").Match(query); // extract terms in quotes
+            while (regexMatch.Success)
             {
-                string term = regex_match.Result("${term}").Trim().ToLower();
+                string term = regexMatch.Result("${term}").Trim().ToLower();
                 term = new Regex(@"\s\s+").Replace(term, " ");
                 if (term != "")
                 {
                     if (!IsAlphaNum(term)) { term = "\"" + term + "\""; }
-                    if (regex_match.Result("${sign}") == "-") { term = "-" + term; }
+                    if (regexMatch.Result("${sign}") == "-") { term = "-" + term; }
                     terms.Add(term);
                 }
-                query = query.Substring(0, regex_match.Index) + StringOfChars(regex_match.Value.Length, ' ') + query.Substring(regex_match.Index + regex_match.Value.Length);
-                regex_match = regex_match.NextMatch();
+                query = query.Substring(0, regexMatch.Index) + StringOfChars(regexMatch.Value.Length, ' ') + query.Substring(regexMatch.Index + regexMatch.Value.Length);
+                regexMatch = regexMatch.NextMatch();
             }
-            regex_match = new Regex(@"(\s|^)(?<sign>(\+|-)?)(?<term>[^\s]+)").Match(query); // extract remaining terms
-            while (regex_match.Success)
+            regexMatch = new Regex(@"(\s|^)(?<sign>(\+|-)?)(?<term>[^\s]+)").Match(query); // extract remaining terms
+            while (regexMatch.Success)
             {
-                string term = regex_match.Result("${term}").ToLower();
+                string term = regexMatch.Result("${term}").ToLower();
                 if (term != "and") // *** AND operator is ignored
                 {
-                    if (regex_match.Result("${sign}") == "-") { term = "-" + term; }
+                    if (regexMatch.Result("${sign}") == "-") { term = "-" + term; }
                     terms.Add(term);
                 }
-                regex_match = regex_match.NextMatch();
+                regexMatch = regexMatch.NextMatch();
             }
             terms.Sort();
-            string nrm_query = "";
+            string nrmQuery = "";
             foreach (string term in terms)
             {
-                nrm_query += term + " ";
+                nrmQuery += term + " ";
             }
-            return nrm_query.TrimEnd(' ');
+            return nrmQuery.TrimEnd(' ');
         }
         public static string NormalizeQuery(string source, string language, string query)
         {
@@ -151,9 +151,9 @@ namespace Latino.Web
     */
     public class MemoryCache : ISearchEngineCache, ISerializable
     {
-        private int m_ttl
+        private int mTtl
             = 0;
-        private Dictionary<string, CacheRecord> m_cache
+        private Dictionary<string, CacheRecord> mCache
             = new Dictionary<string, CacheRecord>();
         public MemoryCache()
         {
@@ -164,28 +164,28 @@ namespace Latino.Web
         }
         public int Ttl
         {
-            get { return m_ttl; }
+            get { return mTtl; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("Ttl value") : null);
-                m_ttl = value;
+                mTtl = value;
             }
         }
         // *** ISearchEngineCache interface implementation ***
-        public bool GetFromCache(string source, SearchEngineLanguage language, string query, int max_size, ref long total_hits, ref SearchEngineResultSet result_set)
+        public bool GetFromCache(string source, SearchEngineLanguage language, string query, int maxSize, ref long totalHits, ref SearchEngineResultSet resultSet)
         {
             // TODO: throw exceptions
-            string normalized_query = SearchEngineCache.NormalizeQuery(source, language.ToString(), query);
-            if (m_cache.ContainsKey(normalized_query))
+            string normalizedQuery = SearchEngineCache.NormalizeQuery(source, language.ToString(), query);
+            if (mCache.ContainsKey(normalizedQuery))
             {
-                CacheRecord cache_record = m_cache[normalized_query];
-                if (m_ttl == 0 || DateTime.Now.Subtract(cache_record.TimeStamp).TotalDays <= m_ttl) // record is not outdated
+                CacheRecord cacheRecord = mCache[normalizedQuery];
+                if (mTtl == 0 || DateTime.Now.Subtract(cacheRecord.TimeStamp).TotalDays <= mTtl) // record is not outdated
                 {
-                    if (cache_record.TotalHits == cache_record.ActualSize || max_size <= cache_record.ActualSize)
+                    if (cacheRecord.TotalHits == cacheRecord.ActualSize || maxSize <= cacheRecord.ActualSize)
                     {
-                        total_hits = cache_record.TotalHits;
-                        XmlTextReader xml_reader = new XmlTextReader(new StringReader(cache_record.ResultSetXml));
-                        result_set = new SearchEngineResultSet(xml_reader, max_size);
+                        totalHits = cacheRecord.TotalHits;
+                        XmlTextReader xmlReader = new XmlTextReader(new StringReader(cacheRecord.ResultSetXml));
+                        resultSet = new SearchEngineResultSet(xmlReader, maxSize);
                         Utils.VerboseLine("Cache hit.");
                         return true;
                     }
@@ -194,39 +194,39 @@ namespace Latino.Web
             Utils.VerboseLine("Cache miss.");
             return false;
         }
-        public void PutIntoCache(string source, SearchEngineLanguage language, string query, long total_hits, SearchEngineResultSet result_set)
+        public void PutIntoCache(string source, SearchEngineLanguage language, string query, long totalHits, SearchEngineResultSet resultSet)
         {
             // TODO: throw exceptions
-            string normalized_query = SearchEngineCache.NormalizeQuery(source, language.ToString(), query);
-            int actual_size = result_set.Count;
-            CacheRecord cache_record = new CacheRecord();
-            cache_record.TotalHits = total_hits;
-            cache_record.ActualSize = result_set.Count;
-            StringWriter string_writer = new StringWriter();
-            XmlTextWriter xml_writer = new XmlTextWriter(string_writer);
-            xml_writer.Formatting = Formatting.Indented;
-            result_set.SaveXml(xml_writer);
-            cache_record.ResultSetXml = string_writer.ToString();
-            cache_record.TimeStamp = DateTime.Now;
-            if (m_cache.ContainsKey(normalized_query))
+            string normalizedQuery = SearchEngineCache.NormalizeQuery(source, language.ToString(), query);
+            int actualSize = resultSet.Count;
+            CacheRecord cacheRecord = new CacheRecord();
+            cacheRecord.TotalHits = totalHits;
+            cacheRecord.ActualSize = resultSet.Count;
+            StringWriter stringWriter = new StringWriter();
+            XmlTextWriter xmlWriter = new XmlTextWriter(stringWriter);
+            xmlWriter.Formatting = Formatting.Indented;
+            resultSet.SaveXml(xmlWriter);
+            cacheRecord.ResultSetXml = stringWriter.ToString();
+            cacheRecord.TimeStamp = DateTime.Now;
+            if (mCache.ContainsKey(normalizedQuery))
             {
-                m_cache[normalized_query] = cache_record;
+                mCache[normalizedQuery] = cacheRecord;
             }
             else
             {
-                m_cache.Add(normalized_query, cache_record);
+                mCache.Add(normalizedQuery, cacheRecord);
             }
         }
         public void RemoveEmptyEntries()
         {
             Set<string> keys = new Set<string>();
-            foreach (KeyValuePair<string, CacheRecord> item in m_cache)
+            foreach (KeyValuePair<string, CacheRecord> item in mCache)
             {
                 if (item.Value.ActualSize == 0) { keys.Add(item.Key); }
             }
             foreach (string key in keys)
             {
-                m_cache.Remove(key);
+                mCache.Remove(key);
             }
         }
         // *** ISerializable interface implementation ***
@@ -234,27 +234,27 @@ namespace Latino.Web
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following functions throw serialization-related exceptions
-            writer.WriteInt(m_cache.Count);
-            foreach (KeyValuePair<string, CacheRecord> cache_record in m_cache)
+            writer.WriteInt(mCache.Count);
+            foreach (KeyValuePair<string, CacheRecord> cacheRecord in mCache)
             {
-                writer.WriteString(cache_record.Key);
-                cache_record.Value.Save(writer);
+                writer.WriteString(cacheRecord.Key);
+                cacheRecord.Value.Save(writer);
             }
-            writer.WriteInt(m_ttl);
+            writer.WriteInt(mTtl);
         }
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            m_cache.Clear();
+            mCache.Clear();
             // the following functions throw serialization-related exceptions            
             int count = reader.ReadInt();
             for (int i = 0; i < count; i++)
             {
                 string key = reader.ReadString();
-                CacheRecord cache_record = new CacheRecord(reader);
-                m_cache.Add(key, cache_record);
+                CacheRecord cacheRecord = new CacheRecord(reader);
+                mCache.Add(key, cacheRecord);
             }
-            m_ttl = reader.ReadInt();
+            mTtl = reader.ReadInt();
         }
     }
 

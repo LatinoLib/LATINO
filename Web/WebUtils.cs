@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,71 +26,71 @@ namespace Latino.Web
     */
     public static class WebUtils
     {
-        private static IWebProxy m_web_proxy
+        private static IWebProxy mWebProxy
             = WebRequest.DefaultWebProxy;
 
         public static void UseDefaultWebProxy()
         {
-            m_web_proxy = WebRequest.DefaultWebProxy;
+            mWebProxy = WebRequest.DefaultWebProxy;
         }
 
         public static void SetWebProxy(string url)
         {
-            if (url == null) { m_web_proxy = null; }
-            else { m_web_proxy = new WebProxy(url); } // throws UriFormatException
+            if (url == null) { mWebProxy = null; }
+            else { mWebProxy = new WebProxy(url); } // throws UriFormatException
         }
 
-        public static string GetWebProxyUrl(string resource_url)
+        public static string GetWebProxyUrl(string resourceUrl)
         {
-            if (m_web_proxy == null) { return null; }
-            else { return m_web_proxy.GetProxy(new Uri(resource_url)).ToString(); } // throws UriFormatException
+            if (mWebProxy == null) { return null; }
+            else { return mWebProxy.GetProxy(new Uri(resourceUrl)).ToString(); } // throws UriFormatException
         }
 
         public static string GetHttpProxyUrl()
         {
-            string rnd_url = string.Format("http://{0}/", Guid.NewGuid().ToString("N"));
-            string proxy_url = GetWebProxyUrl(rnd_url);
-            if (proxy_url == rnd_url) { return null; }
-            else { return proxy_url; }
+            string rndUrl = string.Format("http://{0}/", Guid.NewGuid().ToString("N"));
+            string proxyUrl = GetWebProxyUrl(rndUrl);
+            if (proxyUrl == rndUrl) { return null; }
+            else { return proxyUrl; }
         }
 
         public static string GetHttpsProxyUrl()
         {
-            string rnd_url = string.Format("https://{0}/", Guid.NewGuid().ToString("N"));
-            string proxy_url = GetWebProxyUrl(rnd_url);
-            if (proxy_url == rnd_url) { return null; }
-            else { return proxy_url; }
+            string rndUrl = string.Format("https://{0}/", Guid.NewGuid().ToString("N"));
+            string proxyUrl = GetWebProxyUrl(rndUrl);
+            if (proxyUrl == rndUrl) { return null; }
+            else { return proxyUrl; }
         }
 
         public static string GetWebPage(string url)
         {
             CookieContainer dummy = null;
-            return GetWebPage(url, /*ref_url=*/null, ref dummy); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
+            return GetWebPage(url, /*refUrl=*/null, ref dummy); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
         }
 
-        public static string GetWebPage(string url, string ref_url)
+        public static string GetWebPage(string url, string refUrl)
         {
             CookieContainer dummy = null;
-            return GetWebPage(url, ref_url, ref dummy); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
+            return GetWebPage(url, refUrl, ref dummy); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
         }
 
-        public static string GetWebPage(string url, string ref_url, ref CookieContainer cookies) 
+        public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies) 
         {
             Utils.ThrowException(url == null ? new ArgumentNullException("url") : null);
             Utils.ThrowException((!url.Trim().StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !url.Trim().StartsWith("https://", StringComparison.OrdinalIgnoreCase)) ? new ArgumentValueException("url") : null);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url); // throws UriFormatException
-            request.Proxy = m_web_proxy;
+            request.Proxy = mWebProxy;
             request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6";
             request.Accept = "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,*/*;q=0.5";
             request.Headers.Add("Accept-Language", "en-us,en;q=0.5");
             request.Headers.Add("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
             if (cookies == null) { cookies = new CookieContainer(); }
             request.CookieContainer = cookies; 
-            if (ref_url != null) { request.Referer = ref_url; }
-            StreamReader response_reader;
-            string page_html = (response_reader = new StreamReader(((HttpWebResponse)request.GetResponse()).GetResponseStream())).ReadToEnd(); // throws WebException
-            response_reader.Close();
-            return page_html;
+            if (refUrl != null) { request.Referer = refUrl; }
+            StreamReader responseReader;
+            string pageHtml = (responseReader = new StreamReader(((HttpWebResponse)request.GetResponse()).GetResponseStream())).ReadToEnd(); // throws WebException
+            responseReader.Close();
+            return pageHtml;
         }
     }
 }

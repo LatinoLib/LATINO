@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,7 +26,7 @@ namespace Latino.Model
     */
     public class ClusteringResult : ISerializable
     {
-        private ArrayList<Cluster> m_roots
+        private ArrayList<Cluster> mRoots
             = new ArrayList<Cluster>();
 
         public ClusteringResult()
@@ -40,13 +40,13 @@ namespace Latino.Model
 
         public ArrayList<Cluster>.ReadOnly Roots
         {
-            get { return m_roots; }
+            get { return mRoots; }
         }
 
         public void AddRoot(Cluster root)
         {
             Utils.ThrowException(root == null ? new ArgumentNullException("root") : null);
-            m_roots.Add(root);
+            mRoots.Add(root);
         }
 
         public void AddRoots(IEnumerable<Cluster> roots)
@@ -55,34 +55,34 @@ namespace Latino.Model
             foreach (Cluster root in roots)
             {
                 Utils.ThrowException(root == null ? new ArgumentValueException("roots") : null);
-                m_roots.Add(root);
+                mRoots.Add(root);
             }
         }
 
         public void Clear()
         {
-            m_roots.Clear();
+            mRoots.Clear();
         }
 
-        private void FillClassificationDataset<ExT>(IEnumerable<Cluster> clusters, IUnlabeledExampleCollection<ExT> dataset, LabeledDataset<Cluster, ExT> classification_dataset)
+        private void FillClassificationDataset<ExT>(IEnumerable<Cluster> clusters, IUnlabeledExampleCollection<ExT> dataset, LabeledDataset<Cluster, ExT> classificationDataset)
         {
             foreach (Cluster cluster in clusters)
             {
                 foreach (int idx in cluster.Items)
                 {
                     Utils.ThrowException(idx < 0 || idx >= dataset.Count ? new ArgumentValueException("clusters") : null);
-                    classification_dataset.Add(cluster, dataset[idx]);
+                    classificationDataset.Add(cluster, dataset[idx]);
                 }
-                FillClassificationDataset(cluster.Children, dataset, classification_dataset);
+                FillClassificationDataset(cluster.Children, dataset, classificationDataset);
             }
         }
 
         public LabeledDataset<Cluster, ExT> GetClassificationDataset<ExT>(IUnlabeledExampleCollection<ExT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            LabeledDataset<Cluster, ExT> classification_dataset = new LabeledDataset<Cluster, ExT>();
-            FillClassificationDataset(m_roots, dataset, classification_dataset);
-            return classification_dataset;
+            LabeledDataset<Cluster, ExT> classificationDataset = new LabeledDataset<Cluster, ExT>();
+            FillClassificationDataset(mRoots, dataset, classificationDataset);
+            return classificationDataset;
         }
 
         public override string ToString()
@@ -92,12 +92,12 @@ namespace Latino.Model
 
         public string ToString(string format)
         {
-            StringBuilder str_builder = new StringBuilder();
-            foreach (Cluster root in m_roots)
+            StringBuilder strBuilder = new StringBuilder();
+            foreach (Cluster root in mRoots)
             {
-                str_builder.AppendLine(root.ToString(format)); // throws ArgumentNotSupportedException
+                strBuilder.AppendLine(root.ToString(format)); // throws ArgumentNotSupportedException
             }
-            return str_builder.ToString().TrimEnd('\n', '\r');
+            return strBuilder.ToString().TrimEnd('\n', '\r');
         }
 
         // *** ISerializable interface implementation ***
@@ -105,13 +105,13 @@ namespace Latino.Model
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
-            m_roots.Save(writer); // throws serialization-related exceptions
+            mRoots.Save(writer); // throws serialization-related exceptions
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            m_roots = new ArrayList<Cluster>(reader); // throws serialization-related exceptions
+            mRoots = new ArrayList<Cluster>(reader); // throws serialization-related exceptions
         }
     }
 }

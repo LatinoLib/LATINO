@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -27,20 +27,20 @@ namespace Latino
     public class Network<VtxT, EdgeT> : ICloneable<Network<VtxT, EdgeT>>, IDeeplyCloneable<Network<VtxT, EdgeT>>, IContentEquatable<Network<VtxT, EdgeT>>, 
         ISerializable
     {
-        protected SparseMatrix<EdgeT> m_mtx
+        protected SparseMatrix<EdgeT> mMtx
             = new SparseMatrix<EdgeT>();
-        protected ArrayList<VtxT> m_vtx 
+        protected ArrayList<VtxT> mVtx 
             = new ArrayList<VtxT>();        
-        protected Dictionary<VtxT, int> m_vtx_to_idx;
+        protected Dictionary<VtxT, int> mVtxToIdx;
 
         public Network()
         {
-            m_vtx_to_idx = new Dictionary<VtxT, int>();
+            mVtxToIdx = new Dictionary<VtxT, int>();
         }
 
-        public Network(IEqualityComparer<VtxT> vtx_cmp)
+        public Network(IEqualityComparer<VtxT> vtxCmp)
         {
-            m_vtx_to_idx = new Dictionary<VtxT, int>(vtx_cmp);
+            mVtxToIdx = new Dictionary<VtxT, int>(vtxCmp);
         }
 
         public Network(BinarySerializer reader)
@@ -48,28 +48,28 @@ namespace Latino
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        public Network(BinarySerializer reader, IEqualityComparer<VtxT> vtx_cmp)
+        public Network(BinarySerializer reader, IEqualityComparer<VtxT> vtxCmp)
         {
-            Load(reader, vtx_cmp); // throws ArgumentNullException, serialization-related exceptions
+            Load(reader, vtxCmp); // throws ArgumentNullException, serialization-related exceptions
         }
 
         public override string ToString()
         {
-            StringBuilder str_bld = new StringBuilder();
-            for (int i = 0; i < m_vtx.Count; i++)
+            StringBuilder strBld = new StringBuilder();
+            for (int i = 0; i < mVtx.Count; i++)
             {
-                str_bld.Append(m_vtx[i]);
-                str_bld.Append(": { ");
-                if (m_mtx[i] != null)
+                strBld.Append(mVtx[i]);
+                strBld.Append(": { ");
+                if (mMtx[i] != null)
                 {
-                    foreach (IdxDat<EdgeT> vtx_info in m_mtx[i])
+                    foreach (IdxDat<EdgeT> vtxInfo in mMtx[i])
                     {
-                        str_bld.Append(string.Format("( {0} {1} ) ", m_vtx[vtx_info.Idx], vtx_info.Dat));
+                        strBld.Append(string.Format("( {0} {1} ) ", mVtx[vtxInfo.Idx], vtxInfo.Dat));
                     }                    
                 }
-                str_bld.AppendLine("}");
+                strBld.AppendLine("}");
             }
-            return str_bld.ToString().TrimEnd('\n', '\r');
+            return strBld.ToString().TrimEnd('\n', '\r');
         }
 
         public string ToString(string format)
@@ -80,11 +80,11 @@ namespace Latino
             }
             else if (format == "AMC") // adjacency matrix - compact
             {
-                return m_mtx.ToString("C");
+                return mMtx.ToString("C");
             }
             else if (format == "AME") // adjacency matrix - extended
             {
-                return m_mtx.ToString("E");
+                return mMtx.ToString("E");
             }
             else
             {
@@ -96,203 +96,203 @@ namespace Latino
 
         public int AddVertex(VtxT vtx)
         {
-            m_vtx.Add(vtx);
-            if (vtx != null) { m_vtx_to_idx.Add(vtx, m_vtx.Count - 1); } // throws ArgumentException
-            return m_vtx.Count - 1;
+            mVtx.Add(vtx);
+            if (vtx != null) { mVtxToIdx.Add(vtx, mVtx.Count - 1); } // throws ArgumentException
+            return mVtx.Count - 1;
         }
 
         public void SetVertexAt(int idx, VtxT vtx)
         {
-            if (m_vtx[idx] != null) { m_vtx_to_idx.Remove(m_vtx[idx]); } // throws ArgumentOutOfRangeException
-            m_vtx[idx] = vtx;
-            if (vtx != null) { m_vtx_to_idx.Add(vtx, idx); } // throws ArgumentException
+            if (mVtx[idx] != null) { mVtxToIdx.Remove(mVtx[idx]); } // throws ArgumentOutOfRangeException
+            mVtx[idx] = vtx;
+            if (vtx != null) { mVtxToIdx.Add(vtx, idx); } // throws ArgumentException
         }
 
         public void RemoveVertexAt(int idx)
         {
-            if (m_vtx[idx] != null) { m_vtx_to_idx.Remove(m_vtx[idx]); } // throws ArgumentOutOfRangeException
-            for (int i = idx + 1; i < m_vtx.Count; i++)
+            if (mVtx[idx] != null) { mVtxToIdx.Remove(mVtx[idx]); } // throws ArgumentOutOfRangeException
+            for (int i = idx + 1; i < mVtx.Count; i++)
             {
-                if (m_vtx[i] != null) { m_vtx_to_idx[m_vtx[i]]--; }
+                if (mVtx[i] != null) { mVtxToIdx[mVtx[i]]--; }
             }
-            m_vtx.RemoveAt(idx);
-            m_mtx.PurgeColAt(idx);
-            m_mtx.PurgeRowAt(idx);
+            mVtx.RemoveAt(idx);
+            mMtx.PurgeColAt(idx);
+            mMtx.PurgeRowAt(idx);
         }
 
         public void RemoveVertex(VtxT vtx)
         {
-            RemoveVertexAt(m_vtx_to_idx[vtx]); // throws ArgumentNullException, KeyNotFoundException
+            RemoveVertexAt(mVtxToIdx[vtx]); // throws ArgumentNullException, KeyNotFoundException
         }
 
         public bool IsVertex(VtxT vtx)
         {
-            return m_vtx_to_idx.ContainsKey(vtx); // throws ArgumentNullException
+            return mVtxToIdx.ContainsKey(vtx); // throws ArgumentNullException
         }
 
         public int GetVertexIdx(VtxT vtx)
         {
-            return m_vtx_to_idx[vtx]; // throws ArgumentNullException, KeyNotFoundException
+            return mVtxToIdx[vtx]; // throws ArgumentNullException, KeyNotFoundException
         }
 
         public ArrayList<VtxT>.ReadOnly Vertices
         {
-            get { return m_vtx; }
+            get { return mVtx; }
         }
 
         // *** Edges ***
 
-        public void SetEdgeAt(int vtx_1_idx, int vtx_2_idx, EdgeT val)
+        public void SetEdgeAt(int vtx1Idx, int vtx2Idx, EdgeT val)
         {
-            Utils.ThrowException((vtx_1_idx < 0 || vtx_1_idx >= m_vtx.Count) ? new ArgumentOutOfRangeException("vtx_1_idx") : null);
-            Utils.ThrowException((vtx_2_idx < 0 || vtx_2_idx >= m_vtx.Count) ? new ArgumentOutOfRangeException("vtx_2_idx") : null);
-            m_mtx[vtx_1_idx, vtx_2_idx] = val; // throws ArgumentNullException
+            Utils.ThrowException((vtx1Idx < 0 || vtx1Idx >= mVtx.Count) ? new ArgumentOutOfRangeException("vtx1Idx") : null);
+            Utils.ThrowException((vtx2Idx < 0 || vtx2Idx >= mVtx.Count) ? new ArgumentOutOfRangeException("vtx2Idx") : null);
+            mMtx[vtx1Idx, vtx2Idx] = val; // throws ArgumentNullException
         }
 
-        public void SetEdge(VtxT vtx_1, VtxT vtx_2, EdgeT val)
+        public void SetEdge(VtxT vtx1, VtxT vtx2, EdgeT val)
         {
-            int vtx_1_idx = m_vtx_to_idx[vtx_1], vtx_2_idx = m_vtx_to_idx[vtx_2]; // throws ArgumentNullException, KeyNotFoundException            
-            m_mtx[vtx_1_idx, vtx_2_idx] = val; // throws ArgumentNullException
+            int vtx1Idx = mVtxToIdx[vtx1], vtx2Idx = mVtxToIdx[vtx2]; // throws ArgumentNullException, KeyNotFoundException            
+            mMtx[vtx1Idx, vtx2Idx] = val; // throws ArgumentNullException
         }
 
-        public bool IsEdgeAt(int vtx_1_idx, int vtx_2_idx)
+        public bool IsEdgeAt(int vtx1Idx, int vtx2Idx)
         {
-            Utils.ThrowException((vtx_1_idx < 0 || vtx_1_idx >= m_vtx.Count) ? new ArgumentOutOfRangeException("vtx_1_idx") : null);
-            Utils.ThrowException((vtx_2_idx < 0 || vtx_2_idx >= m_vtx.Count) ? new ArgumentOutOfRangeException("vtx_2_idx") : null);
-            return m_mtx.ContainsAt(vtx_1_idx, vtx_2_idx);
+            Utils.ThrowException((vtx1Idx < 0 || vtx1Idx >= mVtx.Count) ? new ArgumentOutOfRangeException("vtx1Idx") : null);
+            Utils.ThrowException((vtx2Idx < 0 || vtx2Idx >= mVtx.Count) ? new ArgumentOutOfRangeException("vtx2Idx") : null);
+            return mMtx.ContainsAt(vtx1Idx, vtx2Idx);
         }
 
-        public bool IsEdge(VtxT vtx_1, VtxT vtx_2)
+        public bool IsEdge(VtxT vtx1, VtxT vtx2)
         {
-            int vtx_1_idx = m_vtx_to_idx[vtx_1], vtx_2_idx = m_vtx_to_idx[vtx_2]; // throws ArgumentNullException, KeyNotFoundException
-            return m_mtx.ContainsAt(vtx_1_idx, vtx_2_idx);
+            int vtx1Idx = mVtxToIdx[vtx1], vtx2Idx = mVtxToIdx[vtx2]; // throws ArgumentNullException, KeyNotFoundException
+            return mMtx.ContainsAt(vtx1Idx, vtx2Idx);
         }
 
-        public EdgeT GetEdgeAt(int vtx_1_idx, int vtx_2_idx)
+        public EdgeT GetEdgeAt(int vtx1Idx, int vtx2Idx)
         {
-            Utils.ThrowException((vtx_1_idx < 0 || vtx_1_idx >= m_vtx.Count) ? new ArgumentOutOfRangeException("vtx_1_idx") : null);
-            Utils.ThrowException((vtx_2_idx < 0 || vtx_2_idx >= m_vtx.Count) ? new ArgumentOutOfRangeException("vtx_2_idx") : null);
-            return m_mtx[vtx_1_idx, vtx_2_idx]; // throws ArgumentValueException
+            Utils.ThrowException((vtx1Idx < 0 || vtx1Idx >= mVtx.Count) ? new ArgumentOutOfRangeException("vtx1Idx") : null);
+            Utils.ThrowException((vtx2Idx < 0 || vtx2Idx >= mVtx.Count) ? new ArgumentOutOfRangeException("vtx2Idx") : null);
+            return mMtx[vtx1Idx, vtx2Idx]; // throws ArgumentValueException
         }
 
-        public EdgeT GetEdge(VtxT vtx_1, VtxT vtx_2)
+        public EdgeT GetEdge(VtxT vtx1, VtxT vtx2)
         {
-            int vtx_1_idx = m_vtx_to_idx[vtx_1], vtx_2_idx = m_vtx_to_idx[vtx_2]; // throws ArgumentNullException, KeyNotFoundException            
-            return m_mtx[vtx_1_idx, vtx_2_idx]; // throws ArgumentValueException
+            int vtx1Idx = mVtxToIdx[vtx1], vtx2Idx = mVtxToIdx[vtx2]; // throws ArgumentNullException, KeyNotFoundException            
+            return mMtx[vtx1Idx, vtx2Idx]; // throws ArgumentValueException
         }
 
-        public void RemoveEdgeAt(int vtx_1_idx, int vtx_2_idx)
+        public void RemoveEdgeAt(int vtx1Idx, int vtx2Idx)
         {
-            Utils.ThrowException((vtx_1_idx < 0 || vtx_1_idx >= m_vtx.Count) ? new ArgumentOutOfRangeException("vtx_1_idx") : null);
-            Utils.ThrowException((vtx_2_idx < 0 || vtx_2_idx >= m_vtx.Count) ? new ArgumentOutOfRangeException("vtx_2_idx") : null);
-            m_mtx.RemoveAt(vtx_1_idx, vtx_2_idx);
+            Utils.ThrowException((vtx1Idx < 0 || vtx1Idx >= mVtx.Count) ? new ArgumentOutOfRangeException("vtx1Idx") : null);
+            Utils.ThrowException((vtx2Idx < 0 || vtx2Idx >= mVtx.Count) ? new ArgumentOutOfRangeException("vtx2Idx") : null);
+            mMtx.RemoveAt(vtx1Idx, vtx2Idx);
         }
 
-        public void RemoveEdge(VtxT vtx_1, VtxT vtx_2)
+        public void RemoveEdge(VtxT vtx1, VtxT vtx2)
         {
-            int vtx_1_idx = m_vtx_to_idx[vtx_1], vtx_2_idx = m_vtx_to_idx[vtx_2]; // throws ArgumentNullException, KeyNotFoundException            
-            m_mtx.RemoveAt(vtx_1_idx, vtx_2_idx); 
+            int vtx1Idx = mVtxToIdx[vtx1], vtx2Idx = mVtxToIdx[vtx2]; // throws ArgumentNullException, KeyNotFoundException            
+            mMtx.RemoveAt(vtx1Idx, vtx2Idx); 
         }
 
         public SparseMatrix<EdgeT>.ReadOnly Edges
         {
-            get { return m_mtx; }
+            get { return mMtx; }
         }
 
         public void ClearEdges()
         {
-            m_mtx.Clear();
+            mMtx.Clear();
         }
 
         // *** Operations ***
 
         public void Clear()
         {
-            m_mtx.Clear();
-            m_vtx.Clear();
-            m_vtx_to_idx.Clear();
+            mMtx.Clear();
+            mVtx.Clear();
+            mVtxToIdx.Clear();
         }
 
-        public void PerformEdgeOperation(Utils.UnaryOperatorDelegate<EdgeT> unary_op)
+        public void PerformEdgeOperation(Utils.UnaryOperatorDelegate<EdgeT> unaryOp)
         {
-            m_mtx.PerformUnaryOperation(unary_op); // throws ArgumentNullException
+            mMtx.PerformUnaryOperation(unaryOp); // throws ArgumentNullException
         }
 
-        public void ToUndirected(Utils.BinaryOperatorDelegate<EdgeT> bin_op)
+        public void ToUndirected(Utils.BinaryOperatorDelegate<EdgeT> binOp)
         {
-            m_mtx.Symmetrize(bin_op); // throws ArgumentNullException
+            mMtx.Symmetrize(binOp); // throws ArgumentNullException
         }
 
         public bool IsUndirected()
         {
-            return m_mtx.IsSymmetric();
+            return mMtx.IsSymmetric();
         }
 
         public void SetLoops(EdgeT val)
         {
-            m_mtx.SetDiagonal(m_vtx.Count, val); // throws ArgumentNullException
+            mMtx.SetDiagonal(mVtx.Count, val); // throws ArgumentNullException
         }
 
         public void RemoveLoops()
         {
-            m_mtx.RemoveDiagonal();
+            mMtx.RemoveDiagonal();
         }
 
         public bool ContainsLoop()
         {
-            return m_mtx.ContainsDiagonalElement();
+            return mMtx.ContainsDiagonalElement();
         }
 
         public void InvertEdges()
         {
-            m_mtx = m_mtx.GetTransposedCopy();
+            mMtx = mMtx.GetTransposedCopy();
         }
 
         public double GetSparseness()
         {
-            return m_mtx.GetSparseness(m_vtx.Count, m_vtx.Count); // throws ArgumentException
+            return mMtx.GetSparseness(mVtx.Count, mVtx.Count); // throws ArgumentException
         }
 
-        public SparseMatrix<EdgeT>[] GetComponentsUndirected(ref int[] seeds, bool seeds_only)
+        public SparseMatrix<EdgeT>[] GetComponentsUndirected(ref int[] seeds, bool seedsOnly)
         {
             Utils.ThrowException(!IsUndirected() ? new InvalidOperationException() : null);
-            ArrayList<int> seed_list = new ArrayList<int>();
+            ArrayList<int> seedList = new ArrayList<int>();
             ArrayList<SparseMatrix<EdgeT>> components = new ArrayList<SparseMatrix<EdgeT>>();
             Set<int> unvisited = new Set<int>();
-            for (int j = 0; j < m_vtx.Count; j++) { unvisited.Add(j); }
+            for (int j = 0; j < mVtx.Count; j++) { unvisited.Add(j); }
             while (unvisited.Count > 0)
             {
-                int seed_idx = unvisited.Any;
+                int seedIdx = unvisited.Any;
                 SparseMatrix<EdgeT> component = new SparseMatrix<EdgeT>();
-                seed_list.Add(seed_idx);
-                Queue<int> queue = new Queue<int>(new int[] { seed_idx });
-                unvisited.Remove(seed_idx);
+                seedList.Add(seedIdx);
+                Queue<int> queue = new Queue<int>(new int[] { seedIdx });
+                unvisited.Remove(seedIdx);
                 while (queue.Count > 0)
                 {
-                    int vtx_idx = queue.Dequeue();
-                    SparseVector<EdgeT> vtx_info = m_mtx[vtx_idx];
-                    if (vtx_info != null)
+                    int vtxIdx = queue.Dequeue();
+                    SparseVector<EdgeT> vtxInfo = mMtx[vtxIdx];
+                    if (vtxInfo != null)
                     {
-                        if (!seeds_only)
+                        if (!seedsOnly)
                         {
-                            component[vtx_idx] = vtx_info.Clone();
+                            component[vtxIdx] = vtxInfo.Clone();
                         }
-                        foreach (IdxDat<EdgeT> other_vtx in vtx_info)
+                        foreach (IdxDat<EdgeT> otherVtx in vtxInfo)
                         {
-                            if (unvisited.Contains(other_vtx.Idx))
+                            if (unvisited.Contains(otherVtx.Idx))
                             {
-                                unvisited.Remove(other_vtx.Idx);                                
-                                queue.Enqueue(other_vtx.Idx);
+                                unvisited.Remove(otherVtx.Idx);                                
+                                queue.Enqueue(otherVtx.Idx);
                             }
                         }
                     }
                 }
-                if (!seeds_only && component.GetLastNonEmptyRowIdx() >= 0)
+                if (!seedsOnly && component.GetLastNonEmptyRowIdx() >= 0)
                 {
                     components.Add(component);
                 }
             }
-            seeds = seed_list.ToArray();           
+            seeds = seedList.ToArray();           
             return components.ToArray();
         }
 
@@ -301,14 +301,14 @@ namespace Latino
         public Network<VtxT, EdgeT> Clone()
         {
             Network<VtxT, EdgeT> clone = new Network<VtxT, EdgeT>();
-            clone.m_vtx = m_vtx.Clone();
-            clone.m_mtx = m_mtx.Clone();
+            clone.mVtx = mVtx.Clone();
+            clone.mMtx = mMtx.Clone();
             int i = 0;
-            foreach (VtxT vtx in clone.m_vtx)
+            foreach (VtxT vtx in clone.mVtx)
             {
                 if (vtx != null)
                 {
-                    clone.m_vtx_to_idx.Add(vtx, i++);
+                    clone.mVtxToIdx.Add(vtx, i++);
                 }
             }
             return clone;
@@ -324,14 +324,14 @@ namespace Latino
         public Network<VtxT, EdgeT> DeepClone()
         {
             Network<VtxT, EdgeT> clone = new Network<VtxT, EdgeT>();
-            clone.m_vtx = m_vtx.DeepClone();
-            clone.m_mtx = m_mtx.DeepClone();
+            clone.mVtx = mVtx.DeepClone();
+            clone.mMtx = mMtx.DeepClone();
             int i = 0;
-            foreach (VtxT vtx in clone.m_vtx)
+            foreach (VtxT vtx in clone.mVtx)
             {
                 if (vtx != null)
                 {
-                    clone.m_vtx_to_idx.Add(vtx, i++);
+                    clone.mVtxToIdx.Add(vtx, i++);
                 }
             }
             return clone;
@@ -346,7 +346,7 @@ namespace Latino
 
         public bool ContentEquals(Network<VtxT, EdgeT> other)
         {
-            return other != null && m_mtx.ContentEquals(other.m_mtx) && m_vtx.ContentEquals(other.m_vtx);
+            return other != null && mMtx.ContentEquals(other.mMtx) && mVtx.ContentEquals(other.mVtx);
         }
 
         public bool ContentEquals(object other)
@@ -359,22 +359,22 @@ namespace Latino
 
         public void Load(BinarySerializer reader)
         {
-            Load(reader, /*vtx_cmp=*/null); // throws ArgumentNullException, serialization-related exceptions
+            Load(reader, /*vtxCmp=*/null); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        public void Load(BinarySerializer reader, IEqualityComparer<VtxT> vtx_cmp)
+        public void Load(BinarySerializer reader, IEqualityComparer<VtxT> vtxCmp)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            m_mtx.Load(reader);
-            m_vtx.Load(reader);
-            m_vtx_to_idx = new Dictionary<VtxT, int>(vtx_cmp);
+            mMtx.Load(reader);
+            mVtx.Load(reader);
+            mVtxToIdx = new Dictionary<VtxT, int>(vtxCmp);
             int i = 0;
-            foreach (VtxT vtx in m_vtx)
+            foreach (VtxT vtx in mVtx)
             {
                 if (vtx != null)
                 {
-                    m_vtx_to_idx.Add(vtx, i++);
+                    mVtxToIdx.Add(vtx, i++);
                 }
             }
         }
@@ -383,8 +383,8 @@ namespace Latino
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            m_mtx.Save(writer);
-            m_vtx.Save(writer);
+            mMtx.Save(writer);
+            mVtx.Save(writer);
         }
     }
 }

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,11 +26,11 @@ namespace Latino.Model
     */
     public class Cluster : ISerializable
     {
-        private Cluster m_parent
+        private Cluster mParent
             = null;
-        private ArrayList<Cluster> m_children
+        private ArrayList<Cluster> mChildren
             = new ArrayList<Cluster>();
-        private Set<int> m_items
+        private Set<int> mItems
             = new Set<int>();
 
         public Cluster()
@@ -44,19 +44,19 @@ namespace Latino.Model
 
         public Cluster Parent
         {
-            get { return m_parent; }
-            set { m_parent = null; }
+            get { return mParent; }
+            set { mParent = null; }
         }
 
         public ArrayList<Cluster>.ReadOnly Children
         {
-            get { return m_children; }
+            get { return mChildren; }
         }
 
         public void AddChild(Cluster child)
         {
             Utils.ThrowException(child == null ? new ArgumentNullException("child") : null);
-            m_children.Add(child);
+            mChildren.Add(child);
         }
 
         public void AddChildren(IEnumerable<Cluster> children)
@@ -65,23 +65,23 @@ namespace Latino.Model
             foreach (Cluster child in children)
             {
                 Utils.ThrowException(child == null ? new ArgumentValueException("children") : null);
-                m_children.Add(child);
+                mChildren.Add(child);
             }
         }
 
         public void RemoveChildren()
         {
-            m_children.Clear();
+            mChildren.Clear();
         }
 
         public Set<int> Items
         {
-            get { return m_items; }
+            get { return mItems; }
         }
 
         public SparseVector<double> ComputeCentroid(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, CentroidType type)
         {
-            return ModelUtils.ComputeCentroid(m_items, dataset, type); // throws ArgumentValueException
+            return ModelUtils.ComputeCentroid(mItems, dataset, type); // throws ArgumentValueException
         }
 
         public override string ToString()
@@ -93,23 +93,23 @@ namespace Latino.Model
         {
             if (format == "C") // cluster 
             {
-                return string.Format("( Parent:{0} Children:{1} Items:{2} )", m_parent == null, m_children.Count, m_items);
+                return string.Format("( Parent:{0} Children:{1} Items:{2} )", mParent == null, mChildren.Count, mItems);
             }
             else if (format == "CC") // cluster compact 
             {
-                return m_items.ToString();
+                return mItems.ToString();
             }
             else if (format == "T") // tree 
             {
-                StringBuilder str_builder = new StringBuilder();
-                ToString("", str_builder);
-                return str_builder.ToString().TrimEnd('\n', '\r');
+                StringBuilder strBuilder = new StringBuilder();
+                ToString("", strBuilder);
+                return strBuilder.ToString().TrimEnd('\n', '\r');
             }
             else if (format == "TC") // tree compact
             {
-                StringBuilder str_builder = new StringBuilder();
-                ToString("", str_builder);
-                return str_builder.ToString().TrimEnd('\n', '\r');
+                StringBuilder strBuilder = new StringBuilder();
+                ToString("", strBuilder);
+                return strBuilder.ToString().TrimEnd('\n', '\r');
             }
             else
             {
@@ -117,13 +117,13 @@ namespace Latino.Model
             }
         }
 
-        private void ToString(string tab, StringBuilder str_builder)
+        private void ToString(string tab, StringBuilder strBuilder)
         {
-            str_builder.Append(tab);
-            str_builder.AppendLine(ToString("CC"));
-            foreach (Cluster child in m_children)
+            strBuilder.Append(tab);
+            strBuilder.AppendLine(ToString("CC"));
+            foreach (Cluster child in mChildren)
             {
-                child.ToString(tab + "\t", str_builder);
+                child.ToString(tab + "\t", strBuilder);
             }
         }
 
@@ -133,18 +133,18 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteObject(m_parent);            
-            m_children.Save(writer); // *** this will not work properly if two or more parents share a child cluster
-            m_items.Save(writer);
+            writer.WriteObject(mParent);            
+            mChildren.Save(writer); // *** this will not work properly if two or more parents share a child cluster
+            mItems.Save(writer);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            m_parent = reader.ReadObject<Cluster>();
-            m_children = new ArrayList<Cluster>(reader);
-            m_items = new Set<int>(reader);
+            mParent = reader.ReadObject<Cluster>();
+            mChildren = new ArrayList<Cluster>(reader);
+            mItems = new Set<int>(reader);
         }        
     }
 }

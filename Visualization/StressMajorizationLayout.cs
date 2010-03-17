@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,70 +26,70 @@ namespace Latino.Visualization
     */
     public class StressMajorizationLayout : ILayoutAlgorithm
     {
-        private int m_max_steps
+        private int mMaxSteps
             = 1000;
-        private double m_min_diff
+        private double mMinDiff
             = 0.001;
-        private Random m_rnd
+        private Random mRnd
             = new Random(1);
-        private int m_num_points;
-        private IDistance<int> m_dist_func;
+        private int mNumPoints;
+        private IDistance<int> mDistFunc;
 
-        public StressMajorizationLayout(int num_points, IDistance<int> dist_func)
+        public StressMajorizationLayout(int numPoints, IDistance<int> distFunc)
         {
-            Utils.ThrowException(num_points <= 0 ? new ArgumentOutOfRangeException("num_points") : null);
-            Utils.ThrowException(dist_func == null ? new ArgumentNullException("dist_func") : null);
-            m_num_points = num_points;
-            m_dist_func = dist_func;
+            Utils.ThrowException(numPoints <= 0 ? new ArgumentOutOfRangeException("numPoints") : null);
+            Utils.ThrowException(distFunc == null ? new ArgumentNullException("distFunc") : null);
+            mNumPoints = numPoints;
+            mDistFunc = distFunc;
         }
 
         public Random Random
         {
-            get { return m_rnd; }
+            get { return mRnd; }
             set 
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Random") : null);
-                m_rnd = value;
+                mRnd = value;
             }
         }
 
         public double MinDiff
         {
-            get { return m_min_diff; }
+            get { return mMinDiff; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("MinDiff") : null);
-                m_min_diff = value;
+                mMinDiff = value;
             }
         }
 
         public int MaxSteps
         {
-            get { return m_max_steps; }
+            get { return mMaxSteps; }
             set
             {
                 Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("MaxSteps") : null);
-                m_max_steps = value;
+                mMaxSteps = value;
             }
         }
 
         public int NumPoints
         {
-            get { return m_num_points; }
+            get { return mNumPoints; }
             set
             {
                 Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("NumPoints") : null);
-                m_num_points = value;
+                mNumPoints = value;
             }
         }
 
         public IDistance<int> DistFunc
         {
-            get { return m_dist_func; }
+            get { return mDistFunc; }
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("DistFunc") : null);
-                m_dist_func = value;
+                mDistFunc = value;
             }
         }
 
@@ -97,80 +97,80 @@ namespace Latino.Visualization
 
         public Vector2D[] ComputeLayout()
         {
-            return ComputeLayout(/*settings=*/null, /*init_layout=*/null);
+            return ComputeLayout(/*settings=*/null, /*initLayout=*/null);
         }
 
         public Vector2D[] ComputeLayout(LayoutSettings settings)
         {
-            return ComputeLayout(settings, /*init_layout=*/null);
+            return ComputeLayout(settings, /*initLayout=*/null);
         }
 
-        public Vector2D[] ComputeLayout(LayoutSettings settings, Vector2D[] init_layout)
+        public Vector2D[] ComputeLayout(LayoutSettings settings, Vector2D[] initLayout)
         {
             if (settings == null) { settings = new LayoutSettings(); }
-            if (m_num_points == 1) { return settings.AdjustLayout(new Vector2D[] { new Vector2D() }); } // trivial case 
+            if (mNumPoints == 1) { return settings.AdjustLayout(new Vector2D[] { new Vector2D() }); } // trivial case 
             const double eps = 0.00001;
-            Vector2D[] layout = new Vector2D[m_num_points];
+            Vector2D[] layout = new Vector2D[mNumPoints];
             // initialize layout
-            if (init_layout != null)
+            if (initLayout != null)
             {
-                int init_len = Math.Min(m_num_points, init_layout.Length);
-                Array.Copy(init_layout, layout, init_len);
-                for (int i = init_layout.Length; i < m_num_points; i++)
+                int initLen = Math.Min(mNumPoints, initLayout.Length);
+                Array.Copy(initLayout, layout, initLen);
+                for (int i = initLayout.Length; i < mNumPoints; i++)
                 {
-                    layout[i] = new Vector2D(m_rnd.NextDouble(), m_rnd.NextDouble());
+                    layout[i] = new Vector2D(mRnd.NextDouble(), mRnd.NextDouble());
                 }
             }
             else
             {
-                for (int i = 0; i < m_num_points; i++)
+                for (int i = 0; i < mNumPoints; i++)
                 {
-                    layout[i] = new Vector2D(m_rnd.NextDouble(), m_rnd.NextDouble());
+                    layout[i] = new Vector2D(mRnd.NextDouble(), mRnd.NextDouble());
                 }
             }
             // main optimization loop
-            double global_stress = 0, stress_diff = 0;
-            double old_global_stress = double.MaxValue;
-            for (int step = 0; step < m_max_steps; step++)
+            double globalStress = 0, stressDiff = 0;
+            double oldGlobalStress = double.MaxValue;
+            for (int step = 0; step < mMaxSteps; step++)
             {
-                global_stress = 0;
-                for (int i = 0; i < m_num_points; i++)
+                globalStress = 0;
+                for (int i = 0; i < mNumPoints; i++)
                 {
                     double div = 0;
-                    Vector2D new_pos = new Vector2D(0, 0);
-                    for (int j = 0; j < m_num_points; j++)
+                    Vector2D newPos = new Vector2D(0, 0);
+                    for (int j = 0; j < mNumPoints; j++)
                     {
                         if (i != j)
                         {
-                            double d_ij = m_dist_func.GetDistance(i, j);
-                            if (d_ij < eps) { d_ij = eps; }
-                            double w_ij = 1.0 / Math.Pow(d_ij, 2);
-                            double x_i_minus_x_j = layout[i].X - layout[j].X;
-                            double y_i_minus_y_j = layout[i].Y - layout[j].Y;
-                            double denom = Math.Sqrt(Math.Pow(x_i_minus_x_j, 2) + Math.Pow(y_i_minus_y_j, 2));
+                            double dIj = mDistFunc.GetDistance(i, j);
+                            if (dIj < eps) { dIj = eps; }
+                            double wIj = 1.0 / Math.Pow(dIj, 2);
+                            double xIMinusXJ = layout[i].X - layout[j].X;
+                            double yIMinusYJ = layout[i].Y - layout[j].Y;
+                            double denom = Math.Sqrt(Math.Pow(xIMinusXJ, 2) + Math.Pow(yIMinusYJ, 2));
                             if (denom < eps) { denom = eps; } // avoid dividing by zero
-                            div += w_ij;
-                            new_pos.X += w_ij * (layout[j].X + d_ij * (x_i_minus_x_j / denom));
-                            new_pos.Y += w_ij * (layout[j].Y + d_ij * (y_i_minus_y_j / denom));
+                            div += wIj;
+                            newPos.X += wIj * (layout[j].X + dIj * (xIMinusXJ / denom));
+                            newPos.Y += wIj * (layout[j].Y + dIj * (yIMinusYJ / denom));
                             if (i < j)
                             {
                                 Vector2D diff = layout[i] - layout[j];
-                                global_stress += w_ij * Math.Pow(diff.GetLength() - d_ij, 2);
+                                globalStress += wIj * Math.Pow(diff.GetLength() - dIj, 2);
                             }
                         }
                     }
-                    layout[i].X = new_pos.X / div;
-                    layout[i].Y = new_pos.Y / div;
+                    layout[i].X = newPos.X / div;
+                    layout[i].Y = newPos.Y / div;
                 }
-                stress_diff = old_global_stress - global_stress;
+                stressDiff = oldGlobalStress - globalStress;
                 if ((step - 1) % 100 == 0)
                 {
-                    Utils.VerboseLine("Global stress: {0:0.00} Diff: {1:0.0000}", global_stress, stress_diff);
+                    Utils.VerboseLine("Global stress: {0:0.00} Diff: {1:0.0000}", globalStress, stressDiff);
                 }
-                old_global_stress = global_stress;
-                if (stress_diff <= m_min_diff) { break; }
+                oldGlobalStress = globalStress;
+                if (stressDiff <= mMinDiff) { break; }
             }
-            Utils.VerboseLine("Final global stress: {0:0.00} Diff: {1:0.0000}", global_stress, stress_diff);
+            Utils.VerboseLine("Final global stress: {0:0.00} Diff: {1:0.0000}", globalStress, stressDiff);
             return settings.AdjustLayout(layout);
         }
     }

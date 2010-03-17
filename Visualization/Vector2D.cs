@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,8 +25,8 @@ namespace Latino
     */
     public struct Vector2D : IEquatable<Vector2D>, ISerializable
     {
-        private double m_x;
-        private double m_y;
+        private double mX;
+        private double mY;
 
         public Vector2D(BinarySerializer reader) : this()
         {
@@ -35,68 +35,68 @@ namespace Latino
 
         public Vector2D(double x, double y)
         {
-            m_x = x;
-            m_y = y;
+            mX = x;
+            mY = y;
         }
 
-        public Vector2D(double x, double y, double x_2, double y_2) : this(x_2 - x, y_2 - y) 
+        public Vector2D(double x, double y, double x2, double y2) : this(x2 - x, y2 - y) 
         {
         }
 
-        public Vector2D(Vector2D vec_1, Vector2D vec_2) : this(vec_2.X - vec_1.X, vec_2.Y - vec_1.Y) 
+        public Vector2D(Vector2D vec1, Vector2D vec2) : this(vec2.X - vec1.X, vec2.Y - vec1.Y) 
         {
         }
 
         public double X
         {
-            get { return m_x; }
-            set { m_x = value; }
+            get { return mX; }
+            set { mX = value; }
         }
 
         public double Y
         {
-            get { return m_y; }
-            set { m_y = value; }
+            get { return mY; }
+            set { mY = value; }
         }
 
         public void Set(double x, double y)
         {
-            m_x = x;
-            m_y = y;
+            mX = x;
+            mY = y;
         }
 
         public double GetLength()
         {
-            return Math.Sqrt(m_x * m_x + m_y * m_y);
+            return Math.Sqrt(mX * mX + mY * mY);
         }
 
-        public void SetLength(double new_len)
+        public void SetLength(double newLen)
         {
             double len = GetLength(); 
             Utils.ThrowException(len == 0 ? new InvalidOperationException() : null);
-            m_x = m_x / len * new_len;
-            m_y = m_y / len * new_len;
+            mX = mX / len * newLen;
+            mY = mY / len * newLen;
         }
 
         public Vector2D UnitVector()
         {
-            Vector2D unit_vec = this;
-            unit_vec.SetLength(1); // throws InvalidOperationException
-            return unit_vec;
+            Vector2D unitVec = this;
+            unitVec.SetLength(1); // throws InvalidOperationException
+            return unitVec;
         }
 
         public Vector2D Normal() // returns an orthogonal clockwise-oriented vector of the same length
         {
             Utils.ThrowException(GetLength() == 0 ? new InvalidOperationException() : null);
-            return new Vector2D(m_y, -m_x);
+            return new Vector2D(mY, -mX);
         }
 
         public double GetAngle() // returns a value within [0, 2PI)
         {
-            Vector2D unit_vec = UnitVector(); // throws InvalidOperationException
+            Vector2D unitVec = UnitVector(); // throws InvalidOperationException
             double angle;
-            if (m_x >= 0) { angle = Math.Asin(unit_vec.Y); }
-            else { angle = Math.PI - Math.Asin(unit_vec.Y); }
+            if (mX >= 0) { angle = Math.Asin(unitVec.Y); }
+            else { angle = Math.PI - Math.Asin(unitVec.Y); }
             if (angle < 0) { angle += 2.0 * Math.PI; }
             return angle;
         }
@@ -105,14 +105,14 @@ namespace Latino
         {
             Utils.ThrowException(len < 0 ? new ArgumentOutOfRangeException("len") : null);
             Utils.ThrowException(rnd == null ? new ArgumentNullException("rnd") : null);
-            Vector2D rnd_vec;
+            Vector2D rndVec;
             do
             {
-                rnd_vec = new Vector2D(rnd.NextDouble(), rnd.NextDouble());
+                rndVec = new Vector2D(rnd.NextDouble(), rnd.NextDouble());
             }
-            while (rnd_vec.GetLength() == 0);
-            rnd_vec.SetLength(len);
-            return rnd_vec;
+            while (rndVec.GetLength() == 0);
+            rndVec.SetLength(len);
+            return rndVec;
         }
 
         public static Vector2D GetFromAngleAndLength(double angle, double len)
@@ -121,25 +121,25 @@ namespace Latino
             return new Vector2D(Math.Cos(angle) * len, Math.Sin(angle) * len); 
         }
 
-        public static bool Intersect(Vector2D A, Vector2D a, Vector2D B, Vector2D b, ref double x, ref double y, ref bool seg_intersect)
+        public static bool Intersect(Vector2D A, Vector2D a, Vector2D B, Vector2D b, ref double x, ref double y, ref bool segIntersect)
         {
             Utils.ThrowException(a.GetLength() == 0 ? new ArgumentOutOfRangeException("a") : null);
             Utils.ThrowException(b.GetLength() == 0 ? new ArgumentOutOfRangeException("b") : null);
-            double x_1 = A.X;
-            double y_1 = A.Y;
-            double x_2 = A.X + a.X;
-            double y_2 = A.Y + a.Y;
-            double x_3 = B.X;
-            double y_3 = B.Y;
-            double x_4 = B.X + b.X;
-            double y_4 = B.Y + b.Y;
-            double div = (y_4 - y_3) * (x_2 - x_1) - (x_4 - x_3) * (y_2 - y_1);
+            double x1 = A.X;
+            double y1 = A.Y;
+            double x2 = A.X + a.X;
+            double y2 = A.Y + a.Y;
+            double x3 = B.X;
+            double y3 = B.Y;
+            double x4 = B.X + b.X;
+            double y4 = B.Y + b.Y;
+            double div = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
             if (div == 0) { return false; } // the two vectors are parallel or coincident
-            double ua = ((x_4 - x_3) * (y_1 - y_3) - (y_4 - y_3) * (x_1 - x_3)) / div;
-            double ub = ((x_2 - x_1) * (y_1 - y_3) - (y_2 - y_1) * (x_1 - x_3)) / div;
-            x = x_1 + ua * (x_2 - x_1);
-            y = y_1 + ua * (y_2 - y_1);
-            seg_intersect = ua >= 0.0 && ua <= 1.0 && ub >= 0.0 && ub <= 1.0;
+            double ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / div;
+            double ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / div;
+            x = x1 + ua * (x2 - x1);
+            y = y1 + ua * (y2 - y1);
+            segIntersect = ua >= 0.0 && ua <= 1.0 && ub >= 0.0 && ub <= 1.0;
             return true;
         }
 
@@ -147,36 +147,36 @@ namespace Latino
         {
             Utils.ThrowException(a.GetLength() == 0 ? new ArgumentOutOfRangeException("a") : null);
             Utils.ThrowException(b.GetLength() == 0 ? new ArgumentOutOfRangeException("b") : null);
-            double x_1 = A.X;
-            double y_1 = A.Y;
-            double x_2 = A.X + a.X;
-            double y_2 = A.Y + a.Y;
-            double x_3 = B.X;
-            double y_3 = B.Y;
-            double x_4 = B.X + b.X;
-            double y_4 = B.Y + b.Y;
-            double div = (y_4 - y_3) * (x_2 - x_1) - (x_4 - x_3) * (y_2 - y_1);
+            double x1 = A.X;
+            double y1 = A.Y;
+            double x2 = A.X + a.X;
+            double y2 = A.Y + a.Y;
+            double x3 = B.X;
+            double y3 = B.Y;
+            double x4 = B.X + b.X;
+            double y4 = B.Y + b.Y;
+            double div = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
             if (div == 0) { return false; } // the two vectors are parallel or coincident
-            ua = ((x_4 - x_3) * (y_1 - y_3) - (y_4 - y_3) * (x_1 - x_3)) / div;
-            ub = ((x_2 - x_1) * (y_1 - y_3) - (y_2 - y_1) * (x_1 - x_3)) / div;
-            x = x_1 + ua * (x_2 - x_1);
-            y = y_1 + ua * (y_2 - y_1);
+            ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / div;
+            ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / div;
+            x = x1 + ua * (x2 - x1);
+            y = y1 + ua * (y2 - y1);
             return true;
         }
 
-        public static double DotProduct(Vector2D vec_1, Vector2D vec_2)
+        public static double DotProduct(Vector2D vec1, Vector2D vec2)
         {
-            return vec_1.X * vec_2.X + vec_1.Y * vec_2.Y;
+            return vec1.X * vec2.X + vec1.Y * vec2.Y;
         }
 
-        public static Vector2D operator +(Vector2D vec_1, Vector2D vec_2)
+        public static Vector2D operator +(Vector2D vec1, Vector2D vec2)
         {
-            return new Vector2D(vec_1.X + vec_2.X, vec_1.Y + vec_2.Y);
+            return new Vector2D(vec1.X + vec2.X, vec1.Y + vec2.Y);
         }
 
-        public static Vector2D operator -(Vector2D vec_1, Vector2D vec_2)
+        public static Vector2D operator -(Vector2D vec1, Vector2D vec2)
         {
-            return new Vector2D(vec_1.X - vec_2.X, vec_1.Y - vec_2.Y); 
+            return new Vector2D(vec1.X - vec2.X, vec1.Y - vec2.Y); 
         }
 
         public static Vector2D operator *(Vector2D vec, double scalar)
@@ -200,31 +200,31 @@ namespace Latino
             return new Vector2D(-vec.X, -vec.Y);
         }
 
-        public static bool operator ==(Vector2D vec_1, Vector2D vec_2)
+        public static bool operator ==(Vector2D vec1, Vector2D vec2)
         {
-            return vec_1.m_x == vec_2.m_x && vec_1.m_y == vec_2.m_y;
+            return vec1.mX == vec2.mX && vec1.mY == vec2.mY;
         }
 
-        public static bool operator !=(Vector2D vec_1, Vector2D vec_2)
+        public static bool operator !=(Vector2D vec1, Vector2D vec2)
         {
-            return !(vec_1 == vec_2);
+            return !(vec1 == vec2);
         }
 
         public override string ToString()
         {
-            return string.Format("( {0} {1} )", m_x, m_y);
+            return string.Format("( {0} {1} )", mX, mY);
         }
 
         public override int GetHashCode()
         {
-            return m_x.GetHashCode() ^ m_y.GetHashCode();
+            return mX.GetHashCode() ^ mY.GetHashCode();
         }
 
         // *** IEquatable<Vector2D> interface implementation ***
         
         public bool Equals(Vector2D other)
         {
-            return m_x == other.m_x && m_y == other.m_y;
+            return mX == other.mX && mY == other.mY;
         }
 
         public override bool Equals(object obj)
@@ -238,15 +238,15 @@ namespace Latino
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
-            writer.WriteDouble(m_x);
-            writer.WriteDouble(m_y);
+            writer.WriteDouble(mX);
+            writer.WriteDouble(mY);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            m_x = reader.ReadDouble();
-            m_y = reader.ReadDouble();
+            mX = reader.ReadDouble();
+            mY = reader.ReadDouble();
         }
     }
 }

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,7 +26,7 @@ namespace Latino.Model
     */
     public class LabeledDataset<LblT, ExT> : ILabeledDataset<LblT, ExT>, IUnlabeledExampleCollection<ExT>
     {
-        private ArrayList<LabeledExample<LblT, ExT>> m_items
+        private ArrayList<LabeledExample<LblT, ExT>> mItems
             = new ArrayList<LabeledExample<LblT, ExT>>();
 
         public LabeledDataset()
@@ -40,9 +40,9 @@ namespace Latino.Model
 
         private LabeledDataset(IEnumerable<LabeledExample<LblT, object>> examples)
         {           
-            foreach (LabeledExample<LblT, object> labeled_example in examples)
+            foreach (LabeledExample<LblT, object> labeledExample in examples)
             {
-                m_items.Add(new LabeledExample<LblT, ExT>(labeled_example.Label, (ExT)labeled_example.Example));
+                mItems.Add(new LabeledExample<LblT, ExT>(labeledExample.Label, (ExT)labeledExample.Example));
             }
         }
 
@@ -55,74 +55,74 @@ namespace Latino.Model
         {
             Utils.ThrowException(label == null ? new ArgumentNullException("label") : null); // *** allow unlabeled examples?
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            m_items.Add(new LabeledExample<LblT, ExT>(label, example));
+            mItems.Add(new LabeledExample<LblT, ExT>(label, example));
         }
 
         public void Add(LabeledExample<LblT, ExT> example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null); 
-            m_items.Add(example);
+            mItems.Add(example);
         }
 
         public void AddRange(IEnumerable<LabeledExample<LblT, ExT>> examples)
         {
             Utils.ThrowException(examples == null ? new ArgumentNullException("examples") : null);
-            foreach (LabeledExample<LblT, ExT> labeled_example in examples)
+            foreach (LabeledExample<LblT, ExT> labeledExample in examples)
             {
-                Utils.ThrowException(labeled_example == null ? new ArgumentNullException("examples item") : null);
-                m_items.Add(new LabeledExample<LblT, ExT>(labeled_example.Label, labeled_example.Example));
+                Utils.ThrowException(labeledExample == null ? new ArgumentNullException("examples item") : null);
+                mItems.Add(new LabeledExample<LblT, ExT>(labeledExample.Label, labeledExample.Example));
             }
         }
 
         public void RemoveAt(int index)
         {
-            m_items.RemoveAt(index); // throws ArgumentOutOfRangeException
+            mItems.RemoveAt(index); // throws ArgumentOutOfRangeException
         }
 
         public void RemoveRange(int index, int count)
         {
-            m_items.RemoveRange(index, count); // throws ArgumentOutOfRangeException, ArgumentException
+            mItems.RemoveRange(index, count); // throws ArgumentOutOfRangeException, ArgumentException
         }
 
         public void Clear()
         {
-            m_items.Clear();
+            mItems.Clear();
         }
 
         public void Shuffle()
         {
-            m_items.Shuffle();
+            mItems.Shuffle();
         }
 
         public void Shuffle(Random rnd)
         {
-            m_items.Shuffle(rnd); // throws ArgumentNullException
+            mItems.Shuffle(rnd); // throws ArgumentNullException
         }
 
-        public void SplitForCrossValidation(int num_folds, int fold, ref LabeledDataset<LblT, ExT> train_set, ref LabeledDataset<LblT, ExT> test_set)
+        public void SplitForCrossValidation(int numFolds, int fold, ref LabeledDataset<LblT, ExT> trainSet, ref LabeledDataset<LblT, ExT> testSet)
         {
-            Utils.ThrowException(m_items.Count < 2 ? new InvalidOperationException() : null);
-            Utils.ThrowException((num_folds < 2 || num_folds > m_items.Count) ? new ArgumentOutOfRangeException("num_folds") : null);
-            Utils.ThrowException((fold < 1 || fold > num_folds) ? new ArgumentOutOfRangeException("fold") : null);
-            train_set = new LabeledDataset<LblT, ExT>();
-            test_set = new LabeledDataset<LblT, ExT>();
-            double step = (double)m_items.Count / (double)num_folds;
+            Utils.ThrowException(mItems.Count < 2 ? new InvalidOperationException() : null);
+            Utils.ThrowException((numFolds < 2 || numFolds > mItems.Count) ? new ArgumentOutOfRangeException("numFolds") : null);
+            Utils.ThrowException((fold < 1 || fold > numFolds) ? new ArgumentOutOfRangeException("fold") : null);
+            trainSet = new LabeledDataset<LblT, ExT>();
+            testSet = new LabeledDataset<LblT, ExT>();
+            double step = (double)mItems.Count / (double)numFolds;
             double d = 0;
-            for (int i = 0; i < num_folds; i++, d += step)
+            for (int i = 0; i < numFolds; i++, d += step)
             {
-                int end_j = (int)Math.Round(d + step);
+                int endJ = (int)Math.Round(d + step);
                 if (i == fold - 1)
                 {
-                    for (int j = (int)Math.Round(d); j < end_j; j++)
+                    for (int j = (int)Math.Round(d); j < endJ; j++)
                     {
-                        test_set.Add(m_items[j].Label, m_items[j].Example);
+                        testSet.Add(mItems[j].Label, mItems[j].Example);
                     }
                 }
                 else
                 {
-                    for (int j = (int)Math.Round(d); j < end_j; j++)
+                    for (int j = (int)Math.Round(d); j < endJ; j++)
                     {
-                        train_set.Add(m_items[j].Label, m_items[j].Example);
+                        trainSet.Add(mItems[j].Label, mItems[j].Example);
                     }
                 }
             }
@@ -131,9 +131,9 @@ namespace Latino.Model
         UnlabeledDataset<ExT> GetUnlabeledDataset()
         {
             UnlabeledDataset<ExT> dataset = new UnlabeledDataset<ExT>();
-            foreach (LabeledExample<LblT, ExT> labeled_example in m_items)
+            foreach (LabeledExample<LblT, ExT> labeledExample in mItems)
             {
-                dataset.Add(labeled_example.Example);
+                dataset.Add(labeledExample.Example);
             }
             return dataset;
         }
@@ -147,12 +147,12 @@ namespace Latino.Model
 
         public int Count
         {
-            get { return m_items.Count; }
+            get { return mItems.Count; }
         }
 
         public LabeledExample<LblT, ExT> this[int index]
         {
-            get { return m_items[index]; } // throws ArgumentOutOfRangeException
+            get { return mItems[index]; } // throws ArgumentOutOfRangeException
         }
 
         object IEnumerableList.this[int index]
@@ -162,7 +162,7 @@ namespace Latino.Model
 
         public IEnumerator<LabeledExample<LblT, ExT>> GetEnumerator()
         {
-            return m_items.GetEnumerator();
+            return mItems.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -175,45 +175,45 @@ namespace Latino.Model
             return (ILabeledDataset<LblT, NewExT>)ConvertDataset(typeof(NewExT), move); // throws ArgumentNotSupportedException
         }
 
-        public ILabeledDataset<LblT> ConvertDataset(Type new_ex_type, bool move)
+        public ILabeledDataset<LblT> ConvertDataset(Type newExType, bool move)
         {
-            Utils.ThrowException(new_ex_type == null ? new ArgumentNullException("new_ex_type") : null);
-            ILabeledDataset<LblT> new_dataset = null;
-            ArrayList<LabeledExample<LblT, object>> tmp = new ArrayList<LabeledExample<LblT, object>>(m_items.Count);
-            for (int i = 0; i < m_items.Count; i++)
+            Utils.ThrowException(newExType == null ? new ArgumentNullException("newExType") : null);
+            ILabeledDataset<LblT> newDataset = null;
+            ArrayList<LabeledExample<LblT, object>> tmp = new ArrayList<LabeledExample<LblT, object>>(mItems.Count);
+            for (int i = 0; i < mItems.Count; i++)
             {
-                tmp.Add(new LabeledExample<LblT, object>(m_items[i].Label, ModelUtils.ConvertExample(m_items[i].Example, new_ex_type))); // throws ArgumentValueException
-                if (move) { m_items[i] = null; }
+                tmp.Add(new LabeledExample<LblT, object>(mItems[i].Label, ModelUtils.ConvertExample(mItems[i].Example, newExType))); // throws ArgumentValueException
+                if (move) { mItems[i] = null; }
             }
-            if (move) { m_items.Clear(); }
-            if (new_ex_type == typeof(SparseVector<double>))
+            if (move) { mItems.Clear(); }
+            if (newExType == typeof(SparseVector<double>))
             {
-                new_dataset = new LabeledDataset<LblT, SparseVector<double>>(tmp);
+                newDataset = new LabeledDataset<LblT, SparseVector<double>>(tmp);
             }
-            else if (new_ex_type == typeof(SparseVector<double>.ReadOnly))
+            else if (newExType == typeof(SparseVector<double>.ReadOnly))
             {
-                new_dataset = new LabeledDataset<LblT, SparseVector<double>.ReadOnly>(tmp);
+                newDataset = new LabeledDataset<LblT, SparseVector<double>.ReadOnly>(tmp);
             }
-            else if (new_ex_type == typeof(BinaryVector<int>))
+            else if (newExType == typeof(BinaryVector<int>))
             {
-                new_dataset = new LabeledDataset<LblT, BinaryVector<int>>(tmp);
+                newDataset = new LabeledDataset<LblT, BinaryVector<int>>(tmp);
             }
-            else if (new_ex_type == typeof(BinaryVector<int>.ReadOnly))
+            else if (newExType == typeof(BinaryVector<int>.ReadOnly))
             {
-                new_dataset = new LabeledDataset<LblT, BinaryVector<int>.ReadOnly>(tmp);
+                newDataset = new LabeledDataset<LblT, BinaryVector<int>.ReadOnly>(tmp);
             }
-            //else if (new_ex_type == typeof(SvmFeatureVector))
+            //else if (newExType == typeof(SvmFeatureVector))
             //{
-            //    new_dataset = new LabeledDataset<LblT, SvmFeatureVector>(tmp);
+            //    newDataset = new LabeledDataset<LblT, SvmFeatureVector>(tmp);
             //}
-            return new_dataset;
+            return newDataset;
         }
 
         // *** IUnlabeledExampleCollection<ExT> interface implementation ***
 
         ExT IEnumerableList<ExT>.this[int index]
         {
-            get { return m_items[index].Example; } // throws ArgumentOutOfRangeException
+            get { return mItems[index].Example; } // throws ArgumentOutOfRangeException
         }
 
         IEnumerator<ExT> IEnumerable<ExT>.GetEnumerator()
@@ -226,13 +226,13 @@ namespace Latino.Model
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
-            m_items.Save(writer); // throws serialization-related exceptions
+            mItems.Save(writer); // throws serialization-related exceptions
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            m_items.Load(reader); // throws serialization-related exceptions
+            mItems.Load(reader); // throws serialization-related exceptions
         }
 
         /* .-----------------------------------------------------------------------
@@ -243,21 +243,21 @@ namespace Latino.Model
         */
         public class UnlabeledDatasetEnumerator : IEnumerator<ExT>
         { 
-            private LabeledDataset<LblT, ExT> m_dataset;
-            private int m_idx
+            private LabeledDataset<LblT, ExT> mDataset;
+            private int mIdx
                 = -1;
 
             public UnlabeledDatasetEnumerator(LabeledDataset<LblT, ExT> dataset)
             {
                 Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-                m_dataset = dataset;
+                mDataset = dataset;
             }
 
             // *** IEnumerator<ExT> interface implementation ***
 
             public ExT Current
             {
-                get { return m_dataset[m_idx].Example; } // throws ArgumentOutOfRangeException
+                get { return mDataset[mIdx].Example; } // throws ArgumentOutOfRangeException
             }
 
             // *** IEnumerator interface implementation ***
@@ -269,8 +269,8 @@ namespace Latino.Model
 
             public bool MoveNext()
             {
-                m_idx++;
-                if (m_idx >= m_dataset.Count)
+                mIdx++;
+                if (mIdx >= mDataset.Count)
                 {
                     Reset();
                     return false;
@@ -280,7 +280,7 @@ namespace Latino.Model
 
             public void Reset()
             {
-                m_idx = -1;
+                mIdx = -1;
             }
 
             // *** IDisposable interface implementation ***

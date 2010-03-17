@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,17 +25,17 @@ namespace Latino.Model
     */
     public class MaximumEntropyClassifier<LblT> : IModel<LblT, BinaryVector<int>.ReadOnly>
     {
-        private bool m_move_data
+        private bool mMoveData
             = false;
-        private int m_num_iter
+        private int mNumIter
             = 100;
-        private int m_cut_off
+        private int mCutOff
             = 0;
-        private int m_num_threads
+        private int mNumThreads
             = 1;
-        private SparseMatrix<double> m_lambda
+        private SparseMatrix<double> mLambda
             = null;
-        private LblT[] m_idx_to_lbl
+        private LblT[] mIdxToLbl
             = null;
 
         public MaximumEntropyClassifier()
@@ -49,37 +49,37 @@ namespace Latino.Model
 
         public bool MoveData
         {
-            get { return m_move_data; }
-            set { m_move_data = value; }
+            get { return mMoveData; }
+            set { mMoveData = value; }
         }
 
         public int NumIter
         {
-            get { return m_num_iter; }
+            get { return mNumIter; }
             set
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("NumIter") : null);
-                m_num_iter = value;
+                mNumIter = value;
             }
         }
 
         public int CutOff
         {
-            get { return m_cut_off; }
+            get { return mCutOff; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("CutOff") : null);
-                m_cut_off = value;
+                mCutOff = value;
             }
         }
 
         public int NumThreads
         {
-            get { return m_num_threads; }
+            get { return mNumThreads; }
             set 
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("NumThreads") : null);
-                m_num_threads = value;             
+                mNumThreads = value;             
             }
         }
 
@@ -92,15 +92,15 @@ namespace Latino.Model
 
         public bool IsTrained
         {
-            get { return m_lambda != null; }
+            get { return mLambda != null; }
         }
 
         public void Train(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
-            m_lambda = null; // allow GC to collect this
-            m_lambda = MaxEnt.Gis(dataset, m_cut_off, m_num_iter, m_move_data, /*mtx_file_name=*/null, ref m_idx_to_lbl, m_num_threads, /*allowed_diff=*/0); // *** allowed_diff
+            mLambda = null; // allow GC to collect this
+            mLambda = MaxEnt.Gis(dataset, mCutOff, mNumIter, mMoveData, /*mtxFileName=*/null, ref mIdxToLbl, mNumThreads, /*allowedDiff=*/0); // *** allowedDiff
         }
 
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
@@ -112,9 +112,9 @@ namespace Latino.Model
 
         public Prediction<LblT> Predict(BinaryVector<int>.ReadOnly example)
         {
-            Utils.ThrowException(m_lambda == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(mLambda == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            return MaxEnt.Classify(example, m_lambda, m_idx_to_lbl, /*normalize=*/false); // *** normalize
+            return MaxEnt.Classify(example, mLambda, mIdxToLbl, /*normalize=*/false); // *** normalize
         }
 
         Prediction<LblT> IModel<LblT>.Predict(object example)
@@ -130,24 +130,24 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteBool(m_move_data);
-            writer.WriteInt(m_num_iter);
-            writer.WriteInt(m_cut_off);
-            writer.WriteInt(m_num_threads);
-            m_lambda.Save(writer);
-            new ArrayList<LblT>(m_idx_to_lbl).Save(writer);
+            writer.WriteBool(mMoveData);
+            writer.WriteInt(mNumIter);
+            writer.WriteInt(mCutOff);
+            writer.WriteInt(mNumThreads);
+            mLambda.Save(writer);
+            new ArrayList<LblT>(mIdxToLbl).Save(writer);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions            
-            m_move_data = reader.ReadBool();
-            m_num_iter = reader.ReadInt();
-            m_cut_off = reader.ReadInt();
-            m_num_threads = reader.ReadInt();
-            m_lambda = new SparseMatrix<double>(reader);
-            m_idx_to_lbl = new ArrayList<LblT>(reader).ToArray();
+            mMoveData = reader.ReadBool();
+            mNumIter = reader.ReadInt();
+            mCutOff = reader.ReadInt();
+            mNumThreads = reader.ReadInt();
+            mLambda = new SparseMatrix<double>(reader);
+            mIdxToLbl = new ArrayList<LblT>(reader).ToArray();
         }
     }
 }

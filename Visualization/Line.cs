@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,20 +26,20 @@ namespace Latino.Visualization
     */
     public class Line : DrawnObject
     {
-        private float m_x1;
-        private float m_y1;
-        private float m_x2;
-        private float m_y2;
-        private static float m_hit_dist
+        private float mX1;
+        private float mY1;
+        private float mX2;
+        private float mY2;
+        private static float mHitDist
             = 3;
-        private static float m_max_box_area
+        private static float mMaxBoxArea
             = 1000;
         public Line(float x1, float y1, float x2, float y2)
         {
-            m_x1 = x1;
-            m_y1 = y1;
-            m_x2 = x2;
-            m_y2 = y2;
+            mX1 = x1;
+            mY1 = y1;
+            mX2 = x2;
+            mY2 = y2;
         }
         public static void Draw(float x1, float y1, float x2, float y2, Graphics gfx, Pen pen, TransformParams tr)
         {
@@ -73,7 +73,7 @@ namespace Latino.Visualization
         {
             return LineIntersectVertical(new VectorF(pt1.Y, pt1.X), new VectorF(pt2.Y, pt2.X), y, ref x);
         }
-        private static bool LineIntersectRectangle(VectorF pt1, VectorF pt2, RectangleF rect, ref VectorF isect_pt1, ref VectorF isect_pt2)
+        private static bool LineIntersectRectangle(VectorF pt1, VectorF pt2, RectangleF rect, ref VectorF isectPt1, ref VectorF isectPt2)
         {
             float y = 0, x = 0;
             ArrayList<VectorF> points = new ArrayList<VectorF>(2); 
@@ -95,66 +95,66 @@ namespace Latino.Visualization
             }
             if (points.Count == 2)
             {
-                isect_pt1 = points[0];
-                isect_pt2 = points[1];
+                isectPt1 = points[0];
+                isectPt2 = points[1];
                 return true;
             }
             else if (points.Count == 1)
             {
-                isect_pt1 = points[0];
-                isect_pt2 = VisualizationUtils.PointInsideRect(pt1.X, pt1.Y, rect) ? pt1 : pt2;
+                isectPt1 = points[0];
+                isectPt2 = VisualizationUtils.PointInsideRect(pt1.X, pt1.Y, rect) ? pt1 : pt2;
                 return true;
             }
             else if (VisualizationUtils.PointInsideRect(pt1.X, pt1.Y, rect) && VisualizationUtils.PointInsideRect(pt2.X, pt2.Y, rect)) 
             {
-                isect_pt1 = pt1;
-                isect_pt2 = pt2;
+                isectPt1 = pt1;
+                isectPt2 = pt2;
                 return true;
             }
             return false;
         }
-        public static void Draw(float x1, float y1, float x2, float y2, Graphics gfx, Pen pen, TransformParams tr, BoundingArea.ReadOnly bounding_area)
+        public static void Draw(float x1, float y1, float x2, float y2, Graphics gfx, Pen pen, TransformParams tr, BoundingArea.ReadOnly boundingArea)
         {
 #if !NO_PARTIAL_RENDERING
             Utils.ThrowException(gfx == null ? new ArgumentNullException("gfx") : null);
             Utils.ThrowException(pen == null ? new ArgumentNullException("pen") : null);
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
-            Utils.ThrowException(bounding_area == null ? new ArgumentNullException("bounding_area") : null);
+            Utils.ThrowException(boundingArea == null ? new ArgumentNullException("boundingArea") : null);
             VectorF pt1 = tr.Transform(new VectorF(x1, y1));
             VectorF pt2 = tr.Transform(new VectorF(x2, y2));
-            VectorF isect_pt1 = new VectorF();
-            VectorF isect_pt2 = new VectorF();
-            BoundingArea inflated_area = bounding_area.GetWritableCopy();
-            inflated_area.Inflate(pen.Width / 2f + 5f, pen.Width / 2f + 5f);
+            VectorF isectPt1 = new VectorF();
+            VectorF isectPt2 = new VectorF();
+            BoundingArea inflatedArea = boundingArea.GetWritableCopy();
+            inflatedArea.Inflate(pen.Width / 2f + 5f, pen.Width / 2f + 5f);
             ArrayList<KeyDat<float, PointInfo>> points = new ArrayList<KeyDat<float, PointInfo>>();
-            foreach (RectangleF rect in inflated_area.Rectangles)
+            foreach (RectangleF rect in inflatedArea.Rectangles)
             {
-                if (LineIntersectRectangle(pt1, pt2, rect, ref isect_pt1, ref isect_pt2))
+                if (LineIntersectRectangle(pt1, pt2, rect, ref isectPt1, ref isectPt2))
                 {
-                    float dist_pt1 = (pt1 - isect_pt1).GetLength(); // *** don't need sqrt here
-                    float dist_pt2 = (pt1 - isect_pt2).GetLength(); // *** don't need sqrt here
-                    bool start_pt1 = dist_pt1 < dist_pt2;
-                    points.Add(new KeyDat<float, PointInfo>(dist_pt1, new PointInfo(isect_pt1, start_pt1)));
-                    points.Add(new KeyDat<float, PointInfo>(dist_pt2, new PointInfo(isect_pt2, !start_pt1)));
+                    float distPt1 = (pt1 - isectPt1).GetLength(); // *** don't need sqrt here
+                    float distPt2 = (pt1 - isectPt2).GetLength(); // *** don't need sqrt here
+                    bool startPt1 = distPt1 < distPt2;
+                    points.Add(new KeyDat<float, PointInfo>(distPt1, new PointInfo(isectPt1, startPt1)));
+                    points.Add(new KeyDat<float, PointInfo>(distPt2, new PointInfo(isectPt2, !startPt1)));
                 }
             }
             points.Sort();
-            int ref_count = 0;
-            int start_idx = 0;
+            int refCount = 0;
+            int startIdx = 0;
             for (int i = 0; i < points.Count; i++)
             {
-                PointInfo point_info = points[i].Dat;
-                if (point_info.IsStartPoint)
+                PointInfo pointInfo = points[i].Dat;
+                if (pointInfo.IsStartPoint)
                 {
-                    ref_count++;
+                    refCount++;
                 }
                 else
                 {
-                    ref_count--;
-                    if (ref_count == 0)
+                    refCount--;
+                    if (refCount == 0)
                     {
-                        gfx.DrawLine(pen, points[start_idx].Dat.Point, point_info.Point);
-                        start_idx = i + 1;
+                        gfx.DrawLine(pen, points[startIdx].Dat.Point, pointInfo.Point);
+                        startIdx = i + 1;
                     }
                 }
             }
@@ -167,107 +167,107 @@ namespace Latino.Visualization
 #if !SIMPLE_BOUNDING_AREA
             if (x1 == x2 || y1 == y2) { return new BoundingArea(VisualizationUtils.CreateRectangle(x1, y1, x2, y2)); }
             float delta = Math.Abs((x2 - x1) / (y2 - y1));
-            float step_max = (float)Math.Sqrt(m_max_box_area / delta + delta * m_max_box_area);
+            float stepMax = (float)Math.Sqrt(mMaxBoxArea / delta + delta * mMaxBoxArea);
             VectorF line = new VectorF(x1, y1, x2, y2);
-            float line_len = line.GetLength();
-            if (step_max >= line_len) { return new BoundingArea(VisualizationUtils.CreateRectangle(x1, y1, x2, y2)); }
-            BoundingArea bounding_area = new BoundingArea();
-            int steps = (int)Math.Ceiling(line_len / step_max);
-            VectorF step_vec = line;
-            step_vec.SetLength(line_len / (float)steps);
+            float lineLen = line.GetLength();
+            if (stepMax >= lineLen) { return new BoundingArea(VisualizationUtils.CreateRectangle(x1, y1, x2, y2)); }
+            BoundingArea boundingArea = new BoundingArea();
+            int steps = (int)Math.Ceiling(lineLen / stepMax);
+            VectorF stepVec = line;
+            stepVec.SetLength(lineLen / (float)steps);
             VectorF pt1 = new VectorF(x1, y1);
             VectorF pt2;
             for (int i = 0; i < steps - 1; i++)
             {
-                pt2 = pt1 + step_vec;
-                bounding_area.AddRectangles(VisualizationUtils.CreateRectangle(pt1.X, pt1.Y, pt2.X, pt2.Y));
+                pt2 = pt1 + stepVec;
+                boundingArea.AddRectangles(VisualizationUtils.CreateRectangle(pt1.X, pt1.Y, pt2.X, pt2.Y));
                 pt1 = pt2;
             }
             pt2 = new VectorF(x2, y2);
-            bounding_area.AddRectangles(VisualizationUtils.CreateRectangle(pt1.X, pt1.Y, pt2.X, pt2.Y));
-            return bounding_area;
+            boundingArea.AddRectangles(VisualizationUtils.CreateRectangle(pt1.X, pt1.Y, pt2.X, pt2.Y));
+            return boundingArea;
 #else
-            BoundingArea bounding_area = new BoundingArea();
-            bounding_area.AddRectangles(VisualizationUtils.CreateRectangle(x1, y1, x2, y2));
-            return bounding_area;
+            BoundingArea boundingArea = new BoundingArea();
+            boundingArea.AddRectangles(VisualizationUtils.CreateRectangle(x1, y1, x2, y2));
+            return boundingArea;
 #endif
         }
-        public static bool IsObjectAt(float pt_x, float pt_y, TransformParams tr, float x1, float y1, float x2, float y2, ref float dist)
+        public static bool IsObjectAt(float ptX, float ptY, TransformParams tr, float x1, float y1, float x2, float y2, ref float dist)
         {
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
             VectorF pt1 = tr.Transform(new VectorF(x1, y1));
             VectorF pt2 = tr.Transform(new VectorF(x2, y2));
-            return VisualizationUtils.TestLineHit(new VectorF(pt_x, pt_y), pt1, pt2, m_hit_dist, ref dist);
+            return VisualizationUtils.TestLineHit(new VectorF(ptX, ptY), pt1, pt2, mHitDist, ref dist);
         }
         public float X
         {
-            get { return m_x1; }
+            get { return mX1; }
             set
             {
-                m_x1 = value;
+                mX1 = value;
                 InvalidateBoundingArea();
             }
         }
         public float Y
         {
-            get { return m_y1; }
+            get { return mY1; }
             set
             {
-                m_y1 = value;
+                mY1 = value;
                 InvalidateBoundingArea();
             }
         }
         public float X2
         {
-            get { return m_x2; }
+            get { return mX2; }
             set
             {
-                m_x2 = value;
+                mX2 = value;
                 InvalidateBoundingArea();
             }
         }
         public float Y2
         {
-            get { return m_y2; }
+            get { return mY2; }
             set
             {
-                m_y2 = value;
+                mY2 = value;
                 InvalidateBoundingArea();
             }
         }
         public static float LineHitMaxDist
         {
-            get { return m_hit_dist; }
+            get { return mHitDist; }
             set 
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("LineHitMaxDist") : null);
-                m_hit_dist = value; 
+                mHitDist = value; 
             }
         }
         public static float MaxBoxArea
         {
-            get { return m_max_box_area; }
+            get { return mMaxBoxArea; }
             set
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("MaxBoxArea") : null);
-                m_max_box_area = value;
+                mMaxBoxArea = value;
             }
         }
         public override void Draw(Graphics gfx, TransformParams tr)
         {
-            Draw(m_x1, m_y1, m_x2, m_y2, gfx, m_pen, tr); // throws ArgumentNullException, ArgumentValueException
+            Draw(mX1, mY1, mX2, mY2, gfx, mPen, tr); // throws ArgumentNullException, ArgumentValueException
         }
-        public override void Draw(Graphics gfx, TransformParams tr, BoundingArea.ReadOnly bounding_area)
+        public override void Draw(Graphics gfx, TransformParams tr, BoundingArea.ReadOnly boundingArea)
         {
-            Draw(m_x1, m_y1, m_x2, m_y2, gfx, m_pen, tr, bounding_area); // throws ArgumentNullException, ArgumentValueException
+            Draw(mX1, mY1, mX2, mY2, gfx, mPen, tr, boundingArea); // throws ArgumentNullException, ArgumentValueException
         }
         public override IDrawableObject GetObjectAt(float x, float y, TransformParams tr, ref float dist)
         {
-            return IsObjectAt(x, y, tr, m_x1, m_y1, m_x2, m_y2, ref dist) ? this : null; // throws ArgumentValueException
+            return IsObjectAt(x, y, tr, mX1, mY1, mX2, mY2, ref dist) ? this : null; // throws ArgumentValueException
         }
         public override BoundingArea GetBoundingArea()
         {
-            return GetBoundingArea(m_x1, m_y1, m_x2, m_y2);
+            return GetBoundingArea(mX1, mY1, mX2, mY2);
         }
         /* .-----------------------------------------------------------------------
            |		 
@@ -279,10 +279,10 @@ namespace Latino.Visualization
         {
             public VectorF Point;
             public bool IsStartPoint;
-            public PointInfo(VectorF pt, bool is_start_pt)
+            public PointInfo(VectorF pt, bool isStartPt)
             {
                 Point = pt;
-                IsStartPoint = is_start_pt;
+                IsStartPoint = isStartPt;
             }
         }
     }

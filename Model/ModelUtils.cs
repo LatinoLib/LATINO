@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -53,157 +53,157 @@ namespace Latino.Model
     {
         // *** Conversion of examples ***
 
-        public static object ConvertExample(object in_vec, Type out_vec_type)
+        public static object ConvertExample(object inVec, Type outVecType)
         {
-            Utils.ThrowException(in_vec == null ? new ArgumentNullException("in_vec") : null);
-            Utils.ThrowException(out_vec_type == null ? new ArgumentNullException("out_vec_type") : null);
+            Utils.ThrowException(inVec == null ? new ArgumentNullException("inVec") : null);
+            Utils.ThrowException(outVecType == null ? new ArgumentNullException("outVecType") : null);
             // special cases (fast conversions)
-            if (in_vec.GetType() == out_vec_type)
+            if (inVec.GetType() == outVecType)
             {
-                return in_vec;
+                return inVec;
             }
             // general conversion routine (through SparseVector)
             SparseVector<double> tmp;
-            if (in_vec.GetType() == typeof(SparseVector<double>))
+            if (inVec.GetType() == typeof(SparseVector<double>))
             {
-                tmp = (SparseVector<double>)in_vec;
+                tmp = (SparseVector<double>)inVec;
             }
-            else if (in_vec.GetType() == typeof(SparseVector<double>.ReadOnly))
+            else if (inVec.GetType() == typeof(SparseVector<double>.ReadOnly))
             {
-                tmp = ((SparseVector<double>.ReadOnly)in_vec).GetWritableCopy();
+                tmp = ((SparseVector<double>.ReadOnly)inVec).GetWritableCopy();
             }
-            else if (in_vec.GetType() == typeof(BinaryVector<int>) || in_vec.GetType() == typeof(BinaryVector<int>.ReadOnly))
+            else if (inVec.GetType() == typeof(BinaryVector<int>) || inVec.GetType() == typeof(BinaryVector<int>.ReadOnly))
             {
-                tmp = new SparseVector<double>(((BinaryVector<int>.ReadOnly)in_vec).Count);
-                foreach (int item in (BinaryVector<int>.ReadOnly)in_vec)
+                tmp = new SparseVector<double>(((BinaryVector<int>.ReadOnly)inVec).Count);
+                foreach (int item in (BinaryVector<int>.ReadOnly)inVec)
                 {
                     tmp.InnerIdx.Add(item);
                     tmp.InnerDat.Add(1);
                 }
             }
-            //else if (in_vec.GetType() == typeof(SvmFeatureVector))
+            //else if (inVec.GetType() == typeof(SvmFeatureVector))
             //{
-            //    tmp = new SparseVector<double>(((SvmFeatureVector)in_vec).Count);
-            //    foreach (IdxDat<float> item in (SvmFeatureVector)in_vec)
+            //    tmp = new SparseVector<double>(((SvmFeatureVector)inVec).Count);
+            //    foreach (IdxDat<float> item in (SvmFeatureVector)inVec)
             //    {
             //        tmp.Inner.Add(new IdxDat<double>(item.Idx, item.Dat));
             //    }
             //}        
             else
             {
-                throw new ArgumentTypeException("in_vec");
+                throw new ArgumentTypeException("inVec");
             }
-            object out_vec = null;
-            if (out_vec_type == typeof(SparseVector<double>))
+            object outVec = null;
+            if (outVecType == typeof(SparseVector<double>))
             {
-                out_vec = tmp;
+                outVec = tmp;
             }
-            else if (out_vec_type == typeof(SparseVector<double>.ReadOnly))
+            else if (outVecType == typeof(SparseVector<double>.ReadOnly))
             {
-                out_vec = new SparseVector<double>.ReadOnly(tmp);
+                outVec = new SparseVector<double>.ReadOnly(tmp);
             }
-            else if (out_vec_type == typeof(BinaryVector<int>))
+            else if (outVecType == typeof(BinaryVector<int>))
             {
-                out_vec = new BinaryVector<int>();
-                ((BinaryVector<int>)out_vec).Inner.AddRange(tmp.InnerIdx);
+                outVec = new BinaryVector<int>();
+                ((BinaryVector<int>)outVec).Inner.AddRange(tmp.InnerIdx);
             }
-            else if (out_vec_type == typeof(BinaryVector<int>.ReadOnly))
+            else if (outVecType == typeof(BinaryVector<int>.ReadOnly))
             {
                 BinaryVector<int> vec = new BinaryVector<int>();
                 vec.Inner.AddRange(tmp.InnerIdx);
-                out_vec = new BinaryVector<int>.ReadOnly(vec);
+                outVec = new BinaryVector<int>.ReadOnly(vec);
             }
-            //else if (out_vec_type == typeof(SvmFeatureVector))
+            //else if (outVecType == typeof(SvmFeatureVector))
             //{
-            //    SparseVector<float> tmp_2 = new SparseVector<float>(tmp.Count);
+            //    SparseVector<float> tmp2 = new SparseVector<float>(tmp.Count);
             //    foreach (IdxDat<double> item in tmp)
             //    {
-            //        tmp_2.Inner.Add(new IdxDat<float>(item.Idx, (float)item.Dat)); // *** casting double to float
+            //        tmp2.Inner.Add(new IdxDat<float>(item.Idx, (float)item.Dat)); // *** casting double to float
             //    }
-            //    out_vec = new SvmFeatureVector(tmp_2);
+            //    outVec = new SvmFeatureVector(tmp2);
             //}
             else
             {
-                throw new ArgumentValueException("out_vec_type");
+                throw new ArgumentValueException("outVecType");
             }
-            return out_vec;
+            return outVec;
         }
 
-        public static OutVecT ConvertExample<OutVecT>(object in_vec)
+        public static OutVecT ConvertExample<OutVecT>(object inVec)
         {
-            return (OutVecT)ConvertExample(in_vec, typeof(OutVecT)); // throws ArgumentNullException, ArgumentTypeException, ArgumentValueException
+            return (OutVecT)ConvertExample(inVec, typeof(OutVecT)); // throws ArgumentNullException, ArgumentTypeException, ArgumentValueException
         }
 
         // *** Classification of groups of examples ***
 
         public static Prediction<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model)
         {
-            return ClassifyGroup<LblT, ExT>(examples, model, GroupClassifyMethod.Sum, /*lbl_cmp=*/null); // throws InvalidOperationException, ArgumentNullException
+            return ClassifyGroup<LblT, ExT>(examples, model, GroupClassifyMethod.Sum, /*lblCmp=*/null); // throws InvalidOperationException, ArgumentNullException
         }
 
         public static Prediction<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model, GroupClassifyMethod method)
         {
-            return ClassifyGroup<LblT, ExT>(examples, model, method, /*lbl_cmp=*/null); // throws InvalidOperationException, ArgumentNullException
+            return ClassifyGroup<LblT, ExT>(examples, model, method, /*lblCmp=*/null); // throws InvalidOperationException, ArgumentNullException
         }
 
-        public static Prediction<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model, GroupClassifyMethod method, IEqualityComparer<LblT> lbl_cmp)
+        public static Prediction<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model, GroupClassifyMethod method, IEqualityComparer<LblT> lblCmp)
         {
-            Dictionary<LblT, double> tmp = new Dictionary<LblT, double>(lbl_cmp);
+            Dictionary<LblT, double> tmp = new Dictionary<LblT, double>(lblCmp);
             foreach (ExT example in examples)
             {
                 Prediction<LblT> result = model.Predict(example); // throws InvalidOperationException, ArgumentNullException
-                foreach (KeyDat<double, LblT> lbl_info in result)
+                foreach (KeyDat<double, LblT> lblInfo in result)
                 {
                     if (method == GroupClassifyMethod.Vote)
                     {
-                        if (!tmp.ContainsKey(lbl_info.Dat)) 
+                        if (!tmp.ContainsKey(lblInfo.Dat)) 
                         { 
-                            tmp.Add(lbl_info.Dat, 1); 
+                            tmp.Add(lblInfo.Dat, 1); 
                         } 
                         else 
                         { 
-                            tmp[lbl_info.Dat]++; 
+                            tmp[lblInfo.Dat]++; 
                         }
                         break;
                     }
                     else
                     {
-                        if (!tmp.ContainsKey(lbl_info.Dat))
+                        if (!tmp.ContainsKey(lblInfo.Dat))
                         {
-                            tmp.Add(lbl_info.Dat, lbl_info.Key);
+                            tmp.Add(lblInfo.Dat, lblInfo.Key);
                         }
                         else
                         {
                             switch (method)
                             {
                                 case GroupClassifyMethod.Max:
-                                    tmp[lbl_info.Dat] = Math.Max(lbl_info.Key, tmp[lbl_info.Dat]);
+                                    tmp[lblInfo.Dat] = Math.Max(lblInfo.Key, tmp[lblInfo.Dat]);
                                     break;
                                 case GroupClassifyMethod.Sum:
-                                    tmp[lbl_info.Dat] += lbl_info.Key;
+                                    tmp[lblInfo.Dat] += lblInfo.Key;
                                     break;
                             }
                         }
                     }
                 }
             }
-            Prediction<LblT> aggr_result = new Prediction<LblT>();
+            Prediction<LblT> aggrResult = new Prediction<LblT>();
             foreach (KeyValuePair<LblT, double> item in tmp)
             {
-                aggr_result.Items.Add(new KeyDat<double, LblT>(item.Value, item.Key));
+                aggrResult.Items.Add(new KeyDat<double, LblT>(item.Value, item.Key));
             }
-            aggr_result.Items.Sort(new DescSort<KeyDat<double, LblT>>());
-            return aggr_result;
+            aggrResult.Items.Sort(new DescSort<KeyDat<double, LblT>>());
+            return aggrResult;
         }
 
         // *** Computation of centroids ***
 
-        public static SparseVector<double> ComputeCentroid(IEnumerable<SparseVector<double>.ReadOnly> vec_list, CentroidType type)
+        public static SparseVector<double> ComputeCentroid(IEnumerable<SparseVector<double>.ReadOnly> vecList, CentroidType type)
         {
-            Utils.ThrowException(vec_list == null ? new ArgumentNullException("vec_list") : null);
+            Utils.ThrowException(vecList == null ? new ArgumentNullException("vecList") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
-            int vec_count = 0;
-            foreach (SparseVector<double>.ReadOnly vec in vec_list)
+            int vecCount = 0;
+            foreach (SparseVector<double>.ReadOnly vec in vecList)
             {
                 foreach (IdxDat<double> item in vec)
                 {
@@ -216,9 +216,9 @@ namespace Latino.Model
                         tmp.Add(item.Idx, item.Dat);
                     }
                 }
-                vec_count++;
+                vecCount++;
             }
-            Utils.ThrowException(vec_count == 0 ? new ArgumentValueException("vec_list") : null);
+            Utils.ThrowException(vecCount == 0 ? new ArgumentValueException("vecList") : null);
             SparseVector<double> centroid = new SparseVector<double>();
             switch (type)
             {
@@ -233,21 +233,21 @@ namespace Latino.Model
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
                         centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / (double)vec_count);
+                        centroid.InnerDat.Add(item.Value / (double)vecCount);
                     }
                     break;
                 case CentroidType.NrmL2:
-                    double vec_len = 0;
+                    double vecLen = 0;
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
-                        vec_len += item.Value * item.Value;
+                        vecLen += item.Value * item.Value;
                     }
-                    Utils.ThrowException(vec_len == 0 ? new InvalidOperationException() : null);
-                    vec_len = Math.Sqrt(vec_len);
+                    Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
+                    vecLen = Math.Sqrt(vecLen);
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
                         centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / vec_len);
+                        centroid.InnerDat.Add(item.Value / vecLen);
                     }
                     break;
             }
@@ -255,15 +255,15 @@ namespace Latino.Model
             return centroid;
         }
 
-        public static SparseVector<double> ComputeCentroid(IEnumerable<int> vec_idx_list, IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, CentroidType type)
+        public static SparseVector<double> ComputeCentroid(IEnumerable<int> vecIdxList, IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, CentroidType type)
         {
-            Utils.ThrowException(vec_idx_list == null ? new ArgumentNullException("vec_idx_list") : null);
+            Utils.ThrowException(vecIdxList == null ? new ArgumentNullException("vecIdxList") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
-            int vec_count = 0;
-            foreach (int vec_idx in vec_idx_list)
+            int vecCount = 0;
+            foreach (int vecIdx in vecIdxList)
             {
-                Utils.ThrowException((vec_idx < 0 || vec_idx >= dataset.Count) ? new ArgumentValueException("vec_idx_list") : null);
-                SparseVector<double>.ReadOnly vec = dataset[vec_idx];
+                Utils.ThrowException((vecIdx < 0 || vecIdx >= dataset.Count) ? new ArgumentValueException("vecIdxList") : null);
+                SparseVector<double>.ReadOnly vec = dataset[vecIdx];
                 foreach (IdxDat<double> item in vec)
                 {
                     if (tmp.ContainsKey(item.Idx))
@@ -275,9 +275,9 @@ namespace Latino.Model
                         tmp.Add(item.Idx, item.Dat);
                     }
                 }
-                vec_count++;
+                vecCount++;
             }
-            Utils.ThrowException(vec_count == 0 ? new ArgumentValueException("vec_idx_list") : null);
+            Utils.ThrowException(vecCount == 0 ? new ArgumentValueException("vecIdxList") : null);
             SparseVector<double> centroid = new SparseVector<double>();
             switch (type)
             {
@@ -292,21 +292,21 @@ namespace Latino.Model
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
                         centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / (double)vec_count);
+                        centroid.InnerDat.Add(item.Value / (double)vecCount);
                     }
                     break;
                 case CentroidType.NrmL2:
-                    double vec_len = 0;
+                    double vecLen = 0;
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
-                        vec_len += item.Value * item.Value;
+                        vecLen += item.Value * item.Value;
                     }
-                    Utils.ThrowException(vec_len == 0 ? new InvalidOperationException() : null);
-                    vec_len = Math.Sqrt(vec_len);
+                    Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
+                    vecLen = Math.Sqrt(vecLen);
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
                         centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / vec_len);
+                        centroid.InnerDat.Add(item.Value / vecLen);
                     }
                     break;
             }
@@ -314,27 +314,27 @@ namespace Latino.Model
             return centroid;
         }
 
-        public static SparseVector<double> ComputeCentroidWgt(IEnumerable<Pair<double, SparseVector<double>.ReadOnly>> wgt_vec_list, CentroidType type)
+        public static SparseVector<double> ComputeCentroidWgt(IEnumerable<Pair<double, SparseVector<double>.ReadOnly>> wgtVecList, CentroidType type)
         {
-            Utils.ThrowException(wgt_vec_list == null ? new ArgumentNullException("wgt_vec_list") : null);
+            Utils.ThrowException(wgtVecList == null ? new ArgumentNullException("wgtVecList") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
-            double wgt_sum = 0;
-            foreach (Pair<double, SparseVector<double>.ReadOnly> wgt_vec in wgt_vec_list)
+            double wgtSum = 0;
+            foreach (Pair<double, SparseVector<double>.ReadOnly> wgtVec in wgtVecList)
             {
-                foreach (IdxDat<double> item in wgt_vec.Second)
+                foreach (IdxDat<double> item in wgtVec.Second)
                 {
                     if (tmp.ContainsKey(item.Idx))
                     {
-                        tmp[item.Idx] += wgt_vec.First * item.Dat;
+                        tmp[item.Idx] += wgtVec.First * item.Dat;
                     }
                     else
                     {
-                        tmp.Add(item.Idx, wgt_vec.First * item.Dat);
+                        tmp.Add(item.Idx, wgtVec.First * item.Dat);
                     }
                 }
-                wgt_sum += wgt_vec.First;
+                wgtSum += wgtVec.First;
             }
-            Utils.ThrowException(wgt_sum == 0 ? new ArgumentValueException("wgt_vec_list") : null);
+            Utils.ThrowException(wgtSum == 0 ? new ArgumentValueException("wgtVecList") : null);
             SparseVector<double> centroid = new SparseVector<double>();
             switch (type)
             {
@@ -349,21 +349,21 @@ namespace Latino.Model
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
                         centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / wgt_sum);
+                        centroid.InnerDat.Add(item.Value / wgtSum);
                     }
                     break;
                 case CentroidType.NrmL2:
-                    double vec_len = 0;
+                    double vecLen = 0;
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
-                        vec_len += item.Value * item.Value;
+                        vecLen += item.Value * item.Value;
                     }
-                    Utils.ThrowException(vec_len == 0 ? new InvalidOperationException() : null);
-                    vec_len = Math.Sqrt(vec_len);
+                    Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
+                    vecLen = Math.Sqrt(vecLen);
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
                         centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / vec_len);
+                        centroid.InnerDat.Add(item.Value / vecLen);
                     }
                     break;
             }
@@ -373,19 +373,19 @@ namespace Latino.Model
 
         // *** IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> template specialization ***
 
-        private static void GetDotProductSimilarity(SparseVector<double>.ReadOnly vec, double[] sim_vec, SparseMatrix<double>.ReadOnly tr_mtx, int start_idx)
+        private static void GetDotProductSimilarity(SparseVector<double>.ReadOnly vec, double[] simVec, SparseMatrix<double>.ReadOnly trMtx, int startIdx)
         {
             foreach (IdxDat<double> item in vec)
             {
-                SparseVector<double>.ReadOnly col = tr_mtx[item.Idx];
+                SparseVector<double>.ReadOnly col = trMtx[item.Idx];
                 if (col != null)
                 {
-                    int start_idx_direct = col.GetDirectIdx(start_idx);
-                    if (start_idx_direct < 0) { start_idx_direct = ~start_idx_direct; }
-                    for (int i = start_idx_direct; i < col.Count; i++)
+                    int startIdxDirect = col.GetDirectIdx(startIdx);
+                    if (startIdxDirect < 0) { startIdxDirect = ~startIdxDirect; }
+                    for (int i = startIdxDirect; i < col.Count; i++)
                     {
-                        IdxDat<double> tr_mtx_item = col.GetDirect(i);
-                        sim_vec[tr_mtx_item.Idx] += item.Dat * tr_mtx_item.Dat;
+                        IdxDat<double> trMtxItem = col.GetDirect(i);
+                        simVec[trMtxItem.Idx] += item.Dat * trMtxItem.Dat;
                     }
                 }
             }
@@ -395,121 +395,121 @@ namespace Latino.Model
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
-            SparseMatrix<double> tr_mtx = new SparseMatrix<double>();
-            int row_idx = 0;
+            SparseMatrix<double> trMtx = new SparseMatrix<double>();
+            int rowIdx = 0;
             foreach (SparseVector<double>.ReadOnly item in dataset)
             {
-                foreach (IdxDat<double> vec_item in item)
+                foreach (IdxDat<double> vecItem in item)
                 {
-                    if (!tr_mtx.ContainsRowAt(vec_item.Idx))
+                    if (!trMtx.ContainsRowAt(vecItem.Idx))
                     {
-                        tr_mtx[vec_item.Idx] = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(row_idx, vec_item.Dat) });
+                        trMtx[vecItem.Idx] = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(rowIdx, vecItem.Dat) });
                     }
                     else
                     {
-                        tr_mtx[vec_item.Idx].InnerIdx.Add(row_idx);
-                        tr_mtx[vec_item.Idx].InnerDat.Add(vec_item.Dat);
+                        trMtx[vecItem.Idx].InnerIdx.Add(rowIdx);
+                        trMtx[vecItem.Idx].InnerDat.Add(vecItem.Dat);
                     }
                 }
-                row_idx++;
+                rowIdx++;
             }
-            return tr_mtx;
+            return trMtx;
         }
 
-        public static double[] GetDotProductSimilarity(SparseMatrix<double>.ReadOnly tr_mtx, int dataset_count, SparseVector<double>.ReadOnly vec)
+        public static double[] GetDotProductSimilarity(SparseMatrix<double>.ReadOnly trMtx, int datasetCount, SparseVector<double>.ReadOnly vec)
         {
             // TODO: exceptions on dataset count
-            Utils.ThrowException(tr_mtx == null ? new ArgumentNullException("tr_mtx") : null);
+            Utils.ThrowException(trMtx == null ? new ArgumentNullException("trMtx") : null);
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
-            double[] sim_vec = new double[dataset_count];
-            GetDotProductSimilarity(vec, sim_vec, tr_mtx, /*start_idx=*/0);
-            return sim_vec;
+            double[] simVec = new double[datasetCount];
+            GetDotProductSimilarity(vec, simVec, trMtx, /*startIdx=*/0);
+            return simVec;
         }
 
-        public static SparseVector<double> GetDotProductSimilarity(SparseMatrix<double>.ReadOnly tr_mtx, int dataset_count, SparseVector<double>.ReadOnly vec, double thresh)
+        public static SparseVector<double> GetDotProductSimilarity(SparseMatrix<double>.ReadOnly trMtx, int datasetCount, SparseVector<double>.ReadOnly vec, double thresh)
         {
             // TODO: exceptions on dataset count
             Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
-            double[] sim_vec = GetDotProductSimilarity(tr_mtx, dataset_count, vec); // throws ArgumentNullException
-            SparseVector<double> sparse_vec = new SparseVector<double>();
-            for (int i = 0; i < sim_vec.Length; i++)
+            double[] simVec = GetDotProductSimilarity(trMtx, datasetCount, vec); // throws ArgumentNullException
+            SparseVector<double> sparseVec = new SparseVector<double>();
+            for (int i = 0; i < simVec.Length; i++)
             {
-                if (sim_vec[i] > thresh)
+                if (simVec[i] > thresh)
                 {
-                    sparse_vec.InnerIdx.Add(i);
-                    sparse_vec.InnerDat.Add(sim_vec[i]);
+                    sparseVec.InnerIdx.Add(i);
+                    sparseVec.InnerDat.Add(simVec[i]);
                 }
             }
-            return sparse_vec;
+            return sparseVec;
         }
 
         public static double[] GetDotProductSimilarity(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, SparseVector<double>.ReadOnly vec)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
-            SparseMatrix<double> tr_mtx = GetTransposedMatrix(dataset);
-            double[] sim_vec = new double[dataset.Count];
-            GetDotProductSimilarity(vec, sim_vec, tr_mtx, /*start_idx=*/0);
-            return sim_vec;
+            SparseMatrix<double> trMtx = GetTransposedMatrix(dataset);
+            double[] simVec = new double[dataset.Count];
+            GetDotProductSimilarity(vec, simVec, trMtx, /*startIdx=*/0);
+            return simVec;
         }
 
         public static SparseVector<double> GetDotProductSimilarity(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, SparseVector<double>.ReadOnly vec, double thresh)
         {
             Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
-            double[] sim_vec = GetDotProductSimilarity(dataset, vec); // throws ArgumentNullException
-            SparseVector<double> sparse_vec = new SparseVector<double>();
-            for (int i = 0; i < sim_vec.Length; i++)
+            double[] simVec = GetDotProductSimilarity(dataset, vec); // throws ArgumentNullException
+            SparseVector<double> sparseVec = new SparseVector<double>();
+            for (int i = 0; i < simVec.Length; i++)
             {
-                if (sim_vec[i] > thresh)
+                if (simVec[i] > thresh)
                 {
-                    sparse_vec.InnerIdx.Add(i);
-                    sparse_vec.InnerDat.Add(sim_vec[i]);
+                    sparseVec.InnerIdx.Add(i);
+                    sparseVec.InnerDat.Add(simVec[i]);
                 }
             }
-            return sparse_vec;
+            return sparseVec;
         }
 
-        public static SparseMatrix<double> GetDotProductSimilarity(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, double thresh, bool full_matrix) // if full_matrix is false, upper (right) triangular sparse matrix of dot products is computed
+        public static SparseMatrix<double> GetDotProductSimilarity(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, double thresh, bool fullMatrix) // if fullMatrix is false, upper (right) triangular sparse matrix of dot products is computed
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
-            SparseMatrix<double> tr_mtx = GetTransposedMatrix(dataset);
-            double[] sim_vec = new double[dataset.Count];
-            SparseMatrix<double> sim_mtx = new SparseMatrix<double>();
-            int row_idx = 0;
+            SparseMatrix<double> trMtx = GetTransposedMatrix(dataset);
+            double[] simVec = new double[dataset.Count];
+            SparseMatrix<double> simMtx = new SparseMatrix<double>();
+            int rowIdx = 0;
             foreach (SparseVector<double>.ReadOnly item in dataset)
             {
-                GetDotProductSimilarity(item, sim_vec, tr_mtx, /*start_idx=*/full_matrix ? 0 : row_idx);
-                for (int idx = 0; idx < sim_vec.Length; idx++)
+                GetDotProductSimilarity(item, simVec, trMtx, /*startIdx=*/fullMatrix ? 0 : rowIdx);
+                for (int idx = 0; idx < simVec.Length; idx++)
                 {
-                    double sim = sim_vec[idx];
+                    double sim = simVec[idx];
                     if (sim > thresh)
                     {
-                        if (!sim_mtx.ContainsRowAt(row_idx))
+                        if (!simMtx.ContainsRowAt(rowIdx))
                         {
-                            sim_mtx[row_idx] = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(idx, sim) });
+                            simMtx[rowIdx] = new SparseVector<double>(new IdxDat<double>[] { new IdxDat<double>(idx, sim) });
                         }
                         else
                         {
-                            sim_mtx[row_idx].InnerIdx.Add(idx);
-                            sim_mtx[row_idx].InnerDat.Add(sim);
+                            simMtx[rowIdx].InnerIdx.Add(idx);
+                            simMtx[rowIdx].InnerDat.Add(sim);
                         }
                     }
-                    sim_vec[idx] = 0;
+                    simVec[idx] = 0;
                 }
-                row_idx++;
+                rowIdx++;
             }
-            return sim_mtx;
+            return simMtx;
         }
 
         public static SparseMatrix<double> GetDotProductSimilarity(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, double thresh)
         {
-            return GetDotProductSimilarity(dataset, thresh, /*full_matrix=*/false); // throws ArgumentOutOfRangeException, ArgumentNullException
+            return GetDotProductSimilarity(dataset, thresh, /*fullMatrix=*/false); // throws ArgumentOutOfRangeException, ArgumentNullException
         }
 
         public static SparseMatrix<double> GetDotProductSimilarity(/*this*/ IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
-            return GetDotProductSimilarity(dataset, /*thresh=*/0, /*full_matrix=*/false); // throws ArgumentNullException
+            return GetDotProductSimilarity(dataset, /*thresh=*/0, /*fullMatrix=*/false); // throws ArgumentNullException
         }
     }
 }

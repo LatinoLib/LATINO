@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -37,36 +37,36 @@ namespace Latino.Visualization
         private const int RENDER_LAYER = 1;
         private const int MAIN_LAYER   = 2;
 
-        private float m_scale_factor
+        private float mScaleFactor
             = 1;
         
-        private Color m_canvas_color
+        private Color mCanvasColor
             = Color.White;
-        private Size m_canvas_size
+        private Size mCanvasSize
             = new Size(800, 600);
 
-        private Dictionary<int, BitmapInfo> m_bmp_cache
+        private Dictionary<int, BitmapInfo> mBmpCache
             = new Dictionary<int, BitmapInfo>();
 
-        private IDrawableObject m_drawable_object
+        private IDrawableObject mDrawableObject
             = null;
 
-        private EditableBitmap canvas_view
+        private EditableBitmap canvasView
             = null;
 
-        private ArrayList<IDrawableObject> m_target_objs
+        private ArrayList<IDrawableObject> mTargetObjs
             = new ArrayList<IDrawableObject>();
-        private Set<IDrawableObject> m_target_obj_set
+        private Set<IDrawableObject> mTargetObjSet
             = new Set<IDrawableObject>();
 
-        private ContextMenuStrip m_canvas_menu
+        private ContextMenuStrip mCanvasMenu
             = null;
         
-        private ToolTip m_drawable_object_tip
+        private ToolTip mDrawableObjectTip
             = new ToolTip();
         
         [DllImport("user32", CharSet = CharSet.Auto)]
-        private extern static IntPtr SendMessage(IntPtr h_wnd, int msg, int w_param, IntPtr l_param);
+        private extern static IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
 
         private static void SetupGraphics(Graphics gfx)
         {
@@ -76,44 +76,44 @@ namespace Latino.Visualization
 
         private BitmapInfo PrepareBitmap(int id, int width, int height)
         {
-            if (!m_bmp_cache.ContainsKey(id))
+            if (!mBmpCache.ContainsKey(id))
             {
                 EditableBitmap bmp = new EditableBitmap(width, height, PixelFormat.Format24bppRgb);
                 Graphics gfx = Graphics.FromImage(bmp.Bitmap);
                 SetupGraphics(gfx);                               
-                gfx.Clear(m_canvas_color); 
-                BitmapInfo bmp_info = new BitmapInfo(bmp, gfx);
-                m_bmp_cache.Add(id, bmp_info);
-                return bmp_info;
+                gfx.Clear(mCanvasColor); 
+                BitmapInfo bmpInfo = new BitmapInfo(bmp, gfx);
+                mBmpCache.Add(id, bmpInfo);
+                return bmpInfo;
             }
             else
             {
-                BitmapInfo bmp_info = m_bmp_cache[id];
-                if (bmp_info.Bitmap.Width >= width && bmp_info.Bitmap.Height >= height) 
+                BitmapInfo bmpInfo = mBmpCache[id];
+                if (bmpInfo.Bitmap.Width >= width && bmpInfo.Bitmap.Height >= height) 
                 {
-                    bmp_info.Graphics.Clip = new Region(new Rectangle(0, 0, width, height)); 
-                    bmp_info.Graphics.Clear(m_canvas_color); 
-                    return bmp_info;
+                    bmpInfo.Graphics.Clip = new Region(new Rectangle(0, 0, width, height)); 
+                    bmpInfo.Graphics.Clear(mCanvasColor); 
+                    return bmpInfo;
                 } 
                 // remove old bitmap 
-                bmp_info.Dispose();
-                m_bmp_cache.Remove(id);
+                bmpInfo.Dispose();
+                mBmpCache.Remove(id);
                 // create new bitmap
                 EditableBitmap bmp = new EditableBitmap(width, height, PixelFormat.Format24bppRgb);
                 Graphics gfx = Graphics.FromImage(bmp.Bitmap);
                 SetupGraphics(gfx);
-                gfx.Clear(m_canvas_color); 
-                bmp_info = new BitmapInfo(bmp, gfx);
-                m_bmp_cache.Add(id, bmp_info);
-                return bmp_info;
+                gfx.Clear(mCanvasColor); 
+                bmpInfo = new BitmapInfo(bmp, gfx);
+                mBmpCache.Add(id, bmpInfo);
+                return bmpInfo;
             }
         }
 
         private void SetupCanvas(int width, int height)
         {
-            if (canvas_view != null) { canvas_view.Dispose(); }
-            BitmapInfo main_layer = m_bmp_cache[MAIN_LAYER];
-            canvas_view = main_layer.EditableBitmap.CreateView(new Rectangle(0, 0, width, height));
+            if (canvasView != null) { canvasView.Dispose(); }
+            BitmapInfo mainLayer = mBmpCache[MAIN_LAYER];
+            canvasView = mainLayer.EditableBitmap.CreateView(new Rectangle(0, 0, width, height));
         }
 
         private Rectangle GetEnclosingRect(RectangleF rect)
@@ -134,12 +134,12 @@ namespace Latino.Visualization
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public IDrawableObject DrawableObject
         {
-            get { return m_drawable_object; }
+            get { return mDrawableObject; }
             set 
             { 
-                m_drawable_object = value;
-                m_target_obj_set.Clear();
-                m_target_objs.Clear();
+                mDrawableObject = value;
+                mTargetObjSet.Clear();
+                mTargetObjs.Clear();
                 Draw();
             }
         }
@@ -148,25 +148,25 @@ namespace Latino.Visualization
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ArrayList<IDrawableObject>.ReadOnly TargetObjects
         {
-            get { return m_target_objs; }
+            get { return mTargetObjs; }
         }
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public Set<IDrawableObject>.ReadOnly TargetObjectSet
         {
-            get { return m_target_obj_set; }
+            get { return mTargetObjSet; }
         }
 
         [Category("Appearance")]
         [DefaultValue(typeof(Size), "800, 600")]
         public Size CanvasSize
         {
-            get { return m_canvas_size; }
+            get { return mCanvasSize; }
             set 
             {
-                //Utils.ThrowException(m_drawable_object != null ? new InvalidOperationException() : null);
-                m_canvas_size = value;
+                //Utils.ThrowException(mDrawableObject != null ? new InvalidOperationException() : null);
+                mCanvasSize = value;
                 Draw();
             }
         }
@@ -175,11 +175,11 @@ namespace Latino.Visualization
         [DefaultValue(typeof(Color), "White")]
         public Color CanvasColor
         {
-            get { return m_canvas_color; }
+            get { return mCanvasColor; }
             set 
             {
-                //Utils.ThrowException(m_drawable_object != null ? new InvalidOperationException() : null);
-                m_canvas_color = value;
+                //Utils.ThrowException(mDrawableObject != null ? new InvalidOperationException() : null);
+                mCanvasColor = value;
                 Draw();
             }
         }
@@ -188,11 +188,11 @@ namespace Latino.Visualization
         [DefaultValue(1f)]
         public float ScaleFactor
         {
-            get { return m_scale_factor; }
+            get { return mScaleFactor; }
             set
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("ScaleFactor") : null);
-                m_scale_factor = value;
+                mScaleFactor = value;
                 Draw();
             }
         }
@@ -217,25 +217,25 @@ namespace Latino.Visualization
         [DefaultValue(null)]
         public ContextMenuStrip CanvasContextMenuStrip
         {
-            get { return m_canvas_menu; }
-            set { m_canvas_menu = value; }
+            get { return mCanvasMenu; }
+            set { mCanvasMenu = value; }
         }
 
         [Category("Behavior")]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public ToolTip DrawableObjectToolTip
         {
-            get { return m_drawable_object_tip; }            
+            get { return mDrawableObjectTip; }            
         }
 
-        public void ExtendBoundingArea(BoundingArea bounding_area, params IDrawableObject[] drawable_objects)
+        public void ExtendBoundingArea(BoundingArea boundingArea, params IDrawableObject[] drawableObjects)
         {
-            Utils.ThrowException(bounding_area == null ? new ArgumentNullException("bounding_area") : null);
-            Utils.ThrowException(drawable_objects == null ? new ArgumentNullException("drawable_objects") : null);
-            TransformParams tr = new TransformParams(0, 0, m_scale_factor);
-            foreach (IDrawableObject drawable_object in drawable_objects)
+            Utils.ThrowException(boundingArea == null ? new ArgumentNullException("boundingArea") : null);
+            Utils.ThrowException(drawableObjects == null ? new ArgumentNullException("drawableObjects") : null);
+            TransformParams tr = new TransformParams(0, 0, mScaleFactor);
+            foreach (IDrawableObject drawableObject in drawableObjects)
             {
-                bounding_area.AddRectangles(drawable_object.GetBoundingArea(tr).Rectangles);
+                boundingArea.AddRectangles(drawableObject.GetBoundingArea(tr).Rectangles);
             }
         }
 
@@ -243,112 +243,112 @@ namespace Latino.Visualization
         {
             const int WM_SETREDRAW = 0x000B;
             SendMessage(Handle, WM_SETREDRAW, 0, IntPtr.Zero); // supress redrawing
-            TransformParams tr = new TransformParams(0, 0, m_scale_factor);
-            int width = (int)Math.Ceiling(tr.Transform(m_canvas_size.Width));
-            int height = (int)Math.Ceiling(tr.Transform(m_canvas_size.Height));
-            if (m_drawable_object == null)
+            TransformParams tr = new TransformParams(0, 0, mScaleFactor);
+            int width = (int)Math.Ceiling(tr.Transform(mCanvasSize.Width));
+            int height = (int)Math.Ceiling(tr.Transform(mCanvasSize.Height));
+            if (mDrawableObject == null)
             {
                 PrepareBitmap(MAIN_LAYER, width, height);
                 SetupCanvas(width, height);
-                picBoxCanvas.Image = canvas_view.Bitmap;
+                picBoxCanvas.Image = canvasView.Bitmap;
             }
             else
             {
-                BitmapInfo main_layer = PrepareBitmap(MAIN_LAYER, width, height);
-                m_drawable_object.Draw(main_layer.Graphics, tr);
+                BitmapInfo mainLayer = PrepareBitmap(MAIN_LAYER, width, height);
+                mDrawableObject.Draw(mainLayer.Graphics, tr);
                 SetupCanvas(width, height);
-                picBoxCanvas.Image = canvas_view.Bitmap;
+                picBoxCanvas.Image = canvasView.Bitmap;
             }
             SendMessage(Handle, WM_SETREDRAW, 1, IntPtr.Zero); // resume redrawing
             AutoScroll = true; // update scrollbars
             Refresh(); // repaint control
         }
 
-        public void Draw(params IDrawableObject[] drawable_objects)
+        public void Draw(params IDrawableObject[] drawableObjects)
         {
-            Draw(new BoundingArea(), drawable_objects);
+            Draw(new BoundingArea(), drawableObjects);
         }
 
         // ****** Debugging ******
-        private int m_draw_count
+        private int mDrawCount
             = 0;
-        private TimeSpan m_draw_time
+        private TimeSpan mDrawTime
             = TimeSpan.Zero;
-        private ArrayList<double> m_draw_info
+        private ArrayList<double> mDrawInfo
             = new ArrayList<double>();
 
         private void FpsInfo_Click(object sender, EventArgs e)
         {
             double stdev = 0;
-            double avg = (double)m_draw_time.TotalMilliseconds / (double)m_draw_count;
-            foreach (double val in m_draw_info)
+            double avg = (double)mDrawTime.TotalMilliseconds / (double)mDrawCount;
+            foreach (double val in mDrawInfo)
             {
                 stdev += (val - avg) * (val - avg);
             }
-            stdev = Math.Sqrt(stdev / (double)m_draw_info.Count);
-            m_draw_count = 0;
-            m_draw_time = TimeSpan.Zero;
-            m_draw_info.Clear();
+            stdev = Math.Sqrt(stdev / (double)mDrawInfo.Count);
+            mDrawCount = 0;
+            mDrawTime = TimeSpan.Zero;
+            mDrawInfo.Clear();
             FpsInfo.Text = string.Format("{0:0.00} ({1:0.00}) ms / draw", avg, stdev);           
         }
         // ***********************
 
-        public void Draw(BoundingArea.ReadOnly bounding_area, params IDrawableObject[] drawable_objects)
+        public void Draw(BoundingArea.ReadOnly boundingArea, params IDrawableObject[] drawableObjects)
         {            
-            Utils.ThrowException(bounding_area == null ? new ArgumentNullException("bounding_area") : null);
-            Utils.ThrowException(drawable_objects == null ? new ArgumentNullException("drawable_objects") : null);
-            DateTime start_time = DateTime.Now;
-            BoundingArea extended_area = bounding_area.GetWritableCopy();
-            ExtendBoundingArea(extended_area, drawable_objects);
+            Utils.ThrowException(boundingArea == null ? new ArgumentNullException("boundingArea") : null);
+            Utils.ThrowException(drawableObjects == null ? new ArgumentNullException("drawableObjects") : null);
+            DateTime startTime = DateTime.Now;
+            BoundingArea extendedArea = boundingArea.GetWritableCopy();
+            ExtendBoundingArea(extendedArea, drawableObjects);
 #if !NO_BB_SIMPLIFICATION
-            extended_area.Optimize();
+            extendedArea.Optimize();
 #endif
-            TransformParams tr = new TransformParams(0, 0, m_scale_factor);
-            Set<IDrawableObject> outdated_objects = new Set<IDrawableObject>(drawable_objects);
-            drawable_objects = m_drawable_object.GetObjectsIn(extended_area, tr);
+            TransformParams tr = new TransformParams(0, 0, mScaleFactor);
+            Set<IDrawableObject> outdatedObjects = new Set<IDrawableObject>(drawableObjects);
+            drawableObjects = mDrawableObject.GetObjectsIn(extendedArea, tr);
 
-            Rectangle enclosing_rect = GetEnclosingRect(extended_area.BoundingBox);
+            Rectangle enclosingRect = GetEnclosingRect(extendedArea.BoundingBox);
 
-            BitmapInfo render_layer = PrepareBitmap(RENDER_LAYER, enclosing_rect.Width, enclosing_rect.Height);
-            TransformParams render_tr = new TransformParams(-enclosing_rect.X, -enclosing_rect.Y, m_scale_factor);
+            BitmapInfo renderLayer = PrepareBitmap(RENDER_LAYER, enclosingRect.Width, enclosingRect.Height);
+            TransformParams renderTr = new TransformParams(-enclosingRect.X, -enclosingRect.Y, mScaleFactor);
             
-            BoundingArea extended_area_tr = extended_area.Clone();
-            extended_area_tr.Transform(new TransformParams(-enclosing_rect.X, -enclosing_rect.Y, 1));
+            BoundingArea extendedAreaTr = extendedArea.Clone();
+            extendedAreaTr.Transform(new TransformParams(-enclosingRect.X, -enclosingRect.Y, 1));
 
-            for (int i = drawable_objects.Length - 1; i >= 0; i--)
+            for (int i = drawableObjects.Length - 1; i >= 0; i--)
             {
-                if (outdated_objects.Contains(drawable_objects[i]))
+                if (outdatedObjects.Contains(drawableObjects[i]))
                 {
-                    drawable_objects[i].Draw(render_layer.Graphics, render_tr);
+                    drawableObjects[i].Draw(renderLayer.Graphics, renderTr);
                 }
                 else
                 {
-                    drawable_objects[i].Draw(render_layer.Graphics, render_tr, extended_area_tr);
+                    drawableObjects[i].Draw(renderLayer.Graphics, renderTr, extendedAreaTr);
                 }
             }
-            BitmapInfo main_layer = m_bmp_cache[MAIN_LAYER];
-            Graphics canvas_gfx = Graphics.FromHwnd(picBoxCanvas.Handle);
-            foreach (RectangleF rect in extended_area.Rectangles)
+            BitmapInfo mainLayer = mBmpCache[MAIN_LAYER];
+            Graphics canvasGfx = Graphics.FromHwnd(picBoxCanvas.Handle);
+            foreach (RectangleF rect in extendedArea.Rectangles)
             {
-                Rectangle view_area = GetEnclosingRect(rect);
-                view_area.X -= enclosing_rect.X;
-                view_area.Y -= enclosing_rect.Y;
-                view_area.Intersect(new Rectangle(0, 0, enclosing_rect.Width, enclosing_rect.Height));
-                EditableBitmap view = render_layer.EditableBitmap.CreateView(view_area);
-                main_layer.Graphics.DrawImageUnscaled(view.Bitmap, view_area.X + enclosing_rect.X, view_area.Y + enclosing_rect.Y);
+                Rectangle viewArea = GetEnclosingRect(rect);
+                viewArea.X -= enclosingRect.X;
+                viewArea.Y -= enclosingRect.Y;
+                viewArea.Intersect(new Rectangle(0, 0, enclosingRect.Width, enclosingRect.Height));
+                EditableBitmap view = renderLayer.EditableBitmap.CreateView(viewArea);
+                mainLayer.Graphics.DrawImageUnscaled(view.Bitmap, viewArea.X + enclosingRect.X, viewArea.Y + enclosingRect.Y);
                 // clipping to visible area?!?
-                canvas_gfx.DrawImageUnscaled(view.Bitmap, view_area.X + enclosing_rect.X, view_area.Y + enclosing_rect.Y);
-                //view_on_view.Dispose();
+                canvasGfx.DrawImageUnscaled(view.Bitmap, viewArea.X + enclosingRect.X, viewArea.Y + enclosingRect.Y);
+                //viewOnView.Dispose();
                 view.Dispose();
             }
-            canvas_gfx.Dispose();
+            canvasGfx.Dispose();
 
-            TimeSpan draw_time = DateTime.Now - start_time;
-            m_draw_time += draw_time;
-            m_draw_count++;
+            TimeSpan drawTime = DateTime.Now - startTime;
+            mDrawTime += drawTime;
+            mDrawCount++;
 
-            FpsInfo.Text = string.Format("{0:0.00} ms / draw", (double)m_draw_time.TotalMilliseconds / (double)m_draw_count);
-            m_draw_info.Add(draw_time.TotalMilliseconds);
+            FpsInfo.Text = string.Format("{0:0.00} ms / draw", (double)mDrawTime.TotalMilliseconds / (double)mDrawCount);
+            mDrawInfo.Add(drawTime.TotalMilliseconds);
             FpsInfo.Refresh();
         }
 
@@ -418,62 +418,62 @@ namespace Latino.Visualization
         private void DrawableObjectViewer_MouseMove(object sender, MouseEventArgs args)
         {
             const int WM_ACTIVATE = 0x0006;
-            if (m_drawable_object != null)
+            if (mDrawableObject != null)
             {
-                TransformParams tr = new TransformParams(0, 0, m_scale_factor);
-                float[] dist_array = null;
-                IDrawableObject[] new_target_objs = m_drawable_object.GetObjectsAt(args.X, args.Y, tr, ref dist_array);
-                Set<IDrawableObject> new_target_obj_set = new Set<IDrawableObject>(new_target_objs);
-                ArrayList<IDrawableObject> exit_objs = new ArrayList<IDrawableObject>();
-                ArrayList<IDrawableObject> enter_objs = new ArrayList<IDrawableObject>();
+                TransformParams tr = new TransformParams(0, 0, mScaleFactor);
+                float[] distArray = null;
+                IDrawableObject[] newTargetObjs = mDrawableObject.GetObjectsAt(args.X, args.Y, tr, ref distArray);
+                Set<IDrawableObject> newTargetObjSet = new Set<IDrawableObject>(newTargetObjs);
+                ArrayList<IDrawableObject> exitObjs = new ArrayList<IDrawableObject>();
+                ArrayList<IDrawableObject> enterObjs = new ArrayList<IDrawableObject>();
                 if (DrawableObjectMouseLeave != null || DrawableObjectToolTipRequest != null)
                 {                    
-                    foreach (IDrawableObject obj in m_target_objs)
+                    foreach (IDrawableObject obj in mTargetObjs)
                     {
-                        if (!new_target_obj_set.Contains(obj))
+                        if (!newTargetObjSet.Contains(obj))
                         {
-                            exit_objs.Add(obj);
+                            exitObjs.Add(obj);
                         }
                     }
                 }
                 if (DrawableObjectMouseEnter != null || DrawableObjectToolTipRequest != null)
                 {                   
-                    foreach (IDrawableObject obj in new_target_objs)
+                    foreach (IDrawableObject obj in newTargetObjs)
                     {
-                        if (!m_target_obj_set.Contains(obj))
+                        if (!mTargetObjSet.Contains(obj))
                         {
-                            enter_objs.Add(obj);
+                            enterObjs.Add(obj);
                         }
                     }
                 }
-                m_target_obj_set = new_target_obj_set;
-                m_target_objs.Clear();
-                m_target_objs.AddRange(new_target_objs);
-                if (DrawableObjectMouseLeave != null && exit_objs.Count > 0)
+                mTargetObjSet = newTargetObjSet;
+                mTargetObjs.Clear();
+                mTargetObjs.AddRange(newTargetObjs);
+                if (DrawableObjectMouseLeave != null && exitObjs.Count > 0)
                 {
-                    DrawableObjectMouseLeave(this, new DrawableObjectEventArgs(args, exit_objs));
+                    DrawableObjectMouseLeave(this, new DrawableObjectEventArgs(args, exitObjs));
                 }
-                if (DrawableObjectMouseEnter != null && enter_objs.Count > 0)
+                if (DrawableObjectMouseEnter != null && enterObjs.Count > 0)
                 {
-                    DrawableObjectMouseEnter(this, new DrawableObjectEventArgs(args, enter_objs));
+                    DrawableObjectMouseEnter(this, new DrawableObjectEventArgs(args, enterObjs));
                 }
-                if (DrawableObjectToolTipRequest != null && (enter_objs.Count > 0 || exit_objs.Count > 0))
+                if (DrawableObjectToolTipRequest != null && (enterObjs.Count > 0 || exitObjs.Count > 0))
                 {
-                    if (new_target_objs.Length > 0)
+                    if (newTargetObjs.Length > 0)
                     {
-                        m_drawable_object_tip.SetToolTip(picBoxCanvas, null);
-                        DrawableObjectEventArgs event_args = new DrawableObjectEventArgs(args, new ArrayList<IDrawableObject>(new_target_objs));
-                        DrawableObjectToolTipRequest(this, event_args);
-                        m_drawable_object_tip.SetToolTip(picBoxCanvas, event_args.ToolTipText);
+                        mDrawableObjectTip.SetToolTip(picBoxCanvas, null);
+                        DrawableObjectEventArgs eventArgs = new DrawableObjectEventArgs(args, new ArrayList<IDrawableObject>(newTargetObjs));
+                        DrawableObjectToolTipRequest(this, eventArgs);
+                        mDrawableObjectTip.SetToolTip(picBoxCanvas, eventArgs.ToolTipText);
                         SendMessage(picBoxCanvas.Handle, WM_ACTIVATE, 0, IntPtr.Zero); // *** I'm not sure why this is required but it is :)
                     }
                     else
                     {
-                        m_drawable_object_tip.SetToolTip(picBoxCanvas, null);
+                        mDrawableObjectTip.SetToolTip(picBoxCanvas, null);
                     }
                 }
             }
-            if (m_target_objs.Count == 0)
+            if (mTargetObjs.Count == 0)
             {
                 if (CanvasMouseMove != null) 
                 { 
@@ -484,18 +484,18 @@ namespace Latino.Visualization
             {
                 if (DrawableObjectMouseMove != null) 
                 { 
-                    DrawableObjectMouseMove(this, new DrawableObjectEventArgs(args, m_target_objs)); 
+                    DrawableObjectMouseMove(this, new DrawableObjectEventArgs(args, mTargetObjs)); 
                 }
             }
         }
 
         private void DrawableObjectViewer_MouseHover(object sender, EventArgs args)
         {
-            if (m_target_objs.Count > 0)
+            if (mTargetObjs.Count > 0)
             {
                 if (DrawableObjectMouseHover != null)
                 {
-                    DrawableObjectMouseHover(this, new DrawableObjectEventArgs(m_target_objs));
+                    DrawableObjectMouseHover(this, new DrawableObjectEventArgs(mTargetObjs));
                 }
             }
             else
@@ -510,11 +510,11 @@ namespace Latino.Visualization
         private void DrawableObjectViewer_MouseDown(object sender, MouseEventArgs args)
         {
             Focus();
-            if (m_target_objs.Count > 0)
+            if (mTargetObjs.Count > 0)
             {
                 if (DrawableObjectMouseDown != null)
                 {
-                    DrawableObjectMouseDown(this, new DrawableObjectEventArgs(args, m_target_objs));
+                    DrawableObjectMouseDown(this, new DrawableObjectEventArgs(args, mTargetObjs));
                 }
             }
             else
@@ -528,19 +528,19 @@ namespace Latino.Visualization
 
         private void DrawableObjectViewer_MouseUp(object sender, MouseEventArgs args)
         {
-            if (m_target_objs.Count > 0)
+            if (mTargetObjs.Count > 0)
             {
                 if (DrawableObjectMouseUp != null)
                 {
-                    DrawableObjectMouseUp(this, new DrawableObjectEventArgs(args, m_target_objs));
+                    DrawableObjectMouseUp(this, new DrawableObjectEventArgs(args, mTargetObjs));
                 }
                 if ((args.Button & MouseButtons.Right) == MouseButtons.Right && DrawableObjectContextMenuStripRequest != null)
                 {
-                    DrawableObjectEventArgs event_args = new DrawableObjectEventArgs(args, m_target_objs);
-                    DrawableObjectContextMenuStripRequest(this, event_args);
-                    if (event_args.ContextMenuStrip != null)
+                    DrawableObjectEventArgs eventArgs = new DrawableObjectEventArgs(args, mTargetObjs);
+                    DrawableObjectContextMenuStripRequest(this, eventArgs);
+                    if (eventArgs.ContextMenuStrip != null)
                     {
-                        event_args.ContextMenuStrip.Show(picBoxCanvas, args.X, args.Y);
+                        eventArgs.ContextMenuStrip.Show(picBoxCanvas, args.X, args.Y);
                     }
                 }
             }
@@ -550,20 +550,20 @@ namespace Latino.Visualization
                 {
                     CanvasMouseUp(this, args);
                 }
-                if ((args.Button & MouseButtons.Right) == MouseButtons.Right && m_canvas_menu != null)
+                if ((args.Button & MouseButtons.Right) == MouseButtons.Right && mCanvasMenu != null)
                 {
-                    m_canvas_menu.Show(picBoxCanvas, args.X, args.Y);
+                    mCanvasMenu.Show(picBoxCanvas, args.X, args.Y);
                 }
             }
         }
 
         private void DrawableObjectViewer_MouseClick(object sender, MouseEventArgs args)
         {
-            if (DrawableObjectClick != null && m_target_objs.Count > 0)
+            if (DrawableObjectClick != null && mTargetObjs.Count > 0)
             {
-                DrawableObjectClick(this, new DrawableObjectEventArgs(args, m_target_objs));
+                DrawableObjectClick(this, new DrawableObjectEventArgs(args, mTargetObjs));
             }
-            if (CanvasClick != null && m_target_objs.Count == 0)
+            if (CanvasClick != null && mTargetObjs.Count == 0)
             {
                 CanvasClick(this, args);
             }
@@ -571,11 +571,11 @@ namespace Latino.Visualization
 
         private void DrawableObjectViewer_MouseDoubleClick(object sender, MouseEventArgs args)
         {
-            if (DrawableObjectDoubleClick != null && m_target_objs.Count > 0)
+            if (DrawableObjectDoubleClick != null && mTargetObjs.Count > 0)
             {
-                DrawableObjectDoubleClick(this, new DrawableObjectEventArgs(args, m_target_objs));
+                DrawableObjectDoubleClick(this, new DrawableObjectEventArgs(args, mTargetObjs));
             }
-            if (CanvasDoubleClick != null && m_target_objs.Count == 0)
+            if (CanvasDoubleClick != null && mTargetObjs.Count == 0)
             {
                 CanvasDoubleClick(this, args);
             }
@@ -583,16 +583,16 @@ namespace Latino.Visualization
 
         private void DrawableObjectViewer_MouseLeave(object sender, EventArgs args)
         {            
-            if (m_target_obj_set.Count > 0)
+            if (mTargetObjSet.Count > 0)
             {
-                ArrayList<IDrawableObject> aux = m_target_objs;
-                m_target_obj_set.Clear();
-                m_target_objs = new ArrayList<IDrawableObject>();
+                ArrayList<IDrawableObject> aux = mTargetObjs;
+                mTargetObjSet.Clear();
+                mTargetObjs = new ArrayList<IDrawableObject>();
                 if (DrawableObjectMouseLeave != null)
                 {
                     DrawableObjectMouseLeave(this, new DrawableObjectEventArgs(aux)); 
                 }
-                m_drawable_object_tip.SetToolTip(picBoxCanvas, null);
+                mDrawableObjectTip.SetToolTip(picBoxCanvas, null);
             }
         }
 

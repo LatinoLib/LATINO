@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,31 +26,31 @@ namespace Latino.Visualization
     */
     public class BoundingArea : ICloneable<BoundingArea>
     {
-        private ArrayList<RectangleF> m_rects
+        private ArrayList<RectangleF> mRects
             = new ArrayList<RectangleF>();
-        private RectangleF m_bounding_box
+        private RectangleF mBoundingBox
             = RectangleF.Empty;
         public BoundingArea()
         {
         }
         public BoundingArea(float left, float top, float width, float height)
         {
-            m_rects = new ArrayList<RectangleF>(new RectangleF[] { new RectangleF(left, top, width, height) });
+            mRects = new ArrayList<RectangleF>(new RectangleF[] { new RectangleF(left, top, width, height) });
             UpdateBoundingBox();
         }
         public BoundingArea(RectangleF rect) 
         {
-            m_rects = new ArrayList<RectangleF>(new RectangleF[] { rect });
+            mRects = new ArrayList<RectangleF>(new RectangleF[] { rect });
             UpdateBoundingBox();
         }
         public BoundingArea(IEnumerable<RectangleF> rects) 
         {
-            m_rects = new ArrayList<RectangleF>(rects); // throws ArgumentNullException
-            if (m_rects.Count > 0) { UpdateBoundingBox(); }
+            mRects = new ArrayList<RectangleF>(rects); // throws ArgumentNullException
+            if (mRects.Count > 0) { UpdateBoundingBox(); }
         }
         public ArrayList<RectangleF>.ReadOnly Rectangles
         {
-            get { return m_rects; }
+            get { return mRects; }
         }
         public void AddRectangles(params RectangleF[] rects)
         {
@@ -59,40 +59,40 @@ namespace Latino.Visualization
         public void AddRectangles(IEnumerable<RectangleF> rects)
         {
             Utils.ThrowException(rects == null ? new ArgumentNullException("rects") : null);
-            m_rects.AddRange(rects);
-            if (m_rects.Count > 0) { UpdateBoundingBox(); }
+            mRects.AddRange(rects);
+            if (mRects.Count > 0) { UpdateBoundingBox(); }
         }
         public void Transform(TransformParams tr)
         {
             Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
-            for (int i = 0; i < m_rects.Count; i++)
+            for (int i = 0; i < mRects.Count; i++)
             {
-                m_rects[i] = tr.Transform(m_rects[i]);
+                mRects[i] = tr.Transform(mRects[i]);
             }
-            m_bounding_box = tr.Transform(m_bounding_box);
+            mBoundingBox = tr.Transform(mBoundingBox);
         }
         public void Inflate(float x, float y)
         {
             Utils.ThrowException(x < 0 ? new ArgumentOutOfRangeException("x") : null);
             Utils.ThrowException(y < 0 ? new ArgumentOutOfRangeException("y") : null);
-            for (int i = 0; i < m_rects.Count; i++)
+            for (int i = 0; i < mRects.Count; i++)
             {
-                RectangleF rect = m_rects[i];
+                RectangleF rect = mRects[i];
                 rect.Inflate(x, y);
-                m_rects[i] = rect;
+                mRects[i] = rect;
             }
-            m_bounding_box.Inflate(x, y);
+            mBoundingBox.Inflate(x, y);
         }
         public bool IntersectsWith(BoundingArea.ReadOnly other) 
         {
             Utils.ThrowException(other == null ? new ArgumentNullException("other") : null);
-            if (m_bounding_box.IntersectsWith(other.BoundingBox))
+            if (mBoundingBox.IntersectsWith(other.BoundingBox))
             {
-                foreach (RectangleF rect in m_rects)
+                foreach (RectangleF rect in mRects)
                 {
-                    foreach (RectangleF other_rect in other.Rectangles)
+                    foreach (RectangleF otherRect in other.Rectangles)
                     {
-                        if (rect.IntersectsWith(other_rect)) { return true; }
+                        if (rect.IntersectsWith(otherRect)) { return true; }
                     }
                 }
             }
@@ -100,31 +100,31 @@ namespace Latino.Visualization
         }
         public RectangleF BoundingBox
         {
-            get { return m_bounding_box; }
+            get { return mBoundingBox; }
         }
         private void UpdateBoundingBox() 
         {
-            float min_x = float.MaxValue, min_y = float.MaxValue;
-            float max_x = float.MinValue, max_y = float.MinValue;
-            foreach (RectangleF rect in m_rects)
+            float minX = float.MaxValue, minY = float.MaxValue;
+            float maxX = float.MinValue, maxY = float.MinValue;
+            foreach (RectangleF rect in mRects)
             {
-                if (rect.X < min_x) { min_x = rect.X; }
-                if (rect.X + rect.Width > max_x) { max_x = rect.X + rect.Width; }
-                if (rect.Y < min_y) { min_y = rect.Y; }
-                if (rect.Y + rect.Height > max_y) { max_y = rect.Y + rect.Height; }
+                if (rect.X < minX) { minX = rect.X; }
+                if (rect.X + rect.Width > maxX) { maxX = rect.X + rect.Width; }
+                if (rect.Y < minY) { minY = rect.Y; }
+                if (rect.Y + rect.Height > maxY) { maxY = rect.Y + rect.Height; }
             }
-            m_bounding_box = new RectangleF(min_x, min_y, max_x - min_x, max_y - min_y);
+            mBoundingBox = new RectangleF(minX, minY, maxX - minX, maxY - minY);
         }
         public void Optimize()
         {
-            m_rects = RTree.FullyOptimizeBoundingArea(this);
+            mRects = RTree.FullyOptimizeBoundingArea(this);
         }
         // *** ICloneable<BoundingArea> interface implementation ***
         public BoundingArea Clone()
         {
             BoundingArea clone = new BoundingArea();
-            clone.m_rects = m_rects.Clone();
-            clone.m_bounding_box = m_bounding_box;
+            clone.mRects = mRects.Clone();
+            clone.mBoundingBox = mBoundingBox;
             return clone;
         }
         object ICloneable.Clone()
@@ -132,10 +132,10 @@ namespace Latino.Visualization
             return Clone();
         }
         // *** Implicit cast to a read-only adapter ***
-        public static implicit operator BoundingArea.ReadOnly(BoundingArea bounding_area)
+        public static implicit operator BoundingArea.ReadOnly(BoundingArea boundingArea)
         {
-            if (bounding_area == null) { return null; }
-            return new BoundingArea.ReadOnly(bounding_area);
+            if (boundingArea == null) { return null; }
+            return new BoundingArea.ReadOnly(boundingArea);
         }
         /* .-----------------------------------------------------------------------
            |		 
@@ -145,28 +145,28 @@ namespace Latino.Visualization
         */
         public class ReadOnly : IReadOnlyAdapter<BoundingArea>
         {
-            private BoundingArea m_bounding_area;
-            public ReadOnly(BoundingArea bounding_area)
+            private BoundingArea mBoundingArea;
+            public ReadOnly(BoundingArea boundingArea)
             {
-                Utils.ThrowException(bounding_area == null ? new ArgumentNullException("bounding_area") : null);
-                m_bounding_area = bounding_area;
+                Utils.ThrowException(boundingArea == null ? new ArgumentNullException("boundingArea") : null);
+                mBoundingArea = boundingArea;
             }
             public ArrayList<RectangleF>.ReadOnly Rectangles
             {
-                get { return m_bounding_area.Rectangles; }
+                get { return mBoundingArea.Rectangles; }
             }
             public bool IntersectsWith(BoundingArea.ReadOnly other)
             {
-                return m_bounding_area.IntersectsWith(other);
+                return mBoundingArea.IntersectsWith(other);
             }
             public RectangleF BoundingBox 
             {
-                get { return m_bounding_area.BoundingBox; }
+                get { return mBoundingArea.BoundingBox; }
             }
             // *** IReadOnlyAdapter interface implementation ***
             public BoundingArea GetWritableCopy()
             {
-                return m_bounding_area.Clone();
+                return mBoundingArea.Clone();
             }
             object IReadOnlyAdapter.GetWritableCopy()
             {
@@ -179,7 +179,7 @@ namespace Latino.Visualization
 #endif
             BoundingArea Inner
             {
-                get { return m_bounding_area; }
+                get { return mBoundingArea; }
             }
         }
         /* .-----------------------------------------------------------------------
@@ -194,95 +194,95 @@ namespace Latino.Visualization
                 = 3;
             private const int MIN_ENTRIES_PER_NODE
                 = 1;
-            private Node m_root
+            private Node mRoot
                 = new Node();
             //private static StreamWriter writer
-            //    = new StreamWriter("c:\\r_tree_log.txt");
+            //    = new StreamWriter("c:\\rTreeLog.txt");
             // 
             // *** Utilities ***
             //
-            private Node ChooseLeaf(Entry new_entry)
+            private Node ChooseLeaf(Entry newEntry)
             {
-                //writer.Write("ChooseLeaf({0})", new_entry.Id);
+                //writer.Write("ChooseLeaf({0})", newEntry.Id);
                 // CL1: initialize
-                Node node = m_root;
+                Node node = mRoot;
                 while (!node.IsLeaf) // CL2: leaf check
                 {
                     // CL3: choose subtree
-                    Entry min_diff_entry = null;
-                    float min_diff = float.MaxValue;
-                    float min_area = float.MaxValue;
+                    Entry minDiffEntry = null;
+                    float minDiff = float.MaxValue;
+                    float minArea = float.MaxValue;
                     foreach (Entry entry in node.Entries)
                     {
-                        float entry_area = entry.GetArea();
-                        RectangleF bb = RectangleF.Union(entry.BoundingBox, new_entry.BoundingBox);
-                        float area_diff = bb.Width * bb.Height - entry_area;
-                        if (area_diff < min_diff)
+                        float entryArea = entry.GetArea();
+                        RectangleF bb = RectangleF.Union(entry.BoundingBox, newEntry.BoundingBox);
+                        float areaDiff = bb.Width * bb.Height - entryArea;
+                        if (areaDiff < minDiff)
                         {
-                            min_diff = area_diff;
-                            min_diff_entry = entry;
-                            min_area = entry_area;
+                            minDiff = areaDiff;
+                            minDiffEntry = entry;
+                            minArea = entryArea;
                         }
-                        else if (area_diff == min_diff && entry_area < min_area)
+                        else if (areaDiff == minDiff && entryArea < minArea)
                         {
-                            min_diff_entry = entry;
-                            min_area = entry_area;
+                            minDiffEntry = entry;
+                            minArea = entryArea;
                         }
                     }
                     // CL4: descend until a leaf is reached
-                    node = min_diff_entry.ChildNode;
+                    node = minDiffEntry.ChildNode;
                 }
                 //writer.WriteLine("->{0}", node);
                 //writer.Flush();
                 return node;
             }
-            private void AdjustTree(Node node_1, Node node_2)
+            private void AdjustTree(Node node1, Node node2)
             {
-                while (node_1 != m_root) // AT2: check if done
+                while (node1 != mRoot) // AT2: check if done
                 {
-                    Node parent_1 = node_1.Parent.Owner;
+                    Node parent1 = node1.Parent.Owner;
                     // AT3: adjust covering rectangle in parent entry
-                    node_1.Parent.UpdateBoundingBox();
+                    node1.Parent.UpdateBoundingBox();
                     // AT4: propagate node split upward
-                    if (node_2 != null)
+                    if (node2 != null)
                     {
                         Entry entry = new Entry();
-                        entry.ChildNode = node_2;
+                        entry.ChildNode = node2;
                         entry.UpdateBoundingBox();
-                        if (parent_1.Entries.Count < ENTRIES_PER_NODE)
+                        if (parent1.Entries.Count < ENTRIES_PER_NODE)
                         {
-                            parent_1.AddEntry(entry);
-                            node_2 = null;
+                            parent1.AddEntry(entry);
+                            node2 = null;
                         }
                         else
                         {
-                            Node parent_2 = SplitNode(parent_1, entry);
-                            node_2 = parent_2;
-                            if (parent_1 == m_root)
+                            Node parent2 = SplitNode(parent1, entry);
+                            node2 = parent2;
+                            if (parent1 == mRoot)
                             {
                                 // (I4: grow tree taller)
-                                m_root = new Node();
-                                Entry entry_1 = new Entry();
-                                Entry entry_2 = new Entry();
-                                entry_1.ChildNode = parent_1;
-                                entry_1.UpdateBoundingBox();
-                                entry_2.ChildNode = parent_2;
-                                entry_2.UpdateBoundingBox();
-                                m_root.AddEntry(entry_1);
-                                m_root.AddEntry(entry_2);
+                                mRoot = new Node();
+                                Entry entry1 = new Entry();
+                                Entry entry2 = new Entry();
+                                entry1.ChildNode = parent1;
+                                entry1.UpdateBoundingBox();
+                                entry2.ChildNode = parent2;
+                                entry2.UpdateBoundingBox();
+                                mRoot.AddEntry(entry1);
+                                mRoot.AddEntry(entry2);
                                 break;
                             }
                         }
                     }
                     // AT5: move up to next level
-                    node_1 = parent_1;
+                    node1 = parent1;
                 }                
             }
-            private void PickSeeds(ArrayList<Entry> entries, ref Entry seed_1, ref Entry seed_2)
+            private void PickSeeds(ArrayList<Entry> entries, ref Entry seed1, ref Entry seed2)
             {
                 // PS1: calculate inefficiency of grouping entries together            
-                float max_diff = float.MinValue;
-                Pair<int, int> max_diff_pair = new Pair<int, int>(-1, -1);
+                float maxDiff = float.MinValue;
+                Pair<int, int> maxDiffPair = new Pair<int, int>(-1, -1);
                 for (int i = 0; i < entries.Count; i++)
                 {
                     for (int j = 0; j < entries.Count; j++)
@@ -291,62 +291,62 @@ namespace Latino.Visualization
                         {
                             RectangleF bb = RectangleF.Union(entries[i].BoundingBox, entries[j].BoundingBox);
                             float diff = bb.Width * bb.Height - entries[i].GetArea() - entries[j].GetArea();
-                            if (diff > max_diff)
+                            if (diff > maxDiff)
                             {
-                                max_diff = diff;
-                                max_diff_pair = new Pair<int, int>(i, j);
+                                maxDiff = diff;
+                                maxDiffPair = new Pair<int, int>(i, j);
                             }
                         }
                     }
                 }
                 // PS2: choose the most wasteful pair
-                seed_1 = entries[max_diff_pair.First];
-                seed_2 = entries[max_diff_pair.Second];
-                if (max_diff_pair.First > max_diff_pair.Second)
+                seed1 = entries[maxDiffPair.First];
+                seed2 = entries[maxDiffPair.Second];
+                if (maxDiffPair.First > maxDiffPair.Second)
                 {
-                    entries[max_diff_pair.First] = entries.Last;
+                    entries[maxDiffPair.First] = entries.Last;
                     entries.RemoveRange(entries.Count - 1, 1);
-                    entries[max_diff_pair.Second] = entries.Last;
+                    entries[maxDiffPair.Second] = entries.Last;
                     entries.RemoveRange(entries.Count - 1, 1);
                 }
                 else
                 {
-                    entries[max_diff_pair.Second] = entries.Last;
+                    entries[maxDiffPair.Second] = entries.Last;
                     entries.RemoveRange(entries.Count - 1, 1);
-                    entries[max_diff_pair.First] = entries.Last;
+                    entries[maxDiffPair.First] = entries.Last;
                     entries.RemoveRange(entries.Count - 1, 1);
                 }
             }
-            private Entry PickNext(ArrayList<Entry> entries, RectangleF bb_1, RectangleF bb_2, ref float area_1, ref float area_2,
-                ref RectangleF ret_bb_1, ref RectangleF ret_bb_2, ref float ret_diff_1, ref float ret_diff_2)
+            private Entry PickNext(ArrayList<Entry> entries, RectangleF bb1, RectangleF bb2, ref float area1, ref float area2,
+                ref RectangleF retBb1, ref RectangleF retBb2, ref float retDiff1, ref float retDiff2)
             {
                 // PN1: determine cost of putting each entry in each group
-                float max_diff = float.MinValue;
-                int max_diff_idx = -1;
-                area_1 = bb_1.Width * bb_1.Height;
-                area_2 = bb_2.Width * bb_2.Height;
+                float maxDiff = float.MinValue;
+                int maxDiffIdx = -1;
+                area1 = bb1.Width * bb1.Height;
+                area2 = bb2.Width * bb2.Height;
                 for (int i = 0; i < entries.Count; i++)
                 {
-                    RectangleF new_bb_1 = RectangleF.Union(bb_1, entries[i].BoundingBox);
-                    RectangleF new_bb_2 = RectangleF.Union(bb_2, entries[i].BoundingBox);
-                    float area_diff_1 = new_bb_1.Width * new_bb_1.Height - area_1;
-                    float area_diff_2 = new_bb_2.Width * new_bb_2.Height - area_2;
-                    float diff = Math.Abs(area_diff_1 - area_diff_2);
-                    if (diff > max_diff)
+                    RectangleF newBb1 = RectangleF.Union(bb1, entries[i].BoundingBox);
+                    RectangleF newBb2 = RectangleF.Union(bb2, entries[i].BoundingBox);
+                    float areaDiff1 = newBb1.Width * newBb1.Height - area1;
+                    float areaDiff2 = newBb2.Width * newBb2.Height - area2;
+                    float diff = Math.Abs(areaDiff1 - areaDiff2);
+                    if (diff > maxDiff)
                     {
-                        max_diff = diff;
-                        max_diff_idx = i;
-                        ret_bb_1 = new_bb_1;
-                        ret_bb_2 = new_bb_2;
-                        ret_diff_1 = area_diff_1;
-                        ret_diff_2 = area_diff_2;
+                        maxDiff = diff;
+                        maxDiffIdx = i;
+                        retBb1 = newBb1;
+                        retBb2 = newBb2;
+                        retDiff1 = areaDiff1;
+                        retDiff2 = areaDiff2;
                     }
                 }
                 // PN2: find entry with greatest preference for one group
-                Entry max_diff_entry = entries[max_diff_idx];
-                entries[max_diff_idx] = entries.Last;
+                Entry maxDiffEntry = entries[maxDiffIdx];
+                entries[maxDiffIdx] = entries.Last;
                 entries.RemoveRange(entries.Count - 1, 1);
-                return max_diff_entry;
+                return maxDiffEntry;
             }
             private Node SplitNode(Node node, Entry entry)
             {
@@ -354,64 +354,64 @@ namespace Latino.Visualization
                 entries.Add(entry);
                 entries.AddRange(node.Entries);
                 // QS1: pick first entry for each group
-                Entry seed_1 = null, seed_2 = null;
-                PickSeeds(entries, ref seed_1, ref seed_2);
+                Entry seed1 = null, seed2 = null;
+                PickSeeds(entries, ref seed1, ref seed2);
                 node.Entries.Clear();
-                node.AddEntry(seed_1);
-                Node node_2 = new Node();
-                node_2.AddEntry(seed_2);
-                RectangleF bb_1 = seed_1.BoundingBox;
-                RectangleF bb_2 = seed_2.BoundingBox;
+                node.AddEntry(seed1);
+                Node node2 = new Node();
+                node2.AddEntry(seed2);
+                RectangleF bb1 = seed1.BoundingBox;
+                RectangleF bb2 = seed2.BoundingBox;
                 while (entries.Count > 0)
                 {
                     // QS2: check if done
                     if (node.Entries.Count + entries.Count <= MIN_ENTRIES_PER_NODE)
                     {
                         node.AddEntries(entries);
-                        return node_2;
+                        return node2;
                     }
-                    if (node_2.Entries.Count + entries.Count <= MIN_ENTRIES_PER_NODE)
+                    if (node2.Entries.Count + entries.Count <= MIN_ENTRIES_PER_NODE)
                     {
-                        node_2.AddEntries(entries);
-                        return node_2;
+                        node2.AddEntries(entries);
+                        return node2;
                     }
                     // QS3: select entry to assign
-                    float area_1 = 0, area_2 = 0;
-                    RectangleF new_bb_1 = RectangleF.Empty, new_bb_2 = RectangleF.Empty;
-                    float area_diff_1 = 0, area_diff_2 = 0;
-                    Entry next_entry = PickNext(entries, bb_1, bb_2, ref area_1, ref area_2, ref new_bb_1, ref new_bb_2, ref area_diff_1, ref area_diff_2);
-                    if (area_diff_1 < area_diff_2)
+                    float area1 = 0, area2 = 0;
+                    RectangleF newBb1 = RectangleF.Empty, newBb2 = RectangleF.Empty;
+                    float areaDiff1 = 0, areaDiff2 = 0;
+                    Entry nextEntry = PickNext(entries, bb1, bb2, ref area1, ref area2, ref newBb1, ref newBb2, ref areaDiff1, ref areaDiff2);
+                    if (areaDiff1 < areaDiff2)
                     {
-                        node.AddEntry(next_entry);
-                        bb_1 = new_bb_1;
+                        node.AddEntry(nextEntry);
+                        bb1 = newBb1;
                     }
-                    else if (area_diff_1 > area_diff_2)
+                    else if (areaDiff1 > areaDiff2)
                     {
-                        node_2.AddEntry(next_entry);
-                        bb_2 = new_bb_2;
+                        node2.AddEntry(nextEntry);
+                        bb2 = newBb2;
                     }
-                    else if (area_1 < area_2)
+                    else if (area1 < area2)
                     {
-                        node.AddEntry(next_entry);
-                        bb_1 = new_bb_1;
+                        node.AddEntry(nextEntry);
+                        bb1 = newBb1;
                     }
-                    else if (area_1 > area_2)
+                    else if (area1 > area2)
                     {
-                        node_2.AddEntry(next_entry);
-                        bb_2 = new_bb_2;
+                        node2.AddEntry(nextEntry);
+                        bb2 = newBb2;
                     }
-                    else if (node.Entries.Count < node_2.Entries.Count)
+                    else if (node.Entries.Count < node2.Entries.Count)
                     {
-                        node.AddEntry(next_entry);
-                        bb_1 = new_bb_1;
+                        node.AddEntry(nextEntry);
+                        bb1 = newBb1;
                     }
                     else
                     {
-                        node_2.AddEntry(next_entry);
-                        bb_2 = new_bb_2;
+                        node2.AddEntry(nextEntry);
+                        bb2 = newBb2;
                     }
                 }
-                return node_2;
+                return node2;
             }
             //
             // *** Insertion ***
@@ -421,35 +421,35 @@ namespace Latino.Visualization
                 // I1: find position for new record
                 Node leaf = ChooseLeaf(entry);
                 // I2: add record to leaf node
-                Node leaf_2 = null;
+                Node leaf2 = null;
                 if (leaf.Entries.Count < ENTRIES_PER_NODE)
                 {
                     leaf.AddEntry(entry);
                 }
                 else
                 {
-                    leaf_2 = SplitNode(leaf, entry);
+                    leaf2 = SplitNode(leaf, entry);
                 }
                 // I3: propagate changes upward
-                if (leaf == m_root)
+                if (leaf == mRoot)
                 {
-                    if (leaf_2 != null)
+                    if (leaf2 != null)
                     {
                         // I4: grow tree taller
-                        m_root = new Node();
-                        Entry entry_1 = new Entry();
-                        Entry entry_2 = new Entry();
-                        entry_1.ChildNode = leaf;
-                        entry_1.UpdateBoundingBox();
-                        entry_2.ChildNode = leaf_2;
-                        entry_2.UpdateBoundingBox();
-                        m_root.AddEntry(entry_1);
-                        m_root.AddEntry(entry_2);
+                        mRoot = new Node();
+                        Entry entry1 = new Entry();
+                        Entry entry2 = new Entry();
+                        entry1.ChildNode = leaf;
+                        entry1.UpdateBoundingBox();
+                        entry2.ChildNode = leaf2;
+                        entry2.UpdateBoundingBox();
+                        mRoot.AddEntry(entry1);
+                        mRoot.AddEntry(entry2);
                     }
                 }
                 else
                 {
-                    AdjustTree(leaf, leaf_2);
+                    AdjustTree(leaf, leaf2);
                 }
                 //writer.WriteLine(ToString());
                 //writer.Flush();
@@ -503,35 +503,35 @@ namespace Latino.Visualization
             //
             // *** Debugging ***
             //
-            //private void ToString(Node node, string prefix, StringBuilder str_bld)
+            //private void ToString(Node node, string prefix, StringBuilder strBld)
             //{
-            //    str_bld.Append(prefix);
-            //    str_bld.AppendLine(node.ToString());
+            //    strBld.Append(prefix);
+            //    strBld.AppendLine(node.ToString());
             //    if (!node.IsLeaf)
             //    {
             //        foreach (Entry entry in node.Entries)
             //        {
-            //            ToString(entry.ChildNode, prefix + "\t", str_bld);
+            //            ToString(entry.ChildNode, prefix + "\t", strBld);
             //        }
             //    }
             //}
             //public override string ToString()
             //{
-            //    StringBuilder str_bld = new StringBuilder();
-            //    ToString(m_root, "", str_bld);
-            //    return str_bld.ToString();
+            //    StringBuilder strBld = new StringBuilder();
+            //    ToString(mRoot, "", strBld);
+            //    return strBld.ToString();
             //}
             //
             // *** Bounding area optimization ***
             //
-            private void Fetch(RectangleF rect, float rect_area, Node node, ArrayList<Entry> result)
+            private void Fetch(RectangleF rect, float rectArea, Node node, ArrayList<Entry> result)
             {
                 if (node.IsLeaf)
                 {
                     foreach (Entry entry in node.Entries)
                     {
                         RectangleF bb = RectangleF.Union(entry.BoundingBox, rect);
-                        if (entry.GetArea() + rect_area > bb.Width * bb.Height)
+                        if (entry.GetArea() + rectArea > bb.Width * bb.Height)
                         {
                             result.Add(entry);
                         }
@@ -542,9 +542,9 @@ namespace Latino.Visualization
                     foreach (Entry entry in node.Entries)
                     {
                         RectangleF bb = RectangleF.Union(entry.BoundingBox, rect);
-                        if (entry.GetArea() + rect_area > bb.Width * bb.Height)
+                        if (entry.GetArea() + rectArea > bb.Width * bb.Height)
                         {
-                            Fetch(rect, rect_area, entry.ChildNode, result);
+                            Fetch(rect, rectArea, entry.ChildNode, result);
                         }
                     }
                 }
@@ -552,58 +552,58 @@ namespace Latino.Visualization
             private ArrayList<Entry> Fetch(RectangleF rect)
             {
                 ArrayList<Entry> result = new ArrayList<Entry>();
-                Fetch(rect, rect.Width * rect.Height, m_root, result);
+                Fetch(rect, rect.Width * rect.Height, mRoot, result);
                 return result;
             }
             private Entry GetAnyLeafEntry()
             {
-                Node node = m_root;
+                Node node = mRoot;
                 while (!node.IsLeaf) 
                 { 
                     node = node.Entries[0].ChildNode; 
                 }
                 return node.Entries[0];
             }
-            private static ArrayList<RectangleF> OptimizeBoundingArea(IEnumerable<RectangleF> bounding_area)
+            private static ArrayList<RectangleF> OptimizeBoundingArea(IEnumerable<RectangleF> boundingArea)
             {
-                RTree r_tree = new RTree();
-                int rect_count = 0;
-                foreach (RectangleF rect in bounding_area)
+                RTree rTree = new RTree();
+                int rectCount = 0;
+                foreach (RectangleF rect in boundingArea)
                 {
-                    r_tree.Insert(rect);
-                    rect_count++;
+                    rTree.Insert(rect);
+                    rectCount++;
                 }
-                ArrayList<RectangleF> result = new ArrayList<RectangleF>(rect_count);
-                while (r_tree.m_root.Entries.Count > 0)
+                ArrayList<RectangleF> result = new ArrayList<RectangleF>(rectCount);
+                while (rTree.mRoot.Entries.Count > 0)
                 {
-                    Entry entry = r_tree.GetAnyLeafEntry();
+                    Entry entry = rTree.GetAnyLeafEntry();
                     RectangleF bb = entry.BoundingBox;
                     float area = 0;
                     while (bb.Width * bb.Height - area > 0.1f) // *** increase this threshold?
                     {
                         area = bb.Width * bb.Height;                            
-                        ArrayList<Entry> query_result = r_tree.Fetch(bb);
-                        r_tree.Delete(query_result);
-                        foreach (Entry result_entry in query_result)
+                        ArrayList<Entry> queryResult = rTree.Fetch(bb);
+                        rTree.Delete(queryResult);
+                        foreach (Entry resultEntry in queryResult)
                         {
-                            bb = RectangleF.Union(bb, result_entry.BoundingBox);                                    
+                            bb = RectangleF.Union(bb, resultEntry.BoundingBox);                                    
                         }
                     }
                     result.Add(bb);
                 }
                 return result;
             }
-            public static ArrayList<RectangleF> OptimizeBoundingArea(BoundingArea bounding_area)
+            public static ArrayList<RectangleF> OptimizeBoundingArea(BoundingArea boundingArea)
             {
-                return OptimizeBoundingArea(bounding_area.Rectangles);
+                return OptimizeBoundingArea(boundingArea.Rectangles);
             }
-            public static ArrayList<RectangleF> FullyOptimizeBoundingArea(BoundingArea bounding_area)
+            public static ArrayList<RectangleF> FullyOptimizeBoundingArea(BoundingArea boundingArea)
             {
-                int rect_count = bounding_area.Rectangles.Count;
-                ArrayList<RectangleF> rects = OptimizeBoundingArea(bounding_area.Rectangles);
-                while (rects.Count < rect_count)
+                int rectCount = boundingArea.Rectangles.Count;
+                ArrayList<RectangleF> rects = OptimizeBoundingArea(boundingArea.Rectangles);
+                while (rects.Count < rectCount)
                 {
-                    rect_count = rects.Count;
+                    rectCount = rects.Count;
                     rects = OptimizeBoundingArea(rects);
                 }
                 return rects;
@@ -616,26 +616,26 @@ namespace Latino.Visualization
             */
             private class Entry
             {
-                //private static int m_entry_id
+                //private static int mEntryId
                 //    = 0; 
-                private Node m_owner
+                private Node mOwner
                     = null;
-                private Node m_child_node
+                private Node mChildNode
                     = null;
-                private RectangleF m_bounding_box
+                private RectangleF mBoundingBox
                     = RectangleF.Empty;
-                //private int m_id
-                //    = ++m_entry_id;
+                //private int mId
+                //    = ++mEntryId;
                 public Entry()
                 {
                 }
                 public Entry(RectangleF rect)
                 {
-                    m_bounding_box = rect;
+                    mBoundingBox = rect;
                 }
                 //public int Id
                 //{
-                //    get { return m_id; }
+                //    get { return mId; }
                 //}
                 public float GetArea()
                 {
@@ -645,19 +645,19 @@ namespace Latino.Visualization
                 {
                     if (ChildNode != null && ChildNode.Entries.Count > 0)
                     {
-                        m_bounding_box = ChildNode.Entries[0].m_bounding_box;
+                        mBoundingBox = ChildNode.Entries[0].mBoundingBox;
                         for (int i = 1; i < ChildNode.Entries.Count; i++)
                         {
-                            m_bounding_box = RectangleF.Union(m_bounding_box, ChildNode.Entries[i].m_bounding_box);
+                            mBoundingBox = RectangleF.Union(mBoundingBox, ChildNode.Entries[i].mBoundingBox);
                         }
                     }
                 }
                 public Node ChildNode
                 {
-                    get { return m_child_node; }
+                    get { return mChildNode; }
                     set
                     {
-                        m_child_node = value;
+                        mChildNode = value;
                         if (value != null)
                         {
                             value.Parent = this;
@@ -666,13 +666,13 @@ namespace Latino.Visualization
                 }
                 public Node Owner
                 {
-                    get { return m_owner; }
-                    set { m_owner = value; } // *** used only by Node
+                    get { return mOwner; }
+                    set { mOwner = value; } // *** used only by Node
                 }
                 public RectangleF BoundingBox
                 {
-                    get { return m_bounding_box; }
-                    set { m_bounding_box = value; }
+                    get { return mBoundingBox; }
+                    set { mBoundingBox = value; }
                 }
             }
             /* .-----------------------------------------------------------------------
@@ -683,26 +683,26 @@ namespace Latino.Visualization
             */
             private class Node
             {
-                private Entry m_parent
+                private Entry mParent
                     = null;
-                private ArrayList<Entry> m_entries
+                private ArrayList<Entry> mEntries
                     = new ArrayList<Entry>(ENTRIES_PER_NODE);
                 public bool IsLeaf
                 {
-                    get { return m_entries.Count == 0 || m_entries[0].ChildNode == null; }
+                    get { return mEntries.Count == 0 || mEntries[0].ChildNode == null; }
                 }
                 public Entry Parent
                 {
-                    get { return m_parent; }
-                    set { m_parent = value; } // *** used only by Entry
+                    get { return mParent; }
+                    set { mParent = value; } // *** used only by Entry
                 }
                 public ArrayList<Entry> Entries
                 {
-                    get { return m_entries; }
+                    get { return mEntries; }
                 }
                 public void AddEntry(Entry entry)
                 {
-                    m_entries.Add(entry);
+                    mEntries.Add(entry);
                     entry.Owner = this;
                 }
                 public void AddEntries(IEnumerable<Entry> entries)
@@ -714,12 +714,12 @@ namespace Latino.Visualization
                 }
                 //public override string ToString()
                 //{
-                //    string node_str = "(";
-                //    foreach (Entry entry in m_entries)
+                //    string nodeStr = "(";
+                //    foreach (Entry entry in mEntries)
                 //    {
-                //        node_str += entry.Id + ",";
+                //        nodeStr += entry.Id + ",";
                 //    }
-                //    return node_str.TrimEnd(',') + ")";
+                //    return nodeStr.TrimEnd(',') + ")";
                 //}
             }
         }

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,15 +26,15 @@ namespace Latino.Model
     */
     public class BatchUpdateCentroidClassifier<LblT> : IModel<LblT, SparseVector<double>.ReadOnly>
     {
-        private Dictionary<LblT, CentroidData> m_centroids
+        private Dictionary<LblT, CentroidData> mCentroids
             = null;
-        private IEqualityComparer<LblT> m_lbl_cmp
+        private IEqualityComparer<LblT> mLblCmp
             = null;
-        private int m_iterations
+        private int mIterations
             = 20;
-        private double m_damping
+        private double mDamping
             = 0.8;
-        private bool m_positive_values_only
+        private bool mPositiveValuesOnly
             = false;
 
         public BatchUpdateCentroidClassifier()
@@ -48,44 +48,44 @@ namespace Latino.Model
 
         public IEqualityComparer<LblT> LabelEqualityComparer
         {
-            get { return m_lbl_cmp; }
-            set { m_lbl_cmp = value; }
+            get { return mLblCmp; }
+            set { mLblCmp = value; }
         }
 
         public int Iterations
         {
-            get { return m_iterations; }
+            get { return mIterations; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("Iterations") : null);
-                m_iterations = value;
+                mIterations = value;
             }
         }
 
         public double Damping
         {
-            get { return m_damping; }
+            get { return mDamping; }
             set 
             {
                 Utils.ThrowException((value <= 0.0 || value > 1.0) ? new ArgumentOutOfRangeException("Damping") : null);
-                m_damping = value;
+                mDamping = value;
             }
         }
 
         public bool PositiveValuesOnly
         {
-            get { return m_positive_values_only; }
-            set { m_positive_values_only = value; }
+            get { return mPositiveValuesOnly; }
+            set { mPositiveValuesOnly = value; }
         }
 
         public ArrayList<SparseVector<double>> GetCentroids(IEnumerable<LblT> labels)
         {
-            Utils.ThrowException(m_centroids == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(mCentroids == null ? new InvalidOperationException() : null);
             Utils.ThrowException(labels == null ? new ArgumentNullException("labels") : null);
             ArrayList<SparseVector<double>> centroids = new ArrayList<SparseVector<double>>();
             foreach (LblT label in labels)
             {
-                CentroidData data = m_centroids[label]; // throws ArgumentNullException, KeyNotFoundException
+                CentroidData data = mCentroids[label]; // throws ArgumentNullException, KeyNotFoundException
                 centroids.Add(data.GetCentroid());
             }
             return centroids;
@@ -100,71 +100,71 @@ namespace Latino.Model
 
         public bool IsTrained
         {
-            get { return m_centroids != null; }
+            get { return mCentroids != null; }
         }
 
         public void Train(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
-            m_centroids = new Dictionary<LblT, CentroidData>();
-            foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeled_example in dataset)
+            mCentroids = new Dictionary<LblT, CentroidData>();
+            foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeledExample in dataset)
             {
-                if (!m_centroids.ContainsKey(labeled_example.Label))
+                if (!mCentroids.ContainsKey(labeledExample.Label))
                 {
-                    CentroidData centroid_data = new CentroidData();
-                    centroid_data.AddToSum(labeled_example.Example);
-                    m_centroids.Add(labeled_example.Label, centroid_data);
+                    CentroidData centroidData = new CentroidData();
+                    centroidData.AddToSum(labeledExample.Example);
+                    mCentroids.Add(labeledExample.Label, centroidData);
                 }
                 else
                 {
-                    CentroidData centroid_data = m_centroids[labeled_example.Label];
-                    centroid_data.AddToSum(labeled_example.Example);
+                    CentroidData centroidData = mCentroids[labeledExample.Label];
+                    centroidData.AddToSum(labeledExample.Example);
                 }               
             }
-            foreach (CentroidData vec_data in m_centroids.Values)
+            foreach (CentroidData vecData in mCentroids.Values)
             {
-                vec_data.UpdateCentroidLen();
+                vecData.UpdateCentroidLen();
             }
-            double learn_rate = 1;
-            for (int iter = 1; iter <= m_iterations; iter++)
+            double learnRate = 1;
+            for (int iter = 1; iter <= mIterations; iter++)
             {
-                Utils.VerboseLine("Iteration {0} / {1} ...", iter, m_iterations);
+                Utils.VerboseLine("Iteration {0} / {1} ...", iter, mIterations);
                 // classify training documents
                 int i = 0;
-                int num_miscfy = 0;
-                foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeled_example in dataset)
+                int numMiscfy = 0;
+                foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeledExample in dataset)
                 {
                     Utils.Verbose("\rExample {0} / {1} ...", ++i, dataset.Count);
-                    double max_sim = double.MinValue;
-                    CentroidData assigned_centroid = null;
-                    CentroidData actual_centroid = null;
-                    SparseVector<double>.ReadOnly vec = labeled_example.Example;
-                    foreach (KeyValuePair<LblT, CentroidData> labeled_centroid in m_centroids)
+                    double maxSim = double.MinValue;
+                    CentroidData assignedCentroid = null;
+                    CentroidData actualCentroid = null;
+                    SparseVector<double>.ReadOnly vec = labeledExample.Example;
+                    foreach (KeyValuePair<LblT, CentroidData> labeledCentroid in mCentroids)
                     {                        
-                        double sim = labeled_centroid.Value.GetDotProduct(vec);
-                        if (sim > max_sim) { max_sim = sim; assigned_centroid = labeled_centroid.Value; }
-                        if (labeled_centroid.Key.Equals(labeled_example.Label)) { actual_centroid = labeled_centroid.Value; }
+                        double sim = labeledCentroid.Value.GetDotProduct(vec);
+                        if (sim > maxSim) { maxSim = sim; assignedCentroid = labeledCentroid.Value; }
+                        if (labeledCentroid.Key.Equals(labeledExample.Label)) { actualCentroid = labeledCentroid.Value; }
                     }                        
-                    if (assigned_centroid != actual_centroid)
+                    if (assignedCentroid != actualCentroid)
                     {                        
-                        assigned_centroid.AddToDiff(-learn_rate, vec);
-                        actual_centroid.AddToDiff(learn_rate, vec);
-                        num_miscfy++;
+                        assignedCentroid.AddToDiff(-learnRate, vec);
+                        actualCentroid.AddToDiff(learnRate, vec);
+                        numMiscfy++;
                     }                        
                 }
                 Utils.VerboseLine();
-                Utils.VerboseLine("Training set error rate: {0:0.00}%", (double)num_miscfy / (double)dataset.Count * 100.0);
+                Utils.VerboseLine("Training set error rate: {0:0.00}%", (double)numMiscfy / (double)dataset.Count * 100.0);
                 // update centroids
                 i = 0;
-                foreach (CentroidData centroid_data in m_centroids.Values)
+                foreach (CentroidData centroidData in mCentroids.Values)
                 {
-                    Utils.Verbose("\rCentroid {0} / {1} ...", ++i, m_centroids.Count);
-                    centroid_data.UpdateCentroid(m_positive_values_only);
-                    centroid_data.UpdateCentroidLen();
+                    Utils.Verbose("\rCentroid {0} / {1} ...", ++i, mCentroids.Count);
+                    centroidData.UpdateCentroid(mPositiveValuesOnly);
+                    centroidData.UpdateCentroidLen();
                 }
                 Utils.VerboseLine();
-                learn_rate *= m_damping;
+                learnRate *= mDamping;
             }
         }
 
@@ -177,13 +177,13 @@ namespace Latino.Model
 
         public Prediction<LblT> Predict(SparseVector<double>.ReadOnly example)
         {
-            Utils.ThrowException(m_centroids == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(mCentroids == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Prediction<LblT> result = new Prediction<LblT>();
-            foreach (KeyValuePair<LblT, CentroidData> labeled_centroid in m_centroids)
+            foreach (KeyValuePair<LblT, CentroidData> labeledCentroid in mCentroids)
             {
-                double sim = labeled_centroid.Value.GetDotProduct(example);
-                result.Items.Add(new KeyDat<double, LblT>(sim, labeled_centroid.Key));
+                double sim = labeledCentroid.Value.GetDotProduct(example);
+                result.Items.Add(new KeyDat<double, LblT>(sim, labeledCentroid.Key));
             }
             result.Items.Sort(new DescSort<KeyDat<double, LblT>>());
             return result;
@@ -202,24 +202,24 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteBool(m_centroids != null);
-            if (m_centroids != null) 
+            writer.WriteBool(mCentroids != null);
+            if (mCentroids != null) 
             { 
-                Utils.SaveDictionary(m_centroids, writer); 
+                Utils.SaveDictionary(mCentroids, writer); 
             }
-            writer.WriteInt(m_iterations);
-            writer.WriteDouble(m_damping);
-            writer.WriteBool(m_positive_values_only);
+            writer.WriteInt(mIterations);
+            writer.WriteDouble(mDamping);
+            writer.WriteBool(mPositiveValuesOnly);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions            
-            m_centroids = reader.ReadBool() ? Utils.LoadDictionary<LblT, CentroidData>(reader) : null;
-            m_iterations = reader.ReadInt();
-            m_damping = reader.ReadDouble();
-            m_positive_values_only = reader.ReadBool();
+            mCentroids = reader.ReadBool() ? Utils.LoadDictionary<LblT, CentroidData>(reader) : null;
+            mIterations = reader.ReadInt();
+            mDamping = reader.ReadDouble();
+            mPositiveValuesOnly = reader.ReadBool();
         }
 
         /* .-----------------------------------------------------------------------
@@ -277,7 +277,7 @@ namespace Latino.Model
                 }
             }
 
-            public void UpdateCentroid(bool positive_values_only)
+            public void UpdateCentroid(bool positiveValuesOnly)
             {
                 foreach (KeyValuePair<int, double> item in CentroidDiff)
                 {
@@ -291,7 +291,7 @@ namespace Latino.Model
                     }
                 }
                 CentroidDiff.Clear();
-                if (positive_values_only)
+                if (positiveValuesOnly)
                 {
                     Dictionary<int, double> tmp = new Dictionary<int, double>();
                     foreach (KeyValuePair<int, double> item in CentroidSum)

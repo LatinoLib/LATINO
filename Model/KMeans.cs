@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -18,67 +18,67 @@ namespace Latino.Model
 {
     public class KMeans : IClustering<SparseVector<double>.ReadOnly> 
     {        
-        private ISimilarity<SparseVector<double>.ReadOnly> m_similarity
+        private ISimilarity<SparseVector<double>.ReadOnly> mSimilarity
             = new CosineSimilarity();
-        private Random m_rnd
+        private Random mRnd
             = new Random();
-        private CentroidType m_centroid_type
+        private CentroidType mCentroidType
             = CentroidType.NrmL2;
-        private double m_eps
+        private double mEps
             = 0.0005;
-        private int m_trials
+        private int mTrials
             = 1;
-        private int m_k;
+        private int mK;
 
         public KMeans(int k)
         {
             Utils.ThrowException(k < 2 ? new ArgumentOutOfRangeException("k") : null);
-            m_k = k;
+            mK = k;
         }
 
         public Random Random
         {
-            get { return m_rnd; }
+            get { return mRnd; }
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Random") : null);
-                m_rnd = value;
+                mRnd = value;
             }
         }
 
         public ISimilarity<SparseVector<double>.ReadOnly> Similarity
         {
-            get { return m_similarity; }
+            get { return mSimilarity; }
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Similarity") : null);
-                m_similarity = value;
+                mSimilarity = value;
             }
         }
 
         public CentroidType CentroidType
         {
-            get { return m_centroid_type; }
-            set { m_centroid_type = value; }
+            get { return mCentroidType; }
+            set { mCentroidType = value; }
         }
 
         public double Eps
         {
-            get { return m_eps; }
+            get { return mEps; }
             set
             {
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("Eps") : null);
-                m_eps = value;
+                mEps = value;
             }
         }
 
         public int Trials
         {
-            get { return m_trials; }
+            get { return mTrials; }
             set
             {
                 Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("Trials") : null);
-                m_trials = value;
+                mTrials = value;
             }
         }
 
@@ -92,110 +92,110 @@ namespace Latino.Model
         public ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(dataset.Count < m_k ? new ArgumentValueException("dataset") : null);
+            Utils.ThrowException(dataset.Count < mK ? new ArgumentValueException("dataset") : null);
             ClusteringResult clustering = null;
-            ClusteringResult best_clustering = null;
-            double global_best_clust_qual = 0;
-            for (int trial = 1; trial <= m_trials; trial++)
+            ClusteringResult bestClustering = null;
+            double globalBestClustQual = 0;
+            for (int trial = 1; trial <= mTrials; trial++)
             {
-                Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, m_trials);
+                Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, mTrials);
                 ArrayList<SparseVector<double>.ReadOnly> centroids = null;
                 clustering = new ClusteringResult();
-                for (int i = 0; i < m_k; i++) { clustering.AddRoot(new Cluster()); }
+                for (int i = 0; i < mK; i++) { clustering.AddRoot(new Cluster()); }
                 // select seed items
-                double min_sim = double.MaxValue;
+                double minSim = double.MaxValue;
                 ArrayList<int> tmp = new ArrayList<int>(dataset.Count);
                 for (int i = 0; i < dataset.Count; i++) { tmp.Add(i); }
                 for (int k = 0; k < 3; k++)
                 {
-                    ArrayList<SparseVector<double>.ReadOnly> seeds = new ArrayList<SparseVector<double>.ReadOnly>(m_k);
-                    tmp.Shuffle(m_rnd);
-                    for (int i = 0; i < m_k; i++)
+                    ArrayList<SparseVector<double>.ReadOnly> seeds = new ArrayList<SparseVector<double>.ReadOnly>(mK);
+                    tmp.Shuffle(mRnd);
+                    for (int i = 0; i < mK; i++)
                     {
-                        seeds.Add(ModelUtils.ComputeCentroid(new SparseVector<double>.ReadOnly[] { dataset[tmp[i]] }, m_centroid_type));
+                        seeds.Add(ModelUtils.ComputeCentroid(new SparseVector<double>.ReadOnly[] { dataset[tmp[i]] }, mCentroidType));
                     }
                     // assess quality of seed items
-                    double sim_avg = 0;
-                    foreach (SparseVector<double>.ReadOnly seed_1 in seeds)
+                    double simAvg = 0;
+                    foreach (SparseVector<double>.ReadOnly seed1 in seeds)
                     {
-                        foreach (SparseVector<double>.ReadOnly seed_2 in seeds)
+                        foreach (SparseVector<double>.ReadOnly seed2 in seeds)
                         {
-                            if (seed_1 != seed_2)
+                            if (seed1 != seed2)
                             {
-                                sim_avg += m_similarity.GetSimilarity(seed_1, seed_2);
+                                simAvg += mSimilarity.GetSimilarity(seed1, seed2);
                             }
                         }
                     }
-                    sim_avg /= (double)(m_k * m_k - m_k);
-                    //Console.WriteLine(sim_avg);
-                    if (sim_avg < min_sim)
+                    simAvg /= (double)(mK * mK - mK);
+                    //Console.WriteLine(simAvg);
+                    if (simAvg < minSim)
                     {
-                        min_sim = sim_avg;
+                        minSim = simAvg;
                         centroids = seeds;
                     }
                 }
                 // main loop
                 int iter = 0;
-                double best_clust_qual = 0;
-                double clust_qual;
+                double bestClustQual = 0;
+                double clustQual;
                 while (true)
                 {
                     iter++;
-                    clust_qual = 0;
+                    clustQual = 0;
                     // assign items to clusters
                     foreach (Cluster cluster in clustering.Roots) { cluster.Items.Clear(); }
                     for (int i = 0; i < dataset.Count; i++)
                     {
                         SparseVector<double>.ReadOnly example = dataset[i];
-                        double max_sim = double.MinValue;
+                        double maxSim = double.MinValue;
                         ArrayList<int> candidates = new ArrayList<int>();
-                        for (int j = 0; j < m_k; j++)
+                        for (int j = 0; j < mK; j++)
                         {
                             SparseVector<double>.ReadOnly centroid = centroids[j];
-                            double sim = m_similarity.GetSimilarity(example, centroid);
-                            if (sim > max_sim)
+                            double sim = mSimilarity.GetSimilarity(example, centroid);
+                            if (sim > maxSim)
                             {
-                                max_sim = sim;
+                                maxSim = sim;
                                 candidates.Clear();
                                 candidates.Add(j);
                             }
-                            else if (sim == max_sim)
+                            else if (sim == maxSim)
                             {
                                 candidates.Add(j);
                             }
                         }
                         if (candidates.Count > 1)
                         {
-                            candidates.Shuffle(m_rnd); 
+                            candidates.Shuffle(mRnd); 
                         }
                         if (candidates.Count > 0) // *** is this always true? 
                         {
                             clustering.Roots[candidates[0]].Items.Add(i);
-                            clust_qual += max_sim;
+                            clustQual += maxSim;
                         }
                     }
-                    clust_qual /= (double)dataset.Count;
+                    clustQual /= (double)dataset.Count;
                     Utils.VerboseLine("*** Iteration {0} ***", iter);
-                    Utils.VerboseLine("Quality: {0:0.0000}", clust_qual);
+                    Utils.VerboseLine("Quality: {0:0.0000}", clustQual);
                     // check if done
-                    if (iter > 1 && clust_qual - best_clust_qual <= m_eps)
+                    if (iter > 1 && clustQual - bestClustQual <= mEps)
                     {
                         break;
                     }
-                    best_clust_qual = clust_qual;
+                    bestClustQual = clustQual;
                     // compute new centroids
-                    for (int i = 0; i < m_k; i++)
+                    for (int i = 0; i < mK; i++)
                     {
-                        centroids[i] = clustering.Roots[i].ComputeCentroid(dataset, m_centroid_type);
+                        centroids[i] = clustering.Roots[i].ComputeCentroid(dataset, mCentroidType);
                     }
                 }
-                if (trial == 1 || clust_qual > global_best_clust_qual)
+                if (trial == 1 || clustQual > globalBestClustQual)
                 {
-                    global_best_clust_qual = clust_qual;
-                    best_clustering = clustering;
+                    globalBestClustQual = clustQual;
+                    bestClustering = clustering;
                 }
             }
-            return best_clustering;
+            return bestClustering;
         }
 
         ClusteringResult IClustering.Cluster(IUnlabeledExampleCollection dataset)

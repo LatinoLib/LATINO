@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -25,12 +25,12 @@ namespace Latino.TextMining
     */
     public class Stemmer : IStemmer, ISerializable
     {
-        private Language m_language;
-        private ISnowballStemmer m_stemmer;
+        private Language mLanguage;
+        private ISnowballStemmer mStemmer;
 
         public Stemmer(Language language)
         {
-            m_language = language;
+            mLanguage = language;
             bool success = CreateStemmer();
             Utils.ThrowException(!success ? new ArgumentNotSupportedException("language") : null);
         }
@@ -42,43 +42,43 @@ namespace Latino.TextMining
 
         private bool CreateStemmer()
         {
-            switch (m_language)
+            switch (mLanguage)
             {
                 case Language.English:
-                    m_stemmer = new EnglishStemmer();
+                    mStemmer = new EnglishStemmer();
                     return true;
                 case Language.German:
-                    m_stemmer = new German2Stemmer();
+                    mStemmer = new German2Stemmer();
                     return true;
                 case Language.French:
-                    m_stemmer = new FrenchStemmer();
+                    mStemmer = new FrenchStemmer();
                     return true;
                 case Language.Spanish:
-                    m_stemmer = new SpanishStemmer();
+                    mStemmer = new SpanishStemmer();
                     return true;
                 case Language.Italian:
-                    m_stemmer = new ItalianStemmer();
+                    mStemmer = new ItalianStemmer();
                     return true;
                 case Language.Portuguese:
-                    m_stemmer = new PortugueseStemmer();
+                    mStemmer = new PortugueseStemmer();
                     return true;
                 case Language.Danish:
-                    m_stemmer = new DanishStemmer();
+                    mStemmer = new DanishStemmer();
                     return true;
                 case Language.Dutch:
-                    m_stemmer = new DutchStemmer();
+                    mStemmer = new DutchStemmer();
                     return true;
                 case Language.Finnish:
-                    m_stemmer = new FinnishStemmer();
+                    mStemmer = new FinnishStemmer();
                     return true;
                 case Language.Norwegian:
-                    m_stemmer = new NorwegianStemmer();
+                    mStemmer = new NorwegianStemmer();
                     return true;
                 case Language.Russian:
-                    m_stemmer = new RussianStemmer();
+                    mStemmer = new RussianStemmer();
                     return true;
                 case Language.Swedish:
-                    m_stemmer = new SwedishStemmer();
+                    mStemmer = new SwedishStemmer();
                     return true;
                 default:
                     return false;
@@ -90,9 +90,9 @@ namespace Latino.TextMining
         public string GetStem(string word)
         {
             Utils.ThrowException(word == null ? new ArgumentNullException("word") : null);
-            m_stemmer.SetCurrent(word);
-            m_stemmer.Stem();
-            return m_stemmer.GetCurrent();
+            mStemmer.SetCurrent(word);
+            mStemmer.Stem();
+            return mStemmer.GetCurrent();
         }
 
         // *** ISerializable interface implementation ***
@@ -101,14 +101,14 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions 
-            writer.WriteInt((int)m_language);
+            writer.WriteInt((int)mLanguage);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions 
-            m_language = (Language)reader.ReadInt();
+            mLanguage = (Language)reader.ReadInt();
             CreateStemmer();
         }
     }

@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -38,44 +38,44 @@ namespace Latino.Model
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            double dot_prod = 0;
+            double dotProd = 0;
             int i = 0, j = 0;
-            int a_count = a.Count;
-            Utils.ThrowException(a_count == 0 ? new ArgumentValueException("a") : null);
-            int b_count = b.Count;
-            Utils.ThrowException(b_count == 0 ? new ArgumentValueException("b") : null);
-            ArrayList<int> a_idx = a.Inner.InnerIdx;
-            ArrayList<double> a_dat = a.Inner.InnerDat;
-            ArrayList<int> b_idx = b.Inner.InnerIdx;
-            ArrayList<double> b_dat = b.Inner.InnerDat;
-            int a_idx_i = a_count == 0 ? 0 : a_idx[0];
-            int b_idx_j = b_count == 0 ? 0 : b_idx[0];
+            int aCount = a.Count;
+            Utils.ThrowException(aCount == 0 ? new ArgumentValueException("a") : null);
+            int bCount = b.Count;
+            Utils.ThrowException(bCount == 0 ? new ArgumentValueException("b") : null);
+            ArrayList<int> aIdx = a.Inner.InnerIdx;
+            ArrayList<double> aDat = a.Inner.InnerDat;
+            ArrayList<int> bIdx = b.Inner.InnerIdx;
+            ArrayList<double> bDat = b.Inner.InnerDat;
+            int aIdxI = aCount == 0 ? 0 : aIdx[0];
+            int bIdxJ = bCount == 0 ? 0 : bIdx[0];
             while (true)
             {
-                if (a_idx_i < b_idx_j)
+                if (aIdxI < bIdxJ)
                 {
-                    if (++i == a_count) { break; }
-                    a_idx_i = a_idx[i];
+                    if (++i == aCount) { break; }
+                    aIdxI = aIdx[i];
                 }
-                else if (a_idx_i > b_idx_j)
+                else if (aIdxI > bIdxJ)
                 {
-                    if (++j == b_count) { break; }
-                    b_idx_j = b_idx[j];
+                    if (++j == bCount) { break; }
+                    bIdxJ = bIdx[j];
                 }
                 else
                 {
-                    dot_prod += a_dat[i] * b_dat[j];
-                    if (++i == a_count || ++j == b_count) { break; }
-                    a_idx_i = a_idx[i];
-                    b_idx_j = b_idx[j];
+                    dotProd += aDat[i] * bDat[j];
+                    if (++i == aCount || ++j == bCount) { break; }
+                    aIdxI = aIdx[i];
+                    bIdxJ = bIdx[j];
                 }
             }
-            double len_a = Utils.GetVecLenL2(a);
-            Utils.ThrowException(len_a == 0 ? new ArgumentValueException("a") : null);
-            double len_b = Utils.GetVecLenL2(b);
-            Utils.ThrowException(len_b == 0 ? new ArgumentValueException("b") : null);
-            double len_mult = len_a * len_b;
-            return dot_prod / len_mult;
+            double lenA = Utils.GetVecLenL2(a);
+            Utils.ThrowException(lenA == 0 ? new ArgumentValueException("a") : null);
+            double lenB = Utils.GetVecLenL2(b);
+            Utils.ThrowException(lenB == 0 ? new ArgumentValueException("b") : null);
+            double lenMult = lenA * lenB;
+            return dotProd / lenMult;
         }
 
         // *** ISerializable interface implementation ***

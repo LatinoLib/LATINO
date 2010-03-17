@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -24,7 +24,7 @@ namespace Latino.Model
     */
     public interface IUnlabeledDataset : IUnlabeledExampleCollection, ISerializable
     {
-        IUnlabeledDataset ConvertDataset(Type new_ex_type, bool move);
+        IUnlabeledDataset ConvertDataset(Type newExType, bool move);
         IUnlabeledDataset<ExT> ConvertDataset<ExT>(bool move);
     }
 

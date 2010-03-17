@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -26,16 +26,16 @@ namespace Latino.TextMining
     */
     public class Word : IEnumerable<KeyValuePair<string, int>>, ISerializable
     {
-        internal int m_idx
+        internal int mIdx
             = -1;
-        internal Dictionary<string, int> m_forms
+        internal Dictionary<string, int> mForms
             = new Dictionary<string, int>();
-        internal string m_most_frequent_form;
-        internal int m_doc_freq
+        internal string mMostFrequentForm;
+        internal int mDocFreq
             = 1;
-        internal int m_freq
+        internal int mFreq
             = 1;
-        internal double m_idf
+        internal double mIdf
             = -1;
 
         internal Word(BinarySerializer reader)
@@ -45,40 +45,40 @@ namespace Latino.TextMining
 
         internal Word(string word)
         {
-            m_most_frequent_form = word;
-            m_forms.Add(word, 1);
+            mMostFrequentForm = word;
+            mForms.Add(word, 1);
         }
 
         public string MostFrequentForm
         {
-            get { return m_most_frequent_form; }
+            get { return mMostFrequentForm; }
         }
 
         public int DocFreq
         {
-            get { return m_doc_freq; }
+            get { return mDocFreq; }
         }
 
         public int Freq
         {
-            get { return m_freq; }
+            get { return mFreq; }
         }
 
         public double Idf
         {
-            get { return m_idf; }
+            get { return mIdf; }
         }
 
         // *** IEnumerable<KeyValuePair<string, int>> interface implementation ***
 
         public IEnumerator<KeyValuePair<string, int>> GetEnumerator()
         {
-            return m_forms.GetEnumerator();
+            return mForms.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return m_forms.GetEnumerator();
+            return mForms.GetEnumerator();
         }
 
         // *** ISerializable interface implementation ***
@@ -87,20 +87,20 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteInt(m_idx);
-            writer.WriteString(m_most_frequent_form);
-            writer.WriteInt(m_doc_freq);
-            writer.WriteInt(m_freq);
-            writer.WriteDouble(m_idf);
+            writer.WriteInt(mIdx);
+            writer.WriteString(mMostFrequentForm);
+            writer.WriteInt(mDocFreq);
+            writer.WriteInt(mFreq);
+            writer.WriteDouble(mIdf);
         }
 
         internal void Load(BinarySerializer reader)
         {
-            m_idx = reader.ReadInt();
-            m_most_frequent_form = reader.ReadString();
-            m_doc_freq = reader.ReadInt();
-            m_freq = reader.ReadInt();
-            m_idf = reader.ReadDouble();
+            mIdx = reader.ReadInt();
+            mMostFrequentForm = reader.ReadString();
+            mDocFreq = reader.ReadInt();
+            mFreq = reader.ReadInt();
+            mIdf = reader.ReadDouble();
         }
     }
 }

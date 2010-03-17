@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -34,32 +34,32 @@ namespace Latino.Model
         // *** External functions ***
 
         [DllImport(LSQR_DLL)]
-        public static extern int NewMatrix(int row_count);
+        public static extern int NewMatrix(int rowCount);
 
         [DllImport(LSQR_DLL)]
         public static extern void DeleteMatrix(int id);
 
         [DllImport(LSQR_DLL)]
-        public static extern void InsertValue(int mat_id, int row_idx, int col_idx, double val);
+        public static extern void InsertValue(int matId, int rowIdx, int colIdx, double val);
 
         [DllImport(LSQR_DLL)]
-        public static extern IntPtr DoLSqr(int mat_id, int mat_transp_id, double[] init_sol, double[] rhs, int max_iter);
+        public static extern IntPtr DoLSqr(int matId, int matTranspId, double[] initSol, double[] rhs, int maxIter);
 
         // *** Wrappers for external DoLSqr ***
 
-        public static double[] DoLSqr(int num_cols, LSqrSparseMatrix mat, LSqrSparseMatrix mat_transp, double[] rhs, int max_iter)
+        public static double[] DoLSqr(int numCols, LSqrSparseMatrix mat, LSqrSparseMatrix matTransp, double[] rhs, int maxIter)
         {
-            return DoLSqr(num_cols, mat, mat_transp, /*init_sol=*/null, rhs, max_iter);
+            return DoLSqr(numCols, mat, matTransp, /*initSol=*/null, rhs, maxIter);
         }
 
-        public static double[] DoLSqr(int num_cols, LSqrSparseMatrix mat, LSqrSparseMatrix mat_transp, double[] init_sol, double[] rhs, int max_iter)
+        public static double[] DoLSqr(int numCols, LSqrSparseMatrix mat, LSqrSparseMatrix matTransp, double[] initSol, double[] rhs, int maxIter)
         {
-            IntPtr sol_ptr = DoLSqr(mat.Id, mat_transp.Id, init_sol, rhs, max_iter);
+            IntPtr solPtr = DoLSqr(mat.Id, matTransp.Id, initSol, rhs, maxIter);
             GC.KeepAlive(mat); // avoid premature garbage collection
-            GC.KeepAlive(mat_transp);
-            double[] sol = new double[num_cols];
-            Marshal.Copy(sol_ptr, sol, 0, sol.Length);
-            Marshal.FreeHGlobal(sol_ptr);
+            GC.KeepAlive(matTransp);
+            double[] sol = new double[numCols];
+            Marshal.Copy(solPtr, sol, 0, sol.Length);
+            Marshal.FreeHGlobal(solPtr);
             return sol;
         }
     }
@@ -72,11 +72,11 @@ namespace Latino.Model
     */
     public class LSqrSparseMatrix : IDisposable
     {
-        private int m_id;
+        private int mId;
 
-        public LSqrSparseMatrix(int row_count)
+        public LSqrSparseMatrix(int rowCount)
         {
-            m_id = LSqrDll.NewMatrix(row_count);
+            mId = LSqrDll.NewMatrix(rowCount);
         }
 
         ~LSqrSparseMatrix()
@@ -86,54 +86,54 @@ namespace Latino.Model
 
         public int Id
         {
-            get { return m_id; }
+            get { return mId; }
         }
 
-        public void InsertValue(int row_idx, int col_idx, double val)
+        public void InsertValue(int rowIdx, int colIdx, double val)
         {
-            LSqrDll.InsertValue(m_id, row_idx, col_idx, val);
+            LSqrDll.InsertValue(mId, rowIdx, colIdx, val);
         }
 
         public static LSqrSparseMatrix FromDenseMatrix(double[,] mat)
         {
-            LSqrSparseMatrix lsqr_mat = new LSqrSparseMatrix(mat.GetLength(0));
+            LSqrSparseMatrix lsqrMat = new LSqrSparseMatrix(mat.GetLength(0));
             for (int row = 0; row < mat.GetLength(0); row++)
             {
                 for (int col = 0; col < mat.GetLength(1); col++)
                 {
                     if (mat[row, col] != 0)
                     {
-                        lsqr_mat.InsertValue(row, col, mat[row, col]);
+                        lsqrMat.InsertValue(row, col, mat[row, col]);
                     }
                 }
             }
-            return lsqr_mat;
+            return lsqrMat;
         }
 
         public static LSqrSparseMatrix TransposeFromDenseMatrix(double[,] mat)
         {
-            LSqrSparseMatrix lsqr_mat = new LSqrSparseMatrix(mat.GetLength(1));
+            LSqrSparseMatrix lsqrMat = new LSqrSparseMatrix(mat.GetLength(1));
             for (int col = 0; col < mat.GetLength(1); col++)
             {
                 for (int row = 0; row < mat.GetLength(0); row++)
                 {
                     if (mat[row, col] != 0)
                     {
-                        lsqr_mat.InsertValue(col, row, mat[row, col]);
+                        lsqrMat.InsertValue(col, row, mat[row, col]);
                     }
                 }
             }
-            return lsqr_mat;
+            return lsqrMat;
         }
 
         // *** IDisposable interface implementation ***
 
         public void Dispose()
         {
-            if (m_id >= 0)
+            if (mId >= 0)
             {
-                LSqrDll.DeleteMatrix(m_id);
-                m_id = -1;
+                LSqrDll.DeleteMatrix(mId);
+                mId = -1;
             }
         }
     }

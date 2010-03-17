@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
@@ -28,9 +28,9 @@ namespace Latino
     public class SparseVector<T> : IEnumerable<IdxDat<T>>, ICloneable<SparseVector<T>>, IDeeplyCloneable<SparseVector<T>>, IContentEquatable<SparseVector<T>>,
         ISerializable
     {
-        private ArrayList<int> m_idx
+        private ArrayList<int> mIdx
             = new ArrayList<int>();
-        private ArrayList<T> m_dat
+        private ArrayList<T> mDat
             = new ArrayList<T>();
 
         public SparseVector()
@@ -39,8 +39,8 @@ namespace Latino
 
         public SparseVector(int capacity)
         {
-            m_idx = new ArrayList<int>(capacity); // throws ArgumentOutOfRangeException
-            m_dat = new ArrayList<T>(capacity);
+            mIdx = new ArrayList<int>(capacity); // throws ArgumentOutOfRangeException
+            mDat = new ArrayList<T>(capacity);
         }
 
         public SparseVector(BinarySerializer reader)
@@ -53,9 +53,9 @@ namespace Latino
             AddRange(vals); // throws ArgumentNullException, ArgumentValueException
         }
 
-        public SparseVector(IEnumerable<IdxDat<T>> sorted_list)
+        public SparseVector(IEnumerable<IdxDat<T>> sortedList)
         {
-            AddRange(sorted_list); // throws ArgumentNullException, ArgumentValueException
+            AddRange(sortedList); // throws ArgumentNullException, ArgumentValueException
         }
 
 #if PUBLIC_INNER
@@ -65,7 +65,7 @@ namespace Latino
 #endif
         ArrayList<int> InnerIdx
         {
-            get { return m_idx; }
+            get { return mIdx; }
         }
 
 #if PUBLIC_INNER
@@ -75,21 +75,21 @@ namespace Latino
 #endif
         ArrayList<T> InnerDat
         {
-            get { return m_dat; }
+            get { return mDat; }
         }
 
         public bool ContainsAt(int index)
         {
             Utils.ThrowException(index < 0 ? new ArgumentOutOfRangeException("index") : null);
-            return m_idx.BinarySearch(index) >= 0;
+            return mIdx.BinarySearch(index) >= 0;
         }
 
         public int FirstNonEmptyIndex
         {
             get
             {
-                if (m_idx.Count == 0) { return -1; }
-                return m_idx[0];
+                if (mIdx.Count == 0) { return -1; }
+                return mIdx[0];
             }
         }
 
@@ -97,93 +97,93 @@ namespace Latino
         {
             get
             {
-                if (m_idx.Count == 0) { return -1; }
-                return m_idx.Last;
+                if (mIdx.Count == 0) { return -1; }
+                return mIdx.Last;
             }
         }
 
         public IdxDat<T> First
         {
-            get { return new IdxDat<T>(m_idx[0], m_dat[0]); } // throws ArgumentOutOfRangeException
+            get { return new IdxDat<T>(mIdx[0], mDat[0]); } // throws ArgumentOutOfRangeException
         }
 
         public IdxDat<T> Last
         {
-            get { return new IdxDat<T>(m_idx.Last, m_dat.Last); } // throws ArgumentOutOfRangeException
+            get { return new IdxDat<T>(mIdx.Last, mDat.Last); } // throws ArgumentOutOfRangeException
         }
 
         public override string ToString()
         {
-            StringBuilder str_bld = new StringBuilder("(");
-            for (int i = 0; i < m_idx.Count; i++)
+            StringBuilder strBld = new StringBuilder("(");
+            for (int i = 0; i < mIdx.Count; i++)
             {
-                str_bld.Append(" ");
-                str_bld.Append(string.Format("( {0} {1} )", m_idx[i], m_dat[i]));
+                strBld.Append(" ");
+                strBld.Append(string.Format("( {0} {1} )", mIdx[i], mDat[i]));
             }
-            str_bld.Append(" )");
-            return str_bld.ToString();
+            strBld.Append(" )");
+            return strBld.ToString();
         }
 
-        public void Append(SparseVector<T>.ReadOnly other_vec, int this_vec_len)
+        public void Append(SparseVector<T>.ReadOnly otherVec, int thisVecLen)
         {
-            Utils.ThrowException(other_vec == null ? new ArgumentNullException("other_vec") : null);
-            Utils.ThrowException(this_vec_len <= LastNonEmptyIndex ? new ArgumentOutOfRangeException("this_vec_len") : null);
-            foreach (IdxDat<T> item_info in other_vec)
+            Utils.ThrowException(otherVec == null ? new ArgumentNullException("otherVec") : null);
+            Utils.ThrowException(thisVecLen <= LastNonEmptyIndex ? new ArgumentOutOfRangeException("thisVecLen") : null);
+            foreach (IdxDat<T> itemInfo in otherVec)
             {
-                m_idx.Add(item_info.Idx + this_vec_len);
-                m_dat.Add(item_info.Dat); // *** note that the elements are not cloned (you need to clone them yourself if needed)
+                mIdx.Add(itemInfo.Idx + thisVecLen);
+                mDat.Add(itemInfo.Dat); // *** note that the elements are not cloned (you need to clone them yourself if needed)
             }
         }
 
-        public void Merge(SparseVector<T>.ReadOnly other_vec, Utils.BinaryOperatorDelegate<T> binary_operator)
+        public void Merge(SparseVector<T>.ReadOnly otherVec, Utils.BinaryOperatorDelegate<T> binaryOperator)
         {
-            Utils.ThrowException(other_vec == null ? new ArgumentNullException("other_vec") : null);
-            Utils.ThrowException(binary_operator == null ? new ArgumentNullException("binary_operator") : null);
-            ArrayList<int> other_idx = other_vec.Inner.InnerIdx;
-            ArrayList<T> other_dat = other_vec.Inner.InnerDat;
-            ArrayList<int> new_idx = new ArrayList<int>(m_idx.Count + other_idx.Count);
-            ArrayList<T> new_dat = new ArrayList<T>(m_dat.Count + other_dat.Count);
+            Utils.ThrowException(otherVec == null ? new ArgumentNullException("otherVec") : null);
+            Utils.ThrowException(binaryOperator == null ? new ArgumentNullException("binaryOperator") : null);
+            ArrayList<int> otherIdx = otherVec.Inner.InnerIdx;
+            ArrayList<T> otherDat = otherVec.Inner.InnerDat;
+            ArrayList<int> newIdx = new ArrayList<int>(mIdx.Count + otherIdx.Count);
+            ArrayList<T> newDat = new ArrayList<T>(mDat.Count + otherDat.Count);
             int i = 0, j = 0;
-            while (i < m_idx.Count && j < other_idx.Count)
+            while (i < mIdx.Count && j < otherIdx.Count)
             {
-                int a_idx = m_idx[i];
-                int b_idx = other_idx[j];
-                if (a_idx == b_idx)
+                int aIdx = mIdx[i];
+                int bIdx = otherIdx[j];
+                if (aIdx == bIdx)
                 {
-                    T value = binary_operator(m_dat[i], other_dat[j]); 
-                    if (value != null) { new_idx.Add(a_idx); new_dat.Add(value); }
+                    T value = binaryOperator(mDat[i], otherDat[j]); 
+                    if (value != null) { newIdx.Add(aIdx); newDat.Add(value); }
                     i++;
                     j++;
                 }
-                else if (a_idx < b_idx)
+                else if (aIdx < bIdx)
                 {
-                    new_idx.Add(a_idx); new_dat.Add(m_dat[i]); 
+                    newIdx.Add(aIdx); newDat.Add(mDat[i]); 
                     i++;
                 }
                 else
                 {
-                    new_idx.Add(b_idx); new_dat.Add(other_dat[j]); 
+                    newIdx.Add(bIdx); newDat.Add(otherDat[j]); 
                     j++;
                 }
             }
-            for (; i < m_idx.Count; i++)
+            for (; i < mIdx.Count; i++)
             {
-                new_idx.Add(m_idx[i]); new_dat.Add(m_dat[i]); 
+                newIdx.Add(mIdx[i]); newDat.Add(mDat[i]); 
             }
-            for (; j < other_idx.Count; j++)
+            for (; j < otherIdx.Count; j++)
             {
-                new_idx.Add(other_idx[j]); new_dat.Add(other_dat[j]); 
+                newIdx.Add(otherIdx[j]); newDat.Add(otherDat[j]); 
             }
-            m_idx = new_idx;
-            m_dat = new_dat;
+            mIdx = newIdx;
+            mDat = newDat;
         }
 
-        public void PerformUnaryOperation(Utils.UnaryOperatorDelegate<T> unary_operator)
+        public void PerformUnaryOperation(Utils.UnaryOperatorDelegate<T> unaryOperator)
         {
-            Utils.ThrowException(unary_operator == null ? new ArgumentNullException("unary_operator") : null);
-            for (int i = m_dat.Count - 1; i >= 0; i--)
+            Utils.ThrowException(unaryOperator == null ? new ArgumentNullException("unaryOperator") : null);
+            for (int i = mDat.Count - 1; i >= 0; i--)
             {
-                T value = unary_operator(m_dat[i]);
+                T value = unaryOperator(mDat[i]);
                 if (value == null)
                 {
                     RemoveDirect(i);
@@ -197,46 +197,46 @@ namespace Latino
 
         // *** Direct access ***
 
-        public IdxDat<T> GetDirect(int direct_idx)
+        public IdxDat<T> GetDirect(int directIdx)
         {
-            return new IdxDat<T>(m_idx[direct_idx], m_dat[direct_idx]); // throws ArgumentOutOfRangeException
+            return new IdxDat<T>(mIdx[directIdx], mDat[directIdx]); // throws ArgumentOutOfRangeException
         }
 
-        public int GetIdxDirect(int direct_idx)
+        public int GetIdxDirect(int directIdx)
         {
-            return m_idx[direct_idx]; // throws ArgumentOutOfRangeException
+            return mIdx[directIdx]; // throws ArgumentOutOfRangeException
         }
 
-        public T GetDatDirect(int direct_idx)
+        public T GetDatDirect(int directIdx)
         {
-            return m_dat[direct_idx]; // throws ArgumentOutOfRangeException
+            return mDat[directIdx]; // throws ArgumentOutOfRangeException
         }
 
-        public void SetDirect(int direct_idx, T value)
+        public void SetDirect(int directIdx, T value)
         {
             Utils.ThrowException(value == null ? new ArgumentNullException("value") : null);
-            m_dat[direct_idx] = value; // throws ArgumentOutOfRangeException
+            mDat[directIdx] = value; // throws ArgumentOutOfRangeException
         }
 
-        public void RemoveDirect(int direct_idx)
+        public void RemoveDirect(int directIdx)
         {
-            m_idx.RemoveAt(direct_idx); // throws ArgumentOutOfRangeException
-            m_dat.RemoveAt(direct_idx);
+            mIdx.RemoveAt(directIdx); // throws ArgumentOutOfRangeException
+            mDat.RemoveAt(directIdx);
         }
 
         public int GetDirectIdx(int index)
         {
             Utils.ThrowException(index < 0 ? new ArgumentOutOfRangeException("index") : null);
-            int direct_idx = m_idx.BinarySearch(index);
-            return direct_idx;
+            int directIdx = mIdx.BinarySearch(index);
+            return directIdx;
         }
 
-        public int GetDirectIdx(int index, int direct_start_idx)
+        public int GetDirectIdx(int index, int directStartIdx)
         {
             Utils.ThrowException(index < 0 ? new ArgumentOutOfRangeException("index") : null);
-            Utils.ThrowException((direct_start_idx < 0 || direct_start_idx >= m_idx.Count) ? new ArgumentOutOfRangeException("direct_start_idx") : null);
-            int direct_idx = m_idx.BinarySearch(direct_start_idx, m_idx.Count - direct_start_idx, index, /*comparer=*/null);
-            return direct_idx;
+            Utils.ThrowException((directStartIdx < 0 || directStartIdx >= mIdx.Count) ? new ArgumentOutOfRangeException("directStartIdx") : null);
+            int directIdx = mIdx.BinarySearch(directStartIdx, mIdx.Count - directStartIdx, index, /*comparer=*/null);
+            return directIdx;
         }
 
         // *** Partial IList<T> interface implementation ***
@@ -244,9 +244,9 @@ namespace Latino
         public int IndexOf(T item)
         {
             Utils.ThrowException(item == null ? new ArgumentNullException("item") : null);
-            for (int i = 0; i < m_dat.Count; i++)
+            for (int i = 0; i < mDat.Count; i++)
             {
-                if (m_dat[i].Equals(item)) { return m_idx[i]; }
+                if (mDat[i].Equals(item)) { return mIdx[i]; }
             }
             return -1;
         }
@@ -254,44 +254,44 @@ namespace Latino
         public void RemoveAt(int index)
         {
             Utils.ThrowException(index < 0 ? new ArgumentOutOfRangeException("index") : null);
-            int direct_idx = m_idx.BinarySearch(index);
-            if (direct_idx >= 0) 
+            int directIdx = mIdx.BinarySearch(index);
+            if (directIdx >= 0) 
             { 
-                m_idx.RemoveAt(direct_idx); 
-                m_dat.RemoveAt(direct_idx); 
+                mIdx.RemoveAt(directIdx); 
+                mDat.RemoveAt(directIdx); 
             }
         }
 
         public void PurgeAt(int index)
         {
             Utils.ThrowException(index < 0 ? new ArgumentOutOfRangeException("index") : null);
-            int direct_idx = m_idx.BinarySearch(index);
-            if (direct_idx >= 0) 
+            int directIdx = mIdx.BinarySearch(index);
+            if (directIdx >= 0) 
             {                 
-                m_idx.RemoveAt(direct_idx);
-                m_dat.RemoveAt(direct_idx);
+                mIdx.RemoveAt(directIdx);
+                mDat.RemoveAt(directIdx);
             } 
             else 
             { 
-                direct_idx = ~direct_idx; 
+                directIdx = ~directIdx; 
             }
-            for (int i = direct_idx; i < m_idx.Count; i++) 
+            for (int i = directIdx; i < mIdx.Count; i++) 
             { 
-                m_idx[i]--;
+                mIdx[i]--;
             }
         }
 
-        public T TryGet(int index, T default_val)
+        public T TryGet(int index, T defaultVal)
         {
             Utils.ThrowException(index < 0 ? new ArgumentOutOfRangeException("index") : null);
-            int direct_idx = m_idx.BinarySearch(index);
-            if (direct_idx >= 0)
+            int directIdx = mIdx.BinarySearch(index);
+            if (directIdx >= 0)
             {
-                return m_dat[direct_idx];
+                return mDat[directIdx];
             }
             else
             {
-                return default_val;
+                return defaultVal;
             }
         }
 
@@ -300,23 +300,23 @@ namespace Latino
             get
             {
                 Utils.ThrowException(index < 0 ? new ArgumentOutOfRangeException("index") : null);
-                int direct_idx = m_idx.BinarySearch(index);
-                Utils.ThrowException(direct_idx < 0 ? new ArgumentValueException("index") : null);
-                return m_dat[direct_idx];
+                int directIdx = mIdx.BinarySearch(index);
+                Utils.ThrowException(directIdx < 0 ? new ArgumentValueException("index") : null);
+                return mDat[directIdx];
             }
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("value") : null);
                 Utils.ThrowException(index < 0 ? new ArgumentOutOfRangeException("index") : null);
-                int direct_idx = m_idx.BinarySearch(index);
-                if (direct_idx >= 0)
+                int directIdx = mIdx.BinarySearch(index);
+                if (directIdx >= 0)
                 {
-                    m_dat[direct_idx] = value;
+                    mDat[directIdx] = value;
                 }
                 else
                 {
-                    m_idx.Insert(~direct_idx, index);
-                    m_dat.Insert(~direct_idx, value);
+                    mIdx.Insert(~directIdx, index);
+                    mDat.Insert(~directIdx, value);
                 }
             }
         }
@@ -324,8 +324,8 @@ namespace Latino
         public void Add(T val)
         {
             Utils.ThrowException(val == null ? new ArgumentNullException("val") : null);
-            m_idx.Add(LastNonEmptyIndex + 1);
-            m_dat.Add(val);
+            mIdx.Add(LastNonEmptyIndex + 1);
+            mDat.Add(val);
         }
 
         public void AddRange(IEnumerable<T> vals)
@@ -335,76 +335,76 @@ namespace Latino
             foreach (T val in vals)
             {
                 Utils.ThrowException(val == null ? new ArgumentValueException("vals") : null);
-                m_idx.Add(idx++);
-                m_dat.Add(val);
+                mIdx.Add(idx++);
+                mDat.Add(val);
             }
         }
 
-        public void AddRange(IEnumerable<IdxDat<T>> sorted_list)
+        public void AddRange(IEnumerable<IdxDat<T>> sortedList)
         {
-            Utils.ThrowException(sorted_list == null ? new ArgumentNullException("sorted_list") : null);
+            Utils.ThrowException(sortedList == null ? new ArgumentNullException("sortedList") : null);
             int i = 0;
-            int old_idx = -1;
-            ArrayList<int> new_idx = new ArrayList<int>(m_idx.Count * 2);
-            ArrayList<T> new_dat = new ArrayList<T>(m_dat.Count * 2);
-            IEnumerator<IdxDat<T>> enumer = sorted_list.GetEnumerator();
-            bool item_avail = enumer.MoveNext();
+            int oldIdx = -1;
+            ArrayList<int> newIdx = new ArrayList<int>(mIdx.Count * 2);
+            ArrayList<T> newDat = new ArrayList<T>(mDat.Count * 2);
+            IEnumerator<IdxDat<T>> enumer = sortedList.GetEnumerator();
+            bool itemAvail = enumer.MoveNext();
             IdxDat<T> item;
-            if (item_avail)
+            if (itemAvail)
             {
                 item = enumer.Current;
-                Utils.ThrowException((item.Dat == null || item.Idx <= old_idx) ? new ArgumentValueException("sorted_list") : null);
-                old_idx = item.Idx;
+                Utils.ThrowException((item.Dat == null || item.Idx <= oldIdx) ? new ArgumentValueException("sortedList") : null);
+                oldIdx = item.Idx;
             }
             else
             {
                 return;
             }
-            while (i < m_idx.Count && item_avail)
+            while (i < mIdx.Count && itemAvail)
             {
-                if (item.Idx > m_idx[i])
+                if (item.Idx > mIdx[i])
                 {
-                    new_idx.Add(m_idx[i]);
-                    new_dat.Add(m_dat[i]);
+                    newIdx.Add(mIdx[i]);
+                    newDat.Add(mDat[i]);
                     i++;
                 }
-                else if (item.Idx < m_idx[i])
+                else if (item.Idx < mIdx[i])
                 {
-                    new_idx.Add(item.Idx);
-                    new_dat.Add(item.Dat);
-                    item_avail = enumer.MoveNext();
-                    if (item_avail)
+                    newIdx.Add(item.Idx);
+                    newDat.Add(item.Dat);
+                    itemAvail = enumer.MoveNext();
+                    if (itemAvail)
                     {
                         item = enumer.Current;
-                        Utils.ThrowException((item.Dat == null || item.Idx <= old_idx) ? new ArgumentValueException("sorted_list") : null);
-                        old_idx = item.Idx;
+                        Utils.ThrowException((item.Dat == null || item.Idx <= oldIdx) ? new ArgumentValueException("sortedList") : null);
+                        oldIdx = item.Idx;
                     }
                 }
                 else
                 {
-                    throw new ArgumentValueException("sorted_list");
+                    throw new ArgumentValueException("sortedList");
                 }
             }
-            while (item_avail)
+            while (itemAvail)
             {
-                new_idx.Add(item.Idx);
-                new_dat.Add(item.Dat);
-                item_avail = enumer.MoveNext();
-                if (item_avail)
+                newIdx.Add(item.Idx);
+                newDat.Add(item.Dat);
+                itemAvail = enumer.MoveNext();
+                if (itemAvail)
                 {
                     item = enumer.Current;
-                    Utils.ThrowException((item.Dat == null || item.Idx <= old_idx) ? new ArgumentValueException("sorted_list") : null);
-                    old_idx = item.Idx;
+                    Utils.ThrowException((item.Dat == null || item.Idx <= oldIdx) ? new ArgumentValueException("sortedList") : null);
+                    oldIdx = item.Idx;
                 }
             }
-            while (i < m_idx.Count)
+            while (i < mIdx.Count)
             {
-                new_idx.Add(m_idx[i]);
-                new_dat.Add(m_dat[i]);
+                newIdx.Add(mIdx[i]);
+                newDat.Add(mDat[i]);
                 i++;
             }
-            m_idx = new_idx;
-            m_dat = new_dat;
+            mIdx = newIdx;
+            mDat = newDat;
         }
 
 #if PUBLIC_INNER
@@ -414,27 +414,27 @@ namespace Latino
 #endif
         void Sort()
         {
-            IdxDat<int>[] tmp = new IdxDat<int>[m_idx.Count];
-            for (int i = 0; i < m_idx.Count; i++)
+            IdxDat<int>[] tmp = new IdxDat<int>[mIdx.Count];
+            for (int i = 0; i < mIdx.Count; i++)
             {
-                tmp[i] = new IdxDat<int>(m_idx[i], i);
+                tmp[i] = new IdxDat<int>(mIdx[i], i);
             }
             Array.Sort(tmp);
-            ArrayList<T> new_dat = new ArrayList<T>(m_dat.Count);
+            ArrayList<T> newDat = new ArrayList<T>(mDat.Count);
             for (int i = 0; i < tmp.Length; i++)
             {
-                m_idx[i] = tmp[i].Idx;
-                new_dat.Add(m_dat[tmp[i].Dat]);
+                mIdx[i] = tmp[i].Idx;
+                newDat.Add(mDat[tmp[i].Dat]);
             }
-            m_dat = new_dat;
+            mDat = newDat;
         }
 
         // *** Partial ICollection<T> interface implementation ***
 
         public void Clear()
         {             
-            m_idx.Clear();
-            m_dat.Clear();
+            mIdx.Clear();
+            mDat.Clear();
         }
 
         public bool Contains(T item)
@@ -444,7 +444,7 @@ namespace Latino
 
         public int Count
         {
-            get { return m_idx.Count; }
+            get { return mIdx.Count; }
         }
 
         public bool IsReadOnly
@@ -455,17 +455,17 @@ namespace Latino
         public bool Remove(T item)
         {
             Utils.ThrowException(item == null ? new ArgumentNullException("item") : null);
-            bool val_found = false;
-            for (int direct_idx = m_dat.Count - 1; direct_idx >= 0; direct_idx--)
+            bool valFound = false;
+            for (int directIdx = mDat.Count - 1; directIdx >= 0; directIdx--)
             {
-                if (item.Equals(m_dat[direct_idx]))
+                if (item.Equals(mDat[directIdx]))
                 {
-                    m_idx.RemoveAt(direct_idx);
-                    m_dat.RemoveAt(direct_idx);
-                    val_found = true;
+                    mIdx.RemoveAt(directIdx);
+                    mDat.RemoveAt(directIdx);
+                    valFound = true;
                 }
             }
-            return val_found;
+            return valFound;
         }
 
         // *** IEnumerable<IdxDat<T>> interface implementation ***
@@ -487,8 +487,8 @@ namespace Latino
         public SparseVector<T> Clone()
         {
             SparseVector<T> clone = new SparseVector<T>();
-            clone.m_idx = m_idx.Clone();
-            clone.m_dat = m_dat.Clone();
+            clone.mIdx = mIdx.Clone();
+            clone.mDat = mDat.Clone();
             return clone;
         }
 
@@ -502,12 +502,12 @@ namespace Latino
         public SparseVector<T> DeepClone()
         {
             SparseVector<T> clone = new SparseVector<T>();
-            clone.m_idx.Capacity = m_idx.Capacity;
-            clone.m_dat.Capacity = m_dat.Capacity;
-            for (int i = 0; i < m_idx.Count; i++)
+            clone.mIdx.Capacity = mIdx.Capacity;
+            clone.mDat.Capacity = mDat.Capacity;
+            for (int i = 0; i < mIdx.Count; i++)
             {
-                clone.m_idx.Add(m_idx[i]);
-                clone.m_dat.Add((T)Utils.Clone(m_dat[i], /*deep_clone=*/true));
+                clone.mIdx.Add(mIdx[i]);
+                clone.mDat.Add((T)Utils.Clone(mDat[i], /*deepClone=*/true));
             }
             return clone;
         }
@@ -521,10 +521,10 @@ namespace Latino
 
         public bool ContentEquals(SparseVector<T> other)
         {
-            if (other == null || m_idx.Count != other.m_idx.Count) { return false; }
-            for (int i = 0; i < m_idx.Count; i++)
+            if (other == null || mIdx.Count != other.mIdx.Count) { return false; }
+            for (int i = 0; i < mIdx.Count; i++)
             {
-                if (m_idx[i] != other.m_idx[i] || !Utils.ObjectEquals(m_dat[i], other.m_dat[i], /*deep_cmp=*/true)) 
+                if (mIdx[i] != other.mIdx[i] || !Utils.ObjectEquals(mDat[i], other.mDat[i], /*deepCmp=*/true)) 
                 { 
                     return false; 
                 }
@@ -544,25 +544,25 @@ namespace Latino
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exception
-            writer.WriteInt(m_idx.Count);
-            for (int i = 0; i < m_idx.Count; i++)
+            writer.WriteInt(mIdx.Count);
+            for (int i = 0; i < mIdx.Count; i++)
             {
-                writer.WriteInt(m_idx[i]);
-                writer.WriteValueOrObject<T>(m_dat[i]);
+                writer.WriteInt(mIdx[i]);
+                writer.WriteValueOrObject<T>(mDat[i]);
             }
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            m_idx.Clear();
-            m_dat.Clear();
+            mIdx.Clear();
+            mDat.Clear();
             // the following statements throw serialization-related exception
             int count = reader.ReadInt();
             for (int i = 0; i < count; i++)
             {
-                m_idx.Add(reader.ReadInt());
-                m_dat.Add(reader.ReadValueOrObject<T>());
+                mIdx.Add(reader.ReadInt());
+                mDat.Add(reader.ReadValueOrObject<T>());
             }
         }
 
@@ -589,20 +589,20 @@ namespace Latino
         */
         private class SparseVectorEnumerator : IEnumerator<IdxDat<T>>
         {
-            private SparseVector<T> m_vec;
-            private int m_item_idx
+            private SparseVector<T> mVec;
+            private int mItemIdx
                 = -1;
 
             public SparseVectorEnumerator(SparseVector<T> vec)
             {
-                m_vec = vec;
+                mVec = vec;
             }
 
             // *** IEnumerator<IdxDat<T>> interface implementation ***
 
             public IdxDat<T> Current
             {
-                get { return new IdxDat<T>(m_vec.m_idx[m_item_idx], m_vec.m_dat[m_item_idx]); } // throws ArgumentOutOfRangeException
+                get { return new IdxDat<T>(mVec.mIdx[mItemIdx], mVec.mDat[mItemIdx]); } // throws ArgumentOutOfRangeException
             }
 
             // *** IEnumerator interface implementation ***
@@ -614,8 +614,8 @@ namespace Latino
 
             public bool MoveNext()
             {
-                m_item_idx++;
-                if (m_item_idx == m_vec.m_idx.Count)
+                mItemIdx++;
+                if (mItemIdx == mVec.mIdx.Count)
                 {
                     Reset();
                     return false;
@@ -625,7 +625,7 @@ namespace Latino
 
             public void Reset()
             {
-                m_item_idx = -1;
+                mItemIdx = -1;
             }
 
             // *** IDisposable interface implementation ***
@@ -644,71 +644,71 @@ namespace Latino
         public class ReadOnly : IReadOnlyAdapter<SparseVector<T>>, IEnumerable<IdxDat<T>>, IContentEquatable<SparseVector<T>.ReadOnly>,
             ISerializable
         {
-            private SparseVector<T> m_vec;
+            private SparseVector<T> mVec;
 
             public ReadOnly(SparseVector<T> vec)
             {
                 Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
-                m_vec = vec;
+                mVec = vec;
             }
 
             public ReadOnly(BinarySerializer reader)
             {
-                m_vec = new SparseVector<T>(reader); // throws ArgumentNullException, serialization-related exceptions
+                mVec = new SparseVector<T>(reader); // throws ArgumentNullException, serialization-related exceptions
             }
 
             public bool ContainsAt(int index)
             {
-                return m_vec.ContainsAt(index);
+                return mVec.ContainsAt(index);
             }
 
             public int FirstNonEmptyIndex
             {
-                get { return m_vec.FirstNonEmptyIndex; }
+                get { return mVec.FirstNonEmptyIndex; }
             }
 
             public int LastNonEmptyIndex
             {
-                get { return m_vec.LastNonEmptyIndex; }
+                get { return mVec.LastNonEmptyIndex; }
             }
 
             public IdxDat<T> First
             {
-                get { return m_vec.First; }
+                get { return mVec.First; }
             }
 
             public IdxDat<T> Last
             {
-                get { return m_vec.Last; }
+                get { return mVec.Last; }
             }
 
             public override string ToString()
             {
-                return m_vec.ToString();
+                return mVec.ToString();
             }
 
             // *** Direct access ***
 
-            public IdxDat<T> GetDirect(int direct_idx)
+            public IdxDat<T> GetDirect(int directIdx)
             {
-                return m_vec.GetDirect(direct_idx);
+                return mVec.GetDirect(directIdx);
             }
 
             public int GetDirectIdx(int index)
             {
-                return m_vec.GetDirectIdx(index);
+                return mVec.GetDirectIdx(index);
             }
 
-            public int GetDirectIdx(int index, int direct_start_idx)
+            public int GetDirectIdx(int index, int directStartIdx)
             {
-                return m_vec.GetDirectIdx(index, direct_start_idx);
+                return mVec.GetDirectIdx(index, directStartIdx);
             }
 
             // *** IReadOnlyAdapter interface implementation ***
 
             public SparseVector<T> GetWritableCopy()
             {
-                return m_vec.Clone();
+                return mVec.Clone();
             }
 
             object IReadOnlyAdapter.GetWritableCopy()
@@ -723,37 +723,37 @@ namespace Latino
 #endif
             SparseVector<T> Inner
             {
-                get { return m_vec; }
+                get { return mVec; }
             }
 
             // *** Partial IList<T> interface implementation ***
 
             public int IndexOf(T item)
             {
-                return m_vec.IndexOf(item);
+                return mVec.IndexOf(item);
             }
 
-            public T TryGet(int idx, T default_val)
+            public T TryGet(int idx, T defaultVal)
             {
-                return m_vec.TryGet(idx, default_val);
+                return mVec.TryGet(idx, defaultVal);
             }
 
             public T this[int idx]
             {
-                get { return m_vec[idx]; }
-                set { m_vec[idx] = value; }
+                get { return mVec[idx]; }
+                set { mVec[idx] = value; }
             }
 
             // *** Partial ICollection<T> interface implementation ***
 
             public bool Contains(T item)
             {
-                return m_vec.Contains(item);
+                return mVec.Contains(item);
             }
 
             public int Count
             {
-                get { return m_vec.Count; }
+                get { return mVec.Count; }
             }
 
             public bool IsReadOnly
@@ -765,21 +765,21 @@ namespace Latino
 
             public IEnumerator<IdxDat<T>> GetEnumerator()
             {
-                return m_vec.GetEnumerator();
+                return mVec.GetEnumerator();
             }
 
             // *** IEnumerable interface implementation ***
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return ((IEnumerable)m_vec).GetEnumerator();
+                return ((IEnumerable)mVec).GetEnumerator();
             }
 
             // *** IContentEquatable<SparseVector<T>.ReadOnly> interface implementation ***
 
             public bool ContentEquals(SparseVector<T>.ReadOnly other)
             {
-                return other != null && m_vec.ContentEquals(other.Inner);
+                return other != null && mVec.ContentEquals(other.Inner);
             }
 
             bool IContentEquatable.ContentEquals(object other)
@@ -792,7 +792,7 @@ namespace Latino
 
             public void Save(BinarySerializer writer)
             {
-                m_vec.Save(writer);
+                mVec.Save(writer);
             }
 
             // *** Equality comparer ***
