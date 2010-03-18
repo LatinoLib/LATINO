@@ -140,7 +140,7 @@ namespace Latino
             }
             else if (format.StartsWith("E")) // extended format
             {
-                StringBuilder strBld = new StringBuilder();
+                StringBuilder str = new StringBuilder();
                 int rowCount = mRows.Count; // this will show empty rows at the end if the matrix is not trimmed
                 int colCount = GetLastNonEmptyColIdx() + 1;
                 string valFmt = format.Length == 1 ? "{0}" : "{0:" + format.Substring(1) + "}";
@@ -150,17 +150,17 @@ namespace Latino
                     {
                         if (ContainsAt(rowIdx, colIdx))
                         {
-                            strBld.Append(string.Format(valFmt, this[rowIdx, colIdx])); // throws FormatException
+                            str.Append(string.Format(valFmt, this[rowIdx, colIdx])); // throws FormatException
                         }
                         else
                         {
-                            strBld.Append("-");
+                            str.Append("-");
                         }
-                        if (colIdx != colCount - 1) { strBld.Append("\t"); }
+                        if (colIdx != colCount - 1) { str.Append("\t"); }
                     }
-                    if (rowIdx != rowCount - 1) { strBld.Append("\n"); }
+                    if (rowIdx != rowCount - 1) { str.Append("\n"); }
                 }
-                return strBld.ToString();
+                return str.ToString();
             }
             else
             {

@@ -503,23 +503,23 @@ namespace Latino.Visualization
             //
             // *** Debugging ***
             //
-            //private void ToString(Node node, string prefix, StringBuilder strBld)
+            //private void ToString(Node node, string prefix, StringBuilder str)
             //{
-            //    strBld.Append(prefix);
-            //    strBld.AppendLine(node.ToString());
+            //    str.Append(prefix);
+            //    str.AppendLine(node.ToString());
             //    if (!node.IsLeaf)
             //    {
             //        foreach (Entry entry in node.Entries)
             //        {
-            //            ToString(entry.ChildNode, prefix + "\t", strBld);
+            //            ToString(entry.ChildNode, prefix + "\t", str);
             //        }
             //    }
             //}
             //public override string ToString()
             //{
-            //    StringBuilder strBld = new StringBuilder();
-            //    ToString(mRoot, "", strBld);
-            //    return strBld.ToString();
+            //    StringBuilder str = new StringBuilder();
+            //    ToString(mRoot, "", str);
+            //    return str.ToString();
             //}
             //
             // *** Bounding area optimization ***

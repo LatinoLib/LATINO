@@ -223,32 +223,6 @@ namespace Latino.Visualization
             public SparseVector<double> Vec;
         }
 
-        public class StopWatch
-        {
-            DateTime mDt
-                = DateTime.Now;
-            public double TotalMilliseconds
-            {
-                get { return (DateTime.Now - mDt).TotalMilliseconds; }
-            }
-            public void Reset()
-            {
-                mDt = DateTime.Now;
-            }
-            public void Save(string fileName, int count)
-            {
-                StreamWriter writer = new StreamWriter(fileName, /*append=*/true);
-                writer.WriteLine("{0}\t{1}", count, TotalMilliseconds);
-                writer.Close();
-            }
-            public void Save(string fileName, int count, string addInfo)
-            {
-                StreamWriter writer = new StreamWriter(fileName, /*append=*/true);
-                writer.WriteLine("{0}\t{1}\t{2}", count, TotalMilliseconds, addInfo);
-                writer.Close();
-            }
-        }
-
         // TODO: exceptions
         public Vector2D[] Update(int numDequeue, IEnumerable<SparseVector<double>.ReadOnly> newInst, bool test, LayoutSettings settings, ref PtInfo[] ptInfo, int _count)
         {

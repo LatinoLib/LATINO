@@ -24,12 +24,20 @@ namespace Latino.Model
     */
     public class CosineSimilarity : ISimilarity<SparseVector<double>.ReadOnly>
     {
+        public static CosineSimilarity mInstance
+            = new CosineSimilarity();
+
         public CosineSimilarity()
         {
         }
 
         public CosineSimilarity(BinarySerializer reader)
         {
+        }
+
+        public static CosineSimilarity Instance
+        {
+            get { return mInstance; }
         }
 
         // *** ISimilarity<SparseVector<double>.ReadOnly> interface implementation ***
@@ -48,33 +56,33 @@ namespace Latino.Model
             ArrayList<double> aDat = a.Inner.InnerDat;
             ArrayList<int> bIdx = b.Inner.InnerIdx;
             ArrayList<double> bDat = b.Inner.InnerDat;
-            int aIdxI = aCount == 0 ? 0 : aIdx[0];
-            int bIdxJ = bCount == 0 ? 0 : bIdx[0];
+            int aIdx_i = aCount == 0 ? 0 : aIdx[0];
+            int bIdx_j = bCount == 0 ? 0 : bIdx[0];
             while (true)
             {
-                if (aIdxI < bIdxJ)
+                if (aIdx_i < bIdx_j)
                 {
                     if (++i == aCount) { break; }
-                    aIdxI = aIdx[i];
+                    aIdx_i = aIdx[i];
                 }
-                else if (aIdxI > bIdxJ)
+                else if (aIdx_i > bIdx_j)
                 {
                     if (++j == bCount) { break; }
-                    bIdxJ = bIdx[j];
+                    bIdx_j = bIdx[j];
                 }
                 else
                 {
                     dotProd += aDat[i] * bDat[j];
                     if (++i == aCount || ++j == bCount) { break; }
-                    aIdxI = aIdx[i];
-                    bIdxJ = bIdx[j];
+                    aIdx_i = aIdx[i];
+                    bIdx_j = bIdx[j];
                 }
             }
-            double lenA = Utils.GetVecLenL2(a);
-            Utils.ThrowException(lenA == 0 ? new ArgumentValueException("a") : null);
-            double lenB = Utils.GetVecLenL2(b);
-            Utils.ThrowException(lenB == 0 ? new ArgumentValueException("b") : null);
-            double lenMult = lenA * lenB;
+            double aLen = Utils.GetVecLenL2(a);
+            Utils.ThrowException(aLen == 0 ? new ArgumentValueException("a") : null);
+            double bLen = Utils.GetVecLenL2(b);
+            Utils.ThrowException(bLen == 0 ? new ArgumentValueException("b") : null);
+            double lenMult = aLen * bLen;
             return dotProd / lenMult;
         }
 

@@ -124,14 +124,14 @@ namespace Latino
 
         public override string ToString()
         {
-            StringBuilder strBuilder = new StringBuilder("(");
+            StringBuilder str = new StringBuilder("(");
             foreach (T item in mVec)
             {
-                strBuilder.Append(" ");
-                strBuilder.Append(item);
+                str.Append(" ");
+                str.Append(item);
             }
-            strBuilder.Append(" )");
-            return strBuilder.ToString();
+            str.Append(" )");
+            return str.ToString();
         }
 
         // *** ICollection<T> interface implementation ***

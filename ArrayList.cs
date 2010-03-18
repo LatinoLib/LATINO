@@ -133,14 +133,14 @@ namespace Latino
 
         public override string ToString()
         {
-            StringBuilder strBld = new StringBuilder("(");
+            StringBuilder str = new StringBuilder("(");
             foreach (T item in this)
             {
-                strBld.Append(" ");
-                strBld.Append(item.ToString());
+                str.Append(" ");
+                str.Append(item.ToString());
             }
-            strBld.Append(" )");
-            return strBld.ToString();
+            str.Append(" )");
+            return str.ToString();
         }
 
         // *** ICloneable interface implementation ***

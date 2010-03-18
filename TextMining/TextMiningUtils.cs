@@ -47,7 +47,7 @@ namespace Latino.TextMining
                     stemmer = new Stemmer(language);
                     break;
                 case Language.Estonian:
-                    stopWords = new Set<string>(); // *** missing stop words
+                    stopWords = null; // *** missing stop words
                     stemmer = new Lemmatizer(language);
                     break;
                 case Language.Finnish:

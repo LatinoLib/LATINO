@@ -55,21 +55,21 @@ namespace Latino
 
         public override string ToString()
         {
-            StringBuilder strBld = new StringBuilder();
+            StringBuilder str = new StringBuilder();
             for (int i = 0; i < mVtx.Count; i++)
             {
-                strBld.Append(mVtx[i]);
-                strBld.Append(": { ");
+                str.Append(mVtx[i]);
+                str.Append(": { ");
                 if (mMtx[i] != null)
                 {
                     foreach (IdxDat<EdgeT> vtxInfo in mMtx[i])
                     {
-                        strBld.Append(string.Format("( {0} {1} ) ", mVtx[vtxInfo.Idx], vtxInfo.Dat));
+                        str.Append(string.Format("( {0} {1} ) ", mVtx[vtxInfo.Idx], vtxInfo.Dat));
                     }                    
                 }
-                strBld.AppendLine("}");
+                str.AppendLine("}");
             }
-            return strBld.ToString().TrimEnd('\n', '\r');
+            return str.ToString().TrimEnd('\n', '\r');
         }
 
         public string ToString(string format)

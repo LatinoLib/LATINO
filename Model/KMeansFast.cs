@@ -7,8 +7,8 @@
  *  Desc:		   K-means clustering algorithm (optimized for speed)
  *  Author:        Miha Grcar 
  *  Created on:    Aug-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Mar-2010
+ *  Revision:      Mar-2010
  * 
  ***************************************************************************/
 
@@ -19,8 +19,6 @@ namespace Latino.Model
     public class KMeansFast : IClustering<SparseVector<double>.ReadOnly> 
     {
         private int mK;
-        private static ISimilarity<SparseVector<double>.ReadOnly> mSimilarity
-            = new DotProductSimilarity();
         private Random mRnd
             = new Random();
         private double mEps
@@ -108,7 +106,7 @@ namespace Latino.Model
                         {
                             if (seed1 != seed2)
                             {
-                                simAvg += mSimilarity.GetSimilarity(seed1, seed2);
+                                simAvg += DotProductSimilarity.Instance.GetSimilarity(seed1, seed2);
                             }
                         }
                     }
@@ -126,6 +124,8 @@ namespace Latino.Model
                     centroids[i].Items.Add(bestSeeds[i]);
                     centroids[i].Update();
                 }
+                double[,] dotProd = new double[dataset.Count, mK];
+                SparseMatrix<double> dsMat = ModelUtils.GetTransposedMatrix(dataset);
                 // main loop
                 int iter = 0;
                 double bestClustQual = 0;
@@ -135,23 +135,33 @@ namespace Latino.Model
                     iter++;
                     clustQual = 0;
                     // assign items to clusters
-                    for (int i = 0; i < dataset.Count; i++)
+                    int j = 0;
+                    foreach (Centroid cen in centroids)
                     {
-                        SparseVector<double>.ReadOnly example = dataset[i];
+                        SparseVector<double> cenVec = cen.GetSparseVector();
+                        double[] dotProdSimVec = ModelUtils.GetDotProductSimilarity(dsMat, dataset.Count, cenVec);
+                        for (int i = 0; i < dotProdSimVec.Length; i++)
+                        {
+                            dotProd[i, j] = dotProdSimVec[i];
+                        }
+                        j++;
+                    }
+                    for (int dsInstIdx = 0; dsInstIdx < dataset.Count; dsInstIdx++)
+                    {
                         double maxSim = double.MinValue;
                         ArrayList<int> candidates = new ArrayList<int>();
-                        for (int j = 0; j < mK; j++)
+                        for (int cenIdx = 0; cenIdx < mK; cenIdx++)
                         {
-                            double sim = centroids[j].GetDotProduct(example);
+                            double sim = dotProd[dsInstIdx, cenIdx];
                             if (sim > maxSim)
                             {
                                 maxSim = sim;
                                 candidates.Clear();
-                                candidates.Add(j);
+                                candidates.Add(cenIdx);
                             }
                             else if (sim == maxSim)
                             {
-                                candidates.Add(j);
+                                candidates.Add(cenIdx);
                             }
                         }
                         if (candidates.Count > 1)
@@ -160,7 +170,7 @@ namespace Latino.Model
                         }
                         if (candidates.Count > 0) // *** is this always true? 
                         {
-                            centroids[candidates[0]].Items.Add(i);
+                            centroids[candidates[0]].Items.Add(dsInstIdx);
                             clustQual += maxSim;
                         }
                     }

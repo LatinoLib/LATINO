@@ -114,14 +114,14 @@ namespace Latino
 
         public override string ToString()
         {
-            StringBuilder strBld = new StringBuilder("(");
+            StringBuilder str = new StringBuilder("(");
             for (int i = 0; i < mIdx.Count; i++)
             {
-                strBld.Append(" ");
-                strBld.Append(string.Format("( {0} {1} )", mIdx[i], mDat[i]));
+                str.Append(" ");
+                str.Append(string.Format("( {0} {1} )", mIdx[i], mDat[i]));
             }
-            strBld.Append(" )");
-            return strBld.ToString();
+            str.Append(" )");
+            return str.ToString();
         }
 
         public void Append(SparseVector<T>.ReadOnly otherVec, int thisVecLen)

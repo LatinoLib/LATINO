@@ -4,7 +4,7 @@
  *
  *  File:          IClustering.cs
  *  Version:       1.0
- *  Desc:		   Clustering interface definition
+ *  Desc:		   I    nterface definition
  *  Author:        Miha Grcar
  *  Created on:    Aug-2009
  *  Last modified: Nov-2009

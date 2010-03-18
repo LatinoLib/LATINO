@@ -92,12 +92,12 @@ namespace Latino.Model
 
         public string ToString(string format)
         {
-            StringBuilder strBuilder = new StringBuilder();
+            StringBuilder str = new StringBuilder();
             foreach (Cluster root in mRoots)
             {
-                strBuilder.AppendLine(root.ToString(format)); // throws ArgumentNotSupportedException
+                str.AppendLine(root.ToString(format)); // throws ArgumentNotSupportedException
             }
-            return strBuilder.ToString().TrimEnd('\n', '\r');
+            return str.ToString().TrimEnd('\n', '\r');
         }
 
         // *** ISerializable interface implementation ***

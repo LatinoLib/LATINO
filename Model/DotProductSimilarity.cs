@@ -24,12 +24,20 @@ namespace Latino.Model
     */
     public class DotProductSimilarity : ISimilarity<SparseVector<double>.ReadOnly>
     {
+        public static DotProductSimilarity mInstance
+            = new DotProductSimilarity();
+
         public DotProductSimilarity()
         {
         }
 
         public DotProductSimilarity(BinarySerializer reader)
         {
+        }
+
+        public static DotProductSimilarity Instance
+        {
+            get { return mInstance; }
         }
 
         // *** ISimilarity<SparseVector<double>.ReadOnly> interface implementation ***
@@ -47,26 +55,26 @@ namespace Latino.Model
             ArrayList<double> aDat = a.Inner.InnerDat;
             ArrayList<int> bIdx = b.Inner.InnerIdx;
             ArrayList<double> bDat = b.Inner.InnerDat;            
-            int aIdxI = aIdx[0];
-            int bIdxJ = bIdx[0];
+            int aIdx_i = aIdx[0];
+            int bIdx_j = bIdx[0];
             while (true)
             {
-                if (aIdxI < bIdxJ)
+                if (aIdx_i < bIdx_j)
                 {
                     if (++i == aCount) { break; }
-                    aIdxI = aIdx[i];
+                    aIdx_i = aIdx[i];
                 }
-                else if (aIdxI > bIdxJ)
+                else if (aIdx_i > bIdx_j)
                 {
                     if (++j == bCount) { break; }
-                    bIdxJ = bIdx[j];
+                    bIdx_j = bIdx[j];
                 }
                 else
                 {
                     dotProd += aDat[i] * bDat[j];
                     if (++i == aCount || ++j == bCount) { break; }
-                    aIdxI = aIdx[i];
-                    bIdxJ = bIdx[j];                    
+                    aIdx_i = aIdx[i];
+                    bIdx_j = bIdx[j];                    
                 }
             }
             return dotProd;

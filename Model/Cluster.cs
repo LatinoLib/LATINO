@@ -101,15 +101,15 @@ namespace Latino.Model
             }
             else if (format == "T") // tree 
             {
-                StringBuilder strBuilder = new StringBuilder();
-                ToString("", strBuilder);
-                return strBuilder.ToString().TrimEnd('\n', '\r');
+                StringBuilder str = new StringBuilder();
+                ToString("", str);
+                return str.ToString().TrimEnd('\n', '\r');
             }
             else if (format == "TC") // tree compact
             {
-                StringBuilder strBuilder = new StringBuilder();
-                ToString("", strBuilder);
-                return strBuilder.ToString().TrimEnd('\n', '\r');
+                StringBuilder str = new StringBuilder();
+                ToString("", str);
+                return str.ToString().TrimEnd('\n', '\r');
             }
             else
             {
@@ -117,13 +117,13 @@ namespace Latino.Model
             }
         }
 
-        private void ToString(string tab, StringBuilder strBuilder)
+        private void ToString(string tab, StringBuilder str)
         {
-            strBuilder.Append(tab);
-            strBuilder.AppendLine(ToString("CC"));
+            str.Append(tab);
+            str.AppendLine(ToString("CC"));
             foreach (Cluster child in mChildren)
             {
-                child.ToString(tab + "\t", strBuilder);
+                child.ToString(tab + "\t", str);
             }
         }
 

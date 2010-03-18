@@ -260,9 +260,9 @@ namespace Latino
             }
             else if (typeof(ISerializable).IsAssignableFrom(type))
             {
-                ConstructorInfo cxtor = type.GetConstructor(new Type[] { typeof(BinarySerializer) });
-                Utils.ThrowException(cxtor == null ? new ArgumentNotSupportedException("type") : null);
-                return (ValueType)cxtor.Invoke(new object[] { this }); // throws MemberAccessException, MethodAccessException, TargetInvocationException, NotSupportedException, SecurityException
+                ConstructorInfo ctor = type.GetConstructor(new Type[] { typeof(BinarySerializer) });
+                Utils.ThrowException(ctor == null ? new ArgumentNotSupportedException("type") : null);
+                return (ValueType)ctor.Invoke(new object[] { this }); // throws MemberAccessException, MethodAccessException, TargetInvocationException, NotSupportedException, SecurityException
             }
             else
             {
@@ -285,10 +285,10 @@ namespace Latino
                 case 1:
                     break;
                 case 2:
-                    Type type0 = ReadType(); // throws exceptions (see ReadType())
-                    Utils.ThrowException(type0 == null ? new TypeLoadException() : null); 
-                    Utils.ThrowException(!type.IsAssignableFrom(type0) ? new ArgumentValueException("type") : null);
-                    type = type0;
+                    Type _type = ReadType(); // throws exceptions (see ReadType())
+                    Utils.ThrowException(_type == null ? new TypeLoadException() : null); 
+                    Utils.ThrowException(!type.IsAssignableFrom(_type) ? new ArgumentValueException("type") : null);
+                    type = _type;
                     break;
                 default:
                     throw new InvalidDataException();
@@ -299,9 +299,9 @@ namespace Latino
             }
             else if (typeof(ISerializable).IsAssignableFrom(type))
             {
-                ConstructorInfo cxtor = type.GetConstructor(new Type[] { typeof(BinarySerializer) });
-                Utils.ThrowException(cxtor == null ? new ArgumentNotSupportedException("type") : null);
-                return cxtor.Invoke(new object[] { this }); // throws MemberAccessException, MethodAccessException, TargetInvocationException, NotSupportedException, SecurityException
+                ConstructorInfo ctor = type.GetConstructor(new Type[] { typeof(BinarySerializer) });
+                Utils.ThrowException(ctor == null ? new ArgumentNotSupportedException("type") : null);
+                return ctor.Invoke(new object[] { this }); // throws MemberAccessException, MethodAccessException, TargetInvocationException, NotSupportedException, SecurityException
             }
             else if (type.IsValueType)
             {

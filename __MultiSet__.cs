@@ -2,13 +2,13 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Set.cs
+ *  File:          MultiSet.cs
  *  Version:       1.0
- *  Desc:		   Set data structure based on Dictionary
+ *  Desc:		   Set data structure with multiple equal items
  *  Author:        Miha Grcar
- *  Created on:    Mar-2007
- *  Last modified: May-2008
- *  Revision:      Oct-2009
+ *  Created on:    Mar-2010
+ *  Last modified: Mar-2010
+ *  Revision:      Mar-2010
  *
  ***************************************************************************/
 
@@ -21,43 +21,43 @@ namespace Latino
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class Set<T>
+       |  Class MultiSet<T>
        |
        '-----------------------------------------------------------------------
     */
-    public class Set<T> : ICollection<T>, ICollection, IEnumerable<T>, ICloneable<Set<T>>, IDeeplyCloneable<Set<T>>, IContentEquatable<Set<T>>, ISerializable
+    public class MultiSet<T> : ICollection<T>, ICollection, IEnumerable<T>, ICloneable<MultiSet<T>>, IDeeplyCloneable<MultiSet<T>>, IContentEquatable<MultiSet<T>>, ISerializable
     {
-        private Dictionary<T, object> mItems
-            = new Dictionary<T, object>();
+        private Dictionary<T, int> mItems
+            = new Dictionary<T, int>();
 
-        public Set()
+        public MultiSet()
         {
         }
 
-        public Set(IEqualityComparer<T> comparer)
+        public MultiSet(IEqualityComparer<T> comparer)
         {
-            mItems = new Dictionary<T, object>(comparer);
+            mItems = new Dictionary<T, int>(comparer);
         }
 
-        public Set(BinarySerializer reader)
+        public MultiSet(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        public Set(BinarySerializer reader, IEqualityComparer<T> comparer)
+        public MultiSet(BinarySerializer reader, IEqualityComparer<T> comparer)
         {
-            mItems = new Dictionary<T, object>(comparer);
+            mItems = new Dictionary<T, int>(comparer);
             Load(reader); // throws ArgumentNullException
         }
 
-        public Set(IEnumerable<T> items)
+        public MultiSet(IEnumerable<T> items)
         {
             AddRange(items); // throws ArgumentNullException
         }
 
-        public Set(IEnumerable<T> items, IEqualityComparer<T> comparer)
+        public MultiSet(IEnumerable<T> items, IEqualityComparer<T> comparer)
         {
-            mItems = new Dictionary<T, object>(comparer);
+            mItems = new Dictionary<T, int>(comparer);
             AddRange(items); // throws ArgumentNullException
         }
 
@@ -74,26 +74,26 @@ namespace Latino
             {
                 if (!mItems.ContainsKey(item)) // throws ArgumentNullException
                 {
-                    mItems.Add(item, null);
+                    mItems.Add(item, 1);
                 }
             }
         }
 
-        public static Set<T> Union(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        public static MultiSet<T> Union(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            Set<T> c = (Set<T>)a.GetWritableCopy();
+            MultiSet<T> c = (MultiSet<T>)a.GetWritableCopy();
             c.AddRange(b);
             return c;
         }
 
-        public static Set<T> Intersection(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        public static MultiSet<T> Intersection(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            Set<T> c = new Set<T>();
-            if (b.Count < a.Count) { Set<T>.ReadOnly tmp; tmp = a; a = b; b = tmp; }
+            MultiSet<T> c = new MultiSet<T>();
+            if (b.Count < a.Count) { MultiSet<T>.ReadOnly tmp; tmp = a; a = b; b = tmp; }
             foreach (T item in a)
             {
                 if (b.Contains(item)) { c.Add(item); }
@@ -101,11 +101,11 @@ namespace Latino
             return c;
         }
 
-        public static Set<T> Difference(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        public static MultiSet<T> Difference(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            Set<T> c = new Set<T>();
+            MultiSet<T> c = new MultiSet<T>();
             foreach (T item in a)
             {
                 if (!b.Contains(item)) { c.Add(item); }
@@ -113,11 +113,11 @@ namespace Latino
             return c;
         }
 
-        public static double JaccardSimilarity(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        public static double JaccardSimilarity(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            Set<T> c = Intersection(a, b);
+            MultiSet<T> c = Intersection(a, b);
             double div = (double)(a.Count + b.Count - c.Count);
             if (div == 0) { return 1; } // *** if both sets are empty, the similarity is 1
             return (double)c.Count / div;
@@ -134,7 +134,7 @@ namespace Latino
         { 
             get
             {
-                foreach (KeyValuePair<T, object> item in mItems)
+                foreach (KeyValuePair<T, int> item in mItems)
                 {
                     return item.Key;
                 }
@@ -185,7 +185,7 @@ namespace Latino
         {
             if (!mItems.ContainsKey(item)) // throws ArgumentNullException
             {
-                mItems.Add(item, null);
+                mItems.Add(item, 1);
             }
         }
 
@@ -262,9 +262,9 @@ namespace Latino
 
         // *** ICloneable interface implementation ***
 
-        public Set<T> Clone()
+        public MultiSet<T> Clone()
         {
-            return new Set<T>(mItems.Keys);
+            return new MultiSet<T>(mItems.Keys);
         }
 
         object ICloneable.Clone()
@@ -274,9 +274,9 @@ namespace Latino
 
         // *** IDeeplyCloneable interface implementation ***
 
-        public Set<T> DeepClone()
+        public MultiSet<T> DeepClone()
         {
-            Set<T> clone = new Set<T>();
+            MultiSet<T> clone = new MultiSet<T>();
             foreach (T item in mItems.Keys)
             {
                 clone.Add((T)Utils.Clone(item, /*deepClone=*/true));
@@ -289,9 +289,9 @@ namespace Latino
             return DeepClone();
         }
 
-        // *** IContentEquatable<Set<T>> interface implementation ***
+        // *** IContentEquatable<MultiSet<T>> interface implementation ***
 
-        public bool ContentEquals(Set<T> other)
+        public bool ContentEquals(MultiSet<T> other)
         {
             if (other == null || Count != other.Count) { return false; }
             foreach (T item in mItems.Keys)
@@ -303,8 +303,8 @@ namespace Latino
 
         bool IContentEquatable.ContentEquals(object other)
         {
-            Utils.ThrowException((other != null && !(other is Set<T>)) ? new ArgumentTypeException("other") : null);
-            return ContentEquals((Set<T>)other);
+            Utils.ThrowException((other != null && !(other is MultiSet<T>)) ? new ArgumentTypeException("other") : null);
+            return ContentEquals((MultiSet<T>)other);
         }
 
         // *** ISerializable interface implementation ***
@@ -314,7 +314,7 @@ namespace Latino
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions 
             writer.WriteInt(mItems.Count); 
-            foreach (KeyValuePair<T, object> item in mItems)
+            foreach (KeyValuePair<T, int> item in mItems)
             {
                 writer.WriteValueOrObject<T>(item.Key); 
             }
@@ -328,29 +328,29 @@ namespace Latino
             int count = reader.ReadInt();
             for (int i = 0; i < count; i++)
             {
-                mItems.Add(reader.ReadValueOrObject<T>(), null); 
+                mItems.Add(reader.ReadValueOrObject<T>(), 1); 
             }
         }
 
         // *** Implicit cast to a read-only adapter ***
 
-        public static implicit operator Set<T>.ReadOnly(Set<T> set)
+        public static implicit operator MultiSet<T>.ReadOnly(MultiSet<T> set)
         {
             if (set == null) { return null; }
-            return new Set<T>.ReadOnly(set);
+            return new MultiSet<T>.ReadOnly(set);
         }
 
         /* .-----------------------------------------------------------------------
            |
-           |  Class Set<T>.ReadOnly
+           |  Class MultiSet<T>.ReadOnly
            |
            '-----------------------------------------------------------------------
         */
-        public class ReadOnly : IReadOnlyAdapter<Set<T>>, ICollection, IEnumerable<T>, IEnumerable, IContentEquatable<Set<T>.ReadOnly>, ISerializable
+        public class ReadOnly : IReadOnlyAdapter<MultiSet<T>>, ICollection, IEnumerable<T>, IEnumerable, IContentEquatable<MultiSet<T>.ReadOnly>, ISerializable
         {
-            private Set<T> mSet;
+            private MultiSet<T> mSet;
 
-            public ReadOnly(Set<T> set)
+            public ReadOnly(MultiSet<T> set)
             {
                 Utils.ThrowException(set == null ? new ArgumentNullException("set") : null);
                 mSet = set;
@@ -358,7 +358,7 @@ namespace Latino
 
             public ReadOnly(BinarySerializer reader)
             {
-                mSet = new Set<T>(reader); // throws ArgumentNullException, serialization-related exceptions
+                mSet = new MultiSet<T>(reader); // throws ArgumentNullException, serialization-related exceptions
             }
 
             public T[] ToArray()
@@ -388,7 +388,7 @@ namespace Latino
 
             // *** IReadOnlyAdapter interface implementation ***
 
-            public Set<T> GetWritableCopy()
+            public MultiSet<T> GetWritableCopy()
             {
                 return mSet.Clone();
             }
@@ -403,7 +403,7 @@ namespace Latino
 #else
             internal
 #endif
-            Set<T> Inner
+            MultiSet<T> Inner
             {
                 get { return mSet; }
             }
@@ -461,17 +461,17 @@ namespace Latino
                 return ((IEnumerable)mSet).GetEnumerator();
             }
 
-            // *** IContentEquatable<Set<T>.ReadOnly> interface implementation ***
+            // *** IContentEquatable<MultiSet<T>.ReadOnly> interface implementation ***
 
-            public bool ContentEquals(Set<T>.ReadOnly other)
+            public bool ContentEquals(MultiSet<T>.ReadOnly other)
             {
                 return other != null && mSet.ContentEquals(other.Inner);
             }
 
             bool IContentEquatable.ContentEquals(object other)
             {
-                Utils.ThrowException((other != null && !(other is Set<T>.ReadOnly)) ? new ArgumentTypeException("other") : null);
-                return ContentEquals((Set<T>.ReadOnly)other);
+                Utils.ThrowException((other != null && !(other is MultiSet<T>.ReadOnly)) ? new ArgumentTypeException("other") : null);
+                return ContentEquals((MultiSet<T>.ReadOnly)other);
             }
 
             // *** ISerializable interface implementation ***

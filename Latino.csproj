@@ -50,6 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinaryVector.cs" />
+    <Compile Include="Misc\StopWatch.cs" />
+    <Compile Include="__MultiSet__.cs" />
     <Compile Include="IPair.cs" />
     <Compile Include="IEnumerableList.cs" />
     <Compile Include="ICloneable.cs" />

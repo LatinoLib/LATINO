@@ -136,6 +136,8 @@ namespace Latino.Model
                     centroids[i].Update();
                     medoids.Add(new KeyDat<double, int>(-1, bestSeeds[i]));
                 }
+                double[,] dotProd = new double[mDataset.Count, mK];
+                SparseMatrix<double> dsMat = ModelUtils.GetTransposedMatrix(mDataset);
                 // main loop
                 int iter = 0;
                 double bestClustQual = 0;
@@ -145,23 +147,37 @@ namespace Latino.Model
                     iter++;
                     clustQual = 0;
                     // assign items to clusters
-                    for (int i = 0; i < mDataset.Count; i++)
+                    //StopWatch stopWatch = new StopWatch();               
+                    int j = 0;
+                    foreach (Centroid cen in centroids)
                     {
-                        SparseVector<double>.ReadOnly example = mDataset[i];
+                        SparseVector<double> cenVec = cen.GetSparseVector();
+                        double[] dotProdSimVec = ModelUtils.GetDotProductSimilarity(dsMat, mDataset.Count, cenVec);
+                        for (int i = 0; i < dotProdSimVec.Length; i++)
+                        {
+                            if (dotProdSimVec[i] > 0)
+                            {
+                                dotProd[i, j] = dotProdSimVec[i];
+                            }
+                        }
+                        j++;
+                    }
+                    for (int dsInstIdx = 0; dsInstIdx < mDataset.Count; dsInstIdx++)
+                    {
                         double maxSim = double.MinValue;
                         ArrayList<int> candidates = new ArrayList<int>();
-                        for (int j = 0; j < mK; j++)
+                        for (int cenIdx = 0; cenIdx < mK; cenIdx++)
                         {
-                            double sim = centroids[j].GetDotProduct(example);
+                            double sim = dotProd[dsInstIdx, cenIdx];
                             if (sim > maxSim)
                             {
                                 maxSim = sim;
                                 candidates.Clear();
-                                candidates.Add(j);
+                                candidates.Add(cenIdx);
                             }
                             else if (sim == maxSim)
                             {
-                                candidates.Add(j);
+                                candidates.Add(cenIdx);
                             }
                         }
                         if (candidates.Count > 1)
@@ -170,14 +186,15 @@ namespace Latino.Model
                         }
                         if (candidates.Count > 0) // *** is this always true? 
                         {
-                            centroids[candidates[0]].Items.Add(i);
+                            centroids[candidates[0]].Items.Add(dsInstIdx);
                             clustQual += maxSim;
                             if (medoids[candidates[0]].Key < maxSim)
                             {
-                                medoids[candidates[0]] = new KeyDat<double, int>(maxSim, i);
+                                medoids[candidates[0]] = new KeyDat<double, int>(maxSim, dsInstIdx);
                             }
                         }
                     }
+                    //Console.WriteLine(stopWatch.TotalMilliseconds);
                     clustQual /= (double)mDataset.Count;
                     Utils.VerboseLine("*** Iteration {0} ***", iter);
                     Utils.VerboseLine("Quality: {0:0.0000}", clustQual);
@@ -255,6 +272,7 @@ namespace Latino.Model
         // TODO: exceptions
         public ClusteringResult Update(int dequeueN, IEnumerable<SparseVector<double>.ReadOnly> addList, ref int iter)
         {
+            StopWatch stopWatch = new StopWatch();
             // update centroid data (1)
             foreach (Centroid centroid in mCentroids)
             {
@@ -266,10 +284,14 @@ namespace Latino.Model
                 centroid.Update();
                 centroid.NormalizeL2();
             }
+            Console.WriteLine(">>> {0} >>> update centroid data (1)", stopWatch.TotalMilliseconds);
+            stopWatch.Reset();
             // update dataset
             mDataset.RemoveRange(0, dequeueN);
             int ofs = mDataset.Count;
             mDataset.AddRange(addList);
+            Console.WriteLine(">>> {0} >>> update dataset", stopWatch.TotalMilliseconds);
+            stopWatch.Reset();
             // update centroid data (2)
             foreach (Centroid centroid in mCentroids)
             {
@@ -281,6 +303,8 @@ namespace Latino.Model
                 centroid.CurrentItems.Inner.SetItems(itemsOfs);
                 centroid.Items.SetItems(itemsOfs);
             }
+            Console.WriteLine(">>> {0} >>> update centroid data (2)", stopWatch.TotalMilliseconds);
+            stopWatch.Reset();
             // assign new instances
             double bestClustQual = 0;
             {
@@ -332,6 +356,8 @@ namespace Latino.Model
                 Utils.VerboseLine("*** Initialization ***");
                 Utils.VerboseLine("Quality: {0:0.0000}", bestClustQual);
             }
+            Console.WriteLine(">>> {0} >>> assign new instances", stopWatch.TotalMilliseconds);
+            stopWatch.Reset();
             // main k-means loop
             iter = 0;
             while (true)
@@ -366,6 +392,11 @@ namespace Latino.Model
                         mCentroids[candidates[0]].Items.Add(i);
                     }
                 }
+                //
+                // *** OPTIMIZE THIS with GetDotProductSimilarity (see this.Cluster) !!! ***
+                //
+                Console.WriteLine(">>> {0} >>> loop: assign items to clusters", stopWatch.TotalMilliseconds);
+                stopWatch.Reset();
                 double clustQual = 0;
                 // update centroids
                 foreach (Centroid centroid in mCentroids)
@@ -383,6 +414,8 @@ namespace Latino.Model
                     }
                 }
                 clustQual /= (double)mDataset.Count;
+                Console.WriteLine(">>> {0} >>> loop: update centroids", stopWatch.TotalMilliseconds);
+                stopWatch.Reset();
                 Utils.VerboseLine("*** Iteration {0} ***", iter);
                 Utils.VerboseLine("Quality: {0:0.0000} Diff: {1:0.0000}", clustQual, clustQual - bestClustQual);
                 // check if done
