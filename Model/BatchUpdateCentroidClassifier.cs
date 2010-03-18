@@ -86,7 +86,7 @@ namespace Latino.Model
             foreach (LblT label in labels)
             {
                 CentroidData data = mCentroids[label]; // throws ArgumentNullException, KeyNotFoundException
-                centroids.Add(data.GetCentroid());
+                centroids.Add(data.GetSparseVector());
             }
             return centroids;
         }
@@ -160,7 +160,7 @@ namespace Latino.Model
                 foreach (CentroidData centroidData in mCentroids.Values)
                 {
                     Utils.Verbose("\rCentroid {0} / {1} ...", ++i, mCentroids.Count);
-                    centroidData.UpdateCentroid(mPositiveValuesOnly);
+                    centroidData.Update(mPositiveValuesOnly);
                     centroidData.UpdateCentroidLen();
                 }
                 Utils.VerboseLine();
@@ -220,140 +220,6 @@ namespace Latino.Model
             mIterations = reader.ReadInt();
             mDamping = reader.ReadDouble();
             mPositiveValuesOnly = reader.ReadBool();
-        }
-
-        /* .-----------------------------------------------------------------------
-           |
-           |  Class CentroidData
-           |
-           '-----------------------------------------------------------------------
-        */
-        // *** would it make sense to use Centroid<LblT> within/instead of CentroidData?
-        private class CentroidData : ISerializable
-        {
-            public Dictionary<int, double> CentroidSum
-                = new Dictionary<int, double>();
-            public Dictionary<int, double> CentroidDiff
-                = new Dictionary<int, double>();
-            public double CentroidLen
-                = -1;
-
-            public CentroidData()
-            { 
-            }
-
-            public CentroidData(BinarySerializer reader)
-            {
-                Load(reader); 
-            }
-
-            public void AddToSum(SparseVector<double>.ReadOnly vec)
-            {
-                foreach (IdxDat<double> item in vec)
-                {
-                    if (CentroidSum.ContainsKey(item.Idx))
-                    {
-                        CentroidSum[item.Idx] += item.Dat;
-                    }
-                    else
-                    {
-                        CentroidSum.Add(item.Idx, item.Dat);
-                    }
-                }
-            }
-
-            public void AddToDiff(double mult, SparseVector<double>.ReadOnly vec)
-            {                
-                foreach (IdxDat<double> item in vec)
-                {
-                    if (CentroidDiff.ContainsKey(item.Idx))
-                    {
-                        CentroidDiff[item.Idx] += item.Dat * mult;
-                    }
-                    else
-                    {
-                        CentroidDiff.Add(item.Idx, item.Dat * mult);
-                    }
-                }
-            }
-
-            public void UpdateCentroid(bool positiveValuesOnly)
-            {
-                foreach (KeyValuePair<int, double> item in CentroidDiff)
-                {
-                    if (CentroidSum.ContainsKey(item.Key))
-                    {
-                        CentroidSum[item.Key] += item.Value;
-                    }
-                    else 
-                    {
-                        CentroidSum.Add(item.Key, item.Value);
-                    }
-                }
-                CentroidDiff.Clear();
-                if (positiveValuesOnly)
-                {
-                    Dictionary<int, double> tmp = new Dictionary<int, double>();
-                    foreach (KeyValuePair<int, double> item in CentroidSum)
-                    {
-                        if (item.Value > 0)
-                        {
-                            tmp.Add(item.Key, item.Value);
-                        }
-                    }
-                    CentroidSum = tmp;
-                }
-            }
-
-            public void UpdateCentroidLen()
-            {
-                CentroidLen = 0;
-                foreach (double val in CentroidSum.Values)
-                {
-                    CentroidLen += val * val;
-                }
-                //Utils.VerboseLine(CentroidLen); // *** CentroidLen overflow?
-                CentroidLen = Math.Sqrt(CentroidLen);
-            }
-
-            public double GetDotProduct(SparseVector<double>.ReadOnly vec)
-            {
-                double result = 0;
-                foreach (IdxDat<double> item in vec)
-                {
-                    if (CentroidSum.ContainsKey(item.Idx))
-                    {
-                        result += item.Dat * CentroidSum[item.Idx]; 
-                    }
-                }
-                return result / CentroidLen;
-            }
-
-            public SparseVector<double> GetCentroid()
-            {
-                SparseVector<double> vec = new SparseVector<double>();
-                foreach (KeyValuePair<int, double> item in CentroidSum)
-                {
-                    vec.InnerIdx.Add(item.Key);
-                    vec.InnerDat.Add(item.Value / CentroidLen);
-                }
-                vec.Sort();
-                return vec;
-            }
-
-            // *** ISerializable interface implementation ***
-
-            public void Save(BinarySerializer writer)
-            {
-                Utils.SaveDictionary(CentroidSum, writer);
-                writer.WriteDouble(CentroidLen);
-            }
-
-            public void Load(BinarySerializer reader)
-            {
-                CentroidSum = Utils.LoadDictionary<int, double>(reader);
-                CentroidLen = reader.ReadDouble();
-            }
         }
     }
 }

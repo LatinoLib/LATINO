@@ -78,13 +78,11 @@ namespace Latino.Model
             for (int trial = 1; trial <= mTrials; trial++)
             {
                 Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, mTrials);
-                ArrayList<Centroid> centroids = new ArrayList<Centroid>(mK);
+                ArrayList<CentroidData> centroids = new ArrayList<CentroidData>(mK);
                 ArrayList<int> bestSeeds = null;
-                centroids.Add(new Centroid(dataset));
-                int vecLen = centroids[0].VecLen;
-                for (int i = 1; i < mK; i++)
+                for (int i = 0; i < mK; i++)
                 {
-                    centroids.Add(new Centroid(dataset, vecLen));
+                    centroids.Add(new CentroidData());
                 }
                 // select seed items
                 double minSim = double.MaxValue;
@@ -122,7 +120,8 @@ namespace Latino.Model
                 for (int i = 0; i < mK; i++)
                 {
                     centroids[i].Items.Add(bestSeeds[i]);
-                    centroids[i].Update();
+                    centroids[i].Update(dataset);
+                    centroids[i].UpdateCentroidLen();
                 }
                 double[,] dotProd = new double[dataset.Count, mK];
                 SparseMatrix<double> dsMat = ModelUtils.GetTransposedMatrix(dataset);
@@ -136,7 +135,7 @@ namespace Latino.Model
                     clustQual = 0;
                     // assign items to clusters
                     int j = 0;
-                    foreach (Centroid cen in centroids)
+                    foreach (CentroidData cen in centroids)
                     {
                         SparseVector<double> cenVec = cen.GetSparseVector();
                         double[] dotProdSimVec = ModelUtils.GetDotProductSimilarity(dsMat, dataset.Count, cenVec);
@@ -186,9 +185,8 @@ namespace Latino.Model
                     // compute new centroids
                     for (int i = 0; i < mK; i++)
                     {
-                        centroids[i].ResetNrmL2();
-                        centroids[i].Update();
-                        centroids[i].NormalizeL2();
+                        centroids[i].Update(dataset);
+                        centroids[i].UpdateCentroidLen();
                     }
                 }
                 if (trial == 1 || clustQual > globalBestClustQual)

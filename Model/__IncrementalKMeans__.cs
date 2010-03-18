@@ -28,7 +28,7 @@ namespace Latino.Model
             = 0.0005;
         private int mTrials
             = 1;
-        private ArrayList<Centroid> mCentroids
+        private ArrayList<CentroidData> mCentroids
             = null;
         private ArrayList<KeyDat<double, int>> mMedoids
             = null;
@@ -88,13 +88,11 @@ namespace Latino.Model
             for (int trial = 1; trial <= mTrials; trial++)
             {
                 Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, mTrials);
-                ArrayList<Centroid> centroids = new ArrayList<Centroid>(mK);
+                ArrayList<CentroidData> centroids = new ArrayList<CentroidData>(mK);
                 ArrayList<int> bestSeeds = null;
-                centroids.Add(new Centroid(mDataset));
-                int vecLen = centroids[0].VecLen;
-                for (int i = 1; i < mK; i++)
+                for (int i = 0; i < mK; i++)
                 {
-                    centroids.Add(new Centroid(mDataset, vecLen));
+                    centroids.Add(new CentroidData());
                 }
                 // select seed items
                 double minSim = double.MaxValue;
@@ -133,7 +131,8 @@ namespace Latino.Model
                 for (int i = 0; i < mK; i++)
                 {
                     centroids[i].Items.Add(bestSeeds[i]);
-                    centroids[i].Update();
+                    centroids[i].Update(mDataset);
+                    centroids[i].UpdateCentroidLen();
                     medoids.Add(new KeyDat<double, int>(-1, bestSeeds[i]));
                 }
                 double[,] dotProd = new double[mDataset.Count, mK];
@@ -149,7 +148,7 @@ namespace Latino.Model
                     // assign items to clusters
                     //StopWatch stopWatch = new StopWatch();               
                     int j = 0;
-                    foreach (Centroid cen in centroids)
+                    foreach (CentroidData cen in centroids)
                     {
                         SparseVector<double> cenVec = cen.GetSparseVector();
                         double[] dotProdSimVec = ModelUtils.GetDotProductSimilarity(dsMat, mDataset.Count, cenVec);
@@ -201,9 +200,8 @@ namespace Latino.Model
                     // compute new centroids
                     for (int i = 0; i < mK; i++)
                     {
-                        centroids[i].ResetNrmL2();
-                        centroids[i].Update();
-                        centroids[i].NormalizeL2();
+                        centroids[i].Update(mDataset);
+                        centroids[i].UpdateCentroidLen();
                     }
                     // check if done
                     if (iter > 1 && clustQual - bestClustQual <= mEps)
@@ -248,7 +246,7 @@ namespace Latino.Model
         public ArrayList<SparseVector<double>> GetCentroids()
         {
             ArrayList<SparseVector<double>> centroids = new ArrayList<SparseVector<double>>();
-            foreach (Centroid centroid in mCentroids)
+            foreach (CentroidData centroid in mCentroids)
             {
                 centroids.Add(centroid.GetSparseVector());
             }
@@ -274,15 +272,14 @@ namespace Latino.Model
         {
             StopWatch stopWatch = new StopWatch();
             // update centroid data (1)
-            foreach (Centroid centroid in mCentroids)
+            foreach (CentroidData centroid in mCentroids)
             {
                 foreach (int item in centroid.CurrentItems)
                 {
                     if (item >= dequeueN) { centroid.Items.Add(item); }
                 }
-                centroid.ResetNrmL2();
-                centroid.Update();
-                centroid.NormalizeL2();
+                centroid.Update(mDataset);
+                centroid.UpdateCentroidLen();
             }
             Console.WriteLine(">>> {0} >>> update centroid data (1)", stopWatch.TotalMilliseconds);
             stopWatch.Reset();
@@ -293,7 +290,7 @@ namespace Latino.Model
             Console.WriteLine(">>> {0} >>> update dataset", stopWatch.TotalMilliseconds);
             stopWatch.Reset();
             // update centroid data (2)
-            foreach (Centroid centroid in mCentroids)
+            foreach (CentroidData centroid in mCentroids)
             {
                 Set<int> itemsOfs = new Set<int>();
                 foreach (int item in centroid.CurrentItems)
@@ -338,14 +335,13 @@ namespace Latino.Model
                     i++;
                 }
                 // update centroids
-                foreach (Centroid centroid in mCentroids)
+                foreach (CentroidData centroid in mCentroids)
                 {
-                    centroid.ResetNrmL2();
-                    centroid.Update();
-                    centroid.NormalizeL2();
+                    centroid.Update(mDataset);
+                    centroid.UpdateCentroidLen();
                 }
                 //Console.WriteLine(GetQual());
-                foreach (Centroid centroid in mCentroids)
+                foreach (CentroidData centroid in mCentroids)
                 {
                     foreach (int itemIdx in centroid.CurrentItems)
                     {
@@ -399,14 +395,13 @@ namespace Latino.Model
                 stopWatch.Reset();
                 double clustQual = 0;
                 // update centroids
-                foreach (Centroid centroid in mCentroids)
+                foreach (CentroidData centroid in mCentroids)
                 {
-                    centroid.ResetNrmL2();
-                    centroid.Update();
-                    centroid.NormalizeL2();
+                    centroid.Update(mDataset);
+                    centroid.UpdateCentroidLen();
                 }
                 //Console.WriteLine(GetQual());
-                foreach (Centroid centroid in mCentroids)
+                foreach (CentroidData centroid in mCentroids)
                 {
                     foreach (int itemIdx in centroid.CurrentItems)
                     {

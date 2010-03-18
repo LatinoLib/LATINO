@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="BinaryVector.cs" />
     <Compile Include="Misc\StopWatch.cs" />
+    <Compile Include="Model\CentroidData.cs" />
     <Compile Include="__MultiSet__.cs" />
     <Compile Include="IPair.cs" />
     <Compile Include="IEnumerableList.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="IXmlSerializable.cs" />
     <Compile Include="KeyDat.cs" />
     <Compile Include="ListEnum.cs" />
-    <Compile Include="Model\Centroid.cs" />
     <Compile Include="Model\CentroidClassifier.cs" />
     <Compile Include="Model\Prediction.cs" />
     <Compile Include="Model\Cluster.cs" />
