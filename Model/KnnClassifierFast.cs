@@ -2,13 +2,13 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          KnnClassifier.cs
+ *  File:          KnnClassifierFast.cs
  *  Version:       1.0
- *  Desc:		   K-nearest neighbors classifier 
+ *  Desc:		   K-nearest neighbors classifier (optimized for speed)
  *  Author:        Miha Grcar
- *  Created on:    Aug-2007
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Created on:    Mar-2010
+ *  Last modified: Mar-2010
+ *  Revision:      Mar-2010
  *
  ***************************************************************************/
 
@@ -19,29 +19,28 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class KnnClassifier<LblT, ExT>
+       |  Class KnnClassifierFast<LblT>
        |
        '-----------------------------------------------------------------------
     */
-    public class KnnClassifier<LblT, ExT> : IModel<LblT, ExT>
+    public class KnnClassifierFast<LblT> : IModel<LblT, SparseVector<double>.ReadOnly>
     {
-        private ArrayList<LabeledExample<LblT, ExT>> mExamples
+        SparseMatrix<double> mDatasetMtx
+            = null;
+        ArrayList<LblT> mLabels
             = null;
         private IEqualityComparer<LblT> mLblCmp
-            = null;
-        private ISimilarity<ExT> mSimilarity
             = null;
         private int mK
             = 10;
         private bool mSoftVoting
             = true;
 
-        public KnnClassifier(ISimilarity<ExT> similarity)
-        {
-            Similarity = similarity; // throws ArgumentNullException
+        public KnnClassifierFast()
+        { 
         }
 
-        public KnnClassifier(BinarySerializer reader)
+        public KnnClassifierFast(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
@@ -50,16 +49,6 @@ namespace Latino.Model
         {
             get { return mLblCmp; }
             set { mLblCmp = value; }
-        }
-
-        public ISimilarity<ExT> Similarity
-        {
-            get { return mSimilarity; }
-            set
-            {
-                Utils.ThrowException(value == null ? new ArgumentNullException("Similarity") : null);
-                mSimilarity = value;
-            }
         }
 
         public int K
@@ -78,43 +67,48 @@ namespace Latino.Model
             set { mSoftVoting = value; }
         }
 
-        // *** IModel<LblT, ExT> interface implementation ***
+        // *** IModel<LblT, SparseVector<double>.ReadOnly> interface implementation ***
 
         public Type RequiredExampleType
         {
-            get { return typeof(ExT); }
+            get { return typeof(SparseVector<double>.ReadOnly); }
         }
 
         public bool IsTrained
         {
-            get { return mExamples != null; }
+            get { return mDatasetMtx != null; }
         }
 
-        public void Train(ILabeledExampleCollection<LblT, ExT> dataset)
+        public void Train(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
-            mExamples = new ArrayList<LabeledExample<LblT, ExT>>(dataset);
+            mDatasetMtx = ModelUtils.GetTransposedMatrix(ModelUtils.ConvertToUnlabeledDataset(dataset));
+            mLabels = new ArrayList<LblT>();
+            foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeledExample in dataset)
+            {
+                mLabels.Add(labeledExample.Label);
+            }
         }
 
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, ExT>) ? new ArgumentTypeException("dataset") : null);
-            Train((ILabeledExampleCollection<LblT, ExT>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
         }
 
-        public Prediction<LblT> Predict(ExT example)
+        public Prediction<LblT> Predict(SparseVector<double>.ReadOnly example)
         {
-            Utils.ThrowException((mExamples == null || mSimilarity == null) ? new InvalidOperationException() : null);
+            Utils.ThrowException(mDatasetMtx == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            ArrayList<KeyDat<double, LabeledExample<LblT, ExT>>> tmp = new ArrayList<KeyDat<double, LabeledExample<LblT, ExT>>>(mExamples.Count);
-            foreach (LabeledExample<LblT, ExT> labeledExample in mExamples)
-            {
-                double sim = mSimilarity.GetSimilarity(example, labeledExample.Example);
-                tmp.Add(new KeyDat<double, LabeledExample<LblT, ExT>>(sim, labeledExample));
+            ArrayList<KeyDat<double, LblT>> tmp = new ArrayList<KeyDat<double, LblT>>(mLabels.Count);
+            double[] dotProdSimVec = ModelUtils.GetDotProductSimilarity(mDatasetMtx, mLabels.Count, example);
+            for (int i = 0; i < mLabels.Count; i++)
+            { 
+                tmp.Add(new KeyDat<double, LblT>(dotProdSimVec[i], mLabels[i]));
             }
-            tmp.Sort(new DescSort<KeyDat<double, LabeledExample<LblT, ExT>>>());
+            tmp.Sort(new DescSort<KeyDat<double, LblT>>());
             Dictionary<LblT, double> voting = new Dictionary<LblT, double>(mLblCmp);
             int n = Math.Min(mK, tmp.Count);
             double value;
@@ -122,14 +116,14 @@ namespace Latino.Model
             {
                 for (int i = 0; i < n; i++)
                 {
-                    KeyDat<double, LabeledExample<LblT, ExT>> item = tmp[i];
-                    if (!voting.TryGetValue(item.Dat.Label, out value))
+                    KeyDat<double, LblT> item = tmp[i];
+                    if (!voting.TryGetValue(item.Dat, out value))
                     {
-                        voting.Add(item.Dat.Label, item.Key);
+                        voting.Add(item.Dat, item.Key);
                     }
                     else
                     {
-                        voting[item.Dat.Label] = value + item.Key;
+                        voting[item.Dat] = value + item.Key;
                     }
                 }
             }
@@ -137,14 +131,14 @@ namespace Latino.Model
             {
                 for (int i = 0; i < n; i++)
                 {
-                    KeyDat<double, LabeledExample<LblT, ExT>> item = tmp[i];
-                    if (!voting.TryGetValue(item.Dat.Label, out value))
+                    KeyDat<double, LblT> item = tmp[i];
+                    if (!voting.TryGetValue(item.Dat, out value))
                     {
-                        voting.Add(item.Dat.Label, 1);
+                        voting.Add(item.Dat, 1);
                     }
                     else
                     {
-                        voting[item.Dat.Label] = value + 1.0;
+                        voting[item.Dat] = value + 1.0;
                     }
                 }
             }
@@ -160,8 +154,8 @@ namespace Latino.Model
         Prediction<LblT> IModel<LblT>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            Utils.ThrowException(!(example is ExT) ? new ArgumentTypeException("example") : null);
-            return Predict((ExT)example); // throws InvalidOperationException
+            Utils.ThrowException(!(example is SparseVector<double>.ReadOnly) ? new ArgumentTypeException("example") : null);
+            return Predict((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
         }
 
         // *** ISerializable interface implementation ***
@@ -170,12 +164,12 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteBool(mExamples != null);
-            if (mExamples != null)
+            writer.WriteBool(mDatasetMtx != null);
+            if (mDatasetMtx != null)
             {
-                mExamples.Save(writer);
+                mDatasetMtx.Save(writer);
+                mLabels.Save(writer);
             }
-            writer.WriteObject<ISimilarity<ExT>>(mSimilarity);
             writer.WriteInt(mK);
             writer.WriteBool(mSoftVoting);
         }
@@ -184,12 +178,13 @@ namespace Latino.Model
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            mExamples = null;
+            mDatasetMtx = null;
+            mLabels = null;
             if (reader.ReadBool())
             {
-                mExamples = new ArrayList<LabeledExample<LblT, ExT>>(reader);
+                mDatasetMtx = new SparseMatrix<double>(reader);
+                mLabels = new ArrayList<LblT>(reader);
             }
-            mSimilarity = reader.ReadObject<ISimilarity<ExT>>();
             mK = reader.ReadInt();
             mSoftVoting = reader.ReadBool();
         }

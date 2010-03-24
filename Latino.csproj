@@ -52,6 +52,7 @@
     <Compile Include="BinaryVector.cs" />
     <Compile Include="Misc\StopWatch.cs" />
     <Compile Include="Model\CentroidData.cs" />
+    <Compile Include="Model\KnnClassifierFast.cs" />
     <Compile Include="__MultiSet__.cs" />
     <Compile Include="IPair.cs" />
     <Compile Include="IEnumerableList.cs" />

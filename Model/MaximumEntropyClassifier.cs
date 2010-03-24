@@ -134,7 +134,7 @@ namespace Latino.Model
             writer.WriteInt(mNumIter);
             writer.WriteInt(mCutOff);
             writer.WriteInt(mNumThreads);
-            mLambda.Save(writer);
+            writer.WriteObject(mLambda);
             new ArrayList<LblT>(mIdxToLbl).Save(writer);
         }
 
@@ -146,7 +146,7 @@ namespace Latino.Model
             mNumIter = reader.ReadInt();
             mCutOff = reader.ReadInt();
             mNumThreads = reader.ReadInt();
-            mLambda = new SparseMatrix<double>(reader);
+            mLambda = reader.ReadObject<SparseMatrix<double>>();
             mIdxToLbl = new ArrayList<LblT>(reader).ToArray();
         }
     }
