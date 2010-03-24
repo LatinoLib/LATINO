@@ -46,10 +46,10 @@ namespace Latino.TextMining
                     stopWords = StopWords.EnglishStopWords;
                     stemmer = new Stemmer(language);
                     break;
-                case Language.Estonian:
-                    stopWords = null; // *** missing stop words
-                    stemmer = new Lemmatizer(language);
-                    break;
+                //case Language.Estonian:
+                //    stopWords = null; // *** missing stop words
+                //    stemmer = new Lemmatizer(language);
+                //    break;
                 case Language.Finnish:
                     stopWords = StopWords.FinnishStopWords;
                     stemmer = new Stemmer(language);

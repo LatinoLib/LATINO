@@ -123,8 +123,8 @@ namespace Latino.Model
                     centroids[i].Update(dataset);
                     centroids[i].UpdateCentroidLen();
                 }
-                double[,] dotProd = new double[dataset.Count, mK];
-                SparseMatrix<double> dsMat = ModelUtils.GetTransposedMatrix(dataset);
+                double[][] dotProd = new double[mK][];
+                SparseMatrix<double> dsMtx = ModelUtils.GetTransposedMatrix(dataset);
                 // main loop
                 int iter = 0;
                 double bestClustQual = 0;
@@ -138,20 +138,16 @@ namespace Latino.Model
                     foreach (CentroidData cen in centroids)
                     {
                         SparseVector<double> cenVec = cen.GetSparseVector();
-                        double[] dotProdSimVec = ModelUtils.GetDotProductSimilarity(dsMat, dataset.Count, cenVec);
-                        for (int i = 0; i < dotProdSimVec.Length; i++)
-                        {
-                            dotProd[i, j] = dotProdSimVec[i];
-                        }
+                        dotProd[j] = ModelUtils.GetDotProductSimilarity(dsMtx, dataset.Count, cenVec);
                         j++;
                     }
-                    for (int dsInstIdx = 0; dsInstIdx < dataset.Count; dsInstIdx++)
+                    for (int instIdx = 0; instIdx < dataset.Count; instIdx++)
                     {
                         double maxSim = double.MinValue;
                         ArrayList<int> candidates = new ArrayList<int>();
                         for (int cenIdx = 0; cenIdx < mK; cenIdx++)
                         {
-                            double sim = dotProd[dsInstIdx, cenIdx];
+                            double sim = dotProd[cenIdx][instIdx];
                             if (sim > maxSim)
                             {
                                 maxSim = sim;
@@ -169,7 +165,7 @@ namespace Latino.Model
                         }
                         if (candidates.Count > 0) // *** is this always true? 
                         {
-                            centroids[candidates[0]].Items.Add(dsInstIdx);
+                            centroids[candidates[0]].Items.Add(instIdx);
                             clustQual += maxSim;
                         }
                     }

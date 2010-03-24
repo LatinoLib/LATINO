@@ -40,17 +40,37 @@ namespace Latino
 
         public static void Verbose(string format, params object[] args)
         {
-            if (mVerbose) { Console.Write(String.Format("{0}", format), args); } // throws ArgumentNullException, FormatException
+            if (mVerbose) { Console.Write(format, args); } // throws ArgumentNullException, FormatException
         }
 
         public static void VerboseLine(string format, params object[] args)
         {
-            if (mVerbose) { Console.WriteLine(String.Format("{0}", format), args); } // throws ArgumentNullException, FormatException
+            if (mVerbose) { Console.WriteLine(format, args); } // throws ArgumentNullException, FormatException
         }
 
         public static void VerboseLine()
         {
             if (mVerbose) { Console.WriteLine(); } 
+        }
+
+        public static void VerboseProgress(string format, int step, int numSteps)
+        {
+            Utils.ThrowException(step < 1 ? new ArgumentOutOfRangeException("step") : null);
+            Utils.ThrowException(numSteps < 1 ? new ArgumentOutOfRangeException("numSteps") : null);
+            if (mVerbose && (step % 100 == 0 || step == numSteps)) 
+            { 
+                Console.Write("\r" + format, step, numSteps); // throws ArgumentNullException, FormatException
+                if (step == numSteps) { Console.WriteLine(); }
+            } 
+        }
+
+        public static void VerboseProgress(string format, int step)
+        {
+            Utils.ThrowException(step < 1 ? new ArgumentOutOfRangeException("step") : null);
+            if (mVerbose && step % 100 == 0)
+            {
+                Console.Write("\r" + format, step); // throws ArgumentNullException, FormatException
+            }
         }
 
         [Conditional("THROW_EXCEPTIONS")]

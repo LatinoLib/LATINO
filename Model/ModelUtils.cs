@@ -416,9 +416,19 @@ namespace Latino.Model
             return trMtx;
         }
 
+        public static IUnlabeledExampleCollection<ExT> ConvertToUnlabeledDataset<LblT, ExT>(/*this*/ ILabeledExampleCollection<LblT, ExT> dataset)
+        {
+            UnlabeledDataset<ExT> unlabeledDataset = new UnlabeledDataset<ExT>();
+            foreach (LabeledExample<LblT, ExT> labeledExample in dataset)
+            {
+                unlabeledDataset.Add(labeledExample.Example);
+            }
+            return unlabeledDataset;
+        }
+
         public static double[] GetDotProductSimilarity(SparseMatrix<double>.ReadOnly trMtx, int datasetCount, SparseVector<double>.ReadOnly vec)
         {
-            // TODO: exceptions on dataset count
+            // TODO: exceptions on dataset count (?)
             Utils.ThrowException(trMtx == null ? new ArgumentNullException("trMtx") : null);
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double[] simVec = new double[datasetCount];
@@ -428,7 +438,7 @@ namespace Latino.Model
 
         public static SparseVector<double> GetDotProductSimilarity(SparseMatrix<double>.ReadOnly trMtx, int datasetCount, SparseVector<double>.ReadOnly vec, double thresh)
         {
-            // TODO: exceptions on dataset count
+            // TODO: exceptions on dataset count (?)
             Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
             double[] simVec = GetDotProductSimilarity(trMtx, datasetCount, vec); // throws ArgumentNullException
             SparseVector<double> sparseVec = new SparseVector<double>();

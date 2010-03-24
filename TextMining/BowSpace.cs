@@ -384,7 +384,7 @@ namespace Latino.TextMining
                 foreach (string document in documents)
                 {
                     docCount++;
-                    Utils.Verbose("Document {0} ...\r", docCount);
+                    Utils.VerboseProgress("Document {0} ...", docCount);
                     Set<string> docWords = new Set<string>();
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                     mTokenizer.Text = document;
@@ -419,7 +419,7 @@ namespace Latino.TextMining
                         ProcessNGramsPass1(nGrams, i, docWords);
                     }
                 }
-                Utils.VerboseLine();
+                Utils.VerboseProgress("Document {0} ...", docCount, docCount);
             }
             else // large-scale mode (needs less memory, slower)
             {
@@ -430,7 +430,7 @@ namespace Latino.TextMining
                     foreach (string document in documents)
                     {
                         docCount++;
-                        Utils.Verbose("Document {0} ...\r", docCount);
+                        Utils.VerboseProgress("Document {0} ...", docCount);
                         ArrayList<WordStem> nGrams = new ArrayList<WordStem>(n);
                         Set<string> docWords = new Set<string>();
                         mTokenizer.Text = document;
@@ -505,7 +505,7 @@ namespace Latino.TextMining
                             }
                         }
                     }
-                    Utils.VerboseLine();
+                    Utils.VerboseProgress("Document {0} ...", docCount, docCount);
                 }
             }            
             // remove unfrequent words and n-grams, precompute IDF      
@@ -541,7 +541,7 @@ namespace Latino.TextMining
             int docNum = 1;
             foreach (string document in documents)
             {                
-                Utils.Verbose("Document {0} of {1} ...\r", docNum++, docCount);
+                Utils.VerboseProgress("Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 mTokenizer.Text = document;
@@ -613,7 +613,6 @@ namespace Latino.TextMining
                 if (mNormalizeVectors) { Utils.TryNrmVecL2(docVec); }
                 mBowVectors.Add(docVec);
             }
-            Utils.VerboseLine();
         }
 
         private void ProcessDocumentNGrams(ArrayList<WordStem> nGrams, int startIdx, Dictionary<int, int> tfVec)

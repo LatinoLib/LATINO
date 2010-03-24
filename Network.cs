@@ -188,6 +188,11 @@ namespace Latino
             mMtx.RemoveAt(vtx1Idx, vtx2Idx);
         }
 
+        public void RemoveEdges()
+        {
+            mMtx.Clear();
+        }
+
         public void RemoveEdge(VtxT vtx1, VtxT vtx2)
         {
             int vtx1Idx = mVtxToIdx[vtx1], vtx2Idx = mVtxToIdx[vtx2]; // throws ArgumentNullException, KeyNotFoundException            

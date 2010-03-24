@@ -25,15 +25,15 @@ namespace Latino.Model
     */
     internal class CentroidData : ISerializable
     {
-        private Dictionary<int, double> CentroidSum
+        private Dictionary<int, double> mCentroidSum
             = new Dictionary<int, double>();
-        private Dictionary<int, double> CentroidDiff
+        private Dictionary<int, double> mCentroidDiff
             = new Dictionary<int, double>();
         private Set<int> mItems
             = new Set<int>();
         private Set<int> mCurrentItems
             = new Set<int>();
-        private double CentroidLen
+        private double mCentroidLen
             = -1;
 
         public CentroidData()
@@ -49,13 +49,13 @@ namespace Latino.Model
         {
             foreach (IdxDat<double> item in vec)
             {
-                if (CentroidSum.ContainsKey(item.Idx))
+                if (mCentroidSum.ContainsKey(item.Idx))
                 {
-                    CentroidSum[item.Idx] += item.Dat;
+                    mCentroidSum[item.Idx] += item.Dat;
                 }
                 else
                 {
-                    CentroidSum.Add(item.Idx, item.Dat);
+                    mCentroidSum.Add(item.Idx, item.Dat);
                 }
             }
         }
@@ -64,43 +64,40 @@ namespace Latino.Model
         {
             foreach (IdxDat<double> item in vec)
             {
-                if (CentroidDiff.ContainsKey(item.Idx))
+                if (mCentroidDiff.ContainsKey(item.Idx))
                 {
-                    CentroidDiff[item.Idx] += item.Dat * mult;
+                    mCentroidDiff[item.Idx] += item.Dat * mult;
                 }
                 else
                 {
-                    CentroidDiff.Add(item.Idx, item.Dat * mult);
+                    mCentroidDiff.Add(item.Idx, item.Dat * mult);
                 }
             }
         }
 
         public void Update(bool positiveValuesOnly)
         {
-            foreach (KeyValuePair<int, double> item in CentroidDiff)
+            foreach (KeyValuePair<int, double> item in mCentroidDiff)
             {
-                if (CentroidSum.ContainsKey(item.Key))
+                if (mCentroidSum.ContainsKey(item.Key))
                 {
-                    CentroidSum[item.Key] += item.Value;
+                    mCentroidSum[item.Key] += item.Value;
                 }
                 else
                 {
-                    CentroidSum.Add(item.Key, item.Value);
+                    mCentroidSum.Add(item.Key, item.Value);
                 }
             }
-            CentroidDiff.Clear();
-            if (positiveValuesOnly)
+            mCentroidDiff.Clear();
+            Dictionary<int, double> tmp = new Dictionary<int, double>();
+            foreach (KeyValuePair<int, double> item in mCentroidSum)
             {
-                Dictionary<int, double> tmp = new Dictionary<int, double>();
-                foreach (KeyValuePair<int, double> item in CentroidSum)
+                if ((!positiveValuesOnly && Math.Abs(item.Value) > 1E-6) || (positiveValuesOnly && item.Value > 1E-6))
                 {
-                    if (item.Value > 1E-6)
-                    {
-                        tmp.Add(item.Key, item.Value);
-                    }
+                    tmp.Add(item.Key, item.Value);
                 }
-                CentroidSum = tmp;
             }
+            mCentroidSum = tmp;
         }
 
         public void Update(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
@@ -119,17 +116,17 @@ namespace Latino.Model
             }
             mCurrentItems = mItems;
             mItems = new Set<int>();
-            Update(/*positiveValuesOnly=*/true);
+            Update(/*positiveValuesOnly=*/false);
         }
 
         public void UpdateCentroidLen()
         {
-            CentroidLen = 0;
-            foreach (double val in CentroidSum.Values)
+            mCentroidLen = 0;
+            foreach (double val in mCentroidSum.Values)
             {
-                CentroidLen += val * val;
+                mCentroidLen += val * val;
             }
-            CentroidLen = Math.Sqrt(CentroidLen);
+            mCentroidLen = Math.Sqrt(mCentroidLen);
         }
 
         public Set<int> Items
@@ -147,21 +144,22 @@ namespace Latino.Model
             double result = 0;
             foreach (IdxDat<double> item in vec)
             {
-                if (CentroidSum.ContainsKey(item.Idx))
+                double val;
+                if (mCentroidSum.TryGetValue(item.Idx, out val))
                 {
-                    result += item.Dat * CentroidSum[item.Idx];
+                    result += item.Dat * val;
                 }
             }
-            return result / CentroidLen;
+            return result / mCentroidLen;
         }
 
         public SparseVector<double> GetSparseVector()
         {
             SparseVector<double> vec = new SparseVector<double>();
-            foreach (KeyValuePair<int, double> item in CentroidSum)
+            foreach (KeyValuePair<int, double> item in mCentroidSum)
             {
                 vec.InnerIdx.Add(item.Key);
-                vec.InnerDat.Add(item.Value / CentroidLen);
+                vec.InnerDat.Add(item.Value / mCentroidLen);
             }
             vec.Sort();
             return vec;
@@ -171,14 +169,14 @@ namespace Latino.Model
 
         public void Save(BinarySerializer writer)
         {
-            Utils.SaveDictionary(CentroidSum, writer);
-            writer.WriteDouble(CentroidLen);
+            Utils.SaveDictionary(mCentroidSum, writer);
+            writer.WriteDouble(mCentroidLen);
         }
 
         public void Load(BinarySerializer reader)
         {
-            CentroidSum = Utils.LoadDictionary<int, double>(reader);
-            CentroidLen = reader.ReadDouble();
+            mCentroidSum = Utils.LoadDictionary<int, double>(reader);
+            mCentroidLen = reader.ReadDouble();
         }
     }
 }

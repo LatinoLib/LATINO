@@ -20,8 +20,6 @@ namespace Latino.Model
     public class IncrementalKMeans : IClustering<SparseVector<double>.ReadOnly> 
     {
         private int mK;
-        private static ISimilarity<SparseVector<double>.ReadOnly> mSimilarity
-            = new DotProductSimilarity();
         private Random mRnd
             = new Random();
         private double mEps
@@ -114,7 +112,7 @@ namespace Latino.Model
                         {
                             if (seed1 != seed2)
                             {
-                                simAvg += mSimilarity.GetSimilarity(seed1, seed2);
+                                simAvg += DotProductSimilarity.Instance.GetSimilarity(seed1, seed2);
                             }
                         }
                     }
@@ -281,13 +279,13 @@ namespace Latino.Model
                 centroid.Update(mDataset);
                 centroid.UpdateCentroidLen();
             }
-            Console.WriteLine(">>> {0} >>> update centroid data (1)", stopWatch.TotalMilliseconds);
+            //Console.WriteLine(">>> {0} >>> update centroid data (1)", stopWatch.TotalMilliseconds);
             stopWatch.Reset();
             // update dataset
             mDataset.RemoveRange(0, dequeueN);
             int ofs = mDataset.Count;
             mDataset.AddRange(addList);
-            Console.WriteLine(">>> {0} >>> update dataset", stopWatch.TotalMilliseconds);
+            //Console.WriteLine(">>> {0} >>> update dataset", stopWatch.TotalMilliseconds);
             stopWatch.Reset();
             // update centroid data (2)
             foreach (CentroidData centroid in mCentroids)
@@ -300,7 +298,7 @@ namespace Latino.Model
                 centroid.CurrentItems.Inner.SetItems(itemsOfs);
                 centroid.Items.SetItems(itemsOfs);
             }
-            Console.WriteLine(">>> {0} >>> update centroid data (2)", stopWatch.TotalMilliseconds);
+            //Console.WriteLine(">>> {0} >>> update centroid data (2)", stopWatch.TotalMilliseconds);
             stopWatch.Reset();
             // assign new instances
             double bestClustQual = 0;
@@ -352,7 +350,7 @@ namespace Latino.Model
                 Utils.VerboseLine("*** Initialization ***");
                 Utils.VerboseLine("Quality: {0:0.0000}", bestClustQual);
             }
-            Console.WriteLine(">>> {0} >>> assign new instances", stopWatch.TotalMilliseconds);
+            //Console.WriteLine(">>> {0} >>> assign new instances", stopWatch.TotalMilliseconds);
             stopWatch.Reset();
             // main k-means loop
             iter = 0;
@@ -391,7 +389,7 @@ namespace Latino.Model
                 //
                 // *** OPTIMIZE THIS with GetDotProductSimilarity (see this.Cluster) !!! ***
                 //
-                Console.WriteLine(">>> {0} >>> loop: assign items to clusters", stopWatch.TotalMilliseconds);
+                //Console.WriteLine(">>> {0} >>> loop: assign items to clusters", stopWatch.TotalMilliseconds);
                 stopWatch.Reset();
                 double clustQual = 0;
                 // update centroids
@@ -409,7 +407,7 @@ namespace Latino.Model
                     }
                 }
                 clustQual /= (double)mDataset.Count;
-                Console.WriteLine(">>> {0} >>> loop: update centroids", stopWatch.TotalMilliseconds);
+                //Console.WriteLine(">>> {0} >>> loop: update centroids", stopWatch.TotalMilliseconds);
                 stopWatch.Reset();
                 Utils.VerboseLine("*** Iteration {0} ***", iter);
                 Utils.VerboseLine("Quality: {0:0.0000} Diff: {1:0.0000}", clustQual, clustQual - bestClustQual);

@@ -128,15 +128,16 @@ namespace Latino.Model
             }
         }
 
-        UnlabeledDataset<ExT> GetUnlabeledDataset()
-        {
-            UnlabeledDataset<ExT> dataset = new UnlabeledDataset<ExT>();
-            foreach (LabeledExample<LblT, ExT> labeledExample in mItems)
-            {
-                dataset.Add(labeledExample.Example);
-            }
-            return dataset;
-        }
+        // moved to ModelUtils
+        //UnlabeledDataset<ExT> GetUnlabeledDataset()
+        //{
+        //    UnlabeledDataset<ExT> dataset = new UnlabeledDataset<ExT>();
+        //    foreach (LabeledExample<LblT, ExT> labeledExample in mItems)
+        //    {
+        //        dataset.Add(labeledExample.Example);
+        //    }
+        //    return dataset;
+        //}
 
         // *** ILabeledDataset<LblT, ExT> interface implementation ***
 

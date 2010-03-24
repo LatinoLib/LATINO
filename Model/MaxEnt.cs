@@ -45,7 +45,7 @@ namespace Latino.Model
             int i = 0;
             foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
             {
-                Utils.Verbose("{0} / {1}\r", ++i, dataset.Count);
+                Utils.VerboseProgress("{0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
                 if (!mtx.ContainsRowAt(lblIdx))
                 {
@@ -58,7 +58,6 @@ namespace Latino.Model
                     mtx[lblIdx] = newVec;
                 }
             }
-            Utils.VerboseLine();
             idxToLbl = tmp.ToArray();
             return mtx;
         }
@@ -418,13 +417,12 @@ namespace Latino.Model
 
         public static Prediction<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly binVec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idxToLbl, bool normalize)
         {
-            DotProductSimilarity dotProd = new DotProductSimilarity();
             SparseVector<double> vec = ModelUtils.ConvertExample<SparseVector<double>>(binVec);
             Prediction<LblT> scores = new Prediction<LblT>();
             double sum = 0;
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambdas)
             {
-                double score = Math.Exp(dotProd.GetSimilarity(row.Dat, vec));
+                double score = Math.Exp(DotProductSimilarity.Instance.GetSimilarity(row.Dat, vec));
                 scores.Items.Add(new KeyDat<double, LblT>(score, idxToLbl[row.Idx]));
                 sum += score;
             }

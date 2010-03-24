@@ -307,7 +307,7 @@ namespace Latino.TextMining
             foreach (string document in documents)
             {
                 docCount++;
-                Utils.Verbose("Document {0} ...\r", docCount);
+                Utils.VerboseProgress("Document {0} ...", docCount);
                 Set<string> docWords = new Set<string>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 mTokenizer.Text = document;
@@ -342,7 +342,7 @@ namespace Latino.TextMining
                     ProcessNGramsPass1(nGrams, i, docWords);
                 }
             }
-            Utils.VerboseLine();
+            Utils.VerboseProgress("Document {0} ...", docCount, docCount);
             // determine most frequent word and n-gram forms
             foreach (WordExt wordInfo in mWordInfo.Values)
             { 
@@ -361,7 +361,7 @@ namespace Latino.TextMining
             int docNum = 1;
             foreach (string document in documents)
             {                
-                Utils.Verbose("Document {0} of {1} ...\r", docNum++, docCount);
+                Utils.VerboseProgress("Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 mTokenizer.Text = document;
@@ -404,7 +404,6 @@ namespace Latino.TextMining
                 docVec.Sort();
                 mTfVectors.Add(docVec);
             }
-            Utils.VerboseLine();
         }
 
         // TODO: exceptions
