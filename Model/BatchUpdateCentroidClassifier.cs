@@ -7,14 +7,13 @@
  *  Desc:		   Batch-update centroid classifier 
  *  Author:        Miha Grcar
  *  Created on:    May-2009
- *  Last modified: Mar-2010
- *  Revision:      Mar-2010
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Latino.Model
 {
@@ -34,7 +33,7 @@ namespace Latino.Model
             = 0.8;
         private bool mPositiveValuesOnly
             = false;
-        private SparseMatrix<double> mCentroidMtx
+        private SparseMatrix<double> mCentroidMtxTr
             = null;
         private ArrayList<LblT> mLabels
             = null;
@@ -80,6 +79,23 @@ namespace Latino.Model
             set { mPositiveValuesOnly = value; }
         }
 
+        public ArrayList<SparseVector<double>> GetCentroids(IEnumerable<LblT> labels)
+        {
+            Utils.ThrowException(mCentroidMtxTr == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(labels == null ? new ArgumentNullException("labels") : null);
+            Set<LblT> tmp = new Set<LblT>(labels, mLblCmp); // throws ArgumentNullException
+            SparseMatrix<double> cenMtx = mCentroidMtxTr.GetTransposedCopy();
+            ArrayList<SparseVector<double>> retCen = new ArrayList<SparseVector<double>>(tmp.Count);
+            for (int i = 0; i < mLabels.Count; i++)
+            {
+                if (tmp.Contains(mLabels[i])) 
+                {
+                    retCen.Add(cenMtx[i]);
+                }
+            }
+            return retCen;
+        }
+
         // *** IModel<LblT, SparseVector<double>.ReadOnly> interface implementation ***
 
         public Type RequiredExampleType
@@ -89,14 +105,14 @@ namespace Latino.Model
 
         public bool IsTrained
         {
-            get { return mCentroidMtx != null; }
+            get { return mCentroidMtxTr != null; }
         }
 
         public void Train(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
-            Dictionary<LblT, CentroidData> centroids = new Dictionary<LblT, CentroidData>();
+            Dictionary<LblT, CentroidData> centroids = new Dictionary<LblT, CentroidData>(mLblCmp);
             foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeledExample in dataset)
             {
                 if (!centroids.ContainsKey(labeledExample.Label))
@@ -133,8 +149,7 @@ namespace Latino.Model
                 {
                     Utils.VerboseProgress("Centroid {0} / {1} ...", j + 1, centroids.Count);
                     SparseVector<double> cenVec = labeledCentroid.Value.GetSparseVector();
-                    double[] dotProdSimVec = ModelUtils.GetDotProductSimilarity(dsMtx, dataset.Count, cenVec);
-                    dotProd[j] = dotProdSimVec;
+                    dotProd[j] = ModelUtils.GetDotProductSimilarity(dsMtx, dataset.Count, cenVec); 
                     j++;
                 }
                 // classify training examples
@@ -174,15 +189,15 @@ namespace Latino.Model
                 }
                 learnRate *= mDamping;
             }
-            mCentroidMtx = new SparseMatrix<double>();
+            mCentroidMtxTr = new SparseMatrix<double>();
             mLabels = new ArrayList<LblT>();
             int rowIdx = 0;
             foreach (KeyValuePair<LblT, CentroidData> labeledCentroid in centroids)
             {
-                mCentroidMtx[rowIdx++] = labeledCentroid.Value.GetSparseVector();
+                mCentroidMtxTr[rowIdx++] = labeledCentroid.Value.GetSparseVector();
                 mLabels.Add(labeledCentroid.Key);
             }
-            mCentroidMtx = mCentroidMtx.GetTransposedCopy();            
+            mCentroidMtxTr = mCentroidMtxTr.GetTransposedCopy();            
         }
 
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
@@ -194,15 +209,15 @@ namespace Latino.Model
 
         public Prediction<LblT> Predict(SparseVector<double>.ReadOnly example)
         {
-            Utils.ThrowException(mCentroidMtx == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(mCentroidMtxTr == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Prediction<LblT> result = new Prediction<LblT>();
-            double[] dotProdSimVec = ModelUtils.GetDotProductSimilarity(mCentroidMtx, mLabels.Count, example);
+            double[] dotProdSimVec = ModelUtils.GetDotProductSimilarity(mCentroidMtxTr, mLabels.Count, example);
             for (int i = 0; i < dotProdSimVec.Length; i++)
             {
-                result.Items.Add(new KeyDat<double, LblT>(dotProdSimVec[i], mLabels[i]));
+                result.Inner.Add(new KeyDat<double, LblT>(dotProdSimVec[i], mLabels[i]));
             }
-            result.Items.Sort(new DescSort<KeyDat<double, LblT>>());
+            result.Inner.Sort(DescSort<KeyDat<double, LblT>>.Instance);
             return result;
         }
 
@@ -219,31 +234,33 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteBool(mCentroidMtx != null);
-            if (mCentroidMtx != null) 
+            writer.WriteBool(mCentroidMtxTr != null);
+            if (mCentroidMtxTr != null) 
             { 
-                mCentroidMtx.Save(writer);
+                mCentroidMtxTr.Save(writer);
                 mLabels.Save(writer);
             }
             writer.WriteInt(mIterations);
             writer.WriteDouble(mDamping);
             writer.WriteBool(mPositiveValuesOnly);
+            writer.WriteObject(mLblCmp);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions            
-            mCentroidMtx = null;
+            mCentroidMtxTr = null;
             mLabels = null;
             if (reader.ReadBool())
             {
-                mCentroidMtx = new SparseMatrix<double>(reader);
+                mCentroidMtxTr = new SparseMatrix<double>(reader);
                 mLabels = new ArrayList<LblT>(reader);
             }
             mIterations = reader.ReadInt();
             mDamping = reader.ReadDouble();
             mPositiveValuesOnly = reader.ReadBool();
+            mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }
     }
 }

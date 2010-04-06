@@ -7,7 +7,7 @@
  *  Desc:		   Text mining utilities
  *  Author:        Miha Grcar
  *  Created on:    Mar-2010
- *  Last modified: Mar-2010
+ *  Last modified: Apr-2010
  *  Revision:      Mar-2010
  *
  ***************************************************************************/
@@ -87,7 +87,7 @@ namespace Latino.TextMining
                     stemmer = new Stemmer(language);
                     break;
                 case Language.Serbian:
-                    stopWords = StopWords.SerbianStopWords;
+                    stopWords = StopWords.SerbianStopWordsLatin;
                     stemmer = new Lemmatizer(language);
                     break;
                 case Language.Slovene:
@@ -102,8 +102,9 @@ namespace Latino.TextMining
                     stopWords = StopWords.SwedishStopWords;
                     stemmer = new Stemmer(language);
                     break;
-            }
-            throw new ArgumentNotSupportedException("language");
+                default:
+                    throw new ArgumentNotSupportedException("language");
+            }            
         }
     }
 }

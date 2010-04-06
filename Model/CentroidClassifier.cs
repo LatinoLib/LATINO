@@ -7,8 +7,8 @@
  *  Desc:		   Centroid classifier
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
@@ -30,7 +30,7 @@ namespace Latino.Model
         private IEqualityComparer<LblT> mLblCmp
             = null;
         private ISimilarity<SparseVector<double>.ReadOnly> mSimilarity
-            = new CosineSimilarity();
+            = CosineSimilarity.Instance;
         private bool mNormalize
             = false;
 
@@ -69,7 +69,7 @@ namespace Latino.Model
         {
             Utils.ThrowException(mCentroids == null ? new InvalidOperationException() : null);
             Utils.ThrowException(labels == null ? new ArgumentNullException("labels") : null);
-            Dictionary<LblT, SparseVector<double>.ReadOnly> aux = new Dictionary<LblT, SparseVector<double>.ReadOnly>(); 
+            Dictionary<LblT, SparseVector<double>.ReadOnly> aux = new Dictionary<LblT, SparseVector<double>.ReadOnly>(mLblCmp); 
             ArrayList<SparseVector<double>.ReadOnly> list = new ArrayList<SparseVector<double>.ReadOnly>();
             foreach (Pair<LblT, SparseVector<double>.ReadOnly> centroid in mCentroids)
             {
@@ -133,9 +133,9 @@ namespace Latino.Model
             foreach (Pair<LblT, SparseVector<double>.ReadOnly> labeledCentroid in mCentroids)
             {
                 double sim = mSimilarity.GetSimilarity(labeledCentroid.Second, example);
-                result.Items.Add(new KeyDat<double, LblT>(sim, labeledCentroid.First));
+                result.Inner.Add(new KeyDat<double, LblT>(sim, labeledCentroid.First));
             }
-            result.Items.Sort(new DescSort<KeyDat<double, LblT>>());
+            result.Inner.Sort(DescSort<KeyDat<double, LblT>>.Instance);
             return result;
         }
 
@@ -153,8 +153,9 @@ namespace Latino.Model
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
             writer.WriteObject(mCentroids);
-            writer.WriteObject<ISimilarity<SparseVector<double>.ReadOnly>>(mSimilarity);
+            writer.WriteObject(mSimilarity);
             writer.WriteBool(mNormalize);
+            writer.WriteObject(mLblCmp);
         }
 
         public void Load(BinarySerializer reader)
@@ -164,6 +165,7 @@ namespace Latino.Model
             mCentroids = reader.ReadObject<ArrayList<Pair<LblT, SparseVector<double>.ReadOnly>>>();
             mSimilarity = reader.ReadObject<ISimilarity<SparseVector<double>.ReadOnly>>();
             mNormalize = reader.ReadBool();
+            mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }
     }
 }

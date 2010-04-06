@@ -4,7 +4,7 @@
  *
  *  File:          IHierarchicalModel.cs
  *  Version:       1.0
- *  Desc:		   Hierarchical model interface definition
+ *  Desc:		   Interface definition
  *  Author:        Miha Grcar
  *  Created on:    Dec-2009
  *  Last modified: Dec-2009

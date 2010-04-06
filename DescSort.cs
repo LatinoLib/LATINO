@@ -7,8 +7,8 @@
  *  Desc:		   Utility class for descending sort
  *  Author:        Miha Grcar
  *  Created on:    Nov-2007
- *  Last modified: Jan-2009
- *  Revision:      Oct-2009
+ *  Last modified: Mar-2010
+ *  Revision:      Mar-2010
  *
  ***************************************************************************/
 
@@ -26,6 +26,14 @@ namespace Latino
     */
     public class DescSort : IComparer<object>, IComparer
     {
+        private static DescSort mInstance
+            = new DescSort();
+
+        public static DescSort Instance
+        {
+            get { return mInstance; }
+        }
+
         public int Compare(object x, object y)
         {
             if (x == null && y == null) { return 0; }
@@ -43,6 +51,14 @@ namespace Latino
     */
     public class DescSort<T> : IComparer<T> where T : IComparable<T>
     {
+        private static DescSort<T> mInstance
+            = new DescSort<T>();
+
+        public static DescSort<T> Instance
+        {
+            get { return mInstance; }
+        }
+
         public int Compare(T x, T y)
         {
             if (x == null && y == null) { return 0; }

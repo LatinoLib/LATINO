@@ -7,8 +7,8 @@
  *  Desc:		   Set equality comparer
  *  Author:        Miha Grcar
  *  Created on:    Nov-2007
- *  Last modified: Jan-2009
- *  Revision:      Oct-2009
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
@@ -26,6 +26,14 @@ namespace Latino
     */
     public class SetEqualityComparer<T> : IEqualityComparer<Set<T>>, IEqualityComparer 
     {
+        private static SetEqualityComparer<T> mInstance
+            = new SetEqualityComparer<T>();
+
+        public static SetEqualityComparer<T> Instance
+        {
+            get { return mInstance; }
+        }
+
         public bool Equals(Set<T> x, Set<T> y)
         {
             if (x == null && y == null) { return true; }

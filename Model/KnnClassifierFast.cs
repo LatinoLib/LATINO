@@ -7,8 +7,8 @@
  *  Desc:		   K-nearest neighbors classifier (optimized for speed)
  *  Author:        Miha Grcar
  *  Created on:    Mar-2010
- *  Last modified: Mar-2010
- *  Revision:      Mar-2010
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
@@ -108,7 +108,7 @@ namespace Latino.Model
             { 
                 tmp.Add(new KeyDat<double, LblT>(dotProdSimVec[i], mLabels[i]));
             }
-            tmp.Sort(new DescSort<KeyDat<double, LblT>>());
+            tmp.Sort(DescSort<KeyDat<double, LblT>>.Instance);
             Dictionary<LblT, double> voting = new Dictionary<LblT, double>(mLblCmp);
             int n = Math.Min(mK, tmp.Count);
             double value;
@@ -145,9 +145,9 @@ namespace Latino.Model
             Prediction<LblT> classifierResult = new Prediction<LblT>();
             foreach (KeyValuePair<LblT, double> item in voting)
             {
-                classifierResult.Items.Add(new KeyDat<double, LblT>(item.Value, item.Key));
+                classifierResult.Inner.Add(new KeyDat<double, LblT>(item.Value, item.Key));
             }
-            classifierResult.Items.Sort(new DescSort<KeyDat<double, LblT>>());
+            classifierResult.Inner.Sort(DescSort<KeyDat<double, LblT>>.Instance);
             return classifierResult;
         }
 
@@ -172,6 +172,7 @@ namespace Latino.Model
             }
             writer.WriteInt(mK);
             writer.WriteBool(mSoftVoting);
+            writer.WriteObject(mLblCmp);
         }
 
         public void Load(BinarySerializer reader)
@@ -187,6 +188,7 @@ namespace Latino.Model
             }
             mK = reader.ReadInt();
             mSoftVoting = reader.ReadBool();
+            mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }
     }
 }

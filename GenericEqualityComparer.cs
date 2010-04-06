@@ -7,8 +7,8 @@
  *  Desc:		   Generic equality comparer
  *  Author:        Miha Grcar
  *  Created on:    Nov-2007
- *  Last modified: Jan-2009
- *  Revision:      Oct-2009
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
@@ -25,6 +25,14 @@ namespace Latino
     */
     public class GenericEqualityComparer<T> : IEqualityComparer<T>, IEqualityComparer where T : ISerializable
     {
+        private static GenericEqualityComparer<T> mInstance
+            = new GenericEqualityComparer<T>();
+
+        public static GenericEqualityComparer<T> Instance
+        {
+            get { return mInstance; }
+        }
+
         public bool Equals(T x, T y)
         {
             return Utils.ObjectEquals(x, y, /*deepCmp=*/true);

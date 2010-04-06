@@ -7,8 +7,8 @@
  *  Desc:		   Labeled example data structure 
  *  Author:        Miha Grcar
  *  Created on:    Jan-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
@@ -34,8 +34,8 @@ namespace Latino.Model
 
         public LabeledExample(LblT lbl, ExT ex)
         {
-            Utils.ThrowException(lbl == null ? new ArgumentNullException("Label") : null); // *** allow unlabeled examples?
-            Utils.ThrowException(ex == null ? new ArgumentNullException("Example") : null);
+            Utils.ThrowException(lbl == null ? new ArgumentNullException("lbl") : null); // *** allow unlabeled examples?
+            Utils.ThrowException(ex == null ? new ArgumentNullException("ex") : null);
             mLbl = lbl;
             mEx = ex;
         }

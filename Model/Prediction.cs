@@ -7,8 +7,8 @@
  *  Desc:		   Prediction (output of ML models)
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
@@ -28,8 +28,6 @@ namespace Latino.Model
     {
         private ArrayList<KeyDat<double, LblT>> mClassScores
             = new ArrayList<KeyDat<double, LblT>>();
-        private static DescSort<KeyDat<double, LblT>> mDescSort
-            = new DescSort<KeyDat<double, LblT>>();
 
         public Prediction()
         {
@@ -47,10 +45,15 @@ namespace Latino.Model
             {
                 mClassScores.Add(classScore);
             }
-            mClassScores.Sort(mDescSort);
+            mClassScores.Sort(DescSort<KeyDat<double, LblT>>.Instance);
         }
 
-        public ArrayList<KeyDat<double, LblT>> Items
+#if PUBLIC_INNER
+        public
+#else
+        internal 
+#endif    
+        ArrayList<KeyDat<double, LblT>> Inner
         {
             get { return mClassScores; }
         }

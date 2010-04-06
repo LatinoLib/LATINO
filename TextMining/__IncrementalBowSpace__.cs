@@ -688,7 +688,7 @@ namespace Latino.TextMining
             {
                 keywords.Add(new KeyDat<double, string>(item.Dat, mIdxInfo[item.Idx].mMostFrequentForm)); // throws ArgumentOutOfRangeException
             }
-            keywords.Sort(new DescSort<KeyDat<double, string>>());
+            keywords.Sort(DescSort<KeyDat<double, string>>.Instance);
             return keywords;
         }
 

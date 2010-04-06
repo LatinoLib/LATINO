@@ -4,7 +4,7 @@
  *
  *  File:          ILabeledDataset.cs
  *  Version:       1.0
- *  Desc:		   Labeled dataset interface definition
+ *  Desc:		   Interface definition
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
  *  Last modified: Nov-2009

@@ -19,7 +19,7 @@ namespace Latino.Model
     public class KMeans : IClustering<SparseVector<double>.ReadOnly> 
     {        
         private ISimilarity<SparseVector<double>.ReadOnly> mSimilarity
-            = new CosineSimilarity();
+            = CosineSimilarity.Instance;
         private Random mRnd
             = new Random();
         private CentroidType mCentroidType

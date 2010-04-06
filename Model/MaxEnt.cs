@@ -423,7 +423,7 @@ namespace Latino.Model
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambdas)
             {
                 double score = Math.Exp(DotProductSimilarity.Instance.GetSimilarity(row.Dat, vec));
-                scores.Items.Add(new KeyDat<double, LblT>(score, idxToLbl[row.Idx]));
+                scores.Inner.Add(new KeyDat<double, LblT>(score, idxToLbl[row.Idx]));
                 sum += score;
             }
             if (normalize && sum > 0)
@@ -431,10 +431,10 @@ namespace Latino.Model
                 for (int i = 0; i < scores.Count; i++)
                 {
                     KeyDat<double, LblT> score = scores[i];
-                    scores.Items[i] = new KeyDat<double, LblT>(score.Key / sum, score.Dat);
+                    scores.Inner[i] = new KeyDat<double, LblT>(score.Key / sum, score.Dat);
                 }
             }
-            scores.Items.Sort(new DescSort<KeyDat<double, LblT>>());
+            scores.Inner.Sort(DescSort<KeyDat<double, LblT>>.Instance);
             return scores;
         }
     }

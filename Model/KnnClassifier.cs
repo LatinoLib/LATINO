@@ -7,8 +7,8 @@
  *  Desc:		   K-nearest neighbors classifier 
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
@@ -114,7 +114,7 @@ namespace Latino.Model
                 double sim = mSimilarity.GetSimilarity(example, labeledExample.Example);
                 tmp.Add(new KeyDat<double, LabeledExample<LblT, ExT>>(sim, labeledExample));
             }
-            tmp.Sort(new DescSort<KeyDat<double, LabeledExample<LblT, ExT>>>());
+            tmp.Sort(DescSort<KeyDat<double, LabeledExample<LblT, ExT>>>.Instance);
             Dictionary<LblT, double> voting = new Dictionary<LblT, double>(mLblCmp);
             int n = Math.Min(mK, tmp.Count);
             double value;
@@ -151,9 +151,9 @@ namespace Latino.Model
             Prediction<LblT> classifierResult = new Prediction<LblT>();
             foreach (KeyValuePair<LblT, double> item in voting)
             {
-                classifierResult.Items.Add(new KeyDat<double, LblT>(item.Value, item.Key));
+                classifierResult.Inner.Add(new KeyDat<double, LblT>(item.Value, item.Key));
             }
-            classifierResult.Items.Sort(new DescSort<KeyDat<double, LblT>>());
+            classifierResult.Inner.Sort(DescSort<KeyDat<double, LblT>>.Instance);
             return classifierResult;
         }
 
@@ -170,28 +170,22 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteBool(mExamples != null);
-            if (mExamples != null)
-            {
-                mExamples.Save(writer);
-            }
-            writer.WriteObject<ISimilarity<ExT>>(mSimilarity);
+            writer.WriteObject(mExamples);
+            writer.WriteObject(mSimilarity);
             writer.WriteInt(mK);
             writer.WriteBool(mSoftVoting);
+            writer.WriteObject(mLblCmp);
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            mExamples = null;
-            if (reader.ReadBool())
-            {
-                mExamples = new ArrayList<LabeledExample<LblT, ExT>>(reader);
-            }
+            mExamples = reader.ReadObject<ArrayList<LabeledExample<LblT, ExT>>>();
             mSimilarity = reader.ReadObject<ISimilarity<ExT>>();
             mK = reader.ReadInt();
             mSoftVoting = reader.ReadBool();
+            mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }
     }
 }

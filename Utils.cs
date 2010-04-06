@@ -228,9 +228,7 @@ namespace Latino
             }
         }
 
-        // *** SparseVector<double> template specialization ***
-
-        public static double GetVecLenL2(/*this*/ SparseVector<double>.ReadOnly vec)
+        public static double GetVecLenL2(SparseVector<double>.ReadOnly vec)
         {
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = 0;
@@ -242,12 +240,7 @@ namespace Latino
             return Math.Sqrt(len);
         }
 
-        public static double GetVecLenL2(/*this*/ SparseVector<double> vec)
-        {
-            return GetVecLenL2(new SparseVector<double>.ReadOnly(vec)); // throws ArgumentNullException
-        }
-
-        public static void NrmVecL2(/*this*/ SparseVector<double> vec)
+        public static void NrmVecL2(SparseVector<double> vec)
         {
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = GetVecLenL2(vec);
@@ -259,7 +252,7 @@ namespace Latino
             }
         }
 
-        public static bool TryNrmVecL2(/*this*/ SparseVector<double> vec)
+        public static bool TryNrmVecL2(SparseVector<double> vec)
         {
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = GetVecLenL2(vec);

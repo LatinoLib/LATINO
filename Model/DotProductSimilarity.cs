@@ -7,8 +7,8 @@
  *  Desc:		   Similarity implementation
  *  Authors:       Miha Grcar, Matjaz Jursic
  *  Created on:    Dec-2008
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  Last modified: Mar-2010
+ *  Revision:      Mar-2010
  *
  ***************************************************************************/
 

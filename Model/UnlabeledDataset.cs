@@ -7,8 +7,8 @@
  *  Desc:		   Dataset for clustering
  *  Author:        Miha Grcar
  *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
@@ -38,7 +38,7 @@ namespace Latino.Model
             mItems.AddRange(examples); // throws ArgumentNullException
         }
 
-        private UnlabeledDataset(IEnumerable<object> examples)
+        private UnlabeledDataset(IEnumerable examples)
         {
             foreach (object example in examples)
             {
@@ -62,7 +62,7 @@ namespace Latino.Model
             Utils.ThrowException(examples == null ? new ArgumentNullException("examples") : null);
             foreach (ExT example in examples)
             {
-                Utils.ThrowException(example == null ? new ArgumentNullException("examples item") : null);
+                Utils.ThrowException(example == null ? new ArgumentValueException("examples") : null);
                 mItems.Add(example);
             }
         }
@@ -151,6 +151,10 @@ namespace Latino.Model
             //{
             //    newDataset = new UnlabeledDataset<SvmFeatureVector>(tmp);
             //}
+            else
+            {
+                throw new ArgumentNotSupportedException("newExType");
+            }
             return newDataset;
         }
 

@@ -722,7 +722,7 @@ namespace Latino.TextMining
             {
                 keywords.Add(new KeyDat<double, string>(item.Dat, mIdxInfo[item.Idx].mMostFrequentForm)); // throws ArgumentOutOfRangeException
             }
-            keywords.Sort(new DescSort<KeyDat<double, string>>());
+            keywords.Sort(DescSort<KeyDat<double, string>>.Instance);
             return keywords;
         }
 
@@ -824,9 +824,9 @@ namespace Latino.TextMining
         {
             // the following statements throw serialization-related exceptions
             SaveVocabulary(writer); // throws ArgumentNullException
-            writer.WriteObject<ITokenizer>(mTokenizer);
-            writer.WriteObject<Set<string>.ReadOnly>(mStopWords);
-            writer.WriteObject<IStemmer>(mStemmer);
+            writer.WriteObject(mTokenizer);
+            writer.WriteObject(mStopWords);
+            writer.WriteObject(mStemmer);
             mBowVectors.Save(writer);
             writer.WriteInt(mMaxNGramLen);
             writer.WriteInt(mMinWordFreq);

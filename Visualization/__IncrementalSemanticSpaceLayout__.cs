@@ -162,7 +162,7 @@ namespace Latino.Visualization
                         knn.Add(new KeyDat<double, int>(item.Dat, item.Idx));
                     }
                 }
-                knn.Sort(new DescSort<KeyDat<double, int>>());
+                knn.Sort(DescSort<KeyDat<double, int>>.Instance);
                 int count = Math.Min(knn.Count, mKNnExt);
                 for (int i = 0; i < count; i++)
                 {

@@ -7,8 +7,8 @@
  *  Desc:		   Dataset for training ML models
  *  Author:        Miha Grcar
  *  Created on:    Aug-2007
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  Last modified: Apr-2010
+ *  Revision:      Apr-2010
  *
  ***************************************************************************/
 
@@ -69,7 +69,7 @@ namespace Latino.Model
             Utils.ThrowException(examples == null ? new ArgumentNullException("examples") : null);
             foreach (LabeledExample<LblT, ExT> labeledExample in examples)
             {
-                Utils.ThrowException(labeledExample == null ? new ArgumentNullException("examples item") : null);
+                Utils.ThrowException(labeledExample == null ? new ArgumentValueException("examples") : null);
                 mItems.Add(new LabeledExample<LblT, ExT>(labeledExample.Label, labeledExample.Example));
             }
         }
@@ -127,17 +127,6 @@ namespace Latino.Model
                 }
             }
         }
-
-        // moved to ModelUtils
-        //UnlabeledDataset<ExT> GetUnlabeledDataset()
-        //{
-        //    UnlabeledDataset<ExT> dataset = new UnlabeledDataset<ExT>();
-        //    foreach (LabeledExample<LblT, ExT> labeledExample in mItems)
-        //    {
-        //        dataset.Add(labeledExample.Example);
-        //    }
-        //    return dataset;
-        //}
 
         // *** ILabeledDataset<LblT, ExT> interface implementation ***
 
@@ -207,6 +196,10 @@ namespace Latino.Model
             //{
             //    newDataset = new LabeledDataset<LblT, SvmFeatureVector>(tmp);
             //}
+            else
+            {
+                throw new ArgumentNotSupportedException("newExType");
+            }
             return newDataset;
         }
 
