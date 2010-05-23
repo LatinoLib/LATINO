@@ -2,14 +2,12 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Network.cs 
- *  Version:       1.0
- *  Desc:		   Network data structure 
- *  Author:        Miha Grcar
- *  Created on:    Jan-2008
- *  Last modified: Mar-2009
- *  Revision:      Oct-2009
- * 
+ *  File:    Network.cs 
+ *  Desc:    Network data structure 
+ *  Created: Jan-2008
+ *
+ *  Authors: Miha Grcar
+ *
  ***************************************************************************/
 
 using System;

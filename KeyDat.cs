@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          KeyDat.cs
- *  Version:       1.0
- *  Desc:		   Dictionary item data structure 
- *  Author:        Miha Grcar
- *  Created on:    Mar-2007
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  File:    KeyDat.cs
+ *  Desc:    Dictionary item data structure 
+ *  Created: Mar-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

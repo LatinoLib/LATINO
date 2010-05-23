@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          BinarySerializer.cs
- *  Version:       1.0
- *  Desc:		   Binary serializer/deserializer
- *  Authors:       Miha Grcar, Matjaz Jursic
- *  Created on:    Oct-2004
- *  Last modified: Aug-2009
- *  Revision:      Oct-2009
+ *  File:    BinarySerializer.cs
+ *  Desc:    Binary serializer/deserializer
+ *  Created: Oct-2004
+ *
+ *  Authors: Miha Grcar, Matjaz Jursic
  *
  ***************************************************************************/
 
@@ -196,7 +194,7 @@ namespace Latino
 
         public string ReadString()
         {
-            return ReadStringUtf8(); // throws exceptions (see ReadString16())
+            return ReadStringUtf8(); // throws exceptions (see ReadStringUtf8())
         }
 
         public Type ReadType()

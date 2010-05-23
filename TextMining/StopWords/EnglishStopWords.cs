@@ -1,14 +1,12 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          EnglishStopWords.cs
- *  Version:       1.0
- *  Desc:		   English stop words
- *  Author:        Miha Grcar
- *  Created on:    Dec-2008
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    EnglishStopWords.cs
+ *  Desc:    English stop words
+ *  Created: Dec-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

@@ -2,14 +2,12 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          __IncrementalKMeans__.cs 
- *  Version:       1.0
- *  Desc:		   Incremental k-means clustering algorithm (experimental)
- *  Author:        Miha Grcar 
- *  Created on:    Aug-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
- * 
+ *  File:    __IncrementalKMeans__.cs 
+ *  Desc:    Incremental k-means clustering algorithm (experimental)
+ *  Created: Aug-2009
+ *
+ *  Authors: Miha Grcar 
+ *
  ***************************************************************************/
 
 using System;

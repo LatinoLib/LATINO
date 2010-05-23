@@ -1,14 +1,12 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          ILabeledExampleCollection.cs
- *  Version:       1.0
- *  Desc:		   Interface definition
- *  Author:        Miha Grcar
- *  Created on:    Aug-2007
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    ILabeledExampleCollection.cs
+ *  Desc:    Interface definition
+ *  Created: Aug-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

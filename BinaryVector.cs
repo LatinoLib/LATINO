@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          BinaryVector.cs
- *  Version:       1.0
- *  Desc:		   Binary vector data structure 
- *  Author:        Miha Grcar
- *  Created on:    Oct-2009
- *  Last modified: Oct-2009
- *  Revision:      Oct-2009
+ *  File:    BinaryVector.cs
+ *  Desc:    Binary vector data structure 
+ *  Created: Oct-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

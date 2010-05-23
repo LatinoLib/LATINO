@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          DrawableObjectEventArgs.cs
- *  Version:       1.0
- *  Desc:		   Drawable object event arguments class
- *  Author:        Miha Grcar
- *  Created on:    Jun-2009
- *  Last modified: Dec-2009
- *  Revision:      Dec-2009
+ *  File:    DrawableObjectEventArgs.cs
+ *  Desc:    Drawable object event arguments class
+ *  Created: Jun-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          ArrayList.cs
- *  Version:       1.0
- *  Desc:		   Dynamic array data structure 
- *  Author:        Miha Grcar
- *  Created on:    Nov-2007
- *  Last modified: May-2008
- *  Revision:      Oct-2009
+ *  File:    ArrayList.cs
+ *  Desc:    Dynamic array data structure 
+ *  Created: Nov-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

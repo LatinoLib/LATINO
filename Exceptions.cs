@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Exceptions.cs
- *  Version:       1.0
- *  Desc:		   Additional exception classes
- *  Author:		   Miha Grcar
- *  Created on:    Feb-2008
- *  Last modified: May-2008
- *  Revision:      Oct-2009
+ *  File:    Exceptions.cs
+ *  Desc:    Additional exception classes
+ *  Created: Feb-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

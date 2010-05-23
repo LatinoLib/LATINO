@@ -2,14 +2,12 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          KMeansFast.cs
- *  Version:       1.0
- *  Desc:		   K-means clustering algorithm (optimized for speed)
- *  Author:        Miha Grcar 
- *  Created on:    Aug-2009
- *  Last modified: Mar-2010
- *  Revision:      Mar-2010
- * 
+ *  File:    KMeansFast.cs
+ *  Desc:    K-means clustering algorithm (optimized for speed)
+ *  Created: Aug-2009
+ *
+ *  Authors: Miha Grcar 
+ *
  ***************************************************************************/
 
 using System;

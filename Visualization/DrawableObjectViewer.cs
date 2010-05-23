@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          DrawableObjectViewer.cs
- *  Version:       1.0
- *  Desc:		   Drawable object viewer
- *  Author:        Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: Jun-2009
- *  Revision:      Jun-2009
+ *  File:    DrawableObjectViewer.cs
+ *  Desc:    Drawable object viewer
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

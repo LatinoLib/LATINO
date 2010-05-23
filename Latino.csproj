@@ -54,6 +54,14 @@
     <Compile Include="Model\CentroidData.cs" />
     <Compile Include="Model\KnnClassifierFast.cs" />
     <Compile Include="TextMining\StopWords\SerbianStopWordsCyrillic.cs" />
+    <Compile Include="Web\CacheRecord.cs" />
+    <Compile Include="Web\Exceptions.cs" />
+    <Compile Include="Web\GoogleDefine.cs" />
+    <Compile Include="Web\ISearchEngineCache.cs" />
+    <Compile Include="Web\SearchEngine.cs" />
+    <Compile Include="Web\SearchEngineResultItem.cs" />
+    <Compile Include="Web\SearchEngineResultSet.cs" />
+    <Compile Include="Web\YahooSearchEngine.cs" />
     <Compile Include="__MultiSet__.cs" />
     <Compile Include="IPair.cs" />
     <Compile Include="IEnumerableList.cs" />
@@ -217,7 +225,6 @@
     <Compile Include="TextMining\PorterStemmer.cs" />
     <Compile Include="TextMining\UnicodeTokenizer.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="Web\SearchEngine.cs" />
     <Compile Include="Web\SearchEngineCache.cs" />
     <Compile Include="Web\WebUtils.cs" />
     <Compile Include="WeightedNetwork.cs" />
@@ -232,6 +239,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>DrawableObjectViewer.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Persistance\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

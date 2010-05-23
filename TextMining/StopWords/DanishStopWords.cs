@@ -1,14 +1,12 @@
-/*==========================================================================;
+ï»¿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          DanishStopWords.cs
- *  Version:       1.0
- *  Desc:		   Danish stop words
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    DanishStopWords.cs
+ *  Desc:    Danish stop words
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -38,7 +36,7 @@ namespace Latino.TextMining
                 "til",          // to/at/for/until/against/by/of/into, more
                 "er",           // present tense of "to be"
                 "som",          // who, as
-                "på",           // on/upon/in/on/at/to/after/of/with/for, on
+                "pÃ¥",           // on/upon/in/on/at/to/after/of/with/for, on
                 "de",           // they
                 "med",          // with/by/in, along
                 "han",          // he
@@ -81,8 +79,8 @@ namespace Latino.TextMining
                 "blev",         // past tense of "to stay/to remain/to get/to become"
                 "kunne",        // could
                 "ind",          // in
-                "når",          // when
-                "være",         // present tense of "to be"
+                "nÃ¥r",          // when
+                "vÃ¦re",         // present tense of "to be"
                 "dog",          // however/yet/after all
                 "noget",        // something
                 "ville",        // would
@@ -95,7 +93,7 @@ namespace Latino.TextMining
                 "end",          // than
                 "dette",        // this
                 "mit",          // my/mine
-                "også",         // also
+                "ogsÃ¥",         // also
                 "under",        // under/beneath/below/during, below/underneath
                 "have",         // have
                 "dig",          // you
@@ -118,9 +116,9 @@ namespace Latino.TextMining
                 "ad",           // by/through
                 "bliver",       // present tense of "to be/to become"
                 "hendes",       // her/hers
-                "været",        // be
+                "vÃ¦ret",        // be
                 "thi",          // for (conj)
                 "jer",          // you
-                "sådan"}));     // such, like this/like that    
+                "sÃ¥dan"}));     // such, like this/like that    
     }
 }

@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          TransformParams.cs
- *  Version:       1.0
- *  Desc:		   Scale-and-translate transform parameters
- *  Author:        Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: May-2009
- *  Revision:      May-2009
+ *  File:    TransformParams.cs
+ *  Desc:    Scale-and-translate transform parameters
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

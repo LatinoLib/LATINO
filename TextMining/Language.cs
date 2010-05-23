@@ -1,14 +1,12 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Language.cs
- *  Version:       1.0
- *  Desc:		   Enum of supported languages 
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    Language.cs
+ *  Desc:    Enum of supported languages 
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -22,6 +20,7 @@ namespace Latino.TextMining
     */
     public enum Language
     {
+        Unspecified = 0,
         English,
         French,
         German,

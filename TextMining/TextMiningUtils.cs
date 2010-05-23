@@ -1,14 +1,12 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          TextMiningUtils.cs
- *  Version:       1.0
- *  Desc:		   Text mining utilities
- *  Author:        Miha Grcar
- *  Created on:    Mar-2010
- *  Last modified: Apr-2010
- *  Revision:      Mar-2010
+ *  File:    TextMiningUtils.cs
+ *  Desc:    Text mining utilities
+ *  Created: Mar-2010
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -105,6 +103,55 @@ namespace Latino.TextMining
                 default:
                     throw new ArgumentNotSupportedException("language");
             }            
+        }
+
+        internal static string GetLanguageCode(Language language)
+        {
+            switch (language)
+            {
+                case Language.Unspecified:
+                    return null;
+                case Language.English:
+                    return "en";
+                case Language.French:
+                    return "fr";
+                case Language.German:
+                    return "de";
+                case Language.Spanish:
+                    return "es";
+                case Language.Danish:
+                    return "da";
+                case Language.Dutch:
+                    return "nl";
+                case Language.Finnish:
+                    return "fi";
+                case Language.Italian:
+                    return "it";
+                case Language.Norwegian:
+                    return "no";
+                case Language.Portuguese:
+                    return "pt";
+                case Language.Swedish:
+                    return "sv";
+                case Language.Serbian:
+                    return "sr";
+                case Language.Slovene:
+                    return "sl";
+                case Language.Romanian:
+                    return "ro";
+                case Language.Hungarian:
+                    return "hu";
+                case Language.Estonian:
+                    return "et";
+                case Language.Bulgarian:
+                    return "bg";
+                case Language.Czech:
+                    return "cs";
+                case Language.Russian:
+                    return "ru";
+                default:
+                    throw new ArgumentNotSupportedException("language");
+            }
         }
     }
 }

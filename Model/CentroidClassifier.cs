@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          CentroidClassifier.cs
- *  Version:       1.0
- *  Desc:		   Centroid classifier
- *  Author:        Miha Grcar
- *  Created on:    Aug-2007
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    CentroidClassifier.cs
+ *  Desc:    Centroid classifier
+ *  Created: Aug-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

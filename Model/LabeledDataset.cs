@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          LabeledDataset.cs
- *  Version:       1.0
- *  Desc:		   Dataset for training ML models
- *  Author:        Miha Grcar
- *  Created on:    Aug-2007
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    LabeledDataset.cs
+ *  Desc:    Dataset for training ML models
+ *  Created: Aug-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

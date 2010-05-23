@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Stemmer.cs
- *  Version:       1.0
- *  Desc:		   English word stemmer 
- *  Author:        M. Porter, A. Hazelwood, L. Azzopardi, M. Grcar
- *  Created on:    Dec-2008
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    Stemmer.cs
+ *  Desc:    English word stemmer 
+ *  Created: Dec-2008
+ *
+ *  Authors: M. Porter, A. Hazelwood, L. Azzopardi, M. Grcar
  *
  ***************************************************************************/
 

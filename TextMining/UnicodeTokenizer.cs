@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          UnicodeTokenizer.cs
- *  Version:       1.0
- *  Desc:		   Text tokenizer based on rules
- *  Author:        Miha Grcar
- *  Created on:    Dec-2008
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    UnicodeTokenizer.cs
+ *  Desc:    Text tokenizer based on rules
+ *  Created: Dec-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -136,7 +134,7 @@ namespace Latino.TextMining
                 ContainsOther = 4
             }
 
-            private FilterFlags mFf;
+            private FilterFlags mFF;
             private string mText;
             private TokenizerFilter mFilter;            
             private int mMinTokenLen;
@@ -195,23 +193,23 @@ namespace Latino.TextMining
 
             private bool AcceptToken()
             {
-                return ((mFilter == TokenizerFilter.AlphanumLoose && (mFf & (FilterFlags.ContainsAlpha | FilterFlags.ContainsNumeric)) != 0) ||
-                    (mFilter == TokenizerFilter.AlphanumStrict && (mFf & FilterFlags.ContainsOther) == 0) ||
-                    (mFilter == TokenizerFilter.AlphaLoose && (mFf & FilterFlags.ContainsAlpha) != 0) ||
-                    (mFilter == TokenizerFilter.AlphaStrict && mFf == FilterFlags.ContainsAlpha) ||
+                return ((mFilter == TokenizerFilter.AlphanumLoose && (mFF & (FilterFlags.ContainsAlpha | FilterFlags.ContainsNumeric)) != 0) ||
+                    (mFilter == TokenizerFilter.AlphanumStrict && (mFF & FilterFlags.ContainsOther) == 0) ||
+                    (mFilter == TokenizerFilter.AlphaLoose && (mFF & FilterFlags.ContainsAlpha) != 0) ||
+                    (mFilter == TokenizerFilter.AlphaStrict && mFF == FilterFlags.ContainsAlpha) ||
                     mFilter == TokenizerFilter.None) && mEndIdx - mStartIdx >= mMinTokenLen;
             }
 
             private void GetNextToken()
             {
-                mFf = 0;
+                mFF = 0;
                 for (int i = mStartIdx; i < mText.Length - 1; i++)
                 {
                     char ch1 = mText[i];
                     char ch2 = mText[i + 1];
-                    if (IsALetter(ch1)) { mFf |= FilterFlags.ContainsAlpha; }
-                    else if (IsNumeric(ch1)) { mFf |= FilterFlags.ContainsNumeric; }
-                    else { mFf |= FilterFlags.ContainsOther; }
+                    if (IsALetter(ch1)) { mFF |= FilterFlags.ContainsAlpha; }
+                    else if (IsNumeric(ch1)) { mFF |= FilterFlags.ContainsNumeric; }
+                    else { mFF |= FilterFlags.ContainsOther; }
                     if (ch1 == '\r' && ch2 == '\n') // WB3
                     {
                     }
@@ -257,9 +255,9 @@ namespace Latino.TextMining
                 else
                 {
                     char lastCh = mText[mText.Length - 1];
-                    if (IsALetter(lastCh)) { mFf |= FilterFlags.ContainsAlpha; }
-                    else if (IsNumeric(lastCh)) { mFf |= FilterFlags.ContainsNumeric; }
-                    else { mFf |= FilterFlags.ContainsOther; }
+                    if (IsALetter(lastCh)) { mFF |= FilterFlags.ContainsAlpha; }
+                    else if (IsNumeric(lastCh)) { mFF |= FilterFlags.ContainsNumeric; }
+                    else { mFF |= FilterFlags.ContainsOther; }
                     mEndIdx = mText.Length;
                 }
             }

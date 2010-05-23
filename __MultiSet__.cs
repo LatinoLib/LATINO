@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          MultiSet.cs
- *  Version:       1.0
- *  Desc:		   Set data structure with multiple equal items
- *  Author:        Miha Grcar
- *  Created on:    Mar-2010
- *  Last modified: Mar-2010
- *  Revision:      Mar-2010
+ *  File:    MultiSet.cs
+ *  Desc:    Set data structure with multiple equal items
+ *  Created: Mar-2010
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

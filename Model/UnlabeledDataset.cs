@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          UnlabeledDataset.cs
- *  Version:       1.0
- *  Desc:		   Dataset for clustering
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    UnlabeledDataset.cs
+ *  Desc:    Dataset for clustering
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

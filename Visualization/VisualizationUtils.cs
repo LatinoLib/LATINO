@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          VisualizationUtils.cs
- *  Version:       1.0
- *  Desc:		   Visualization-related utilities
- *  Author:        Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    VisualizationUtils.cs
+ *  Desc:    Visualization-related utilities
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

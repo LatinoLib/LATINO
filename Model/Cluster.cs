@@ -2,14 +2,12 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Cluster.cs
- *  Version:       1.0
- *  Desc:		   Holds information about a cluster
- *  Author:        Miha Grcar 
- *  Created on:    Aug-2009
- *  Last modified: Dec-2009
- *  Revision:      Dec-2009
- * 
+ *  File:    Cluster.cs
+ *  Desc:    Holds information about a cluster
+ *  Created: Aug-2009
+ *
+ *  Authors: Miha Grcar 
+ *
  ***************************************************************************/
 
 using System;

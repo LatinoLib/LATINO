@@ -1,14 +1,12 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          ISnowballStemmer.cs
- *  Version:       1.0
- *  Desc:		   Snowball word stemmer interface
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    ISnowballStemmer.cs
+ *  Desc:    Snowball word stemmer interface
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

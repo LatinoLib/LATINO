@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          StressMajorizationLayout.cs
- *  Version:       1.0
- *  Desc:		   Stress majorization algorithm 
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    StressMajorizationLayout.cs
+ *  Desc:    Stress majorization algorithm 
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

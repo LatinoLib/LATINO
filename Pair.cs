@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Pair.cs
- *  Version:       1.0
- *  Desc:		   Pair data structure 
- *  Author:        Miha Grcar
- *  Created on:    Nov-2007
- *  Last modified: Aug-2009
- *  Revision:      Oct-2009
+ *  File:    Pair.cs
+ *  Desc:    Pair data structure 
+ *  Created: Nov-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

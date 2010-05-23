@@ -1,14 +1,12 @@
-/*==========================================================================;
+ï»¿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          GermanStopWords.cs
- *  Version:       1.0
- *  Desc:		   German stop words
- *  Author:        Miha Grcar
- *  Created on:    Dec-2008
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    GermanStopWords.cs
+ *  Desc:    German stop words
+ *  Created: Dec-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -64,7 +62,7 @@ namespace Latino.TextMining
                 "dem",
                 "die",
                 "das",
-                "daß",            //  that
+                "daÃŸ",            //  that
                 "derselbe",       //  the same
                 "derselben",
                 "denselben",
@@ -119,7 +117,7 @@ namespace Latino.TextMining
                 "euren",
                 "eurer",
                 "eures",
-                "für",            //  for
+                "fÃ¼r",            //  for
                 "fuer",
                 "gegen",          //  towards
                 "gewesen",        //  p.p. of sein
@@ -165,9 +163,9 @@ namespace Latino.TextMining
                 "keinen",
                 "keiner",
                 "keines",
-                "können",         //  can
+                "kÃ¶nnen",         //  can
                 "koennen",
-                "könnte",         //  could
+                "kÃ¶nnte",         //  could
                 "koennte",
                 "machen",         //  do
                 "man",            //  one
@@ -216,7 +214,7 @@ namespace Latino.TextMining
                 "sollte",         //  should
                 "sondern",        //  but
                 "sonst",          //  else
-                "über",           //  over
+                "Ã¼ber",           //  over
                 "ueber",
                 "um",             //  about, around
                 "und",            //  and
@@ -231,7 +229,7 @@ namespace Latino.TextMining
                 "vom",            //  von + dem
                 "von",            //  from
                 "vor",            //  before
-                "während",        //  while
+                "wÃ¤hrend",        //  while
                 "waehrend",
                 "war",            //  was
                 "waren",          //  were
@@ -257,9 +255,9 @@ namespace Latino.TextMining
                 "wo",             //  where
                 "wollen",         //  want
                 "wollte",         //  wanted
-                "würde",          //  would
+                "wÃ¼rde",          //  would
                 "wuerde",
-                "würden",         //  would
+                "wÃ¼rden",         //  would
                 "wuerden",
                 "zu",             //  to
                 "zum",            //  zu + dem

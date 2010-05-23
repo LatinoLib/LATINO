@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          SparseVector.cs
- *  Version:       1.0
- *  Desc:		   Sparse vector data structure 
- *  Author:        Miha Grcar
- *  Created on:    Mar-2007
- *  Last modified: May-2009
- *  Revision:      Oct-2009
+ *  File:    SparseVector.cs
+ *  Desc:    Sparse vector data structure 
+ *  Created: Mar-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Vector2D.cs
- *  Version:       1.0
- *  Desc:		   Geometric vector data structure 
- *  Author:		   Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    Vector2D.cs
+ *  Desc:    Geometric vector data structure 
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

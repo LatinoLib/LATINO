@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          SetEqualityComparer.cs
- *  Version:       1.0
- *  Desc:		   Set equality comparer
- *  Author:        Miha Grcar
- *  Created on:    Nov-2007
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    SetEqualityComparer.cs
+ *  Desc:    Set equality comparer
+ *  Created: Nov-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

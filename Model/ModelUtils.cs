@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          ModelUtils.cs
- *  Version:       1.0
- *  Desc:		   Fundamental ML-related utilities
- *  Author:        Miha Grcar
- *  Created on:    Aug-2008
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    ModelUtils.cs
+ *  Desc:    Fundamental ML-related utilities
+ *  Created: Aug-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

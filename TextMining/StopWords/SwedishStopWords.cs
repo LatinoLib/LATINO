@@ -1,14 +1,12 @@
-/*==========================================================================;
+ï»¿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          SwedishStopWords.cs
- *  Version:       1.0
- *  Desc:		   Swedish stop words
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    SwedishStopWords.cs
+ *  Desc:    Swedish stop words
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -29,7 +27,7 @@ namespace Latino.TextMining
                 // This is a ranked list (commonest to rarest) of stopwords derived from
                 // a large text sample.
                 // Swedish stop words occasionally exhibit homonym clashes. For example
-                // så = so, but also seed. These are indicated clearly below.
+                // sÃ¥ = so, but also seed. These are indicated clearly below.
                 "och",            // and
                 "det",            // it, this/that
                 "att",            // to (with infinitive)
@@ -39,15 +37,15 @@ namespace Latino.TextMining
                 "hon",            // she
                 "som",            // who, that
                 "han",            // he
-                "på",             // on
+                "pÃ¥",             // on
                 "den",            // it, this/that
                 "med",            // with
                 "var",            // where, each
                 "sig",            // him(self) etc
-                "för",            // for
-                "så",             // so (also: seed)
+                "fÃ¶r",            // for
+                "sÃ¥",             // so (also: seed)
                 "till",           // to
-                "är",             // is
+                "Ã¤r",             // is
                 "men",            // but
                 "ett",            // a
                 "om",             // if; around, about
@@ -58,51 +56,51 @@ namespace Latino.TextMining
                 "mig",            // me
                 "du",             // you
                 "henne",          // her
-                "då",             // then, when
+                "dÃ¥",             // then, when
                 "sin",            // his
                 "nu",             // now
                 "har",            // have
-                "inte",           // inte någon = no one
+                "inte",           // inte nÃ¥gon = no one
                 "hans",           // his
                 "honom",          // him
                 "skulle",         // 'sake'
                 "hennes",         // her
-                "där",            // there
+                "dÃ¤r",            // there
                 "min",            // my
                 "man",            // one (pronoun)
                 "ej",             // nor
                 "vid",            // at, by, on (also: vast)
                 "kunde",          // could
-                "något",          // some etc
-                "från",           // from, off
+                "nÃ¥got",          // some etc
+                "frÃ¥n",           // from, off
                 "ut",             // out
-                "när",            // when
+                "nÃ¤r",            // when
                 "efter",          // after, behind
                 "upp",            // up
                 "vi",             // we
                 "dem",            // them
                 "vara",           // be
                 "vad",            // what
-                "över",           // over
-                "än",             // than
+                "Ã¶ver",           // over
+                "Ã¤n",             // than
                 "dig",            // you
                 "kan",            // can
                 "sina",           // his
-                "här",            // here
+                "hÃ¤r",            // here
                 "ha",             // have
                 "mot",            // towards
                 "alla",           // all
                 "under",          // under (also: wonder)
-                "någon",          // some etc
+                "nÃ¥gon",          // some etc
                 "eller",          // or (else)
                 "allt",           // all
                 "mycket",         // much
                 "sedan",          // since
                 "ju",             // why
                 "denna",          // this/that
-                "själv",          // myself, yourself etc
+                "sjÃ¤lv",          // myself, yourself etc
                 "detta",          // this/that
-                "åt",             // to
+                "Ã¥t",             // to
                 "utan",           // without
                 "varit",          // was
                 "hur",            // how
@@ -114,33 +112,33 @@ namespace Latino.TextMining
                 "oss",            // us
                 "din",            // thy
                 "dessa",          // these/those
-                "några",          // some etc
+                "nÃ¥gra",          // some etc
                 "deras",          // their
                 "blir",           // from bli
                 "mina",           // my
                 "samma",          // (the) same
                 "vilken",         // who, that
                 "er",             // you, your
-                "sådan",          // such a
-                "vår",            // our
+                "sÃ¥dan",          // such a
+                "vÃ¥r",            // our
                 "blivit",         // from bli
                 "dess",           // its
                 "inom",           // within
                 "mellan",         // between
-                "sådant",         // such a
-                "varför",         // why
+                "sÃ¥dant",         // such a
+                "varfÃ¶r",         // why
                 "varje",          // each
                 "vilka",          // who, that
                 "ditt",           // thy
                 "vem",            // who
                 "vilket",         // who, that
                 "sitta",          // his
-                "sådana",         // such a
+                "sÃ¥dana",         // such a
                 "vart",           // each
                 "dina",           // thy
                 "vars",           // whose
-                "vårt",           // our
-                "våra",           // our
+                "vÃ¥rt",           // our
+                "vÃ¥ra",           // our
                 "ert",            // your
                 "era",            // your
                 "vilkas"}));      // whose    

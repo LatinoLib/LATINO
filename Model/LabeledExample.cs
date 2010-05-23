@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          LabeledExample.cs
- *  Version:       1.0
- *  Desc:		   Labeled example data structure 
- *  Author:        Miha Grcar
- *  Created on:    Jan-2009
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    LabeledExample.cs
+ *  Desc:    Labeled example data structure 
+ *  Created: Jan-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

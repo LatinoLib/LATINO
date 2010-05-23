@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          VisualizationInterfaces.cs
- *  Version:       1.0
- *  Desc:		   Visualization-related interfaces
- *  Author:        Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: May-2008
- *  Revision:      May-2008
+ *  File:    VisualizationInterfaces.cs
+ *  Desc:    Visualization-related interfaces
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

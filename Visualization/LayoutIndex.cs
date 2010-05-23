@@ -2,14 +2,12 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          LayoutIndex.cs
- *  Version:       1.0
- *  Desc:		   2-dimensional spatial index (k-D tree implementation)
- *  Author:        Miha Grcar
- *  Created on:    Sep-2007
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
- * 
+ *  File:    LayoutIndex.cs
+ *  Desc:    2-dimensional spatial index (k-D tree implementation)
+ *  Created: Sep-2007
+ *
+ *  Authors: Miha Grcar
+ *
  ***************************************************************************/
 
 using System;

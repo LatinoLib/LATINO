@@ -1,14 +1,12 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          IHierarchicalModel.cs
- *  Version:       1.0
- *  Desc:		   Interface definition
- *  Author:        Miha Grcar
- *  Created on:    Dec-2009
- *  Last modified: Dec-2009
- *  Revision:      Dec-2009
+ *  File:    IHierarchicalModel.cs
+ *  Desc:    Interface definition
+ *  Created: Dec-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

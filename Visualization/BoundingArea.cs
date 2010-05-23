@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          BoundingArea.cs
- *  Version:       1.0
- *  Desc:		   Bounding area as set of rectangles
- *  Author:        Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: Jun-2009
- *  Revision:      Jun-2009
+ *  File:    BoundingArea.cs
+ *  Desc:    Bounding area as set of rectangles
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

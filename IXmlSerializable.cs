@@ -1,14 +1,12 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          IXmlSerializable.cs
- *  Version:       1.0
- *  Desc:		   Interface definition
- *  Author:        Miha Grcar
- *  Created on:    Nov-2007
- *  Last modified: May-2008
- *  Revision:      Oct-2009
+ *  File:    IXmlSerializable.cs
+ *  Desc:    Interface definition
+ *  Created: Nov-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

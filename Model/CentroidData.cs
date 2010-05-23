@@ -1,15 +1,13 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          CentroidData.cs
- *  Version:       1.0
- *  Desc:		   Centroid data structure (used for speed optimizations)
- *  Author:        Miha Grcar 
- *  Created on:    May-2009
- *  Last modified: Mar-2010
- *  Revision:      Mar-2010
- * 
+ *  File:    CentroidData.cs
+ *  Desc:    Centroid data structure (used for speed optimizations)
+ *  Created: May-2009
+ *
+ *  Authors: Miha Grcar 
+ *
  ***************************************************************************/
 
 using System;

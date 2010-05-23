@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Utils.cs
- *  Version:       1.0
- *  Desc:		   Fundamental LATINO utilities
- *  Author:        Miha Grcar
- *  Created on:    Nov-2007
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    Utils.cs
+ *  Desc:    Fundamental LATINO utilities
+ *  Created: Nov-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

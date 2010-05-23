@@ -1,14 +1,12 @@
-/*==========================================================================;
+Ôªø/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          ItalianStopWords.cs
- *  Version:       1.0
- *  Desc:		   Italian stop words
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    ItalianStopWords.cs
+ *  Desc:    Italian stop words
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -121,7 +119,7 @@ namespace Latino.TextMining
                 "ma",             //  but
                 "ed",             //  and
                 "se",             //  if
-                "perchÈ",         //  why, because
+                "perch√©",         //  why, because
                 "anche",          //  also
                 "come",           //  how
                 "dov",            //  where (as dov')
@@ -130,7 +128,7 @@ namespace Latino.TextMining
                 "chi",            //  who
                 "cui",            //  whom
                 "non",            //  not
-                "pi˘",            //  more
+                "pi√π",            //  more
                 "quale",          //  who, that
                 "quanto",         //  how much
                 "quanti",         
@@ -164,9 +162,9 @@ namespace Latino.TextMining
                 "abbia",
                 "abbiate",
                 "abbiano",
-                "avrÚ",
+                "avr√≤",
                 "avrai",
-                "avr‡",
+                "avr√†",
                 "avremo",
                 "avrete",
                 "avranno",
@@ -200,15 +198,15 @@ namespace Latino.TextMining
                                // forms of essere, to be (not including the infinitive):
                 "sono",
                 "sei",
-                "Ë",
+                "√®",
                 "siamo",
                 "siete",
                 "sia",
                 "siate",
                 "siano",
-                "sarÚ",
+                "sar√≤",
                 "sarai",
-                "sar‡",
+                "sar√†",
                 "saremo",
                 "sarete",
                 "saranno",
@@ -243,9 +241,9 @@ namespace Latino.TextMining
                 "faccia",
                 "facciate",
                 "facciano",
-                "farÚ",
+                "far√≤",
                 "farai",
-                "far‡",
+                "far√†",
                 "faremo",
                 "farete",
                 "faranno",
@@ -281,9 +279,9 @@ namespace Latino.TextMining
                 "stia",
                 "stiate",
                 "stiano",
-                "starÚ",
+                "star√≤",
                 "starai",
-                "star‡",
+                "star√†",
                 "staremo",
                 "starete",
                 "staranno",

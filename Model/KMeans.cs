@@ -2,14 +2,12 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          KMeans.cs
- *  Version:       1.0
- *  Desc:		   K-means clustering algorithm
- *  Author:        Miha Grcar 
- *  Created on:    Aug-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
- * 
+ *  File:    KMeans.cs
+ *  Desc:    K-means clustering algorithm
+ *  Created: Aug-2009
+ *
+ *  Authors: Miha Grcar 
+ *
  ***************************************************************************/
 
 using System;

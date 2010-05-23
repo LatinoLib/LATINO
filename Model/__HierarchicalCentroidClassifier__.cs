@@ -2,14 +2,12 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          __HierarchicalCentroidClassifier__.cs 
- *  Version:       1.0
- *  Desc:		   Hierarchical centroid classifier (experimental)
- *  Author:        Miha Grcar 
- *  Created on:    Dec-2009
- *  Last modified: Dec-2009
- *  Revision:      Dec-2009
- * 
+ *  File:    __HierarchicalCentroidClassifier__.cs 
+ *  Desc:    Hierarchical centroid classifier (experimental)
+ *  Created: Dec-2009
+ *
+ *  Authors: Miha Grcar 
+ *
  ***************************************************************************/
 
 using System;

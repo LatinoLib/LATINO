@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          IdxDat.cs
- *  Version:       1.0
- *  Desc:		   Indexed item data structure 
- *  Author:        Miha Grcar
- *  Created on:    Mar-2007
- *  Last modified: Dec-2008
- *  Revision:      Oct-2009
+ *  File:    IdxDat.cs
+ *  Desc:    Indexed item data structure 
+ *  Created: Mar-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

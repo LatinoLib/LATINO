@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          FilledDrawnObject.cs
- *  Version:       1.0
- *  Desc:		   Filled drawable object
- *  Author:        Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: May-2009
- *  Revision:      May-2009
+ *  File:    FilledDrawnObject.cs
+ *  Desc:    Filled drawable object
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

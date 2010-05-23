@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Tokenizer.cs
- *  Version:       1.0
- *  Desc:		   Text tokenizer based on regular expressions
- *  Author:        Miha Grcar
- *  Created on:    Apr-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    Tokenizer.cs
+ *  Desc:    Text tokenizer based on regular expressions
+ *  Created: Apr-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -30,7 +28,7 @@ namespace Latino.TextMining
         private string mText
             = "";
         private Regex mTokenRegex
-            = new Regex(@"[A-Za-z]+(-[A-Za-z]+)*", RegexOptions.Compiled);
+            = new Regex(@"\p{L}+(-\p{L}+)*", RegexOptions.Compiled);
         private Regex mDelimRegex
             = new Regex(@"\s+|$", RegexOptions.Compiled); // *** this is not (yet?) publicly accessible
         private bool mIgnoreUnknownTokens

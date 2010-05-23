@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Ref.cs
- *  Version:       1.0
- *  Desc:		   Enables referencing a value type
- *  Author:        Miha Grcar
- *  Created on:    Feb-2010
- *  Last modified: Feb-2010
- *  Revision:      Feb-2010
+ *  File:    Ref.cs
+ *  Desc:    Enables referencing a value type
+ *  Created: Feb-2010
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

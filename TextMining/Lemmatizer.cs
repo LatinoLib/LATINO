@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Lemmatizer.cs
- *  Version:       1.0
- *  Desc:		   LemmaSharp word lemmatizer (LATINO wrapper)
- *  Author:        Miha Grcar
- *  Created on:    Jan-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    Lemmatizer.cs
+ *  Desc:    LemmaSharp word lemmatizer (LATINO wrapper)
+ *  Created: Jan-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

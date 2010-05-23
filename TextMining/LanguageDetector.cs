@@ -1,14 +1,12 @@
-﻿/*==========================================================================
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          LanguageDetector.cs
- *  Version:       0.1
- *  Desc:          Language detector based on character n-grams
- *  Author:        Marko Brakus
- *  Created on:    Mar-2010
- *  Last modified: Mar-2010
- *  Revision:      Mar-2010
+ *  File:    LanguageDetector.cs
+ *  Desc:    Language detector based on character n-grams
+ *  Created: Mar-2010
+ *
+ *  Authors: Marko Brakus
  *
  ***************************************************************************/
 

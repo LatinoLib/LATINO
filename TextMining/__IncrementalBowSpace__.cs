@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          __IncrementalBowSpace__.cs (experimental)
- *  Version:       1.0
- *  Desc:		   Incremental bag-of-words space 
- *  Author:        Miha Grcar
- *  Created on:    Dec-2008
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    __IncrementalBowSpace__.cs (experimental)
+ *  Desc:    Incremental bag-of-words space 
+ *  Created: Dec-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

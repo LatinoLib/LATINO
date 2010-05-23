@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          WebUtils.cs
- *  Version:       1.0
- *  Desc:		   Fundamental Web-related routines
- *  Author:        Miha Grcar
- *  Created on:    Nov-2006
- *  Last modified: Jun-2008
- *  Revision:      Jun-2008
+ *  File:    WebUtils.cs
+ *  Desc:    Fundamental Web-related routines
+ *  Created: Nov-2006
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -26,6 +24,8 @@ namespace Latino.Web
     */
     public static class WebUtils
     {
+        // *** fetching Web pages ***
+
         private static IWebProxy mWebProxy
             = WebRequest.DefaultWebProxy;
 
@@ -92,5 +92,15 @@ namespace Latino.Web
             responseReader.Close();
             return pageHtml;
         }
+
+        // *** search query normalization ***
+
+        public static string NormalizeQueryDefault(string query)
+        {
+            // TBD
+            return query;
+        }
+
+        public delegate string NormalizeQueryDelegate(string query);
     }
 }

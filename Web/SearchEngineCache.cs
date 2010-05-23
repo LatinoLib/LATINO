@@ -1,14 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  (c) 2007-08 JSI.  All rights reserved.
+ *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          SearchEngineCache.cs
- *  Version:       1.0
- *  Desc:		   Cache for Web search engine results
- *  Author:        Miha Grcar
- *  Created on:    Mar-2007
- *  Last modified: Nov-2008
- *  Revision:      Nov-2008
+ *  File:    MemoryCache.cs
+ *  Desc:    Cache for Web search engine results
+ *  Created: Mar-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -17,29 +15,20 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml;
+using Latino.TextMining;
+
+// TOOD: record should contain binary serialized result sets
+// TODO: default query normalization procedure @ WebUtils
 
 namespace Latino.Web
 {
-    /* .-----------------------------------------------------------------------
-       |		
-       |  Interface ISearchEngineCache
-       |
-       '-----------------------------------------------------------------------
-    */
-    public interface ISearchEngineCache
-    {
-        bool GetFromCache(string source, SearchEngineLanguage language, string query, int maxSize, ref long totalHits,
-            ref SearchEngineResultSet resultSet);
-        void PutIntoCache(string source, SearchEngineLanguage language, string query, long totalHits, SearchEngineResultSet resultSet);
-    }
-
     /* .-----------------------------------------------------------------------
        |		
        |  Class SearchEngineCache
        |
        '-----------------------------------------------------------------------
     */
-    internal static class SearchEngineCache
+   /* internal static class SearchEngineCache
     {
         private static bool IsAlphaNum(string str)
         {
@@ -106,42 +95,7 @@ namespace Latino.Web
             return string.Format("{0} {1}: {2}", source, language, query);
         }
     }
-
-    /* .-----------------------------------------------------------------------
-       |		
-       |  Class CacheRecord
-       |
-       '-----------------------------------------------------------------------
-    */
-    internal class CacheRecord : ISerializable
-    {
-        public long TotalHits;
-        public int ActualSize;
-        public string ResultSetXml;
-        public DateTime TimeStamp;
-        public CacheRecord()
-        {
-        }
-        public CacheRecord(BinarySerializer reader)
-        {
-            Load(reader);
-        }
-        // *** ISerializable interface implementation ***
-        public void Save(BinarySerializer writer)
-        {
-            writer.WriteLong(TotalHits);
-            writer.WriteInt(ActualSize);
-            writer.WriteString(ResultSetXml);
-            writer.WriteDouble(TimeStamp.ToOADate());
-        }
-        public void Load(BinarySerializer reader)
-        {
-            TotalHits = reader.ReadLong();
-            ActualSize = reader.ReadInt();
-            ResultSetXml = reader.ReadString();
-            TimeStamp = DateTime.FromOADate(reader.ReadDouble());
-        }
-    }
+    * /
 
     /* .-----------------------------------------------------------------------
        |		
@@ -155,27 +109,37 @@ namespace Latino.Web
             = 0;
         private Dictionary<string, CacheRecord> mCache
             = new Dictionary<string, CacheRecord>();
+
+        public WebUtils.NormalizeQueryDelegate NormalizeQuery
+            = WebUtils.NormalizeQueryDefault;
+
         public MemoryCache()
         {
         }
+
         public MemoryCache(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
+
         public int Ttl
         {
             get { return mTtl; }
             set
             {
-                Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("Ttl value") : null);
+                Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("Ttl") : null);
                 mTtl = value;
             }
         }
+
         // *** ISearchEngineCache interface implementation ***
-        public bool GetFromCache(string source, SearchEngineLanguage language, string query, int maxSize, ref long totalHits, ref SearchEngineResultSet resultSet)
-        {
-            // TODO: throw exceptions
-            string normalizedQuery = SearchEngineCache.NormalizeQuery(source, language.ToString(), query);
+
+        public bool GetFromCache(string source, Language language, string query, int maxSize, ref long totalHits, ref SearchEngineResultSet resultSet)
+        {            
+            Utils.ThrowException(source == null ? new ArgumentNullException("source") : null);
+            Utils.ThrowException(query == null ? new ArgumentNullException("query") : null);
+            Utils.ThrowException(maxSize < 0 ? new ArgumentOutOfRangeException("maxSize") : null);
+            string normalizedQuery = string.Format("{0} {1} {2}", source, language, NormalizeQuery == null ? query : NormalizeQuery(query));
             if (mCache.ContainsKey(normalizedQuery))
             {
                 CacheRecord cacheRecord = mCache[normalizedQuery];
@@ -194,10 +158,14 @@ namespace Latino.Web
             Utils.VerboseLine("Cache miss.");
             return false;
         }
-        public void PutIntoCache(string source, SearchEngineLanguage language, string query, long totalHits, SearchEngineResultSet resultSet)
+
+        public void PutIntoCache(string source, Language language, string query, long totalHits, SearchEngineResultSet resultSet)
         {
-            // TODO: throw exceptions
-            string normalizedQuery = SearchEngineCache.NormalizeQuery(source, language.ToString(), query);
+            Utils.ThrowException(source == null ? new ArgumentNullException("source") : null);
+            Utils.ThrowException(query == null ? new ArgumentNullException("query") : null);
+            Utils.ThrowException(resultSet == null ? new ArgumentNullException("resultSet") : null);
+            Utils.ThrowException(totalHits < resultSet.Count ? new ArgumentValueException("totalHits") : null);
+            string normalizedQuery = string.Format("{0} {1} {2}", source, language, NormalizeQuery == null ? query : NormalizeQuery(query));
             int actualSize = resultSet.Count;
             CacheRecord cacheRecord = new CacheRecord();
             cacheRecord.TotalHits = totalHits;
@@ -217,6 +185,7 @@ namespace Latino.Web
                 mCache.Add(normalizedQuery, cacheRecord);
             }
         }
+
         public void RemoveEmptyEntries()
         {
             Set<string> keys = new Set<string>();
@@ -229,7 +198,9 @@ namespace Latino.Web
                 mCache.Remove(key);
             }
         }
+
         // *** ISerializable interface implementation ***
+
         public void Save(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
@@ -242,6 +213,7 @@ namespace Latino.Web
             }
             writer.WriteInt(mTtl);
         }
+
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
@@ -257,14 +229,4 @@ namespace Latino.Web
             mTtl = reader.ReadInt();
         }
     }
-
-    /* .-----------------------------------------------------------------------
-       |		
-       |  Class DatabaseCache
-       |
-       '-----------------------------------------------------------------------
-    */
-    //public class DatabaseCache : ISearchEngineCache
-    //{ 
-    //}
 }

@@ -1,14 +1,12 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          DescSort.cs
- *  Version:       1.0
- *  Desc:		   Utility class for descending sort
- *  Author:        Miha Grcar
- *  Created on:    Nov-2007
- *  Last modified: Mar-2010
- *  Revision:      Mar-2010
+ *  File:    DescSort.cs
+ *  Desc:    Utility class for descending sort
+ *  Created: Nov-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

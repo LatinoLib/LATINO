@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          ListEnum.cs
- *  Version:       1.0
- *  Desc:		   Generic list enumerator
- *  Author:        Miha Grcar
- *  Created on:    Nov-2007
- *  Last modified: Jan-2009
- *  Revision:      Oct-2009
+ *  File:    ListEnum.cs
+ *  Desc:    Generic list enumerator
+ *  Created: Nov-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

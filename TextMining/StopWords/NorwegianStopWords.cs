@@ -1,14 +1,12 @@
-/*==========================================================================;
+ï»¿/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          NorwegianStopWords.cs
- *  Version:       1.0
- *  Desc:		   Norwegian stop words
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    NorwegianStopWords.cs
+ *  Desc:    Norwegian stop words
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -25,7 +23,7 @@ namespace Latino.TextMining
         // this list is taken from http://snowball.tartarus.org/algorithms/norwegian/stop.txt
         public static Set<string>.ReadOnly NorwegianStopWords
             = new Set<string>.ReadOnly(new Set<string>(new string[] {
-                // This stop word list is for the dominant bokmål dialect. Words unique
+                // This stop word list is for the dominant bokmÃ¥l dialect. Words unique
                 // to nynorsk are marked *.
                 // Revised by Jan Bruusgaard <Jan.Bruusgaard@ssb.no>, Jan 2005
                 "og",             // and
@@ -39,7 +37,7 @@ namespace Latino.TextMining
                 "til",            // to
                 "er",             // is/am/are
                 "som",            // who/that
-                "på",             // on
+                "pÃ¥",             // on
                 "de",             // they / you(formal)
                 "med",            // with
                 "han",            // he
@@ -47,7 +45,7 @@ namespace Latino.TextMining
                 "ikke",           // not
                 "ikkje",          // not *
                 "der",            // there
-                "så",             // so
+                "sÃ¥",             // so
                 "var",            // was/were
                 "meg",            // me
                 "seg",            // you
@@ -61,7 +59,7 @@ namespace Latino.TextMining
                 "ha",             // have
                 "hadde",          // had
                 "hun",            // she
-                "nå",             // now
+                "nÃ¥",             // now
                 "over",           // over
                 "da",             // when/as
                 "ved",            // by/know
@@ -80,7 +78,7 @@ namespace Latino.TextMining
                 "hva",            // what
                 "skal",           // shall/must
                 "selv",           // self (reflective)
-                "sjøl",           // self (reflective)
+                "sjÃ¸l",           // self (reflective)
                 "her",            // here
                 "alle",           // all
                 "vil",            // will
@@ -90,8 +88,8 @@ namespace Latino.TextMining
                 "blitt",          // have become
                 "kunne",          // could
                 "inn",            // in
-                "når",            // when
-                "være",           // be
+                "nÃ¥r",            // when
+                "vÃ¦re",           // be
                 "kom",            // come
                 "noen",           // some
                 "noe",            // some
@@ -111,7 +109,7 @@ namespace Latino.TextMining
                 "sine",           // hers/his
                 "sitt",           // hers/his
                 "mot",            // against
-                "å",              // to
+                "Ã¥",              // to
                 "meget",          // much
                 "hvorfor",        // why
                 "dette",          // this
@@ -125,25 +123,25 @@ namespace Latino.TextMining
                 "samme",          // same
                 "hvilken",        // which
                 "hvilke",         // which (plural)
-                "sånn",           // such a
+                "sÃ¥nn",           // such a
                 "inni",           // inside/within
                 "mellom",         // between
-                "vår",            // our
+                "vÃ¥r",            // our
                 "hver",           // each
                 "hvem",           // who
                 "vors",           // us/ours
                 "hvis",           // whose
-                "både",           // both
+                "bÃ¥de",           // both
                 "bare",           // only/just
                 "enn",            // than
                 "fordi",          // as/because
-                "før",            // before
+                "fÃ¸r",            // before
                 "mange",          // many
-                "også",           // also
+                "ogsÃ¥",           // also
                 "slik",           // just
-                "vært",           // been
-                "være",           // to be
-                "båe",            // both *
+                "vÃ¦rt",           // been
+                "vÃ¦re",           // to be
+                "bÃ¥e",            // both *
                 "begge",          // both
                 "siden",          // since
                 "dykk",           // your *
@@ -153,14 +151,14 @@ namespace Latino.TextMining
                 "deires",         // theirs *
                 "deim",           // them *
                 "di",             // your (fem.) *
-                "då",             // as/when *
+                "dÃ¥",             // as/when *
                 "eg",             // I *
                 "ein",            // a/an *
                 "eit",            // a/an *
                 "eitt",           // a/an *
                 "elles",          // or *
                 "honom",          // he *
-                "hjå",            // at *
+                "hjÃ¥",            // at *
                 "ho",             // she *
                 "hoe",            // she *
                 "henne",          // her

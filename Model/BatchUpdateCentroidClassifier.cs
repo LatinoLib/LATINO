@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          BatchUpdateCentroidClassifier.cs
- *  Version:       1.0
- *  Desc:		   Batch-update centroid classifier 
- *  Author:        Miha Grcar
- *  Created on:    May-2009
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    BatchUpdateCentroidClassifier.cs
+ *  Desc:    Batch-update centroid classifier 
+ *  Created: May-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

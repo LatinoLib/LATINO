@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          BowSpace.cs
- *  Version:       1.0
- *  Desc:		   Bag-of-words space
- *  Author:        Miha Grcar
- *  Created on:    Dec-2008
- *  Last modified: Dec-2009
- *  Revision:      Dec-2009
+ *  File:    BowSpace.cs
+ *  Desc:    Bag-of-words space
+ *  Created: Dec-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

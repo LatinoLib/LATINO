@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          VectorF.cs
- *  Version:       1.0
- *  Desc:		   Geometric vector data structure (single precision)
- *  Author:		   Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: May-2009
- *  Revision:      May-2009
+ *  File:    VectorF.cs
+ *  Desc:    Geometric vector data structure (single precision)
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

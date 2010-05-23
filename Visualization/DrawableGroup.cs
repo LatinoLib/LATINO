@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          DrawableGroup.cs
- *  Version:       1.0
- *  Desc:		   Group of drawable objects
- *  Author:        Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: May-2009
- *  Revision:      May-2009
+ *  File:    DrawableGroup.cs
+ *  Desc:    Group of drawable objects
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

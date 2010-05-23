@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          SparseMatrix.cs
- *  Version:       1.0
- *  Desc:		   Sparse matrix data structure 
- *  Author:        Miha Grcar
- *  Created on:    Apr-2007
- *  Last modified: Mar-2009
- *  Revision:      Oct-2009
+ *  File:    SparseMatrix.cs
+ *  Desc:    Sparse matrix data structure 
+ *  Created: Apr-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

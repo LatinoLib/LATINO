@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Ellipse.cs
- *  Version:       1.0
- *  Desc:		   Drawable ellipse
- *  Author:        Miha Grcar
- *  Created on:    Mar-2008
- *  Last modified: May-2009
- *  Revision:      May-2009
+ *  File:    Ellipse.cs
+ *  Desc:    Drawable ellipse
+ *  Created: Mar-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

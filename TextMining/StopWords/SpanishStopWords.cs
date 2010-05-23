@@ -1,14 +1,12 @@
-/*==========================================================================;
+Ôªø/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          SpanishStopWords.cs
- *  Version:       1.0
- *  Desc:		   Spanish stop words
- *  Author:        Miha Grcar
- *  Created on:    Dec-2008
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    SpanishStopWords.cs
+ *  Desc:    Spanish stop words
+ *  Created: Dec-2008
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -51,7 +49,7 @@ namespace Latino.TextMining
                   // es         from SER
                 "lo",             //  him
                 "como",           //  how
-                "m·s",            //  more
+                "m√°s",            //  more
                 "pero",           //  pero
                 "sus",            //  su plural
                 "le",             //  to him, her
@@ -60,26 +58,26 @@ namespace Latino.TextMining
                   // fue        from SER
                 "este",           //  this
                   // ha         from HABER
-                "sÌ",             //  himself etc
+                "s√≠",             //  himself etc
                 "porque",         //  because
                 "esta",           //  this
                   // son        from SER
                 "entre",          //  between
-                  // est·       from ESTAR
+                  // est√°       from ESTAR
                 "cuando",         //  when
                 "muy",            //  very
                 "sin",            //  without
                 "sobre",          //  on
                   // ser        from SER
                   // tiene      from TENER
-                "tambiÈn",        //  also
+                "tambi√©n",        //  also
                 "me",             //  me
                 "hasta",          //  until
                 "hay",            //  there is/are
                 "donde",          //  where
                   // han        from HABER
                 "quien",          //  whom, that
-                  // est·n      from ESTAR
+                  // est√°n      from ESTAR
                   // estado     from ESTAR
                 "desde",          //  from
                 "todo",           //  all
@@ -95,21 +93,21 @@ namespace Latino.TextMining
                   // fueron     from SER
                 "ese",            //  that
                 "eso",            //  that
-                  // habÌa      from HABER
+                  // hab√≠a      from HABER
                 "ante",           //  before
                 "ellos",          //  they
                 "e",              //  and (variant of y)
                 "esto",           //  this
-                "mÌ",             //  me
+                "m√≠",             //  me
                 "antes",          //  before
                 "algunos",        //  some
-                "quÈ",            //  what?
+                "qu√©",            //  what?
                 "unos",           //  a
                 "yo",             //  I
                 "otro",           //  other
                 "otras",          //  other
                 "otra",           //  other
-                "Èl",             //  he
+                "√©l",             //  he
                 "tanto",          //  so much, many
                 "esa",            //  that
                 "estos",          //  these
@@ -132,7 +130,7 @@ namespace Latino.TextMining
                                // other forms
                 "mi",             //  me
                 "mis",            //  mi plural
-                "t˙",             //  thou
+                "t√∫",             //  thou
                 "te",             //  thee
                 "ti",             //  thee
                 "tu",             //  thy
@@ -142,10 +140,10 @@ namespace Latino.TextMining
                 "vosotros",       //  you
                 "vosotras",       //  you
                 "os",             //  you
-                "mÌo",            //  mine
-                "mÌa",            //
-                "mÌos",           //
-                "mÌas",           //
+                "m√≠o",            //  mine
+                "m√≠a",            //
+                "m√≠os",           //
+                "m√≠as",           //
                 "tuyo",           //  thine
                 "tuya",           //
                 "tuyos",          //
@@ -166,30 +164,30 @@ namespace Latino.TextMining
                 "esas",           //  those
                                // forms of estar, to be (not including the infinitive):
                 "estoy",
-                "est·s",
-                "est·",
+                "est√°s",
+                "est√°",
                 "estamos",
-                "est·is",
-                "est·n",
-                "estÈ",
-                "estÈs",
+                "est√°is",
+                "est√°n",
+                "est√©",
+                "est√©s",
                 "estemos",
-                "estÈis",
-                "estÈn",
-                "estarÈ",
-                "estar·s",
-                "estar·",
+                "est√©is",
+                "est√©n",
+                "estar√©",
+                "estar√°s",
+                "estar√°",
                 "estaremos",
-                "estarÈis",
-                "estar·n",
-                "estarÌa",
-                "estarÌas",
-                "estarÌamos",
-                "estarÌais",
-                "estarÌan",
+                "estar√©is",
+                "estar√°n",
+                "estar√≠a",
+                "estar√≠as",
+                "estar√≠amos",
+                "estar√≠ais",
+                "estar√≠an",
                 "estaba",
                 "estabas",
-                "est·bamos",
+                "est√°bamos",
                 "estabais",
                 "estaban",
                 "estuve",
@@ -200,12 +198,12 @@ namespace Latino.TextMining
                 "estuvieron",
                 "estuviera",
                 "estuvieras",
-                "estuviÈramos",
+                "estuvi√©ramos",
                 "estuvierais",
                 "estuvieran",
                 "estuviese",
                 "estuvieses",
-                "estuviÈsemos",
+                "estuvi√©semos",
                 "estuvieseis",
                 "estuviesen",
                 "estando",
@@ -219,29 +217,29 @@ namespace Latino.TextMining
                 "has",
                 "ha",
                 "hemos",
-                "habÈis",
+                "hab√©is",
                 "han",
                 "haya",
                 "hayas",
                 "hayamos",
-                "hay·is",
+                "hay√°is",
                 "hayan",
-                "habrÈ",
-                "habr·s",
-                "habr·",
+                "habr√©",
+                "habr√°s",
+                "habr√°",
                 "habremos",
-                "habrÈis",
-                "habr·n",
-                "habrÌa",
-                "habrÌas",
-                "habrÌamos",
-                "habrÌais",
-                "habrÌan",
-                "habÌa",
-                "habÌas",
-                "habÌamos",
-                "habÌais",
-                "habÌan",
+                "habr√©is",
+                "habr√°n",
+                "habr√≠a",
+                "habr√≠as",
+                "habr√≠amos",
+                "habr√≠ais",
+                "habr√≠an",
+                "hab√≠a",
+                "hab√≠as",
+                "hab√≠amos",
+                "hab√≠ais",
+                "hab√≠an",
                 "hube",
                 "hubiste",
                 "hubo",
@@ -250,12 +248,12 @@ namespace Latino.TextMining
                 "hubieron",
                 "hubiera",
                 "hubieras",
-                "hubiÈramos",
+                "hubi√©ramos",
                 "hubierais",
                 "hubieran",
                 "hubiese",
                 "hubieses",
-                "hubiÈsemos",
+                "hubi√©semos",
                 "hubieseis",
                 "hubiesen",
                 "habiendo",
@@ -273,22 +271,22 @@ namespace Latino.TextMining
                 "sea",
                 "seas",
                 "seamos",
-                "se·is",
+                "se√°is",
                 "sean",
-                "serÈ",
-                "ser·s",
-                "ser·",
+                "ser√©",
+                "ser√°s",
+                "ser√°",
                 "seremos",
-                "serÈis",
-                "ser·n",
-                "serÌa",
-                "serÌas",
-                "serÌamos",
-                "serÌais",
-                "serÌan",
+                "ser√©is",
+                "ser√°n",
+                "ser√≠a",
+                "ser√≠as",
+                "ser√≠amos",
+                "ser√≠ais",
+                "ser√≠an",
                 "era",
                 "eras",
-                "Èramos",
+                "√©ramos",
                 "erais",
                 "eran",
                 "fui",
@@ -299,12 +297,12 @@ namespace Latino.TextMining
                 "fueron",
                 "fuera",
                 "fueras",
-                "fuÈramos",
+                "fu√©ramos",
                 "fuerais",
                 "fueran",
                 "fuese",
                 "fueses",
-                "fuÈsemos",
+                "fu√©semos",
                 "fueseis",
                 "fuesen",
                 "siendo",
@@ -315,29 +313,29 @@ namespace Latino.TextMining
                 "tienes",
                 "tiene",
                 "tenemos",
-                "tenÈis",
+                "ten√©is",
                 "tienen",
                 "tenga",
                 "tengas",
                 "tengamos",
-                "teng·is",
+                "teng√°is",
                 "tengan",
-                "tendrÈ",
-                "tendr·s",
-                "tendr·",
+                "tendr√©",
+                "tendr√°s",
+                "tendr√°",
                 "tendremos",
-                "tendrÈis",
-                "tendr·n",
-                "tendrÌa",
-                "tendrÌas",
-                "tendrÌamos",
-                "tendrÌais",
-                "tendrÌan",
-                "tenÌa",
-                "tenÌas",
-                "tenÌamos",
-                "tenÌais",
-                "tenÌan",
+                "tendr√©is",
+                "tendr√°n",
+                "tendr√≠a",
+                "tendr√≠as",
+                "tendr√≠amos",
+                "tendr√≠ais",
+                "tendr√≠an",
+                "ten√≠a",
+                "ten√≠as",
+                "ten√≠amos",
+                "ten√≠ais",
+                "ten√≠an",
                 "tuve",
                 "tuviste",
                 "tuvo",
@@ -346,12 +344,12 @@ namespace Latino.TextMining
                 "tuvieron",
                 "tuviera",
                 "tuvieras",
-                "tuviÈramos",
+                "tuvi√©ramos",
                 "tuvierais",
                 "tuvieran",
                 "tuviese",
                 "tuvieses",
-                "tuviÈsemos",
+                "tuvi√©semos",
                 "tuvieseis",
                 "tuviesen",
                 "teniendo",

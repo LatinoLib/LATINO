@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          KnnClassifier.cs
- *  Version:       1.0
- *  Desc:		   K-nearest neighbors classifier 
- *  Author:        Miha Grcar
- *  Created on:    Aug-2007
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    KnnClassifier.cs
+ *  Desc:    K-nearest neighbors classifier 
+ *  Created: Aug-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

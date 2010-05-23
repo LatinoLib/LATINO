@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          Set.cs
- *  Version:       1.0
- *  Desc:		   Set data structure based on Dictionary
- *  Author:        Miha Grcar
- *  Created on:    Mar-2007
- *  Last modified: May-2008
- *  Revision:      Oct-2009
+ *  File:    Set.cs
+ *  Desc:    Set data structure based on Dictionary
+ *  Created: Mar-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

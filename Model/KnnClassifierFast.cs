@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          KnnClassifierFast.cs
- *  Version:       1.0
- *  Desc:		   K-nearest neighbors classifier (optimized for speed)
- *  Author:        Miha Grcar
- *  Created on:    Mar-2010
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    KnnClassifierFast.cs
+ *  Desc:    K-nearest neighbors classifier (optimized for speed)
+ *  Created: Mar-2010
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          CosineSimilarity.cs
- *  Version:       1.0
- *  Desc:		   Similarity implementation
- *  Authors:       Miha Grcar, Matjaz Jursic
- *  Created on:    Dec-2008
- *  Last modified: Mar-2010
- *  Revision:      Mar-2010
+ *  File:    CosineSimilarity.cs
+ *  Desc:    Similarity implementation
+ *  Created: Dec-2008
+ *
+ *  Authors: Miha Grcar, Matjaz Jursic
  *
  ***************************************************************************/
 

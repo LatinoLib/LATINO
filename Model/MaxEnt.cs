@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          MaxEnt.cs
- *  Version:       1.0
- *  Desc:		   Maximum entropy classifier 
- *  Author:        Jan Rupnik, Miha Grcar
- *  Created on:    Sep-2009
- *  Last modified: Feb-2010
- *  Revision:      Feb-2010
+ *  File:    MaxEnt.cs
+ *  Desc:    Maximum entropy classifier 
+ *  Created: Sep-2009
+ *
+ *  Authors: Jan Rupnik, Miha Grcar
  *
  ***************************************************************************/
 

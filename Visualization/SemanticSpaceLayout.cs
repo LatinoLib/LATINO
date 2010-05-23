@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          SemanticSpaceLayout.cs
- *  Version:       1.0
- *  Desc:		   Semantic space layout algorithm
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    SemanticSpaceLayout.cs
+ *  Desc:    Semantic space layout algorithm
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

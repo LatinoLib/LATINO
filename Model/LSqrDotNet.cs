@@ -2,14 +2,12 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          LSqrDotNet.cs
- *  Version:       1.0
- *  Desc:		   C# wrapper for LSQR DLL
- *  Author:        Miha Grcar 
- *  Created on:    Oct-2007
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
- * 
+ *  File:    LSqrDotNet.cs
+ *  Desc:    C# wrapper for LSQR DLL
+ *  Created: Oct-2007
+ *
+ *  Authors: Miha Grcar 
+ *
  ***************************************************************************/
 
 using System;

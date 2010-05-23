@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          MaxEntClassifier.cs
- *  Version:       1.0
- *  Desc:		   Maximum entropy classifier (LATINO wrapper)
- *  Author:        Miha Grcar
- *  Created on:    Oct-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    MaxEntClassifier.cs
+ *  Desc:    Maximum entropy classifier (LATINO wrapper)
+ *  Created: Oct-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 

@@ -1,14 +1,12 @@
-/*==========================================================================;
+Ôªø/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          PortugueseStopWords.cs
- *  Version:       1.0
- *  Desc:		   Portuguese stop words
- *  Author:        Miha Grcar
- *  Created on:    Nov-2009
- *  Last modified: Nov-2009
- *  Revision:      Nov-2009
+ *  File:    PortugueseStopWords.cs
+ *  Desc:    Portuguese stop words
+ *  Created: Nov-2009
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
@@ -39,9 +37,9 @@ namespace Latino.TextMining
                 "em",             //  in
                 "um",             //  a
                 "para",           //  for
-                  // È          from SER
+                  // √©          from SER
                 "com",            //  with
-                "n„o",            //  not, no
+                "n√£o",            //  not, no
                 "uma",            //  a
                 "os",             //  the; them
                 "no",             //  em + o
@@ -58,23 +56,23 @@ namespace Latino.TextMining
                 "ele",            //  he
                 "das",            //  de + as
                   // tem        from TER
-                "‡",              //  a + a
+                "√†",              //  a + a
                 "seu",            //  his
                 "sua",            //  her
                 "ou",             //  or
                   // ser        from SER
                 "quando",         //  when
                 "muito",          //  much
-                  // h·         from HAV
+                  // h√°         from HAV
                 "nos",            //  em + os; us
-                "j·",             //  already, now
-                  // est·       from EST
+                "j√°",             //  already, now
+                  // est√°       from EST
                 "eu",             //  I
-                "tambÈm",         //  also
-                "sÛ",             //  only, just
+                "tamb√©m",         //  also
+                "s√≥",             //  only, just
                 "pelo",           //  per + o
                 "pela",           //  per + a
-                "atÈ",            //  up to
+                "at√©",            //  up to
                 "isso",           //  that
                 "ela",            //  he
                 "entre",          //  between
@@ -90,8 +88,8 @@ namespace Latino.TextMining
                 "me",             //  me
                 "esse",           //  that
                 "eles",           //  they
-                  // est„o      from EST
-                "vocÍ",           //  you
+                  // est√£o      from EST
+                "voc√™",           //  you
                   // tinha      from TER
                   // foram      from SER
                 "essa",           //  that
@@ -99,17 +97,17 @@ namespace Latino.TextMining
                 "nem",            //  nor
                 "suas",           //  her
                 "meu",            //  my
-                "‡s",             //  a + as
+                "√†s",             //  a + as
                 "minha",          //  my
-                  // tÍm        from TER
+                  // t√™m        from TER
                 "numa",           //  em + uma
                 "pelos",          //  per + os
                 "elas",           //  they
                   // havia      from HAV
                   // seja       from SER
                 "qual",           //  which
-                  // ser·       from SER
-                "nÛs",            //  we
+                  // ser√°       from SER
+                "n√≥s",            //  we
                   // tenho      from TER
                 "lhe",            //  to him, her
                 "deles",          //  of them
@@ -124,7 +122,7 @@ namespace Latino.TextMining
                  // Indefinite article plural forms are also rare.
                 "tu",             //  thou
                 "te",             //  thee
-                "vocÍs",          //  you (plural)
+                "voc√™s",          //  you (plural)
                 "vos",            //  you
                 "lhes",           //  to them
                 "meus",           //  my
@@ -150,111 +148,111 @@ namespace Latino.TextMining
                 "aquilo",         //  that
                                // forms of estar, to be (not including the infinitive):
                 "estou",
-                "est·",
+                "est√°",
                 "estamos",
-                "est„o",
+                "est√£o",
                 "estive",
                 "esteve",
                 "estivemos",
                 "estiveram",
                 "estava",
-                "est·vamos",
+                "est√°vamos",
                 "estavam",
                 "estivera",
-                "estivÈramos",
+                "estiv√©ramos",
                 "esteja",
                 "estejamos",
                 "estejam",
                 "estivesse",
-                "estivÈssemos",
+                "estiv√©ssemos",
                 "estivessem",
                 "estiver",
                 "estivermos",
                 "estiverem",
                                // forms of haver, to have (not including the infinitive):
                 "hei",
-                "h·",
+                "h√°",
                 "havemos",
-                "h„o",
+                "h√£o",
                 "houve",
                 "houvemos",
                 "houveram",
                 "houvera",
-                "houvÈramos",
+                "houv√©ramos",
                 "haja",
                 "hajamos",
                 "hajam",
                 "houvesse",
-                "houvÈssemos",
+                "houv√©ssemos",
                 "houvessem",
                 "houver",
                 "houvermos",
                 "houverem",
                 "houverei",
-                "houver·",
+                "houver√°",
                 "houveremos",
-                "houver„o",
+                "houver√£o",
                 "houveria",
-                "houverÌamos",
+                "houver√≠amos",
                 "houveriam",
                                // forms of ser, to be (not including the infinitive):
                 "sou",
                 "somos",
-                "s„o",
+                "s√£o",
                 "era",
-                "Èramos",
+                "√©ramos",
                 "eram",
                 "fui",
                 "foi",
                 "fomos",
                 "foram",
                 "fora",
-                "fÙramos",
+                "f√¥ramos",
                 "seja",
                 "sejamos",
                 "sejam",
                 "fosse",
-                "fÙssemos",
+                "f√¥ssemos",
                 "fossem",
                 "for",
                 "formos",
                 "forem",
                 "serei",
-                "ser·",
+                "ser√°",
                 "seremos",
-                "ser„o",
+                "ser√£o",
                 "seria",
-                "serÌamos",
+                "ser√≠amos",
                 "seriam",
                                // forms of ter, to have (not including the infinitive):
                 "tenho",
                 "tem",
                 "temos",
-                "tÈm",
+                "t√©m",
                 "tinha",
-                "tÌnhamos",
+                "t√≠nhamos",
                 "tinham",
                 "tive",
                 "teve",
                 "tivemos",
                 "tiveram",
                 "tivera",
-                "tivÈramos",
+                "tiv√©ramos",
                 "tenha",
                 "tenhamos",
                 "tenham",
                 "tivesse",
-                "tivÈssemos",
+                "tiv√©ssemos",
                 "tivessem",
                 "tiver",
                 "tivermos",
                 "tiverem",
                 "terei",
-                "ter·",
+                "ter√°",
                 "teremos",
-                "ter„o",
+                "ter√£o",
                 "teria",
-                "terÌamos",
+                "ter√≠amos",
                 "teriam"}));
     }
 }

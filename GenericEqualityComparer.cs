@@ -2,13 +2,11 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:          GenericEqualityComparer.cs
- *  Version:       1.0
- *  Desc:		   Generic equality comparer
- *  Author:        Miha Grcar
- *  Created on:    Nov-2007
- *  Last modified: Apr-2010
- *  Revision:      Apr-2010
+ *  File:    GenericEqualityComparer.cs
+ *  Desc:    Generic equality comparer
+ *  Created: Nov-2007
+ *
+ *  Authors: Miha Grcar
  *
  ***************************************************************************/
 
