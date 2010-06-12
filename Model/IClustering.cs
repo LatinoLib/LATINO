@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    IClustering.cs
- *  Desc:    Interface definition
+ *  Desc:    Clustering algorithm interface 
  *  Created: Aug-2009
  *
  *  Authors: Miha Grcar

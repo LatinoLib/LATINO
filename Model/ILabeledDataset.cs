@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    ILabeledDataset.cs
- *  Desc:    Interface definition
+ *  Desc:    Labeled dataset interface
  *  Created: Aug-2007
  *
  *  Authors: Miha Grcar

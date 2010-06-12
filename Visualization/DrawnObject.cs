@@ -43,7 +43,7 @@ namespace Latino.Visualization
         // *** IDrawableObject interface implementation ***
         public virtual IDrawableObject[] GetObjectsAt(float x, float y, TransformParams tr, ref float[] distArray)
         {
-            Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
+            Utils.ThrowException(tr == null ? new ArgumentNullException("tr") : null);
             float dist = 0;
             IDrawableObject drawableObject = GetObjectAt(x, y, tr, ref dist);
             if (drawableObject != null)
@@ -60,7 +60,7 @@ namespace Latino.Visualization
         public virtual IDrawableObject[] GetObjectsIn(BoundingArea.ReadOnly area, TransformParams tr)
         {
             Utils.ThrowException(area == null ? new ArgumentNullException("area") : null);
-            Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);            
+            Utils.ThrowException(tr == null ? new ArgumentNullException("tr") : null);            
             if (GetBoundingArea(tr).IntersectsWith(area)) 
             {
                 return new IDrawableObject[] { this };
@@ -72,7 +72,7 @@ namespace Latino.Visualization
         }
         public virtual BoundingArea GetBoundingArea(TransformParams tr)
         {
-            Utils.ThrowException(tr.NotSet ? new ArgumentValueException("tr") : null);
+            Utils.ThrowException(tr == null ? new ArgumentNullException("tr") : null);
             if (mBoundingArea == null) { mBoundingArea = GetBoundingArea(); }
             BoundingArea boundingArea = mBoundingArea.Clone();
             boundingArea.Transform(tr);

@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    IReadOnlyAdapter.cs
- *  Desc:    Interface definition
+ *  Desc:    Read-only adapter interface
  *  Created: Nov-2007
  *
  *  Authors: Miha Grcar

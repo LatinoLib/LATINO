@@ -131,6 +131,21 @@ namespace Latino
             }
         }
 
+        public static byte[] ReadAllBytes(Stream stream)
+        {
+            ThrowException(stream == null ? new ArgumentNullException("stream") : null);
+            byte[] buffer = new byte[32768];
+            using (MemoryStream ms = new MemoryStream())
+            {
+                while (true)
+                {
+                    int read = stream.Read(buffer, 0, buffer.Length); // throws IOException, ObjectDisposedException, NotSupportedException
+                    if (read <= 0) { return ms.ToArray(); }
+                    ms.Write(buffer, 0, read);
+                }
+            }
+        }
+
         public static object Clone(object obj, bool deepClone)
         {
             if (deepClone && obj is IDeeplyCloneable)

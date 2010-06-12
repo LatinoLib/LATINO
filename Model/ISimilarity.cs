@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    ISimilarity.cs
- *  Desc:    Interface definition
+ *  Desc:    Similarity measure interface 
  *  Created: Aug-2007
  *
  *  Authors: Miha Grcar

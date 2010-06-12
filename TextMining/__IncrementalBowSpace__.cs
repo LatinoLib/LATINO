@@ -19,33 +19,6 @@ namespace Latino.TextMining
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class WordExt
-       |
-       '-----------------------------------------------------------------------
-    */
-    public class WordExt : Word
-    {
-        internal string mStem;
-
-        public WordExt(string nGram, string stem) : base(nGram)
-        {
-            mStem = stem;
-        }
-
-        public WordExt(BinarySerializer reader) : base(reader)
-        {
-            // TODO: implementation
-            throw new NotImplementedException();
-        }
-
-        public new double Idf(int docCount)
-        {
-            return Math.Log((double)docCount / (double)mDocFreq);
-        }
-    }
-
-    /* .-----------------------------------------------------------------------
-       |
        |  Class IncrementalBowSpace
        |
        '-----------------------------------------------------------------------
@@ -66,10 +39,10 @@ namespace Latino.TextMining
             = null;
         private IStemmer mStemmer
             = null;
-        private Dictionary<string, WordExt> mWordInfo
-            = new Dictionary<string, WordExt>();
-        private ArrayList<WordExt> mIdxInfo
-            = new ArrayList<WordExt>();
+        private Dictionary<string, Word> mWordInfo
+            = new Dictionary<string, Word>();
+        private ArrayList<Word> mIdxInfo
+            = new ArrayList<Word>();
         private ArrayList<SparseVector<double>> mTfVectors
             = new ArrayList<SparseVector<double>>();
         private int mMaxNGramLen
@@ -161,15 +134,20 @@ namespace Latino.TextMining
             set { mNormalizeVectors = value; }
         }
 
-        public ArrayList<WordExt>.ReadOnly Words
+        public ArrayList<Word>.ReadOnly Words
         {
             get { return mIdxInfo; }
+        }
+
+        private double Idf(Word word, int docCount)
+        {
+            return Math.Log((double)docCount / (double)word.mDocFreq);
         }
 
         public void OutputStats(StreamWriter writer)
         {
             writer.WriteLine("Word\tStem\tF\tDF");
-            foreach (KeyValuePair<string, WordExt> wordInfo in mWordInfo)
+            foreach (KeyValuePair<string, Word> wordInfo in mWordInfo)
             {
                 writer.WriteLine("{0}\t{1}\t{2}\t{3}", wordInfo.Value.mMostFrequentForm, wordInfo.Key, wordInfo.Value.mFreq, wordInfo.Value.mDocFreq);
             }
@@ -224,13 +202,13 @@ namespace Latino.TextMining
                 nGramStem += nGrams[i].Stem;
                 if (!mWordInfo.ContainsKey(nGramStem))
                 {
-                    WordExt nGramInfo = new WordExt(nGram, nGramStem);
+                    Word nGramInfo = new Word(nGram, nGramStem);
                     mWordInfo.Add(nGramStem, nGramInfo);
                     docWords.Add(nGramStem);
                 }
                 else
                 {
-                    WordExt nGramInfo = mWordInfo[nGramStem];
+                    Word nGramInfo = mWordInfo[nGramStem];
                     if (!docWords.Contains(nGramStem))
                     {
                         docWords.Add(nGramStem);
@@ -259,7 +237,7 @@ namespace Latino.TextMining
                 nGramStem += nGrams[i].Stem;
                 if (mWordInfo.ContainsKey(nGramStem))
                 {
-                    WordExt wordInfo = mWordInfo[nGramStem];
+                    Word wordInfo = mWordInfo[nGramStem];
                     if (wordInfo.mIdx == -1)
                     {
                         if (mFreeIdx.Count > 0)
@@ -342,7 +320,7 @@ namespace Latino.TextMining
             }
             Utils.VerboseProgress("Document {0} ...", docCount, docCount);
             // determine most frequent word and n-gram forms
-            foreach (WordExt wordInfo in mWordInfo.Values)
+            foreach (Word wordInfo in mWordInfo.Values)
             { 
                 int max = 0;
                 foreach (KeyValuePair<string, int> wordForm in wordInfo.mForms)
@@ -436,7 +414,7 @@ namespace Latino.TextMining
                         if (mIdxInfo[tfInfo.Idx].Freq >= mMinWordFreq)
                         {                           
                             tmp.InnerIdx.Add(tfInfo.Idx);
-                            tmp.InnerDat.Add(tfInfo.Dat * mIdxInfo[tfInfo.Idx].Idf(mTfVectors.Count));
+                            tmp.InnerDat.Add(tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count));
                         }
                     }
                     CutLowWeights(ref tmp);
@@ -454,7 +432,7 @@ namespace Latino.TextMining
                         if (mIdxInfo[tfInfo.Idx].Freq >= mMinWordFreq)
                         {
                             tmp.InnerIdx.Add(tfInfo.Idx);
-                            double tfIdf = tfInfo.Dat * mIdxInfo[tfInfo.Idx].Idf(mTfVectors.Count);
+                            double tfIdf = tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count);
                             tmp.InnerDat.Add(Math.Log(1 + mIdxInfo[tfInfo.Idx].mDocFreq) * tfIdf);
                         }
                     }
@@ -475,7 +453,7 @@ namespace Latino.TextMining
                 // decrease docFreq and freq, update IDF
                 foreach (IdxDat<double> tfInfo in tfVec)
                 {
-                    WordExt word = mIdxInfo[tfInfo.Idx];
+                    Word word = mIdxInfo[tfInfo.Idx];
                     word.mFreq -= (int)tfInfo.Dat;
                     word.mDocFreq--;
                     if (word.mDocFreq == 0)
@@ -503,7 +481,7 @@ namespace Latino.TextMining
                 {
                     mWordFormUpdate = mWordFormUpdateInit;
                     // set most frequent word forms
-                    foreach (WordExt wordInfo in mWordInfo.Values)
+                    foreach (Word wordInfo in mWordInfo.Values)
                     {
                         int max = 0;
                         foreach (KeyValuePair<string, int> wordForm in wordInfo.mForms)
@@ -536,7 +514,7 @@ namespace Latino.TextMining
                         if (mIdxInfo[item.Idx].Freq >= mMinWordFreq)
                         {
                             vec.InnerIdx.Add(item.Idx);
-                            vec.InnerDat.Add(item.Dat * mIdxInfo[item.Idx].Idf(mTfVectors.Count));
+                            vec.InnerDat.Add(item.Dat * Idf(mIdxInfo[item.Idx], mTfVectors.Count));
                         }
                     }
                 }
@@ -548,7 +526,7 @@ namespace Latino.TextMining
                         if (mIdxInfo[item.Idx].Freq >= mMinWordFreq)
                         {
                             vec.InnerIdx.Add(item.Idx);
-                            double tfIdf = item.Dat * mIdxInfo[item.Idx].Idf(mTfVectors.Count);
+                            double tfIdf = item.Dat * Idf(mIdxInfo[item.Idx], mTfVectors.Count);
                             vec.InnerDat.Add(Math.Log(1 + mIdxInfo[item.Idx].mDocFreq) * tfIdf);
                         }
                     }
@@ -570,7 +548,7 @@ namespace Latino.TextMining
                 nGramStem += nGrams[i].Stem;
                 if (mWordInfo.ContainsKey(nGramStem))
                 {
-                    WordExt word = mWordInfo[nGramStem];
+                    Word word = mWordInfo[nGramStem];
                     // increase docFreq and freq, update IDF
                     word.mFreq++;
                     if (!word.mForms.ContainsKey(nGram))
@@ -611,7 +589,7 @@ namespace Latino.TextMining
                 }
                 else // new word
                 {
-                    WordExt word = new WordExt(nGram, nGramStem);                    
+                    Word word = new Word(nGram, nGramStem);                    
                     mWordInfo.Add(nGramStem, word);
                     docWords.Add(nGramStem);
                     if (mFreeIdx.Count > 0)
@@ -710,7 +688,7 @@ namespace Latino.TextMining
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
             writer.WriteInt(mWordInfo.Count);
-            foreach (KeyValuePair<string, WordExt> item in mWordInfo)
+            foreach (KeyValuePair<string, Word> item in mWordInfo)
             {
                 writer.WriteString(item.Key);
                 item.Value.Save(writer);
@@ -720,7 +698,7 @@ namespace Latino.TextMining
         public void LoadVocabulary(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            ArrayList<IdxDat<WordExt>> tmp = new ArrayList<IdxDat<WordExt>>();
+            ArrayList<IdxDat<Word>> tmp = new ArrayList<IdxDat<Word>>();
             // the following statements throw serialization-related exceptions
             mWordInfo.Clear();
             mIdxInfo.Clear();
@@ -729,12 +707,12 @@ namespace Latino.TextMining
             for (int i = 0; i < count; i++)
             {
                 string key = reader.ReadString();
-                WordExt dat = new WordExt(reader);
+                Word dat = new Word(reader);
                 mWordInfo.Add(key, dat);
-                tmp.Add(new IdxDat<WordExt>(dat.mIdx, dat));
+                tmp.Add(new IdxDat<Word>(dat.mIdx, dat));
             }
             tmp.Sort();
-            foreach (IdxDat<WordExt> item in tmp)
+            foreach (IdxDat<Word> item in tmp)
             {
                 mIdxInfo.Add(item.Dat);
             }

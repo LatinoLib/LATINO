@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    IXmlSerializable.cs
- *  Desc:    Interface definition
+ *  Desc:    XML serialization interface 
  *  Created: Nov-2007
  *
  *  Authors: Miha Grcar

@@ -39,6 +39,7 @@ namespace Latino.Visualization
             this.picBoxCanvas.ErrorImage = null;
             this.picBoxCanvas.InitialImage = null;
             this.picBoxCanvas.Location = new System.Drawing.Point(0, 0);
+            this.picBoxCanvas.Margin = new System.Windows.Forms.Padding(4);
             this.picBoxCanvas.Name = "picBoxCanvas";
             this.picBoxCanvas.Size = new System.Drawing.Size(800, 600);
             this.picBoxCanvas.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -56,22 +57,23 @@ namespace Latino.Visualization
             // 
             this.FpsInfo.AutoSize = true;
             this.FpsInfo.Location = new System.Drawing.Point(0, 0);
+            this.FpsInfo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.FpsInfo.Name = "FpsInfo";
-            this.FpsInfo.Size = new System.Drawing.Size(78, 13);
+            this.FpsInfo.Size = new System.Drawing.Size(100, 17);
             this.FpsInfo.TabIndex = 1;
             this.FpsInfo.Text = "0.00 ms / draw";
-            this.FpsInfo.Visible = false;
             this.FpsInfo.Click += new System.EventHandler(this.FpsInfo_Click);
             // 
             // DrawableObjectViewer
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.Controls.Add(this.FpsInfo);
             this.Controls.Add(this.picBoxCanvas);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "DrawableObjectViewer";
-            this.Size = new System.Drawing.Size(82, 82);
+            this.Size = new System.Drawing.Size(47, 39);
             ((System.ComponentModel.ISupportInitialize)(this.picBoxCanvas)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

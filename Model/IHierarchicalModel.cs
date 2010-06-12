@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    IHierarchicalModel.cs
- *  Desc:    Interface definition
+ *  Desc:    Hierarchical classifier interface
  *  Created: Dec-2009
  *
  *  Authors: Miha Grcar

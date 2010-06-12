@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    ISearchEngineCache.cs
- *  Desc:    Search engine cache interface definition
+ *  Desc:    Search engine cache interface 
  *  Created: Mar-2007
  *
  *  Authors: Miha Grcar

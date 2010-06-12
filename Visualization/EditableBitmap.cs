@@ -158,7 +158,7 @@ namespace Latino.Visualization
             {
                 startOffset=source.startOffset+(stride*viewArea.Y)+(viewArea.X*pixelFormatSize);
                 bitmap = new Bitmap(viewArea.Width, viewArea.Height, stride, source.Bitmap.PixelFormat, 
-                    (IntPtr)(((int)byteArray.bitPtr)+startOffset));
+                    (IntPtr)(((long)byteArray.bitPtr)+startOffset));
             }
             finally
             {   

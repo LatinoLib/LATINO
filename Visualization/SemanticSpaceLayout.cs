@@ -33,7 +33,7 @@ namespace Latino.Visualization
             = 100;
         private double mSimThresh
             = 0.005;
-        private int mKNn
+        private int mKNN
             = 10;
 
         public SemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
@@ -84,11 +84,11 @@ namespace Latino.Visualization
 
         public int NeighborhoodSize
         {
-            get { return mKNn; }
+            get { return mKNN; }
             set
             {
                 Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("NeighborhoodSize") : null);
-                mKNn = value;
+                mKNN = value;
             }
         }
 
@@ -143,7 +143,7 @@ namespace Latino.Visualization
                     }
                 }
                 knn.Sort(DescSort<KeyDat<double, int>>.Instance);
-                int count = Math.Min(knn.Count, mKNn);
+                int count = Math.Min(knn.Count, mKNN);
                 SparseVector<double> eq = new SparseVector<double>();
                 double wgt = 1.0 / (double)count;
                 for (int i = 0; i < count; i++)

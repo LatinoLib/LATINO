@@ -14,6 +14,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 using Latino.Model;
 
 namespace Latino.TextMining
@@ -44,6 +46,7 @@ namespace Latino.TextMining
         internal Dictionary<string, int> mForms
             = new Dictionary<string, int>();
         internal string mMostFrequentForm;
+        internal string mStem;
         internal int mDocFreq
             = 1;
         internal int mFreq
@@ -56,8 +59,9 @@ namespace Latino.TextMining
             Load(reader);
         }
 
-        internal Word(string word)
+        internal Word(string word, string stem)
         {
+            mStem = stem;
             mMostFrequentForm = word;
             mForms.Add(word, 1);
         }
@@ -82,6 +86,19 @@ namespace Latino.TextMining
             get { return mIdf; }
         }
 
+        public string Stem
+        {
+            get { return mStem; }
+        }
+
+        public ulong GetHashCode64()
+        {
+            byte[] hashCode128 = new MD5CryptoServiceProvider().ComputeHash(Encoding.Unicode.GetBytes(mStem));
+            ulong part1 = (ulong)BitConverter.ToInt64(hashCode128, 0);
+            ulong part2 = (ulong)BitConverter.ToInt64(hashCode128, 8);
+            return part1 ^ part2;
+        }
+
         // *** IEnumerable<KeyValuePair<string, int>> interface implementation ***
 
         public IEnumerator<KeyValuePair<string, int>> GetEnumerator()
@@ -102,6 +119,7 @@ namespace Latino.TextMining
             // the following statements throw serialization-related exceptions
             writer.WriteInt(mIdx);
             writer.WriteString(mMostFrequentForm);
+            writer.WriteString(mStem);
             writer.WriteInt(mDocFreq);
             writer.WriteInt(mFreq);
             writer.WriteDouble(mIdf);
@@ -111,6 +129,7 @@ namespace Latino.TextMining
         {
             mIdx = reader.ReadInt();
             mMostFrequentForm = reader.ReadString();
+            mStem = reader.ReadString();
             mDocFreq = reader.ReadInt();
             mFreq = reader.ReadInt();
             mIdf = reader.ReadDouble();
@@ -304,7 +323,7 @@ namespace Latino.TextMining
                 nGramStem += nGrams[i].Stem;
                 if (!mWordInfo.ContainsKey(nGramStem))
                 {
-                    Word nGramInfo = new Word(nGram);
+                    Word nGramInfo = new Word(nGram, nGramStem);
                     mWordInfo.Add(nGramStem, nGramInfo);
                     docWords.Add(nGramStem);
                 }
@@ -478,7 +497,7 @@ namespace Latino.TextMining
                                 }
                                 if (!mWordInfo.ContainsKey(nGramStem))
                                 {
-                                    Word nGramInfo = new Word(nGram);
+                                    Word nGramInfo = new Word(nGram, nGramStem);
                                     mWordInfo.Add(nGramStem, nGramInfo);
                                     docWords.Add(nGramStem);
                                 }

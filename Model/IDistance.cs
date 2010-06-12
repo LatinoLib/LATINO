@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    IDistance.cs
- *  Desc:    Interface definition
+ *  Desc:    Distance measure interface 
  *  Created: Nov-2009
  *
  *  Authors: Miha Grcar

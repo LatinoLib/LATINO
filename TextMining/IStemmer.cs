@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    IStemmer.cs
- *  Desc:    Interface definition
+ *  Desc:    Stemmer/lemmatizer interface 
  *  Created: Dec-2008
  *
  *  Authors: Miha Grcar

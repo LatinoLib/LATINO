@@ -53,7 +53,12 @@
     <Compile Include="Misc\StopWatch.cs" />
     <Compile Include="Model\CentroidData.cs" />
     <Compile Include="Model\KnnClassifierFast.cs" />
+    <Compile Include="Persistance\DatabaseConnection.cs" />
+    <Compile Include="TextMining\SimHash.cs" />
     <Compile Include="TextMining\StopWords\SerbianStopWordsCyrillic.cs" />
+    <Compile Include="Visualization\DrawableObjects\Label.cs" />
+    <Compile Include="Visualization\DrawableObjects\Picture.cs" />
+    <Compile Include="Visualization\RTree.cs" />
     <Compile Include="Web\CacheRecord.cs" />
     <Compile Include="Web\Exceptions.cs" />
     <Compile Include="Web\GoogleDefine.cs" />
@@ -189,16 +194,16 @@
     </Compile>
     <Compile Include="Visualization\DrawnObject.cs" />
     <Compile Include="Visualization\EditableBitmap.cs" />
-    <Compile Include="Visualization\Ellipse.cs" />
+    <Compile Include="Visualization\DrawableObjects\Ellipse.cs" />
     <Compile Include="Visualization\FilledDrawnObject.cs" />
     <Compile Include="Visualization\DrawableGroup.cs" />
     <Compile Include="Visualization\ILayoutAlgorithm.cs" />
-    <Compile Include="Visualization\Line.cs" />
+    <Compile Include="Visualization\DrawableObjects\Line.cs" />
     <Compile Include="Visualization\StressMajorizationLayout.cs" />
     <Compile Include="Visualization\VisualizationUtils.cs" />
     <Compile Include="Visualization\TransformParams.cs" />
-    <Compile Include="Visualization\VectorF.cs" />
-    <Compile Include="Visualization\VisualizationInterfaces.cs" />
+    <Compile Include="Visualization\Vector2DF.cs" />
+    <Compile Include="Visualization\IDrawableObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Set.cs" />
     <Compile Include="SparseVector.cs" />
@@ -225,7 +230,7 @@
     <Compile Include="TextMining\PorterStemmer.cs" />
     <Compile Include="TextMining\UnicodeTokenizer.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="Web\SearchEngineCache.cs" />
+    <Compile Include="Web\MemoryCache.cs" />
     <Compile Include="Web\WebUtils.cs" />
     <Compile Include="WeightedNetwork.cs" />
   </ItemGroup>
@@ -239,9 +244,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>DrawableObjectViewer.cs</DependentUpon>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Persistance\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

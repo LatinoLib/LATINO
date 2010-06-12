@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Latino.Visualization
 {
@@ -26,19 +27,19 @@ namespace Latino.Visualization
     {
         // *** Misc utils ***
 
-        public static bool TestLineHit(VectorF testPt, VectorF lineTail, VectorF lineHead, float maxDist, ref float dist)
+        public static bool TestLineHit(Vector2DF testPt, Vector2DF lineTail, Vector2DF lineHead, float maxDist, ref float dist)
         {
             dist = float.MaxValue;
             if (lineTail != lineHead)
             {
-                VectorF edge = lineHead - lineTail;                     
-                VectorF edgeNormal = edge.Normal();
+                Vector2DF edge = lineHead - lineTail;                     
+                Vector2DF edgeNormal = edge.Normal();
                 float intrsctX = 0, intrsctY = 0;
                 float posA = 0, posB = 0;
-                VectorF.Intersect(testPt, edgeNormal, lineTail, edge, ref intrsctX, ref intrsctY, ref posA, ref posB);                
+                Vector2DF.Intersect(testPt, edgeNormal, lineTail, edge, ref intrsctX, ref intrsctY, ref posA, ref posB);                
                 if (posB >= 0f && posB <= 1f)
                 {
-                    VectorF distVec = new VectorF(intrsctX, intrsctY) - testPt;
+                    Vector2DF distVec = new Vector2DF(intrsctX, intrsctY) - testPt;
                     dist = distVec.GetLength();
                 }
                 dist = Math.Min((lineTail - testPt).GetLength(), dist);
@@ -55,6 +56,22 @@ namespace Latino.Visualization
         public static bool PointInsideRect(float x, float y, RectangleF rect)
         {
             return x >= rect.X && x <= rect.X + rect.Width && y >= rect.Y && y <= rect.Y + rect.Height;
+        }
+
+        public static void MeasureString(string str, Font font, out float width, out float height)
+        {
+            using (Bitmap bmp = new Bitmap(1, 1))
+            {
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    StringFormat strFmt = (StringFormat)StringFormat.GenericTypographic.Clone();
+                    strFmt.FormatFlags = StringFormatFlags.NoClip;
+                    strFmt.SetMeasurableCharacterRanges(new CharacterRange[] { new CharacterRange(0, str.Length) });
+                    Region[] strSz = g.MeasureCharacterRanges(str, font, RectangleF.Empty, strFmt);
+                    width = strSz[0].GetBounds(g).Width;
+                    height = strSz[0].GetBounds(g).Height;                    
+                }
+            }
         }
 
         // *** Layout utils ***

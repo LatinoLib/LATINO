@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    Tokenizer.cs
- *  Desc:    Interface definition
+ *  Desc:    Tokenizer interface 
  *  Created: Apr-2009
  *
  *  Authors: Miha Grcar

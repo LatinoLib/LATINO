@@ -66,10 +66,10 @@ namespace Latino.Visualization
         [DllImport("user32", CharSet = CharSet.Auto)]
         private extern static IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
 
-        private static void SetupGraphics(Graphics gfx)
+        private static void SetupGraphics(Graphics g)
         {
-            gfx.SmoothingMode = SmoothingMode.AntiAlias;
-            gfx.TextRenderingHint = TextRenderingHint.AntiAlias;        
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            g.TextRenderingHint = TextRenderingHint.AntiAlias;
         }
 
         private BitmapInfo PrepareBitmap(int id, int width, int height)
@@ -111,7 +111,7 @@ namespace Latino.Visualization
         {
             if (canvasView != null) { canvasView.Dispose(); }
             BitmapInfo mainLayer = mBmpCache[MAIN_LAYER];
-            canvasView = mainLayer.EditableBitmap.CreateView(new Rectangle(0, 0, width, height));
+            canvasView = mainLayer.EditableBitmap.CreateView(new Rectangle(0, 0, width, height)); 
         }
 
         private Rectangle GetEnclosingRect(RectangleF rect)
