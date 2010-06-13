@@ -3,13 +3,12 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    SimHash.cs
- *  Desc:    SimHash fingerprints
+ *  Desc:    Sim-hash fingerprints for duplicate detection
  *  Created: Jun-2010
  *
  *  Authors: Marko Brakus
  *
  ***************************************************************************/
-
 
 using System;
 using System.Collections.Generic;
@@ -17,29 +16,34 @@ using System.Collections;
 
 namespace Latino.TextMining
 {
-    class Fingerprint
+    public class Fingerprint
     {
-        public ulong code;
-        public ulong did;  // document id
+        internal ulong code;
+        internal ulong did;  // document id
         public Fingerprint(ulong code, ulong did)
         { this.code = code; this.did = did; }
+
+        public ulong Code { get { return code; } }
+        public ulong DocId { get { return did; } }
     }
 
-    class NearFingerprint : Fingerprint
+    public class NearFingerprint : Fingerprint
     {
-        public int dist;    // Hamming distance from the query fingerprint
+        private int dist;    // Hamming distance from the query fingerprint
         public NearFingerprint(ulong code, ulong did, int dist)
             : base(code, did)
         { this.dist = dist; }
+
+        public int Dist { get { return dist; } }
     }
 
-    class BitTree
+    internal class BitTree
     {
-        private int KeyLength;
+        private int keyLength;
         private int[] perm;
         public BitTree(int b1, int b2, int b3, int b4, int b5)
         {
-            KeyLength = (b5 == 39) ? 25 : 26;
+            keyLength = (b5 == 39) ? 25 : 26;
             perm = new int[]{b1,b2,b3,b4,b5};
         }
 
@@ -156,7 +160,7 @@ namespace Latino.TextMining
 
             int bit;
             Node it = root;
-            for (int i = 0; i < KeyLength; i++)
+            for (int i = 0; i < keyLength; i++)
             {
                 bit = (int)((pf & (((ulong)1) << i)) >> i);
                 if (it.kids[bit] == null)
@@ -175,7 +179,7 @@ namespace Latino.TextMining
 
             int bit;
             Node it = root;
-            for (int i = 0; i < KeyLength; i++)
+            for (int i = 0; i < keyLength; i++)
             {
                 bit = (int)((pf & (((ulong)1) << i)) >> i);
                 if (it.kids[bit] == null)
@@ -198,7 +202,7 @@ namespace Latino.TextMining
 
             int bit;
             Node it = root;
-            for (int i = 0; i <= KeyLength; i++)
+            for (int i = 0; i <= keyLength; i++)
             {
                 bit = (int)((pf & (((ulong)1) << i)) >> i);
                 if (it.kids[bit] == null)
@@ -223,7 +227,7 @@ namespace Latino.TextMining
             bool isAdding = false;
             int bit;
             Node it = root;
-            for (int i = 0; i < KeyLength; i++)
+            for (int i = 0; i < keyLength; i++)
             {
                 bit = (int)((pf & (((ulong)1) << i)) >> i);
                 if (isAdding == false)
@@ -231,12 +235,12 @@ namespace Latino.TextMining
                         isAdding = true;
                     else
                     {
-                        if (i == KeyLength - 1)
+                        if (i == keyLength - 1)
                             return ((Leaf)it.kids[bit]).Add(pf, did);
                         it = it.kids[bit];
                     }
                 if (isAdding == true)
-                    if (i == KeyLength - 1)
+                    if (i == keyLength - 1)
                     {
                         it.kids[bit] = new Leaf();
                         return ((Leaf)it.kids[bit]).Add(pf, did);
@@ -269,7 +273,7 @@ namespace Latino.TextMining
             int bit;
             int cutNode = -1;
             Node it = root;
-            for (int i = 0; i < KeyLength; i++)
+            for (int i = 0; i < keyLength; i++)
             {
                 bit = (int)((pf & (((ulong)1) << i)) >> i);
                 if (it.kids[bit] != null)
@@ -278,7 +282,7 @@ namespace Latino.TextMining
                         cutNode = i;
                     else if (it.kids[1 - bit] != null)
                         cutNode = -1;
-                    if (i == KeyLength - 1)
+                    if (i == keyLength - 1)
                     {
                         if (((Leaf)it.kids[bit]).Remove(pf) == false)
                             return false;
@@ -299,7 +303,7 @@ namespace Latino.TextMining
         }
     }
 
-    class PTables
+    public class PTables
     {
         private BitTree[] trees;
 
@@ -344,7 +348,7 @@ namespace Latino.TextMining
             return false;
         }
 
-        public bool HasNearDuplicate(ulong f, int k)
+        public bool HasNearDuplicate(ulong f, int k) // TODO: check k
         {
             for (int t = 0; t < 9; t++)
                 if (trees[t].FindNearDuplicate(f, k) != null)
@@ -352,7 +356,7 @@ namespace Latino.TextMining
             return false;
         }
 
-        public List<NearFingerprint> FindAllNearDuplicates(ulong f, int k)
+        public List<NearFingerprint> FindAllNearDuplicates(ulong f, int k) // TODO: check k
         {
             List<NearFingerprint> dups = new List<NearFingerprint>();
             for (int t = 0; t < 9; t++)
@@ -378,11 +382,4 @@ namespace Latino.TextMining
             return true;
         }
     }
-
-    //class Program
-    //{
-    //    static void Main(string[] args)
-    //    {
-    //    }
-    //}
 }

@@ -29,7 +29,7 @@ namespace Latino.Web
         // *** fetching Web pages ***
 
         private static Regex mCharsetRegex
-            = new Regex(@"((charset)|(encoding))\s*=\s*(([""'](?<enc>[^""']+)[""'])|((?<enc>[^ >""']+)))", RegexOptions.Compiled | RegexOptions.IgnoreCase); // [^\s>""'] ???
+            = new Regex(@"((charset)|(encoding))\s*=\s*(([""'](?<enc>[^""']+)[""'])|((?<enc>[^\s>""']+)))", RegexOptions.Compiled | RegexOptions.IgnoreCase); 
 
         private static IWebProxy mWebProxy
             = WebRequest.DefaultWebProxy;
@@ -133,6 +133,7 @@ namespace Latino.Web
                     byte[] bytes = extAscii.GetBytes(html);
                     Encoding enc = Encoding.GetEncoding(encStr);                    
                     html = enc.GetString(bytes);
+                    //Console.WriteLine(encStr);
                     success = true;
                 }
                 catch 
