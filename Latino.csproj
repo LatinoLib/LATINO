@@ -163,7 +163,7 @@
     <EmbeddedResource Include="TextMining\LemmaSharpPrebuilt\Models\compressed-me-ro.lem" />
     <EmbeddedResource Include="TextMining\LemmaSharpPrebuilt\Models\compressed-me-sl.lem" />
     <EmbeddedResource Include="TextMining\LemmaSharpPrebuilt\Models\compressed-me-sr.lem" />
-    <None Include="TextMining\LemmaSharpPrebuilt\LemmatizerPrebuiltCompact.cs" />
+    <Compile Include="TextMining\LemmaSharpPrebuilt\LemmatizerPrebuiltCompact.cs" />
     <Compile Include="TextMining\LemmaSharpPrebuilt\LemmatizerPrebuiltCompressed.cs" />
     <Compile Include="TextMining\LemmaSharpPrebuilt\LemmatizerPrebuiltData.cs" />
     <Compile Include="TextMining\LemmaSharpPrebuilt\LemmatizerPrebuiltFull.cs" />
@@ -244,6 +244,26 @@
       <SubType>Designer</SubType>
       <DependentUpon>DrawableObjectViewer.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Bulgarian.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Czech.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Danish.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Dutch.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\English.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Estonian.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Finnish.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\French.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\German.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Hungarian.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Italian.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Portuguese.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Romanian.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Russian.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Serbian.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Slovene.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Spanish.ldp" />
+    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Swedish.ldp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -15,6 +15,7 @@ using System.Text;
 using System.IO;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Reflection;
 
 namespace Latino.TextMining
 {
@@ -27,7 +28,7 @@ namespace Latino.TextMining
     public class LanguageDetector : ISerializable
     {
         private int n;
-        private ArrayList<LanguageProfile> languageProfiles;
+        private ArrayList<LanguageProfile> languageProfiles;        
 
         public LanguageDetector(int n)
         {
@@ -43,6 +44,25 @@ namespace Latino.TextMining
         public LanguageDetector(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
+        }
+
+        public static LanguageDetector GetLanguageDetectorPrebuilt()
+        {
+            LanguageDetector ld = new LanguageDetector();
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            foreach (string resName in assembly.GetManifestResourceNames())
+            {
+                if (resName.EndsWith(".ldp"))
+                {
+                    // load language detector profile
+                    BinarySerializer ser = new BinarySerializer(assembly.GetManifestResourceStream(resName));
+                    LanguageProfile langProfile = new LanguageProfile(ser);
+                    ser.Close();
+                    ld.AddLanguageProfile(langProfile);
+                    //Utils.VerboseLine("Loaded resource {0}.", resName);
+                }
+            }
+            return ld;
         }
 
         public void AddLanguageProfile(LanguageProfile l)
@@ -201,11 +221,17 @@ namespace Latino.TextMining
     public class LanguageProfile : NGramProfile
     {
         private Language lang;
+        private string codePage;
 
-        public LanguageProfile(int n, Language lang) : base(n) // throws ArgumentOutOfRangeException
+        public LanguageProfile(int n, Language lang, string codePage) : base(n) // throws ArgumentOutOfRangeException
         {
             Utils.ThrowException(lang == Language.Unspecified ? new ArgumentValueException("lang") : null);
             this.lang = lang;
+            this.codePage = codePage;
+        }
+
+        public LanguageProfile(int n, Language lang) : this(n, lang, /*codePage=*/null) // throws ArgumentOutOfRangeException, ArgumentValueException
+        {
         }
 
         public LanguageProfile(Language lang) : this(/*n=*/2, lang) // throws ArgumentValueException
@@ -222,6 +248,11 @@ namespace Latino.TextMining
             get { return lang; }
         }
 
+        public string CodePage
+        {
+            get { return codePage; }
+        }
+
         // *** ISerializable interface implementation ***
 
         public override void Save(BinarySerializer writer)
@@ -229,6 +260,7 @@ namespace Latino.TextMining
             // the following statements throw serialization-related exceptions
             base.Save(writer); // throws ArgumentNullException
             writer.WriteInt((int)lang);
+            writer.WriteString(codePage);
         }
 
         public override void Load(BinarySerializer reader)
@@ -236,6 +268,7 @@ namespace Latino.TextMining
             // the following statements throw serialization-related exceptions
             base.Load(reader); // throws ArgumentNullException
             lang = (Language)reader.ReadInt();
+            codePage = reader.ReadString();
         }
     }
 
