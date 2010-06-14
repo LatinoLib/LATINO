@@ -105,6 +105,30 @@ namespace Latino.TextMining
             }            
         }
 
+        internal static Language GetLanguage(string code)
+        {
+            if (code == "en") { return Language.English; }
+            else if (code == "fr") { return Language.French; }
+            else if (code == "de") { return Language.German; }
+            else if (code == "es") { return Language.Spanish; }
+            else if (code == "da") { return Language.Danish; }
+            else if (code == "nl") { return Language.Dutch; }
+            else if (code == "fi") { return Language.Finnish; }
+            else if (code == "it") { return Language.Italian; }
+            else if (code == "no") { return Language.Norwegian; }
+            else if (code == "pt") { return Language.Portuguese; }
+            else if (code == "sv") { return Language.Swedish; }
+            else if (code == "sr") { return Language.Serbian; }
+            else if (code == "sl") { return Language.Slovene; }
+            else if (code == "ro") { return Language.Romanian; }
+            else if (code == "hu") { return Language.Hungarian; }
+            else if (code == "et") { return Language.Estonian; }
+            else if (code == "bg") { return Language.Bulgarian; }
+            else if (code == "cs") { return Language.Czech; }
+            else if (code == "ru") { return Language.Russian; }
+            else { return Language.Unspecified; }
+        }
+
         internal static string GetLanguageCode(Language language)
         {
             switch (language)
@@ -150,7 +174,7 @@ namespace Latino.TextMining
                 case Language.Russian:
                     return "ru";
                 default:
-                    throw new ArgumentNotSupportedException("language");
+                    throw new ArgumentNotSupportedException("language"); // should not happen
             }
         }
     }

@@ -36,6 +36,10 @@ namespace Latino.TextMining
             languageProfiles = new ArrayList<LanguageProfile>();
         }
 
+        public LanguageDetector() : this(/*n=*/2)
+        {
+        }
+
         public LanguageDetector(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
@@ -46,6 +50,60 @@ namespace Latino.TextMining
             Utils.ThrowException(l == null ? new ArgumentNullException("l") : null);
             Utils.ThrowException((!l.IsRanked || l.N != n) ? new ArgumentValueException("l") : null);
             languageProfiles.Add(l);
+        }
+
+        public void ReadCorpus(string dir, int cutOff)
+        {
+            Utils.ThrowException(dir == null ? new ArgumentNullException("dir") : null);
+            Utils.ThrowException(!Utils.VerifyPathName(dir, /*mustExist=*/true) ? new ArgumentValueException("dir") : null);
+            Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);
+
+            if (languageProfiles != null)
+                languageProfiles.Clear();
+
+            string[] files = Directory.GetFiles(dir, "*.txt", SearchOption.AllDirectories);
+            Array.Sort(files);
+
+            DateTime dtStart = DateTime.Now;
+            LanguageProfile langProfile = null;
+            Language lastLang = Language.Unspecified;
+            foreach (string f in files)
+            {
+                Language lang;
+                string fileLangCode = Path.GetFileName(f).Substring(0, 2).ToLower();
+                lang = TextMiningUtils.GetLanguage(fileLangCode);
+                // Skips file names starting with unknown language code
+                if (lang == Language.Unspecified)
+                    continue;
+                if (lang.Equals(lastLang) == false)
+                {
+                    // Adds new language
+                    Utils.VerboseLine(lang + ":\t" + Path.GetFileName(f));
+                    langProfile = new LanguageProfile(n, lang);
+                    langProfile.AddTokensFromFile(f);
+                    languageProfiles.Add(langProfile);
+                    lastLang = lang;
+                }
+                else
+                {
+                    // Adds corpus file to the last language added
+                    Utils.VerboseLine(lang + ":\t" + Path.GetFileName(f));
+                    langProfile.AddTokensFromFile(f);
+                }
+            }
+
+            // Does ranking of language profiles
+            // No n-grams should be added to languages after this!
+            foreach (LanguageProfile l in languageProfiles)
+            {
+                l.Trim(cutOff);
+                l.DoRanking(); // throws InvalidOperationException
+            }
+        }
+
+        public void ReadCorpus(string dir)
+        {
+            ReadCorpus(dir, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException
         }
 
         public LanguageProfile FindMatchingLanguage(NGramProfile p, int cutOff)
@@ -81,7 +139,7 @@ namespace Latino.TextMining
             Utils.ThrowException(languageProfiles.Count == 0 ? new InvalidOperationException() : null);
             Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
             NGramProfile p = new NGramProfile(n);
-            p.AddTokens(str);
+            p.AddTokensFromString(str);
             p.DoRanking();
             return FindMatchingLanguage(p);
         }
@@ -106,7 +164,7 @@ namespace Latino.TextMining
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Languages:");
             foreach (LanguageProfile l in languageProfiles)
-                sb.AppendLine(l.Code);
+                sb.AppendLine(l.Language.ToString());
             return sb.ToString();
         }
 
@@ -142,26 +200,26 @@ namespace Latino.TextMining
     */
     public class LanguageProfile : NGramProfile
     {
-        private string code;
+        private Language lang;
 
-        public LanguageProfile(int n, string code) : base(n) // throws ArgumentOutOfRangeException
+        public LanguageProfile(int n, Language lang) : base(n) // throws ArgumentOutOfRangeException
         {
-            Utils.ThrowException(code == null ? new ArgumentNullException("code") : null);
-            this.code = code;
+            Utils.ThrowException(lang == Language.Unspecified ? new ArgumentValueException("lang") : null);
+            this.lang = lang;
         }
 
-        public LanguageProfile(string code) : this(/*n=*/2, code) // throws ArgumentNullException
+        public LanguageProfile(Language lang) : this(/*n=*/2, lang) // throws ArgumentValueException
         {
         }
 
-        public LanguageProfile(BinarySerializer reader) : base(/*n=*/1)
+        public LanguageProfile(BinarySerializer reader) : base()
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        public string Code
+        public Language Language
         {
-            get { return code; }
+            get { return lang; }
         }
 
         // *** ISerializable interface implementation ***
@@ -170,14 +228,14 @@ namespace Latino.TextMining
         {
             // the following statements throw serialization-related exceptions
             base.Save(writer); // throws ArgumentNullException
-            writer.WriteString(code);
+            writer.WriteInt((int)lang);
         }
 
         public override void Load(BinarySerializer reader)
         {
             // the following statements throw serialization-related exceptions
             base.Load(reader); // throws ArgumentNullException
-            code = reader.ReadString();
+            lang = (Language)reader.ReadInt();
         }
     }
 
@@ -221,7 +279,7 @@ namespace Latino.TextMining
                     AddToken(token.ToUpper());
         }
 
-        public void AddTokens(string str)
+        public void AddTokensFromString(string str)
         {
             Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
             Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
@@ -308,6 +366,25 @@ namespace Latino.TextMining
                 count++;
             }
             isRanked = true; // indicates that ranks have been assigned
+        }
+
+        public void Trim(int cutOff)
+        {
+            Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);
+            Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
+            if (hist.Count <= cutOff) { return; }
+            ArrayList<KeyDat<uint, string>> aux = new ArrayList<KeyDat<uint, string>>(hist.Count);
+            foreach (KeyValuePair<string, uint> item in hist)
+            {
+                aux.Add(new KeyDat<uint, string>(item.Value, item.Key));
+            }
+            aux.Sort(DescSort<KeyDat<uint, string>>.Instance);
+            aux.RemoveRange(cutOff, hist.Count - cutOff);
+            hist.Clear();
+            foreach (KeyDat<uint, string> item in aux)
+            {
+                hist.Add(item.Dat, item.Key);
+            }
         }
 
         public uint CalcOutOfPlace(NGramProfile p, int cutOff)
