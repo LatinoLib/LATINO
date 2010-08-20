@@ -14,6 +14,8 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Xml;
+using System.Text;
+using System.IO;
 
 namespace Latino.Web
 {
@@ -74,6 +76,15 @@ namespace Latino.Web
         ArrayList<SearchEngineResultItem> Inner
         {
             get { return mItems; }
+        }
+
+        public string GetXmlStr()
+        {
+            StringWriter strWriter = new StringWriter();
+            XmlTextWriter xmlWriter = new XmlTextWriter(strWriter);
+            xmlWriter.Formatting = Formatting.Indented;
+            SaveXml(xmlWriter);
+            return strWriter.ToString();
         }
 
         // *** IEnumerableList<SearchEngineResult> interface implementation ***

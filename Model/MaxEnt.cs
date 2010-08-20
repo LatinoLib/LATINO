@@ -28,8 +28,6 @@ namespace Latino.Model
     {
         private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idxToLbl)
         {
-            Utils.BinaryOperatorDelegate<double> sumOperator = delegate(double a, double b) { return a + b; };
-            SparseMatrix<double> mtx = new SparseMatrix<double>();
             ArrayList<LblT> tmp = new ArrayList<LblT>();
             Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>();
             foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
@@ -39,22 +37,41 @@ namespace Latino.Model
                     lblToIdx.Add(labeledExample.Label, lblToIdx.Count);
                     tmp.Add(labeledExample.Label);
                 }
-            }
+            }            
+            // prepare struct for fast computation
+            Dictionary<int, int>[] counter = new Dictionary<int, int>[tmp.Count];
+            for (int j = 0; j < counter.Length; j++) { counter[j] = new Dictionary<int, int>(); }
+            // count features
             int i = 0;
             foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
             {
                 Utils.VerboseProgress("{0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
-                if (!mtx.ContainsRowAt(lblIdx))
+                int val;
+                foreach (int idx in labeledExample.Example)
                 {
-                    mtx[lblIdx] = ModelUtils.ConvertExample<SparseVector<double>>(labeledExample.Example);
+                    if (counter[lblIdx].TryGetValue(idx, out val))
+                    {
+                        counter[lblIdx][idx] = val + 1;
+                    }
+                    else
+                    {
+                        counter[lblIdx].Add(idx, 1);
+                    }
                 }
-                else
+            }            
+            // create sparse matrix
+            SparseMatrix<double> mtx = new SparseMatrix<double>();
+            for (int j = 0; j < counter.Length; j++)
+            {
+                SparseVector<double> vec = new SparseVector<double>();
+                foreach (KeyValuePair<int, int> item in counter[j])
                 {
-                    SparseVector<double> newVec = ModelUtils.ConvertExample<SparseVector<double>>(labeledExample.Example);
-                    newVec.Merge(mtx[lblIdx], sumOperator); 
-                    mtx[lblIdx] = newVec;
+                    vec.InnerIdx.Add(item.Key);
+                    vec.InnerDat.Add(item.Value);
                 }
+                vec.Sort();
+                mtx[j] = vec;
             }
             idxToLbl = tmp.ToArray();
             return mtx;
@@ -148,7 +165,7 @@ namespace Latino.Model
                         }
                     }
                 }
-                progress++;
+                progress.Val++;
             }
         }
 
@@ -175,7 +192,7 @@ namespace Latino.Model
                     }
                     itemIdx++;
                 }
-                progress++;
+                progress.Val++;
             }
         }
 
@@ -427,6 +444,54 @@ namespace Latino.Model
             if (normalize && sum > 0)
             {
                 for (int i = 0; i < scores.Count; i++)
+                {
+                    KeyDat<double, LblT> score = scores[i];
+                    scores.Inner[i] = new KeyDat<double, LblT>(score.Key / sum, score.Dat);
+                }
+            }
+            scores.Inner.Sort(DescSort<KeyDat<double, LblT>>.Instance);
+            return scores;
+        }
+
+        public static Dictionary<int, double>[] PrepareForFastPrediction(SparseMatrix<double>.ReadOnly lambdas)
+        {
+            Dictionary<int, double>[] retVal = new Dictionary<int, double>[lambdas.GetLastNonEmptyRowIdx() + 1];
+            foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambdas)
+            {
+                Dictionary<int, double> vec = new Dictionary<int, double>();
+                foreach (IdxDat<double> item in row.Dat)
+                {
+                    vec.Add(item.Idx, item.Dat);
+                }
+                retVal[row.Idx] = vec;
+            }
+            return retVal;
+        }
+
+        public static Prediction<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly binVec, Dictionary<int, double>[] lambdas, LblT[] idxToLbl, bool normalize)
+        { 
+            Prediction<LblT> scores = new Prediction<LblT>();
+            double sum = 0;
+            int i = 0;
+            foreach (Dictionary<int, double> row in lambdas)
+            {
+                if (row != null)
+                {
+                    double score = 0;
+                    foreach (int idx in binVec)
+                    {
+                        double val;
+                        if (row.TryGetValue(idx, out val)) { score += val; }
+                    }
+                    score = Math.Exp(score);
+                    scores.Inner.Add(new KeyDat<double, LblT>(score, idxToLbl[i]));
+                    sum += score;
+                }
+                i++;
+            }
+            if (normalize && sum > 0)
+            {
+                for (i = 0; i < scores.Count; i++)
                 {
                     KeyDat<double, LblT> score = scores[i];
                     scores.Inner[i] = new KeyDat<double, LblT>(score.Key / sum, score.Dat);

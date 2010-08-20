@@ -383,9 +383,9 @@ namespace Latino.TextMining
         }
 
         // TODO: exceptions
-        public ArrayList<SparseVector<double>.ReadOnly> GetBowVectors()
+        public ArrayList<SparseVector<double>> GetBowVectors()
         {
-            ArrayList<SparseVector<double>.ReadOnly> bowVectors = new ArrayList<SparseVector<double>.ReadOnly>(mTfVectors.Count);            
+            ArrayList<SparseVector<double>> bowVectors = new ArrayList<SparseVector<double>>(mTfVectors.Count);            
             if (mWordWeightType == WordWeightType.TermFreq)
             {
                 foreach (SparseVector<double> tfVec in mTfVectors)
@@ -442,6 +442,11 @@ namespace Latino.TextMining
                 }
             }
             return bowVectors;
+        }
+
+        public int Count
+        {
+            get { return mTfVectors.Count; }
         }
 
         // TODO: exceptions

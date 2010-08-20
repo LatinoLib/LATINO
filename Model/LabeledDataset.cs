@@ -97,7 +97,7 @@ namespace Latino.Model
             mItems.Shuffle(rnd); // throws ArgumentNullException
         }
 
-        public void SplitForCrossValidation(int numFolds, int fold, ref LabeledDataset<LblT, ExT> trainSet, ref LabeledDataset<LblT, ExT> testSet)
+        public void SplitForCrossValidation(int numFolds, int fold, out LabeledDataset<LblT, ExT> trainSet, out LabeledDataset<LblT, ExT> testSet)
         {
             Utils.ThrowException(mItems.Count < 2 ? new InvalidOperationException() : null);
             Utils.ThrowException((numFolds < 2 || numFolds > mItems.Count) ? new ArgumentOutOfRangeException("numFolds") : null);

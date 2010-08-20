@@ -3,8 +3,8 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    MaxEntClassifier.cs
- *  Desc:    Maximum entropy classifier (LATINO wrapper)
- *  Created: Oct-2009
+ *  Desc:    Fast maximum entropy classifier (LATINO wrapper)
+ *  Created: Jul-2010
  *
  *  Authors: Miha Grcar
  *
@@ -17,11 +17,11 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class MaximumEntropyClassifier<LblT>
+       |  Class MaximumEntropyClassifierFast<LblT>
        |
        '-----------------------------------------------------------------------
     */
-    public class MaximumEntropyClassifier<LblT> : IModel<LblT, BinaryVector<int>.ReadOnly>
+    public class MaximumEntropyClassifierFast<LblT> : IModel<LblT, BinaryVector<int>.ReadOnly>
     {
         private bool mMoveData
             = false;
@@ -31,18 +31,18 @@ namespace Latino.Model
             = 0;
         private int mNumThreads
             = 1;
-        private SparseMatrix<double> mLambda
+        private Dictionary<int, double>[] mLambda
             = null;
         private LblT[] mIdxToLbl
             = null;
         private bool mNormalize
             = false;
 
-        public MaximumEntropyClassifier()
+        public MaximumEntropyClassifierFast()
         {
         }
 
-        public MaximumEntropyClassifier(BinarySerializer reader)
+        public MaximumEntropyClassifierFast(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
@@ -106,7 +106,8 @@ namespace Latino.Model
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             mLambda = null; // allow GC to collect this
-            mLambda = MaxEnt.Gis(dataset, mCutOff, mNumIter, mMoveData, /*mtxFileName=*/null, ref mIdxToLbl, mNumThreads, /*allowedDiff=*/0); // *** allowedDiff
+            SparseMatrix<double> lambda = MaxEnt.Gis(dataset, mCutOff, mNumIter, mMoveData, /*mtxFileName=*/null, ref mIdxToLbl, mNumThreads, /*allowedDiff=*/0); // *** allowedDiff
+            mLambda = MaxEnt.PrepareForFastPrediction(lambda);
         }
 
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
@@ -140,7 +141,18 @@ namespace Latino.Model
             writer.WriteInt(mNumIter);
             writer.WriteInt(mCutOff);
             writer.WriteInt(mNumThreads);
-            writer.WriteObject(mLambda);
+            writer.WriteInt(mLambda == null ? -1 : mLambda.Length);
+            if (mLambda != null)
+            {
+                foreach (Dictionary<int, double> dict in mLambda)
+                {
+                    writer.WriteBool(dict != null);
+                    if (dict != null)
+                    {
+                        Utils.SaveDictionary<int, double>(dict, writer);
+                    }
+                }
+            }
             new ArrayList<LblT>(mIdxToLbl).Save(writer);
             writer.WriteBool(mNormalize);
         }
@@ -153,7 +165,22 @@ namespace Latino.Model
             mNumIter = reader.ReadInt();
             mCutOff = reader.ReadInt();
             mNumThreads = reader.ReadInt();
-            mLambda = reader.ReadObject<SparseMatrix<double>>();
+            int len = reader.ReadInt();
+            if (len != -1)
+            {
+                mLambda = new Dictionary<int, double>[len];
+                for (int i = 0; i < len; i++)
+                {
+                    if (reader.ReadBool())
+                    {
+                        mLambda[i] = Utils.LoadDictionary<int, double>(reader);
+                    }
+                }
+            }
+            else
+            {  
+                mLambda = null;
+            }
             mIdxToLbl = new ArrayList<LblT>(reader).ToArray();
             mNormalize = reader.ReadBool();
         }

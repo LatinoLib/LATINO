@@ -113,7 +113,8 @@ namespace Latino.Visualization
             UnlabeledDataset<SparseVector<double>.ReadOnly> dsRefInst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
             foreach (Cluster cluster in clustering.Roots)
             {
-                SparseVector<double> centroid = cluster.ComputeCentroid(mDataset, CentroidType.NrmL2);
+                SparseVector<double> centroid
+                    = cluster.Items.Count > 0 ? cluster.ComputeCentroid(mDataset, CentroidType.NrmL2) : new SparseVector<double>();
                 dsRefInst.Add(centroid); // dataset of reference instances
                 dataset.Add(centroid); // add centroids to the main dataset
             }

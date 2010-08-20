@@ -35,7 +35,7 @@ namespace Latino.TextMining
        |
        |  Class UnicodeTokenizer
        |
-       '-----------------------------------------------------------------------  
+       '-----------------------------------------------------------------------
     */
     // This tokenizer (partially) follows the rules defined at http://www.unicode.org/reports/tr29/#Word_Boundaries
     public class UnicodeTokenizer : ITokenizer 

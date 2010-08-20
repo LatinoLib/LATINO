@@ -267,6 +267,13 @@ namespace Latino.Visualization
             Draw(new BoundingArea(), drawableObjects);
         }
 
+        public void Save(string fileName)
+        {
+            Utils.ThrowException(fileName == null ? new ArgumentNullException("fileName") : null);
+            Utils.ThrowException(!Utils.VerifyFileNameCreate(fileName) ? new ArgumentValueException("fileName") : null);
+            picBoxCanvas.Image.Save(fileName);
+        }
+
         // ****** Debugging ******
         private int mDrawCount
             = 0;

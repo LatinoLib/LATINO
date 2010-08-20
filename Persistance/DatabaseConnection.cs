@@ -18,16 +18,20 @@ namespace Latino.Persistance
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Enum DatabaseType
+       |  Enum ConnectionType
        |
        '-----------------------------------------------------------------------
     */
-    public enum DatabaseType
+    public enum ConnectionType
     {
         SqlServer7,
+        SqlServer7Trusted,
         SqlServer2000,
+        SqlServer2000Trusted,
         SqlServer2005,
-        SqlServer2008
+        SqlServer2005Trusted,
+        SqlServer2008,
+        SqlServer2008Trusted
     }
 
     /* .-----------------------------------------------------------------------
@@ -103,23 +107,33 @@ namespace Latino.Persistance
             }
         }
 
-        public void SetConnectionString(DatabaseType dbType)
+        public void SetConnectionString(ConnectionType connectionType)
         {
-            switch (dbType)
+            switch (connectionType)
             {
-                case DatabaseType.SqlServer7:
-                case DatabaseType.SqlServer2000:
+                case ConnectionType.SqlServer7:
+                case ConnectionType.SqlServer2000:
                     mConnectionString = "Provider=SQLOLEDB;Data Source=${server};User ID=${username};Password=${password};Initial Catalog=${database}";
                     break;
-                case DatabaseType.SqlServer2005:
+                case ConnectionType.SqlServer7Trusted:
+                case ConnectionType.SqlServer2000Trusted:
+                    mConnectionString = "Provider=SQLOLEDB;Data Source=${server};Initial Catalog=${database};Integrated Security=SSPI";
+                    break;
+                case ConnectionType.SqlServer2005:
                     mConnectionString = "Provider=SQLNCLI;Server=${server};Database=${database};Uid=${username};Pwd=${password}";
                     break;
-                case DatabaseType.SqlServer2008:
+                case ConnectionType.SqlServer2005Trusted:
+                    mConnectionString = "Provider=SQLNCLI;Server=${server};Database=${database};Trusted_Connection=Yes";
+                    break;
+                case ConnectionType.SqlServer2008:
                     mConnectionString = "Provider=SQLNCLI10;Server=${server};Database=${database};Uid=${username};Pwd=${password}";
                     break;
+                case ConnectionType.SqlServer2008Trusted:
+                    mConnectionString = "Provider=SQLNCLI10;Server=${server};Database=${database};Trusted_Connection=Yes";
+                    break;
                 default:
-                    throw new ArgumentNotSupportedException("dbType");
-            }            
+                    throw new ArgumentNotSupportedException("connectionType");
+            }
         }
 
         public void Connect()
@@ -137,7 +151,7 @@ namespace Latino.Persistance
             catch (Exception e)
             {
                 Utils.VerboseLine("Not successful: {0}", e);
-                throw; 
+                throw;
             }
             Utils.VerboseLine("Success.");
         }
@@ -167,7 +181,7 @@ namespace Latino.Persistance
         {
             Utils.ThrowException((mConnection == null || mTransaction == null) ? new InvalidOperationException() : null);
             Utils.VerboseLine("Committing transaction.");
-            mTransaction.Commit(); 
+            mTransaction.Commit();
             mTransaction = null;
         }
 
@@ -200,7 +214,7 @@ namespace Latino.Persistance
                 OleDbCommand command = new OleDbCommand(sqlStatement, mConnection);
                 if (mTransaction != null) { command.Transaction = mTransaction; }
                 AssignParamsToCommand(command, args);
-                int rowsAffected = command.ExecuteNonQuery();
+                int rowsAffected = command.ExecuteNonQuery(); // throws OleDbException
                 Utils.VerboseLine("Success. {0} rows affected.", rowsAffected);
                 return rowsAffected > 0;
             }
@@ -223,9 +237,31 @@ namespace Latino.Persistance
                 if (mTransaction != null) { command.Transaction = mTransaction; }
                 AssignParamsToCommand(command, args);
                 DataTable dataTable;
-                new OleDbDataAdapter(command).Fill(dataTable = new DataTable());
+                new OleDbDataAdapter(command).Fill(dataTable = new DataTable()); // throws OleDbException
                 Utils.VerboseLine("Success.");
                 return dataTable;
+            }
+            catch (Exception e)
+            {
+                Utils.VerboseLine("Not successful: {0}", e);
+                throw;
+            }
+        }
+
+        public OleDbDataReader ExecuteReader(string sqlSelectStatement, params object[] args)
+        {
+            Utils.ThrowException(mConnection == null ? new InvalidOperationException() : null);
+            Utils.ThrowException(sqlSelectStatement == null ? new ArgumentNullException("sqlSelectStatement") : null);
+            Utils.ThrowException(args == null ? new ArgumentNullException("args") : null);
+            Utils.VerboseLine("Executing query ...");
+            try
+            {
+                OleDbCommand command = new OleDbCommand(sqlSelectStatement, mConnection);
+                if (mTransaction != null) { command.Transaction = mTransaction; }
+                AssignParamsToCommand(command, args);
+                OleDbDataReader dataReader = command.ExecuteReader(); // throws OleDbException
+                Utils.VerboseLine("Success.");
+                return dataReader;
             }
             catch (Exception e)
             {

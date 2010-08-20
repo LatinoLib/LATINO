@@ -251,7 +251,7 @@ namespace Latino
         {
             Utils.ThrowException(rowIdx < 0 ? new ArgumentOutOfRangeException("rowIdx") : null);
             Utils.ThrowException(colIdx < 0 ? new ArgumentOutOfRangeException("colIdx") : null);
-            Utils.ThrowException(rowIdx >= mRows.Count ? new ArgumentValueException("rowIdx") : null);
+            if (rowIdx >= mRows.Count) { return defaultVal; }
             return mRows[rowIdx].TryGet(colIdx, defaultVal);
         }
 
@@ -372,7 +372,8 @@ namespace Latino
 
         public void AppendCols(SparseMatrix<T>.ReadOnly otherMatrix, int thisMatrixNumCols)
         {
-            Utils.ThrowException(thisMatrixNumCols < 0 ? new ArgumentOutOfRangeException("thisMatrixNumCols") : null);
+            Utils.ThrowException(otherMatrix == null ? new ArgumentNullException("otherMatrix") : null);
+            Utils.ThrowException(thisMatrixNumCols < 0 ? new ArgumentOutOfRangeException("thisMatrixNumCols") : null);            
             int otherMatrixNumRows = otherMatrix.GetLastNonEmptyRowIdx() + 1;
             if (mRows.Count < otherMatrixNumRows)
             {
@@ -382,6 +383,21 @@ namespace Latino
             {
                 mRows[rowIdx].Append(otherMatrix.Inner.mRows[rowIdx], thisMatrixNumCols); // throws ArgumentOutOfRangeException
                 rowIdx++;
+            }
+        }
+
+        public void AppendRows(SparseMatrix<T>.ReadOnly otherMatrix, int thisMatrixNumRows)
+        {
+            Utils.ThrowException(otherMatrix == null ? new ArgumentNullException("otherMatrix") : null);
+            Utils.ThrowException(thisMatrixNumRows < (GetLastNonEmptyRowIdx() + 1) ? new ArgumentOutOfRangeException("thisMatrixNumRows") : null);
+            int totalNumRows = (otherMatrix.GetLastNonEmptyRowIdx() + 1) + thisMatrixNumRows;
+            if (mRows.Count < totalNumRows)
+            {
+                SetRowListSize(totalNumRows);
+            }
+            foreach (IdxDat<SparseVector<T>.ReadOnly> row in otherMatrix)
+            {
+                mRows[thisMatrixNumRows + row.Idx] = row.Dat.GetWritableCopy();
             }
         }
 

@@ -130,7 +130,7 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(languageProfiles.Count == 0 ? new InvalidOperationException() : null);
             Utils.ThrowException(p == null ? new ArgumentNullException("p") : null);
-            Utils.ThrowException((!p.IsRanked || p.N != n) ? new ArgumentValueException("p") : null);
+            Utils.ThrowException((!p.IsRanked /*|| p.N != n*/) ? new ArgumentValueException("p") : null);
             Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);            
             // finds language most similar to the profile 'p'
             LanguageProfile matchingLang = null;
