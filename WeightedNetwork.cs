@@ -201,6 +201,7 @@ namespace Latino
                     foreach (int srcVtxIdx in srcVtxList) { rankVec[srcVtxIdx] = initRank; }
                 }
             }
+            //Console.WriteLine(new ArrayList<double>(rankVec));
             // transpose adjacency matrix
             if (inlinks == null)
             {
@@ -238,6 +239,7 @@ namespace Latino
                         }
                         newRankVec[vtxIdx] = newRank;
                     }
+                    //Console.WriteLine("< {0} >", new ArrayList<double>(newRankVec));
                 }
                 else
                 {
@@ -290,6 +292,7 @@ namespace Latino
                     diff += Math.Abs(rankVec[i] - newRankVec[i]);
                 }
                 rankVec = newRankVec;
+                //Console.WriteLine(new ArrayList<double>(rankVec));
                 step++;
                 //Console.WriteLine("Step {0}\tTime {1}", step, (DateTime.Now - then).TotalMilliseconds);
             } while (step < maxSteps && diff > eps);

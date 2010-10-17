@@ -196,6 +196,14 @@ namespace Latino.Model
 
         // *** Computation of centroids ***
 
+        public static SparseVector<double> ComputeCentroid(IEnumerable<SparseVector<double>> vecList, CentroidType type)
+        {
+            Utils.ThrowException(vecList == null ? new ArgumentNullException("vecList") : null);
+            ArrayList<SparseVector<double>.ReadOnly> tmp = new ArrayList<SparseVector<double>.ReadOnly>();
+            foreach (SparseVector<double> vec in vecList) { tmp.Add(vec); }
+            return ComputeCentroid(tmp, type);
+        }
+
         public static SparseVector<double> ComputeCentroid(IEnumerable<SparseVector<double>.ReadOnly> vecList, CentroidType type)
         {
             Utils.ThrowException(vecList == null ? new ArgumentNullException("vecList") : null);

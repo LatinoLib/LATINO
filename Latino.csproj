@@ -56,6 +56,7 @@
     <Compile Include="Model\KnnClassifierFast.cs" />
     <Compile Include="Model\NaiveBayesClassifier.cs" />
     <Compile Include="Persistance\DatabaseConnection.cs" />
+    <Compile Include="TextMining\CustomStemmer.cs" />
     <Compile Include="TextMining\HtmlTokenizer.cs" />
     <Compile Include="TextMining\SimHash.cs" />
     <Compile Include="TextMining\StopWords\SerbianStopWordsCyrillic.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Web\SearchEngine.cs" />
     <Compile Include="Web\SearchEngineResultItem.cs" />
     <Compile Include="Web\SearchEngineResultSet.cs" />
+    <Compile Include="Web\BingSearchEngine.cs" />
     <Compile Include="Web\YahooSearchEngine.cs" />
     <Compile Include="__MultiSet__.cs" />
     <Compile Include="IPair.cs" />

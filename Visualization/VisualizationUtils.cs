@@ -60,6 +60,8 @@ namespace Latino.Visualization
 
         public static void MeasureString(string str, Font font, out float width, out float height)
         {
+            Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
+            Utils.ThrowException(font == null ? new ArgumentNullException("font") : null);
             using (Bitmap bmp = new Bitmap(1, 1))
             {
                 using (Graphics g = Graphics.FromImage(bmp))
@@ -68,8 +70,15 @@ namespace Latino.Visualization
                     strFmt.FormatFlags = StringFormatFlags.NoClip;
                     strFmt.SetMeasurableCharacterRanges(new CharacterRange[] { new CharacterRange(0, str.Length) });
                     Region[] strSz = g.MeasureCharacterRanges(str, font, RectangleF.Empty, strFmt);
-                    width = strSz[0].GetBounds(g).Width;
-                    height = strSz[0].GetBounds(g).Height;                    
+                    if (strSz.Length > 0)
+                    {
+                        width = strSz[0].GetBounds(g).Width;
+                        height = strSz[0].GetBounds(g).Height;
+                    }
+                    else
+                    {
+                        width = height = 0;
+                    }
                 }
             }
         }

@@ -208,7 +208,7 @@ namespace Latino.Persistance
             Utils.ThrowException(mConnection == null ? new InvalidOperationException() : null);
             Utils.ThrowException(sqlStatement == null ? new ArgumentNullException("sqlStatement") : null);
             Utils.ThrowException(args == null ? new ArgumentNullException("args") : null);
-            Utils.VerboseLine("Executing non-query ...");
+            Utils.VerboseLine("Executing SQL command ...");
             try
             {
                 OleDbCommand command = new OleDbCommand(sqlStatement, mConnection);
@@ -230,7 +230,7 @@ namespace Latino.Persistance
             Utils.ThrowException(mConnection == null ? new InvalidOperationException() : null);
             Utils.ThrowException(sqlSelectStatement == null ? new ArgumentNullException("sqlSelectStatement") : null);
             Utils.ThrowException(args == null ? new ArgumentNullException("args") : null);
-            Utils.VerboseLine("Executing query ...");
+            Utils.VerboseLine("Executing SQL query ...");
             try
             {
                 OleDbCommand command = new OleDbCommand(sqlSelectStatement, mConnection);
@@ -253,7 +253,7 @@ namespace Latino.Persistance
             Utils.ThrowException(mConnection == null ? new InvalidOperationException() : null);
             Utils.ThrowException(sqlSelectStatement == null ? new ArgumentNullException("sqlSelectStatement") : null);
             Utils.ThrowException(args == null ? new ArgumentNullException("args") : null);
-            Utils.VerboseLine("Executing query ...");
+            Utils.VerboseLine("Executing SQL query ...");
             try
             {
                 OleDbCommand command = new OleDbCommand(sqlSelectStatement, mConnection);

@@ -17,6 +17,7 @@ using System.Xml;
 using Latino.TextMining;
 
 // TOOD: record should contain binary serialized result sets
+// TODO: thread safety (see DB cache)
 
 namespace Latino.Web
 {

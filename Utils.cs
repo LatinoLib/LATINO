@@ -29,6 +29,70 @@ namespace Latino
     {
         private static bool mVerbose
             = true;
+        private static VerboseDelegate mVerboseProc
+            = new VerboseDelegate(DefaultVerbose);
+        private static VerboseDelegate mVerboseLineProc
+            = new VerboseDelegate(DefaultVerboseLine);
+        private static VerboseProgressDelegate mVerboseProgressProc
+            = new VerboseProgressDelegate(DefaultVerboseProgress);
+
+        public delegate void VerboseDelegate(string format, params object[] args);
+        public delegate void VerboseProgressDelegate(string format, int step, int numSteps);
+
+        private static void DefaultVerbose(string format, params object[] args)
+        {
+            Console.Write(format, args); // throws ArgumentNullException, FormatException
+        }
+
+        private static void DefaultVerboseLine(string format, params object[] args)
+        {
+            Console.WriteLine(format, args); // throws ArgumentNullException, FormatException
+        }
+
+        private static void DefaultVerboseProgress(string format, int step, int numSteps)
+        {
+            Utils.ThrowException(step < 1 ? new ArgumentOutOfRangeException("step") : null);
+            if (numSteps <= 0)
+            {
+                if (mVerbose && step % 100 == 0)
+                {
+                    Console.Write("\r" + format, step); // throws ArgumentNullException, FormatException
+                }
+            }
+            else
+            {
+                if (mVerbose && (step % 100 == 0 || step == numSteps))
+                {
+                    Console.Write("\r" + format, step, numSteps); // throws ArgumentNullException, FormatException
+                    if (step == numSteps) { Console.WriteLine(); }
+                }
+            }
+        }
+
+        public static void Verbose(string format, params object[] args)
+        {
+            if (mVerbose && mVerboseProc != null) { mVerboseProc(format, args); } 
+        }
+
+        public static void VerboseLine(string format, params object[] args)
+        {
+            if (mVerbose && mVerboseLineProc != null) { mVerboseLineProc(format, args); } 
+        }
+
+        public static void VerboseLine()
+        {
+            if (mVerbose && mVerboseLineProc != null) { mVerboseLineProc(""); } 
+        }
+
+        public static void VerboseProgress(string format, int step, int numSteps)
+        {
+            if (mVerbose && mVerboseProgressProc != null) { mVerboseProgressProc(format, step, numSteps); }
+        }
+
+        public static void VerboseProgress(string format, int step)
+        {
+            VerboseProgress(format, step, /*numSteps=*/-1);
+        }
 
         public static bool VerboseEnabled
         {
@@ -36,39 +100,22 @@ namespace Latino
             set { mVerbose = value; }
         }
 
-        public static void Verbose(string format, params object[] args)
+        public static VerboseDelegate VerboseFunc
         {
-            if (mVerbose) { Console.Write(format, args); } // throws ArgumentNullException, FormatException
+            get { return mVerboseProc; }
+            set { mVerboseProc = value; }
         }
 
-        public static void VerboseLine(string format, params object[] args)
+        public static VerboseDelegate VerboseLineFunc
         {
-            if (mVerbose) { Console.WriteLine(format, args); } // throws ArgumentNullException, FormatException
+            get { return mVerboseLineProc; }
+            set { mVerboseLineProc = value; }
         }
 
-        public static void VerboseLine()
+        public static VerboseProgressDelegate VerboseProgressFunc
         {
-            if (mVerbose) { Console.WriteLine(); } 
-        }
-
-        public static void VerboseProgress(string format, int step, int numSteps)
-        {
-            Utils.ThrowException(step < 1 ? new ArgumentOutOfRangeException("step") : null);
-            Utils.ThrowException(numSteps < 1 ? new ArgumentOutOfRangeException("numSteps") : null);
-            if (mVerbose && (step % 100 == 0 || step == numSteps)) 
-            { 
-                Console.Write("\r" + format, step, numSteps); // throws ArgumentNullException, FormatException
-                if (step == numSteps) { Console.WriteLine(); }
-            } 
-        }
-
-        public static void VerboseProgress(string format, int step)
-        {
-            Utils.ThrowException(step < 1 ? new ArgumentOutOfRangeException("step") : null);
-            if (mVerbose && step % 100 == 0)
-            {
-                Console.Write("\r" + format, step); // throws ArgumentNullException, FormatException
-            }
+            get { return mVerboseProgressProc; }
+            set { mVerboseProgressProc = value; }
         }
 
         [Conditional("THROW_EXCEPTIONS")]

@@ -384,15 +384,16 @@ namespace Latino.TextMining
 
         public void Initialize(IEnumerable<string> documents)
         {
-            Initialize(documents, /*largeScale=*/false);
+            Initialize(documents, /*largeScale=*/false, /*keepBowVectors=*/true);
         }
 
-        public void Initialize(IEnumerable<string> documents, bool largeScale)
+        public ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale, bool keepBowVectors)
         {
             Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);            
             mWordInfo.Clear();
             mIdxInfo.Clear();
             mBowVectors.Clear();
+            ArrayList<SparseVector<double>> bows = keepBowVectors ? null : new ArrayList<SparseVector<double>>();
             // build vocabulary
             Utils.VerboseLine("Building vocabulary ...");
             int docCount = 0;
@@ -628,8 +629,10 @@ namespace Latino.TextMining
                 docVec.Sort();
                 CutLowWeights(ref docVec);
                 if (mNormalizeVectors) { Utils.TryNrmVecL2(docVec); }
-                mBowVectors.Add(docVec);
+                if (keepBowVectors) { mBowVectors.Add(docVec); }
+                else { bows.Add(docVec); }
             }
+            return bows; 
         }
 
         private void ProcessDocumentNGrams(ArrayList<WordStem> nGrams, int startIdx, Dictionary<int, int> tfVec)

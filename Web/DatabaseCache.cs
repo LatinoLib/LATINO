@@ -59,7 +59,8 @@ namespace Latino.Web
         }
 
         public DatabaseCache(string connectionString)
-        { 
+        {
+            mConnection = new DatabaseConnection();
             mConnection.ConnectionString = connectionString; // throws ArgumentNullException
             mConnection.Username = "";
             mConnection.Password = "";
@@ -94,11 +95,8 @@ namespace Latino.Web
             Utils.ThrowException(maxSize < 0 ? new ArgumentOutOfRangeException("maxSize") : null);
             Utils.ThrowException(mConnection == null ? new InvalidOperationException() : null);
             string normalizedQuery = string.Format("{0} {1} {2}", source, language, NormalizeQuery == null ? query : NormalizeQuery(query));
-            MD5CryptoServiceProvider hashAlgo = new MD5CryptoServiceProvider();
-            Guid queryId = new Guid(hashAlgo.ComputeHash(Encoding.UTF8.GetBytes(normalizedQuery)));
             bool cacheMiss = true;
-            //mConnection.StartTransaction(); // start transaction
-            DataTable dataTable = mConnection.ExecuteQuery("select * from Queries where Id = ?", queryId);
+            DataTable dataTable = mConnection.ExecuteQuery("select * from Queries where Query = ?", normalizedQuery);
             if (dataTable.Rows.Count != 0) 
             {
 				DateTime timeStamp = (DateTime)dataTable.Rows[0]["TimeStamp"];
@@ -116,7 +114,6 @@ namespace Latino.Web
                     }
                 }
             }
-            //mConnection.Commit(); // commit 
             if (cacheMiss) { Utils.VerboseLine("Cache miss."); }
             return !cacheMiss;
         }
@@ -128,23 +125,21 @@ namespace Latino.Web
             Utils.ThrowException(resultSet == null ? new ArgumentNullException("resultSet") : null);
             Utils.ThrowException(totalHits < resultSet.Count ? new ArgumentValueException("totalHits") : null);
             string normalizedQuery = string.Format("{0} {1} {2}", source, language, NormalizeQuery == null ? query : NormalizeQuery(query));
-            MD5CryptoServiceProvider hashAlgo = new MD5CryptoServiceProvider();
-            Guid queryId = new Guid(hashAlgo.ComputeHash(Encoding.UTF8.GetBytes(normalizedQuery)));
             mConnection.StartTransaction(); // start transaction
-			// check if such query already exists
-            DataTable dataTable = mConnection.ExecuteQuery("select * from Queries where Id = ?", queryId);
+            // check if such query already exists
+            DataTable dataTable = mConnection.ExecuteQuery("select * from Queries where Query = ?", normalizedQuery);
             if (dataTable.Rows.Count > 0)
             {
                 // remove old database record 
-                mConnection.ExecuteNonQuery("delete from Queries where Id = ?", queryId);
+                mConnection.ExecuteNonQuery("delete from Queries where Query = ?", normalizedQuery);
             }
             // add new database record
             StringWriter strWriter = new StringWriter();
             XmlTextWriter xmlWriter = new XmlTextWriter(strWriter);
             xmlWriter.Formatting = Formatting.Indented;
             resultSet.SaveXml(xmlWriter);
-            mConnection.ExecuteNonQuery("insert into Queries (Id, Query, TotalHits, ActualSize, ResultSetXml, TimeStamp) values (?, ?, ?, ?, ?, ?)",
-                queryId, normalizedQuery, totalHits, resultSet.Count, strWriter.ToString(), DateTime.Now);
+            mConnection.ExecuteNonQuery("insert into Queries (Query, TotalHits, ActualSize, ResultSetXml, TimeStamp) values (?, ?, ?, ?, ?)",
+                normalizedQuery, totalHits, resultSet.Count, strWriter.ToString(), DateTime.Now);
             mConnection.Commit(); // commit
         }
     }

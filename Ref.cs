@@ -20,7 +20,8 @@ namespace Latino
     */
     public class Ref<T>
     {
-        public T Val;
+        public T Val
+            = default(T);
 
         public Ref()
         {
