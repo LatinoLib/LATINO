@@ -2,8 +2,8 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    __IncrementalSemanticSpaceLayout__.cs
- *  Desc:    Semantic space layout algorithm (experimental)
+ *  File:    IncrementalSemanticSpaceLayout.cs
+ *  Desc:    Semantic space layout algorithm 
  *  Created: Nov-2009
  *
  *  Authors: Miha Grcar
@@ -14,8 +14,10 @@ using System;
 using System.Collections.Generic;
 using Latino.Model;
 using System.IO;
+using Latino.Visualization;
+using Latino.Experimental.Model;
 
-namespace Latino.Visualization
+namespace Latino.Experimental.Visualization
 {
     /* .-----------------------------------------------------------------------
        |

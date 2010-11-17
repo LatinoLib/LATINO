@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    IModel.cs
- *  Desc:    Prediction model nterface 
+ *  Desc:    Prediction model interface 
  *  Created: Aug-2007
  *
  *  Authors: Miha Grcar

@@ -21,8 +21,9 @@ using System.Net;
 using System.Threading;
 using System.Text.RegularExpressions;
 using Latino.TextMining;
+using Latino.Web;
 
-namespace Latino.Web
+namespace Latino.Experimental.Web
 {
     /* .-----------------------------------------------------------------------
        |		

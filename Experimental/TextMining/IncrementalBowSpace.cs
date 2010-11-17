@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    __IncrementalBowSpace__.cs (experimental)
+ *  File:    IncrementalBowSpace.cs 
  *  Desc:    Incremental bag-of-words space 
  *  Created: Dec-2008
  *
@@ -14,8 +14,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Latino.Model;
+using Latino.TextMining;
 
-namespace Latino.TextMining
+namespace Latino.Experimental.TextMining
 {
     /* .-----------------------------------------------------------------------
        |

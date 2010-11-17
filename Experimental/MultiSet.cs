@@ -15,7 +15,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Latino
+namespace Latino.Experimental
 {
     /* .-----------------------------------------------------------------------
        |

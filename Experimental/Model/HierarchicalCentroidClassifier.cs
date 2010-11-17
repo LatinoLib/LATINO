@@ -2,8 +2,8 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    __HierarchicalCentroidClassifier__.cs 
- *  Desc:    Hierarchical centroid classifier (experimental)
+ *  File:    HierarchicalCentroidClassifier.cs 
+ *  Desc:    Hierarchical centroid classifier 
  *  Created: Dec-2009
  *
  *  Authors: Miha Grcar 
@@ -12,8 +12,9 @@
 
 using System;
 using System.Collections.Generic;
+using Latino.Model;
 
-namespace Latino.Model
+namespace Latino.Experimental.Model
 {
     /* .-----------------------------------------------------------------------
        |

@@ -36,7 +36,7 @@ namespace Latino.Model
         private bool mNormalize
             = false;
 
-        public static Dictionary<int, double>[] PrecomputeProbabilities(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, 
+        private static Dictionary<int, double>[] PrecomputeProbabilities(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, 
             out LblT[] idxToLbl, out Dictionary<int, double> featurePriors, out int[] exampleCount)
         {
             featurePriors = new Dictionary<int, double>();

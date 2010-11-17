@@ -22,13 +22,18 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class Prediction<LblT> : IEnumerableList<KeyDat<double, LblT>>
+    public class Prediction<LblT> : IEnumerableList<KeyDat<double, LblT>>, ISerializable, ICloneable<Prediction<LblT>>
     {
         private ArrayList<KeyDat<double, LblT>> mClassScores
             = new ArrayList<KeyDat<double, LblT>>();
 
         public Prediction()
         {
+        }
+
+        public Prediction(BinarySerializer reader)
+        {
+            Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
         public Prediction(IEnumerable<KeyDat<double, LblT>> classScores)
@@ -91,6 +96,20 @@ namespace Latino.Model
             return mClassScores.ToString();
         }
 
+        // *** ICloneable<Prediction<LblT>> interface implementation ***
+
+        public Prediction<LblT> Clone()
+        {
+            Prediction<LblT> clone = new Prediction<LblT>();
+            clone.Inner.AddRange(mClassScores);
+            return clone;
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+
         // *** IEnumerableList<KeyDat<double, LblT>> interface implementation ***
 
         public int Count
@@ -120,6 +139,22 @@ namespace Latino.Model
         IEnumerator IEnumerable.GetEnumerator()
         {
             return new ListEnum(this);
+        }
+
+        // *** ISerializable interface implementation
+
+        public void Save(BinarySerializer writer)
+        {
+            Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
+            // the following statements throw serialization-related exceptions
+            mClassScores.Save(writer);
+        }
+
+        public void Load(BinarySerializer reader)
+        {
+            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            // the following statements throw serialization-related exceptions
+            mClassScores = new ArrayList<KeyDat<double, LblT>>(reader);
         }
     }
 }

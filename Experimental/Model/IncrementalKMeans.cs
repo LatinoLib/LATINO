@@ -2,8 +2,8 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    __IncrementalKMeans__.cs 
- *  Desc:    Incremental k-means clustering algorithm (experimental)
+ *  File:    IncrementalKMeans.cs 
+ *  Desc:    Incremental k-means clustering algorithm
  *  Created: Aug-2009
  *
  *  Authors: Miha Grcar 
@@ -12,8 +12,9 @@
 
 using System;
 using System.Collections.Generic;
+using Latino.Model;
 
-namespace Latino.Model
+namespace Latino.Experimental.Model
 {
     public class IncrementalKMeans : IClustering<SparseVector<double>.ReadOnly> 
     {

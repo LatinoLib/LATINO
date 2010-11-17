@@ -14,6 +14,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace Latino.TextMining
 {
@@ -25,18 +26,27 @@ namespace Latino.TextMining
     */
     public class HtmlTokenizer : ITokenizer
     {
-        private static string tag = @"<(?<startMark>/?)(?<tagName>\w([-_:]?\w)*)((\s+\w([-_:]?\w)*(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)(?<endMark>/?)>";
-        private static string number = @"[0-9][\.,0-9]*";
-        private static string word = @"\p{L}+";
-        private static string comment = "(<!--)|(-->)";
-        private static Regex tagRegex = new Regex("^" + tag + "$", RegexOptions.Compiled);
-        private static Regex numberRegex = new Regex("^" + number + "$", RegexOptions.Compiled);
-        private static Regex wordRegex = new Regex("^" + word + "$", RegexOptions.Compiled);
+        private static string tag 
+            = @"<(?<startMark>/?)(?<tagName>\w([-_:]?\w)*)((\s+\w([-_:]?\w)*(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)(?<endMark>/?)>";
+        private static string number 
+            = @"[0-9][\.,0-9]*";
+        private static string word 
+            = @"\p{L}+";
+        private static string comment 
+            = "(<!--)|(-->)";
+        private static Regex tagRegex
+            = new Regex("^" + tag + "$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static Regex numberRegex
+            = new Regex("^" + number + "$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static Regex wordRegex
+            = new Regex("^" + word + "$", RegexOptions.Compiled | RegexOptions.Singleline);
 
         private RegexTokenizer mRegexTokenizer
             = new RegexTokenizer();
         private IStemmer mStemmer;
         private bool mNormalize 
+            = true;
+        private bool mDecodeHtml
             = true;
 
         public HtmlTokenizer() : this(/*stemmer=*/null, "")
@@ -50,10 +60,30 @@ namespace Latino.TextMining
         public HtmlTokenizer(IStemmer stemmer, string text)
         {
             Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
-            mRegexTokenizer.Text = Regex.Replace(text, @"<!doctype\s+[^>]*>", "", RegexOptions.IgnoreCase); 
+            mRegexTokenizer.Text = PreprocHtml(text);
             mStemmer = stemmer;
             mRegexTokenizer.TokenRegex = string.Format("({0})|({1})|({2})|({3})", tag, number, word, comment);
             mRegexTokenizer.IgnoreUnknownTokens = true;
+            mRegexTokenizer.TokenRegexOptions |= RegexOptions.Singleline;
+        }
+
+        private string CleanText(string text)
+        {
+            text = Regex.Replace(text, tag, " ", RegexOptions.Singleline); // remove tags
+            text = Regex.Replace(text.Trim(), @"\s\s+", " "); // compress text
+            return text;
+        }
+
+        private string PreprocHtml(string html)
+        {
+            html = Regex.Replace(html, @"<!doctype\s+[^>]*>", "", RegexOptions.IgnoreCase);
+            if (mDecodeHtml)
+            {
+                html = html.Replace("&lt;", " ");
+                html = html.Replace("&gt;", " ");
+                html = HttpUtility.HtmlDecode(html);
+            }
+            return html;
         }
 
         public bool Normalize
@@ -62,12 +92,20 @@ namespace Latino.TextMining
             set { mNormalize = value; }
         }
 
+        public bool DecodeHtml
+        {
+            get { return mDecodeHtml; }
+            set { mDecodeHtml = value; }
+        }
+
         public static string GetTagName(string tag)
         {
             Utils.ThrowException(tag == null ? new ArgumentNullException("tag") : null);
             Match m = tagRegex.Match(tag);
             if (m.Success)
+            {
                 return m.Result("${tagName}").ToLower();
+            }
             return null;
         }
 
@@ -87,17 +125,15 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
             Match m = tagRegex.Match(token);
-            if (!m.Success)
-                return false;
-            return m.Result("${startMark}") != "/"; 
+            if (!m.Success) { return false; }
+            return m.Result("${startMark}") != "/";
         }
 
         public static bool IsClosingTag(string token)
         {
             Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
             Match m = tagRegex.Match(token);
-            if (!m.Success)
-                return false;
+            if (!m.Success) { return false; }
             return (m.Result("${startMark}") == "/");
         }
 
@@ -105,6 +141,20 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
             return numberRegex.Match(token).Success;
+        }
+
+        public string GetTextBlock(int startIdx, int len)
+        {
+            Utils.ThrowException((startIdx < 0 || startIdx >= mRegexTokenizer.Text.Length) ? new ArgumentOutOfRangeException("startIdx") : null);
+            Utils.ThrowException((len < 0 || startIdx + len > mRegexTokenizer.Text.Length) ? new ArgumentOutOfRangeException("len") : null);
+            return mRegexTokenizer.Text.Substring(startIdx, len);
+        }
+       
+        public string GetTextBlockCleaned(int startIdx, int len)
+        {
+            Utils.ThrowException((startIdx < 0 || startIdx >= mRegexTokenizer.Text.Length) ? new ArgumentOutOfRangeException("startIdx") : null);
+            Utils.ThrowException((len < 0 || startIdx + len > mRegexTokenizer.Text.Length) ? new ArgumentOutOfRangeException("len") : null);
+            return CleanText(mRegexTokenizer.Text.Substring(startIdx, len));
         }
 
         // *** ITokenizer interface implementation ***
@@ -115,7 +165,7 @@ namespace Latino.TextMining
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Text") : null);
-                mRegexTokenizer.Text = Regex.Replace(value, @"<!doctype\s+[^>]*>", "", RegexOptions.IgnoreCase);
+                mRegexTokenizer.Text = PreprocHtml(value);
             }
         }
 
@@ -136,6 +186,7 @@ namespace Latino.TextMining
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
             writer.WriteBool(mNormalize);
+            writer.WriteBool(mDecodeHtml);
             writer.WriteObject(mStemmer);
         }
 
@@ -144,6 +195,7 @@ namespace Latino.TextMining
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
             mNormalize = reader.ReadBool();
+            mDecodeHtml = reader.ReadBool();
             mStemmer = reader.ReadObject<IStemmer>();
         }
 
@@ -156,18 +208,22 @@ namespace Latino.TextMining
         public class Enumerator : IEnumerator<string>
         {
             private RegexTokenizer mTokenizer;
-            private IEnumerator<string> mEnum;
+            private RegexTokenizer.Enumerator mEnum;
             private IStemmer mStemmer;
             private bool mNormalize;
             private string mCurrentToken 
                 = null;
+            private int mCurrentTokenIdx
+                = -1;
+            private int mCurrentTokenLen
+                = -1;
             private string mNextToken
                 = null;
 
             internal Enumerator(RegexTokenizer tokenizer, IStemmer stemmer, bool normalize)
             {
                 mTokenizer = tokenizer;
-                mEnum = tokenizer.GetEnumerator();
+                mEnum = (RegexTokenizer.Enumerator)tokenizer.GetEnumerator();
                 mStemmer = stemmer;
                 mNormalize = normalize;
             }
@@ -176,12 +232,16 @@ namespace Latino.TextMining
             {
                 nextToken = null;
                 if (token == "<!--" || token == "-->")
+                {
                     return token;
+                }
                 Match m = null;
                 if ((m = tagRegex.Match(token)).Success)
                 {
                     if (m.Result("${startMark}") == "/")
+                    {
                         return "</" + m.Result("${tagName}").ToLower() + ">";
+                    }
                     if (m.Result("${endMark}") == "/")
                     {
                         nextToken = "</" + m.Result("${tagName}").ToLower() + ">";
@@ -190,10 +250,32 @@ namespace Latino.TextMining
                     return "<" + m.Result("${tagName}").ToLower() + ">";
                 }
                 if ((m = numberRegex.Match(token)).Success)
+                {
                     return "1";
+                }
                 if ((m = wordRegex.Match(token)).Success)
+                {
                     return mStemmer == null ? token : mStemmer.GetStem(token.ToLower());
+                }
                 return null; // *** we should not get here
+            }
+
+            public int CurrentTokenIdx
+            {
+                get
+                {
+                    Utils.ThrowException(mCurrentToken == null ? new InvalidOperationException() : null);
+                    return mCurrentTokenIdx;
+                }
+            }
+
+            public int CurrentTokenLen
+            {
+                get
+                {
+                    Utils.ThrowException(mCurrentToken == null ? new InvalidOperationException() : null);
+                    return mCurrentTokenLen;
+                }
             }
 
             // *** IEnumerator<string> interface implementation ***
@@ -223,6 +305,8 @@ namespace Latino.TextMining
                 if (mEnum.MoveNext())
                 {
                     mCurrentToken = mEnum.Current;
+                    mCurrentTokenIdx = mEnum.CurrentTokenIdx;
+                    mCurrentTokenLen = mCurrentToken.Length;
                     if (mNormalize) { mCurrentToken = NormalizeToken(mCurrentToken, out mNextToken); }
                     return true;
                 }
@@ -237,6 +321,8 @@ namespace Latino.TextMining
             {
                 mEnum.Reset();
                 mCurrentToken = null;
+                mCurrentTokenIdx = -1;
+                mCurrentTokenLen = -1;
                 mNextToken = null;
             }
 

@@ -33,6 +33,8 @@ namespace Latino.TextMining
             = new Regex(@"\s+|$", RegexOptions.Compiled); // *** this is not (yet?) publicly accessible
         private bool mIgnoreUnknownTokens
             = false;
+        private RegexOptions mRegexOptions
+            = RegexOptions.Compiled;
 
         public RegexTokenizer()
         {
@@ -52,13 +54,23 @@ namespace Latino.TextMining
         public string TokenRegex
         { 
             get { return mTokenRegex.ToString(); }
-            set { mTokenRegex = new Regex(value, RegexOptions.Compiled); } // throws ArgumentNullException, ArgumentException
+            set { mTokenRegex = new Regex(value, mRegexOptions); } // throws ArgumentNullException, ArgumentException
         }
 
         public bool IgnoreUnknownTokens
         {
             get { return mIgnoreUnknownTokens; }
             set { mIgnoreUnknownTokens = value; }
+        }
+
+        public RegexOptions TokenRegexOptions
+        {
+            get { return mRegexOptions; }
+            set 
+            { 
+                mRegexOptions = value;
+                mTokenRegex = new Regex(mTokenRegex.ToString(), mRegexOptions);
+            }
         }
 
         // *** ITokenizer interface implementation ***
@@ -89,6 +101,7 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
+            writer.WriteInt((int)mRegexOptions);
             writer.WriteString(mTokenRegex.ToString());
             writer.WriteString(mDelimRegex.ToString());
             writer.WriteBool(mIgnoreUnknownTokens);
@@ -98,8 +111,9 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            mTokenRegex = new Regex(reader.ReadString(), RegexOptions.Compiled);
-            mDelimRegex = new Regex(reader.ReadString(), RegexOptions.Compiled);
+            mRegexOptions = (RegexOptions)reader.ReadInt();
+            mTokenRegex = new Regex(reader.ReadString(), mRegexOptions);
+            mDelimRegex = new Regex(reader.ReadString(), mRegexOptions);
             mIgnoreUnknownTokens = reader.ReadBool();
         }
 
@@ -115,8 +129,8 @@ namespace Latino.TextMining
             private Regex mTokenRegex;
             private Regex mDelimRegex;
             private bool mIgnoreUnknownTokens;
-            private Queue<string> mTokens
-                = new Queue<string>();
+            private Queue<Pair<int, string>> mTokens
+                = new Queue<Pair<int, string>>();
             private Match mTokenMatch
                 = null;
 
@@ -155,14 +169,14 @@ namespace Latino.TextMining
                                 int innerLen = delimMatch.Index - innerStartIdx;
                                 if (innerLen > 0)
                                 {
-                                    mTokens.Enqueue(glue.Substring(innerStartIdx, innerLen));
+                                    mTokens.Enqueue(new Pair<int, string>(startIdx + innerStartIdx, glue.Substring(innerStartIdx, innerLen)));
                                 }
                                 innerStartIdx = delimMatch.Index + delimMatch.Value.Length;
                                 delimMatch = delimMatch.NextMatch();
                             }
                         }
                     }
-                    mTokens.Enqueue(mTokenMatch.Value);
+                    mTokens.Enqueue(new Pair<int, string>(mTokenMatch.Index, mTokenMatch.Value));
                     if (!mIgnoreUnknownTokens && !mTokenMatch.NextMatch().Success) // tokenize tail
                     {
                         startIdx = mTokenMatch.Index + mTokenMatch.Value.Length;
@@ -177,13 +191,22 @@ namespace Latino.TextMining
                                 int innerLen = delimMatch.Index - innerStartIdx;
                                 if (innerLen > 0)
                                 {
-                                    mTokens.Enqueue(glue.Substring(innerStartIdx, innerLen));
+                                    mTokens.Enqueue(new Pair<int, string>(startIdx + innerStartIdx, glue.Substring(innerStartIdx, innerLen)));
                                 }
                                 innerStartIdx = delimMatch.Index + delimMatch.Value.Length;
                                 delimMatch = delimMatch.NextMatch();
                             }
                         }
                     }
+                }
+            }
+
+            public int CurrentTokenIdx
+            {
+                get
+                {
+                    Utils.ThrowException(mTokens.Count == 0 ? new InvalidOperationException() : null);
+                    return mTokens.Peek().First;
                 }
             }
 
@@ -194,7 +217,7 @@ namespace Latino.TextMining
                 get
                 {
                     Utils.ThrowException(mTokens.Count == 0 ? new InvalidOperationException() : null);
-                    return mTokens.Peek();
+                    return mTokens.Peek().Second;
                 }
             }
 
