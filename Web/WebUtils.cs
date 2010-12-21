@@ -79,7 +79,8 @@ namespace Latino.Web
         public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies, Encoding htmlEncoding) 
         {            
             Utils.ThrowException(url == null ? new ArgumentNullException("url") : null);
-            Utils.ThrowException((!url.Trim().StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !url.Trim().StartsWith("https://", StringComparison.OrdinalIgnoreCase)) ? new ArgumentValueException("url") : null);
+            Utils.ThrowException(!Uri.IsWellFormedUriString(url, UriKind.Absolute) ? new ArgumentValueException("url") : null);
+            Utils.ThrowException(Array.IndexOf(new string[] { "http", "https" }, new Uri(url).Scheme) < 0 ? new ArgumentValueException("url") : null);
             Utils.ThrowException(htmlEncoding == null ? new ArgumentNullException("htmlEncoding") : null);
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url); // throws UriFormatException
             request.Proxy = mWebProxy;
