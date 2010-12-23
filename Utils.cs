@@ -16,6 +16,8 @@ using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using System.Xml;
+using System.Web;
 
 namespace Latino
 {
@@ -336,6 +338,34 @@ namespace Latino
                 vec.SetDirect(i, datInner[i] / len);
             }
             return true;
+        }
+
+        public static string XmlReadValue(XmlReader reader, string attrName)
+        {
+            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            Utils.ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
+            if (reader.IsEmptyElement) { return ""; }
+            string text = "";
+            while (reader.Read() && reader.NodeType != XmlNodeType.Text && reader.NodeType != XmlNodeType.CDATA && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) ;
+            if (reader.NodeType == XmlNodeType.Text)
+            {
+                text = HttpUtility.HtmlDecode(reader.Value);
+                XmlSkip(reader, attrName);
+            }
+            else if (reader.NodeType == XmlNodeType.CDATA)
+            {
+                text = reader.Value; // no decoding for CDATA
+                XmlSkip(reader, attrName);
+            }
+            return text;
+        }
+
+        public static void XmlSkip(XmlReader reader, string attrName)
+        {
+            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            Utils.ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
+            if (reader.IsEmptyElement) { return; }
+            while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) ;
         }
 
         // *** Delegates ***
