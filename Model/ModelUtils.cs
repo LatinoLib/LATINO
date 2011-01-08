@@ -78,15 +78,7 @@ namespace Latino.Model
                     tmp.InnerIdx.Add(item);
                     tmp.InnerDat.Add(1);
                 }
-            }
-            //else if (inVec.GetType() == typeof(SvmFeatureVector))
-            //{
-            //    tmp = new SparseVector<double>(((SvmFeatureVector)inVec).Count);
-            //    foreach (IdxDat<float> item in (SvmFeatureVector)inVec)
-            //    {
-            //        tmp.Inner.Add(new IdxDat<double>(item.Idx, item.Dat));
-            //    }
-            //}        
+            }       
             else
             {
                 throw new ArgumentTypeException("inVec");
@@ -111,15 +103,6 @@ namespace Latino.Model
                 vec.Inner.AddRange(tmp.InnerIdx);
                 outVec = new BinaryVector<int>.ReadOnly(vec);
             }
-            //else if (outVecType == typeof(SvmFeatureVector))
-            //{
-            //    SparseVector<float> tmp2 = new SparseVector<float>(tmp.Count);
-            //    foreach (IdxDat<double> item in tmp)
-            //    {
-            //        tmp2.Inner.Add(new IdxDat<float>(item.Idx, (float)item.Dat)); // *** casting double to float
-            //    }
-            //    outVec = new SvmFeatureVector(tmp2);
-            //}
             else
             {
                 throw new ArgumentValueException("outVecType");
