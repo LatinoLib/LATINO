@@ -14,8 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-// TODO: save / load (callbacks in SvmLightLib?), expose params (C and eps)
-
 namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
@@ -52,6 +50,26 @@ namespace Latino.Model
         {
             get { return mLblCmp; }
             set { mLblCmp = value; }
+        }
+
+        public double C
+        {
+            get { return mC; }
+            set
+            {
+                Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("C") : null);
+                mC = value;
+            }
+        }
+
+        public double Eps
+        {
+            get { return mEps; }
+            set
+            {
+                Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("Eps") : null);
+                mEps = value;
+            }
         }
 
         // *** IModel<LblT, SparseVector<double>> interface implementation ***
@@ -127,6 +145,7 @@ namespace Latino.Model
                 result.Inner.Add(new KeyDat<double, LblT>(score, lbl));
             }
             result.Inner.Sort(DescSort<KeyDat<double, LblT>>.Instance);
+            result.Trim();
             SvmLightLib.DeleteFeatureVector(vecId); // delete feature vector
             return result;
         }
@@ -157,14 +176,38 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            throw new NotImplementedException();
+            writer.WriteDouble(mC);
+            writer.WriteDouble(mEps);
+            mIdxToLbl.Save(writer);
+            writer.WriteObject(mLblCmp);
+            writer.WriteBool(mModelId != -1);
+            if (mModelId != -1)
+            {
+                SvmLightLib.WriteByteCallback wb = delegate(byte b) { writer.WriteByte(b); };
+                SvmLightLib.SaveMulticlassModelBinCallback(mModelId, wb);
+                GC.KeepAlive(wb);
+            }
         }
 
         public void Load(BinarySerializer reader)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            Dispose();
             // the following statements throw serialization-related exceptions
-            throw new NotImplementedException();
+            mC = reader.ReadDouble();
+            mEps = reader.ReadDouble();
+            mIdxToLbl.Load(reader);
+            for (int i = 0; i < mIdxToLbl.Count; i++)
+            {
+                mLblToId.Add(mIdxToLbl[i], i + 1);
+            }
+            mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
+            if (reader.ReadBool())
+            {
+                SvmLightLib.ReadByteCallback rb = delegate() { return reader.ReadByte(); };
+                mModelId = SvmLightLib.LoadMulticlassModelBinCallback(rb);
+                GC.KeepAlive(rb);
+            }
         }
     }
 }

@@ -91,6 +91,17 @@ namespace Latino.Model
             }
         }
 
+        public void Trim()
+        {
+            ArrayList<KeyDat<double, LblT>> scores = new ArrayList<KeyDat<double, LblT>>();
+            foreach (KeyDat<double, LblT> item in mClassScores)
+            {
+                if (item.Key == 0) { break; }
+                scores.Add(item);
+            }
+            mClassScores = scores;
+        }
+
         public override string ToString()
         {
             return mClassScores.ToString();

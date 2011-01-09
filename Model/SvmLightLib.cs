@@ -20,13 +20,16 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public/*internal*/ static class SvmLightLib
+    internal static class SvmLightLib
     {
 #if DEBUG
         const string SVMLIGHTLIB_DLL = "SvmLightLibDebug.dll";
 #else
         const string SVMLIGHTLIB_DLL = "SvmLightLib.dll";
 #endif
+        public delegate void WriteByteCallback(byte b);
+        public delegate byte ReadByteCallback();
+
         // label is 1 or -1 for inductive binary SVM; 1, -1, or 0 (unlabeled) for transductive binary SVM; 
         // a positive integer for multiclass SVM; a real value for SVM regression
         [DllImport(SVMLIGHTLIB_DLL)]
@@ -61,6 +64,10 @@ namespace Latino.Model
         [DllImport(SVMLIGHTLIB_DLL)]
         public static extern int LoadModelBin(string fileName);
         [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern void SaveModelBinCallback(int modelId, WriteByteCallback callback);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern int LoadModelBinCallback(ReadByteCallback callback);
+        [DllImport(SVMLIGHTLIB_DLL)]
         public static extern void _Classify(string args);
         [DllImport(SVMLIGHTLIB_DLL)]
         public static extern void Classify(int modelId, int featureVectorCount, int[] featureVectors);
@@ -79,6 +86,10 @@ namespace Latino.Model
         public static extern void SaveMulticlassModelBin(int modelId, string fileName);
         [DllImport(SVMLIGHTLIB_DLL)]
         public static extern int LoadMulticlassModelBin(string fileName);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern void SaveMulticlassModelBinCallback(int modelId, WriteByteCallback callback);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern int LoadMulticlassModelBinCallback(ReadByteCallback callback);
         [DllImport(SVMLIGHTLIB_DLL)]
         public static extern void _MulticlassClassify(string args);
         [DllImport(SVMLIGHTLIB_DLL)]
