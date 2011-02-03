@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Xml;
 using System.Web;
+using System.Text.RegularExpressions;
 
 namespace Latino
 {
@@ -53,7 +54,7 @@ namespace Latino
 
         private static void DefaultVerboseProgress(string format, int step, int numSteps)
         {
-            Utils.ThrowException(step < 1 ? new ArgumentOutOfRangeException("step") : null);
+            ThrowException(step < 1 ? new ArgumentOutOfRangeException("step") : null);
             if (numSteps <= 0)
             {
                 if (mVerbose && step % 100 == 0)
@@ -305,7 +306,7 @@ namespace Latino
 
         public static double GetVecLenL2(SparseVector<double>.ReadOnly vec)
         {
-            Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = 0;
             ArrayList<double> datInner = vec.Inner.InnerDat;
             foreach (double val in datInner)
@@ -317,9 +318,9 @@ namespace Latino
 
         public static void NrmVecL2(SparseVector<double> vec)
         {
-            Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = GetVecLenL2(vec);
-            Utils.ThrowException(len == 0 ? new InvalidOperationException() : null);
+            ThrowException(len == 0 ? new InvalidOperationException() : null);
             ArrayList<double> datInner = vec.InnerDat;
             for (int i = 0; i < vec.Count; i++)
             {
@@ -329,7 +330,7 @@ namespace Latino
 
         public static bool TryNrmVecL2(SparseVector<double> vec)
         {
-            Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = GetVecLenL2(vec);
             if (len == 0) { return false; }
             ArrayList<double> datInner = vec.InnerDat;
@@ -340,10 +341,182 @@ namespace Latino
             return true;
         }
 
+        public const string DATE_TIME_SIMPLE
+            = "yyyy-MM-dd HH:mm:ss K"; // simple date-time format (incl. time zone, if available)
+        private static KeyDat<string, string>[] mTimeZones = new KeyDat<string, string>[] {
+            new KeyDat<string, string>("ACDT", "+10:30"),
+            new KeyDat<string, string>("ACST", "+09:30"),
+            new KeyDat<string, string>("ACT", "+08:00"),
+            new KeyDat<string, string>("ADT", "-03:00"),
+            new KeyDat<string, string>("AEDT", "+11:00"),
+            new KeyDat<string, string>("AEST", "+10:00"),
+            new KeyDat<string, string>("AFT", "+04:30"),
+            new KeyDat<string, string>("AKDT", "-08:00"),
+            new KeyDat<string, string>("AKST", "-09:00"),
+            new KeyDat<string, string>("AMST", "+05:00"),
+            new KeyDat<string, string>("AMT", "+04:00"),
+            new KeyDat<string, string>("ART", "-03:00"),
+            new KeyDat<string, string>("AST", "+03:00"),
+            new KeyDat<string, string>("AST", "+04:00"),
+            new KeyDat<string, string>("AST", "+03:00"),
+            new KeyDat<string, string>("AST", "-04:00"),
+            new KeyDat<string, string>("AWDT", "+09:00"),
+            new KeyDat<string, string>("AWST", "+08:00"),
+            new KeyDat<string, string>("AZOST", "-01:00"),
+            new KeyDat<string, string>("AZT", "+04:00"),
+            new KeyDat<string, string>("BDT", "+08:00"),
+            new KeyDat<string, string>("BIOT", "+06:00"),
+            new KeyDat<string, string>("BIT", "-12:00"),
+            new KeyDat<string, string>("BOT", "-04:00"),
+            new KeyDat<string, string>("BRT", "-03:00"),
+            new KeyDat<string, string>("BST", "+06:00"),
+            new KeyDat<string, string>("BST", "+01:00"),
+            new KeyDat<string, string>("BTT", "+06:00"),
+            new KeyDat<string, string>("CAT", "+02:00"),
+            new KeyDat<string, string>("CCT", "+06:30"),
+            new KeyDat<string, string>("CDT", "-05:00"),
+            new KeyDat<string, string>("CEDT", "+02:00"),
+            new KeyDat<string, string>("CEST", "+02:00"),
+            new KeyDat<string, string>("CET", "+01:00"),
+            new KeyDat<string, string>("CHAST", "+12:45"),
+            new KeyDat<string, string>("CIST", "-08:00"),
+            new KeyDat<string, string>("CKT", "-10:00"),
+            new KeyDat<string, string>("CLST", "-03:00"),
+            new KeyDat<string, string>("CLT", "-04:00"),
+            new KeyDat<string, string>("COST", "-04:00"),
+            new KeyDat<string, string>("COT", "-05:00"),
+            new KeyDat<string, string>("CST", "-06:00"),
+            new KeyDat<string, string>("CST", "+08:00"),
+            new KeyDat<string, string>("CVT", "-01:00"),
+            new KeyDat<string, string>("CXT", "+07:00"),
+            new KeyDat<string, string>("ChST", "+10:00"),
+            new KeyDat<string, string>("DFT", "+01:00"),
+            new KeyDat<string, string>("EAST", "-06:00"),
+            new KeyDat<string, string>("EAT", "+03:00"),
+            new KeyDat<string, string>("ECT", "-04:00"),
+            new KeyDat<string, string>("ECT", "-05:00"),
+            new KeyDat<string, string>("EDT", "-04:00"),
+            new KeyDat<string, string>("EEDT", "+03:00"),
+            new KeyDat<string, string>("EEST", "+03:00"),
+            new KeyDat<string, string>("EET", "+02:00"),
+            new KeyDat<string, string>("EST", "-05:00"),
+            new KeyDat<string, string>("FJT", "+12:00"),
+            new KeyDat<string, string>("FKST", "-03:00"),
+            new KeyDat<string, string>("FKT", "-04:00"),
+            new KeyDat<string, string>("GALT", "-06:00"),
+            new KeyDat<string, string>("GET", "+04:00"),
+            new KeyDat<string, string>("GFT", "-03:00"),
+            new KeyDat<string, string>("GILT", "+12:00"),
+            new KeyDat<string, string>("GIT", "-09:00"),
+            new KeyDat<string, string>("GMT", "+00:00"),
+            new KeyDat<string, string>("GST", "-02:00"),
+            new KeyDat<string, string>("GYT", "-04:00"),
+            new KeyDat<string, string>("HADT", "-09:00"),
+            new KeyDat<string, string>("HAST", "-10:00"),
+            new KeyDat<string, string>("HKT", "+08:00"),
+            new KeyDat<string, string>("HMT", "+05:00"),
+            new KeyDat<string, string>("HST", "-10:00"),
+            new KeyDat<string, string>("IRKT", "+08:00"),
+            new KeyDat<string, string>("IRST", "+03:30"),
+            new KeyDat<string, string>("IST", "+05:30"),
+            new KeyDat<string, string>("IST", "+01:00"),
+            new KeyDat<string, string>("IST", "+02:00"),
+            new KeyDat<string, string>("JST", "+09:00"),
+            new KeyDat<string, string>("KRAT", "+07:00"),
+            new KeyDat<string, string>("KST", "+09:00"),
+            new KeyDat<string, string>("LHST", "+10:30"),
+            new KeyDat<string, string>("LINT", "+14:00"),
+            new KeyDat<string, string>("MAGT", "+11:00"),
+            new KeyDat<string, string>("MDT", "-06:00"),
+            new KeyDat<string, string>("MIT", "-09:30"),
+            new KeyDat<string, string>("MSD", "+04:00"),
+            new KeyDat<string, string>("MSK", "+03:00"),
+            new KeyDat<string, string>("MST", "+08:00"),
+            new KeyDat<string, string>("MST", "-07:00"),
+            new KeyDat<string, string>("MST", "+06:30"),
+            new KeyDat<string, string>("MUT", "+04:00"),
+            new KeyDat<string, string>("NDT", "-02:30"),
+            new KeyDat<string, string>("NFT", "+11:30"),
+            new KeyDat<string, string>("NPT", "+05:45"),
+            new KeyDat<string, string>("NST", "-03:30"),
+            new KeyDat<string, string>("NT", "-03:30"),
+            new KeyDat<string, string>("OMST", "+06:00"),
+            new KeyDat<string, string>("PDT", "-07:00"),
+            new KeyDat<string, string>("PETT", "+12:00"),
+            new KeyDat<string, string>("PHOT", "+13:00"),
+            new KeyDat<string, string>("PKT", "+05:00"),
+            new KeyDat<string, string>("PST", "-08:00"),
+            new KeyDat<string, string>("PST", "+08:00"),
+            new KeyDat<string, string>("RET", "+04:00"),
+            new KeyDat<string, string>("SAMT", "+04:00"),
+            new KeyDat<string, string>("SAST", "+02:00"),
+            new KeyDat<string, string>("SBT", "+11:00"),
+            new KeyDat<string, string>("SCT", "+04:00"),
+            new KeyDat<string, string>("SLT", "+05:30"),
+            new KeyDat<string, string>("SST", "-11:00"),
+            new KeyDat<string, string>("SST", "+08:00"),
+            new KeyDat<string, string>("TAHT", "-10:00"),
+            new KeyDat<string, string>("THA", "+07:00"),
+            new KeyDat<string, string>("UTC", "+00:00"),
+            new KeyDat<string, string>("UYST", "-02:00"),
+            new KeyDat<string, string>("UYT", "-03:00"),
+            new KeyDat<string, string>("VET", "-04:30"),
+            new KeyDat<string, string>("VLAT", "+10:00"),
+            new KeyDat<string, string>("WAT", "+01:00"),
+            new KeyDat<string, string>("WEDT", "+01:00"),
+            new KeyDat<string, string>("WEST", "+01:00"),
+            new KeyDat<string, string>("WET", "+00:00"),
+            new KeyDat<string, string>("YAKT", "+09:00"),
+            new KeyDat<string, string>("YEKT", "+05:00") };
+
+        public static string NormalizeDateTimeStr(string dateTime)
+        {
+            ThrowException(dateTime == null ? new ArgumentNullException("dateTime") : null);
+            dateTime = dateTime.Trim();
+            foreach (KeyDat<string, string> timeZone in mTimeZones)
+            {
+                if (dateTime.EndsWith(" " + timeZone.Key)) { dateTime = dateTime.Replace(timeZone.Key, timeZone.Dat); break; }
+            }
+            DateTime dt;
+            try
+            {
+                dt = DateTime.Parse(dateTime);
+            }
+            catch
+            {
+                return null;
+            }
+            return dt.ToString(DATE_TIME_SIMPLE);
+        }
+
+        public static string Trunc(string str, int len)
+        {
+            //ThrowException(str == null ? new ArgumentNullException("str") : null); // *** nulls are allowed
+            ThrowException(len < 0 ? new ArgumentOutOfRangeException("len") : null);
+            return (str != null && str.Length > len) ? str.Substring(0, len) : str;
+        }
+
+        public static string MakeOneLine(string str)
+        {
+            return MakeOneLine(str, /*compact=*/false);
+        }
+
+        public static string MakeOneLine(string str, bool compact)
+        {
+            //ThrowException(str == null ? new ArgumentNullException("str") : null); // *** nulls are allowed
+            if (str == null) { return null; }
+            str = str.Replace("\r", "").Replace('\n', ' ').Trim();
+            if (compact)
+            { 
+                str = Regex.Replace(str, @"\s\s+", " ");
+            }
+            return str;
+        }
+
         public static string XmlReadValue(XmlReader reader, string attrName)
         {
-            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            Utils.ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
+            ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
             if (reader.IsEmptyElement) { return ""; }
             string text = "";
             while (reader.Read() && reader.NodeType != XmlNodeType.Text && reader.NodeType != XmlNodeType.CDATA && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) ;
@@ -362,8 +535,8 @@ namespace Latino
 
         public static void XmlSkip(XmlReader reader, string attrName)
         {
-            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
-            Utils.ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
+            ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
             if (reader.IsEmptyElement) { return; }
             while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) ;
         }

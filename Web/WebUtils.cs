@@ -33,10 +33,23 @@ namespace Latino.Web
 
         private static IWebProxy mWebProxy
             = WebRequest.DefaultWebProxy;
+        private static string mJsintProxyUrl
+            = null;
 
         public static void UseDefaultWebProxy()
         {
             mWebProxy = WebRequest.DefaultWebProxy;
+        }
+
+        public static string JsintProxyUrl
+        { 
+            get { return mJsintProxyUrl; }
+            set 
+            {
+                Utils.ThrowException((value != null && !Uri.IsWellFormedUriString(value, UriKind.Absolute)) ? new ArgumentValueException("JsintProxyUrl") : null);
+                Utils.ThrowException((value != null && Array.IndexOf(new string[] { "http", "https" }, new Uri(value).Scheme) < 0) ? new ArgumentValueException("JsintProxyUrl") : null);
+                mJsintProxyUrl = value; 
+            }
         }
 
         public static void SetWebProxy(string url)
@@ -61,14 +74,14 @@ namespace Latino.Web
 
         public static string GetWebPage(string url)
         {
-            CookieContainer dummy = null;
-            return GetWebPage(url, /*refUrl=*/null, ref dummy, Encoding.UTF8); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
+            CookieContainer cookies = null;
+            return GetWebPage(url, /*refUrl=*/null, ref cookies, Encoding.UTF8); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
         }
 
         public static string GetWebPage(string url, string refUrl)
         {
-            CookieContainer dummy = null;
-            return GetWebPage(url, refUrl, ref dummy, Encoding.UTF8); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
+            CookieContainer cookies = null;
+            return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
         }
 
         public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies)
@@ -155,6 +168,21 @@ namespace Latino.Web
                 }
             }
             return html;
+        }
+
+        // *** jsint support ***
+
+        public static string GetWebPageJsint(string url)
+        {
+            if (mJsintProxyUrl == null)
+            {
+                return GetWebPageDetectEncoding(url); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException  
+            }
+            else
+            {
+                string jsintUrl = mJsintProxyUrl + (mJsintProxyUrl.Contains("?") ? "&t=" : "?t=") + url;
+                return GetWebPage(jsintUrl); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
+            }
         }
 
         // *** search query normalization ***

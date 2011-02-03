@@ -6,7 +6,7 @@
  *  Desc:	 SVM^light and SVM^multiclass C# wrapper
  *  Created: Aug-2007
  * 
- *  Author:  Miha Grcar 
+ *  Authors: Miha Grcar 
  * 
  ***************************************************************************/
 

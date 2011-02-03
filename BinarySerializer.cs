@@ -105,6 +105,16 @@ namespace Latino
             return (byte)val;
         }
 
+        public byte[] ReadBytes(int sz) 
+        {
+            Utils.ThrowException(sz < 0 ? new ArgumentOutOfRangeException("sz") : null);
+            if (sz == 0) { return new byte[0]; }
+            byte[] buffer = new byte[sz];
+            int numBytes = mStream.Read(buffer, 0, sz); // throws IOException, NotSupportedException, ObjectDisposedException
+            Utils.ThrowException(numBytes < sz ? new EndOfStreamException() : null);
+            return buffer;
+        }
+
         public sbyte ReadSByte()
         {
             return (sbyte)ReadByte();
@@ -261,6 +271,17 @@ namespace Latino
                 ConstructorInfo ctor = type.GetConstructor(new Type[] { typeof(BinarySerializer) });
                 Utils.ThrowException(ctor == null ? new ArgumentNotSupportedException("type") : null);
                 return (ValueType)ctor.Invoke(new object[] { this }); // throws MemberAccessException, MethodAccessException, TargetInvocationException, NotSupportedException, SecurityException
+            }
+            else if (!type.IsEnum)
+            {
+                // deserialize struct 
+                int objSize = Marshal.SizeOf(type);
+                IntPtr buff = Marshal.AllocHGlobal(objSize);
+                byte[] data = ReadBytes(objSize);
+                Marshal.Copy(data, /*startIndex=*/0, buff, objSize);
+                ValueType retStruct = (ValueType)Marshal.PtrToStructure(buff, type);
+                Marshal.FreeHGlobal(buff);
+                return retStruct;
             }
             else
             {
@@ -491,6 +512,17 @@ namespace Latino
             else if (val is ISerializable)
             {
                 ((ISerializable)val).Save(this); // throws serialization-related exceptions
+            }
+            else if (!val.GetType().IsEnum)
+            {
+                // serialize struct             
+                int objSize = Marshal.SizeOf(val.GetType());
+                byte[] bytes = new byte[objSize];
+                IntPtr buff = Marshal.AllocHGlobal(objSize);
+                Marshal.StructureToPtr(val, buff, /*fDeleteOld=*/true);
+                Marshal.Copy(buff, bytes, /*startIndex=*/0, objSize);
+                Marshal.FreeHGlobal(buff);
+                Write(bytes);
             }
             else
             {
