@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    UnlabeledDataset.cs
- *  Desc:    Dataset for clustering
+ *  Desc:    Unlabeled dataset (for clustering)
  *  Created: Nov-2009
  *
  *  Authors: Miha Grcar
@@ -145,10 +145,6 @@ namespace Latino.Model
             {
                 newDataset = new UnlabeledDataset<BinaryVector<int>.ReadOnly>(tmp);
             }
-            //else if (newExType == typeof(SvmFeatureVector))
-            //{
-            //    newDataset = new UnlabeledDataset<SvmFeatureVector>(tmp);
-            //}
             else
             {
                 throw new ArgumentNotSupportedException("newExType");

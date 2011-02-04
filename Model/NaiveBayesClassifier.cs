@@ -162,13 +162,16 @@ namespace Latino.Model
 
         public void Train(ILabeledExampleCollection<LblT> dataset)
         {
-            // ...
+            Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly>)dataset); // throws ... ?
         }
 
         public Prediction<LblT> Predict(object example)
         {
-            // ...
-            return null;
+            Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
+            Utils.ThrowException(!(example is BinaryVector<int>.ReadOnly) ? new ArgumentTypeException("example") : null);
+            return Predict((BinaryVector<int>.ReadOnly)example); // throws ... ?
         }
 
         // *** ISerializable interface implementation ***

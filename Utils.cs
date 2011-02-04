@@ -519,7 +519,7 @@ namespace Latino
             ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
             if (reader.IsEmptyElement) { return ""; }
             string text = "";
-            while (reader.Read() && reader.NodeType != XmlNodeType.Text && reader.NodeType != XmlNodeType.CDATA && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) ;
+            while (reader.Read() && reader.NodeType != XmlNodeType.Text && reader.NodeType != XmlNodeType.CDATA && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) { }
             if (reader.NodeType == XmlNodeType.Text)
             {
                 text = HttpUtility.HtmlDecode(reader.Value);
@@ -538,7 +538,35 @@ namespace Latino
             ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
             if (reader.IsEmptyElement) { return; }
-            while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) ;
+            while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) { }
+        }
+
+        public static string GetManifestResourceString(Type type, string resName)
+        {
+            Utils.ThrowException(type == null ? new ArgumentNullException("type") : null);
+            Utils.ThrowException(resName == null ? new ArgumentNullException("resName") : null);
+            foreach (string res in type.Assembly.GetManifestResourceNames())
+            {
+                if (res.EndsWith(resName))
+                {
+                    return new StreamReader(type.Assembly.GetManifestResourceStream(res)).ReadToEnd();
+                }
+            }
+            return null;
+        }
+
+        public static Stream GetManifestResourceStream(Type type, string resName)
+        {
+            Utils.ThrowException(type == null ? new ArgumentNullException("type") : null);
+            Utils.ThrowException(resName == null ? new ArgumentNullException("resName") : null);
+            foreach (string res in type.Assembly.GetManifestResourceNames())
+            {
+                if (res.EndsWith(resName))
+                {
+                    return type.Assembly.GetManifestResourceStream(res);
+                }
+            }
+            return null;
         }
 
         // *** Delegates ***

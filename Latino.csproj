@@ -52,6 +52,7 @@
     <Compile Include="BinaryVector.cs" />
     <Compile Include="Misc\StopWatch.cs" />
     <Compile Include="Model\CentroidData.cs" />
+    <Compile Include="Model\SvmBinary.cs" />
     <Compile Include="Model\MajorityClassifier.cs" />
     <Compile Include="Model\MaximumEntropyClassifierFast.cs" />
     <Compile Include="Model\KnnClassifierFast.cs" />

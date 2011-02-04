@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://latino.sf.net
  *
  *  File:    LabeledDataset.cs
- *  Desc:    Dataset for training ML models
+ *  Desc:    Labeled dataset (for building ML models)
  *  Created: Aug-2007
  *
  *  Authors: Miha Grcar
@@ -190,10 +190,6 @@ namespace Latino.Model
             {
                 newDataset = new LabeledDataset<LblT, BinaryVector<int>.ReadOnly>(tmp);
             }
-            //else if (newExType == typeof(SvmFeatureVector))
-            //{
-            //    newDataset = new LabeledDataset<LblT, SvmFeatureVector>(tmp);
-            //}
             else
             {
                 throw new ArgumentNotSupportedException("newExType");
