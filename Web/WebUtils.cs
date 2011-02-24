@@ -15,6 +15,8 @@ using System.Net;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Threading;
+using System.Web;
 
 namespace Latino.Web
 {
@@ -24,6 +26,7 @@ namespace Latino.Web
        |
        '-----------------------------------------------------------------------
     */
+    // TODO: remove jsint support 
     public static class WebUtils
     {
         // *** fetching Web pages ***
@@ -35,8 +38,12 @@ namespace Latino.Web
             = WebRequest.DefaultWebProxy;
         private static string mJsintProxyUrl
             = null;
-        private static int mTimeout
+        private static int mDefaultTimeout
             = 100000;
+        private static int mNumRetries
+            = 1;
+        private static int mWaitBetweenRetries
+            = 5000;
 
         public static void UseDefaultWebProxy()
         {
@@ -74,32 +81,51 @@ namespace Latino.Web
             else { return proxyUrl; }
         }
 
-
-        public static int Timeout
+        public static int DefaultTimeout
         {
-            get { return mTimeout; }
+            get { return mDefaultTimeout; }
             set
             {
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("Timeout") : null);
-                mTimeout = value;
+                mDefaultTimeout = value;
+            }
+        }
+
+        public static int NumRetries
+        {
+            get { return mNumRetries; }
+            set
+            {
+                Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("mNumRetries") : null);
+                mNumRetries = value;
+            }
+        }
+
+        public static int WaitBetweenRetries
+        {
+            get { return mWaitBetweenRetries; }
+            set
+            {
+                Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("WaitBetweenRetries") : null);
+                mWaitBetweenRetries = value;
             }
         }
 
         public static string GetWebPage(string url)
         {
             CookieContainer cookies = null;
-            return GetWebPage(url, /*refUrl=*/null, ref cookies, Encoding.UTF8, mTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
+            return GetWebPage(url, /*refUrl=*/null, ref cookies, Encoding.UTF8, mDefaultTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
         }
 
         public static string GetWebPage(string url, string refUrl)
         {
             CookieContainer cookies = null;
-            return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8, mTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
+            return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8, mDefaultTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
         }
 
         public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies)
         {
-            return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8, mTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
+            return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8, mDefaultTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
         }
 
         public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies, Encoding htmlEncoding, int timeout) 
@@ -109,19 +135,34 @@ namespace Latino.Web
             Utils.ThrowException(Array.IndexOf(new string[] { "http", "https" }, new Uri(url).Scheme) < 0 ? new ArgumentValueException("url") : null);
             Utils.ThrowException(htmlEncoding == null ? new ArgumentNullException("htmlEncoding") : null);
             Utils.ThrowException(timeout <= 0 ? new ArgumentOutOfRangeException("timeout") : null);
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url); // throws UriFormatException
-            request.Timeout = timeout;
-            request.Proxy = mWebProxy;
-            request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6";
-            request.Accept = "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,*/*;q=0.5";
-            request.Headers.Add("Accept-Language", "en-us,en;q=0.5");
-            request.Headers.Add("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
-            if (cookies == null) { cookies = new CookieContainer(); }
-            request.CookieContainer = cookies; 
-            if (refUrl != null) { request.Referer = refUrl; }
-            StreamReader responseReader;
-            string pageHtml = (responseReader = new StreamReader(((HttpWebResponse)request.GetResponse()).GetResponseStream(), htmlEncoding)).ReadToEnd(); // throws WebException
-            responseReader.Close();
+            string pageHtml;
+            int numRetries = 0;
+            while (true)
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url); // throws UriFormatException
+                request.Timeout = timeout;
+                request.Proxy = mWebProxy;
+                request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6";
+                request.Accept = "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,*/*;q=0.5";
+                request.Headers.Add("Accept-Language", "en-us,en;q=0.5");
+                request.Headers.Add("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
+                if (cookies == null) { cookies = new CookieContainer(); }
+                request.CookieContainer = cookies;
+                if (refUrl != null) { request.Referer = refUrl; }
+                StreamReader responseReader;
+                try
+                {
+                    pageHtml = (responseReader = new StreamReader(((HttpWebResponse)request.GetResponse()).GetResponseStream(), htmlEncoding)).ReadToEnd(); // throws WebException
+                    responseReader.Close();
+                    break; 
+                }
+                catch (WebException e)
+                {
+                    numRetries++;
+                    if (numRetries > mNumRetries) { throw e; }
+                    Thread.Sleep(mWaitBetweenRetries);
+                }
+            } 
             return pageHtml;
         }
 
@@ -129,28 +170,28 @@ namespace Latino.Web
         {
             CookieContainer foo = null;
             bool bar;
-            return GetWebPageDetectEncoding(url, Encoding.UTF8, /*refUrl=*/null, ref foo, out bar, mTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException  
+            return GetWebPageDetectEncoding(url, Encoding.UTF8, /*refUrl=*/null, ref foo, out bar, mDefaultTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException  
         }
 
         public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding)
         {
             CookieContainer foo = null;
             bool bar;
-            return GetWebPageDetectEncoding(url, defaultEncoding, /*refUrl=*/null, ref foo, out bar, mTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException  
+            return GetWebPageDetectEncoding(url, defaultEncoding, /*refUrl=*/null, ref foo, out bar, mDefaultTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException  
         }
 
         public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding, string refUrl)
         {
             CookieContainer foo = null;
             bool bar;
-            return GetWebPageDetectEncoding(url, defaultEncoding, refUrl, ref foo, out bar, mTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException  
+            return GetWebPageDetectEncoding(url, defaultEncoding, refUrl, ref foo, out bar, mDefaultTimeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException  
         }
 
         public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding, string refUrl, ref CookieContainer cookies, out bool success, int timeout) 
         {
             Utils.ThrowException(defaultEncoding == null ? new ArgumentNullException("defaultEncoding") : null);
-            Encoding extAscii = Encoding.GetEncoding("ISO-8859-1");
-            string html = GetWebPage(url, refUrl, ref cookies, extAscii, timeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException, ArgumentOutOfRangeException
+            Encoding extAsciiEnc = Encoding.GetEncoding("ISO-8859-1");
+            string html = GetWebPage(url, refUrl, ref cookies, extAsciiEnc, timeout); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException, ArgumentOutOfRangeException
             // try to get encoding info from HTML
             success = false;
             Match match = mCharsetRegex.Match(html);
@@ -159,26 +200,25 @@ namespace Latino.Web
                 string encStr = match.Result("${enc}");          
                 try
                 {
-                    byte[] bytes = extAscii.GetBytes(html);
+                    byte[] bytes = extAsciiEnc.GetBytes(html);
                     Encoding enc = Encoding.GetEncoding(encStr);                    
                     html = enc.GetString(bytes);
-                    //Console.WriteLine(encStr);
                     success = true;
                 }
                 catch 
                 {
-                    if (defaultEncoding != extAscii)
+                    if (defaultEncoding != extAsciiEnc)
                     {
-                        byte[] bytes = extAscii.GetBytes(html);
+                        byte[] bytes = extAsciiEnc.GetBytes(html);
                         html = defaultEncoding.GetString(bytes);
                     }
                 }
             }
             else 
             {
-                if (defaultEncoding != extAscii)
+                if (defaultEncoding != extAsciiEnc)
                 {
-                    byte[] bytes = extAscii.GetBytes(html);
+                    byte[] bytes = extAsciiEnc.GetBytes(html);
                     html = defaultEncoding.GetString(bytes);
                 }
             }
@@ -195,7 +235,7 @@ namespace Latino.Web
             }
             else
             {
-                string jsintUrl = mJsintProxyUrl + (mJsintProxyUrl.Contains("?") ? "&t=" : "?t=") + url;
+                string jsintUrl = mJsintProxyUrl + (mJsintProxyUrl.Contains("?") ? "&t=" : "?t=") + HttpUtility.UrlEncode(url);
                 return GetWebPage(jsintUrl); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
             }
         }
