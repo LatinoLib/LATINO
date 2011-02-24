@@ -60,6 +60,7 @@
     <Compile Include="Model\SvmLightLib.cs" />
     <Compile Include="Model\SvmMulticlassFast.cs" />
     <Compile Include="Persistance\DatabaseConnection.cs" />
+    <Compile Include="TextMining\BoilerplateRemover.cs" />
     <Compile Include="TextMining\CustomStemmer.cs" />
     <Compile Include="TextMining\HtmlTokenizer.cs" />
     <Compile Include="TextMining\SimHash.cs" />
@@ -256,24 +257,28 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Bulgarian.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Czech.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Danish.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Dutch.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\English.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Estonian.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Finnish.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\French.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\German.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Hungarian.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Italian.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Portuguese.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Romanian.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Russian.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Serbian.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Slovene.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Spanish.ldp" />
-    <EmbeddedResource Include="TextMining\LanguageDetectorModels\Swedish.ldp" />
+    <EmbeddedResource Include="Resources\BoilerplateRemover\2ClassAllFeatures.tree" />
+    <EmbeddedResource Include="Resources\BoilerplateRemover\6ClassAllFeatures.tree" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LanguageDetector\Bulgarian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Czech.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Danish.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Dutch.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\English.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Estonian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Finnish.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\French.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\German.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Hungarian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Italian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Portuguese.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Romanian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Russian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Serbian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Slovene.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Spanish.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Swedish.ldp" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
