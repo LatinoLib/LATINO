@@ -31,7 +31,7 @@ namespace Latino.TextMining
         private ArrayList<LanguageProfile> languageProfiles;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(LanguageDetector).ToString());
+            = Logger.GetLogger(typeof(LanguageDetector));
 
         public LanguageDetector(int n)
         {

@@ -33,7 +33,7 @@ namespace Latino.Experimental.Model
             = null;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(IncrementalKMeans).ToString());
+            = Logger.GetLogger(typeof(IncrementalKMeans));
 
         public IncrementalKMeans(int k)
         {

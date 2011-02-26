@@ -29,7 +29,7 @@ namespace Latino.Model
         private int mK;
         
         private static Logger mLogger
-            = Logger.GetLogger(typeof(KMeans).ToString());
+            = Logger.GetLogger(typeof(KMeans));
 
         public KMeans(int k)
         {

@@ -178,7 +178,7 @@ namespace Latino.TextMining
             = false;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(BowSpace).ToString());
+            = Logger.GetLogger(typeof(BowSpace));
 
         public BowSpace()
         {

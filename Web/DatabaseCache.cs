@@ -37,7 +37,7 @@ namespace Latino.Web
             = WebUtils.NormalizeQuery;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(DatabaseCache).ToString());
+            = Logger.GetLogger(typeof(DatabaseCache));
 
         public DatabaseCache(string connectionString, string username, string password, string database, string server)
 		{

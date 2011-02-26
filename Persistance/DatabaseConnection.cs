@@ -58,7 +58,7 @@ namespace Latino.Persistance
             = "(local)";
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(DatabaseConnection).ToString());
+            = Logger.GetLogger(typeof(DatabaseConnection));
 
         public string ConnectionString
         {

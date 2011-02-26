@@ -25,7 +25,7 @@ namespace Latino.Model
             = 1;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(KMeansFast).ToString());
+            = Logger.GetLogger(typeof(KMeansFast));
 
         public KMeansFast(int k)
         {

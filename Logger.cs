@@ -147,6 +147,12 @@ namespace Latino
             return mRoot.mLogger;
         }
 
+        public static Logger GetLogger(Type type)
+        {
+            if (type == null) { return mRoot.mLogger; }
+            return GetLogger(type.ToString());
+        }
+
         public static Logger GetLogger(string name)
         {
             if (name == null) { return mRoot.mLogger; }

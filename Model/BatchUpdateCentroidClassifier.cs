@@ -37,7 +37,7 @@ namespace Latino.Model
             = null;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(BatchUpdateCentroidClassifier<LblT>).ToString());
+            = Logger.GetLogger(typeof(BatchUpdateCentroidClassifier<LblT>));
 
         public BatchUpdateCentroidClassifier()
         {

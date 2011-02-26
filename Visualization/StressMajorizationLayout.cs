@@ -34,7 +34,7 @@ namespace Latino.Visualization
         private IDistance<int> mDistFunc;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(StressMajorizationLayout).ToString());
+            = Logger.GetLogger(typeof(StressMajorizationLayout));
 
         public StressMajorizationLayout(int numPoints, IDistance<int> distFunc)
         {

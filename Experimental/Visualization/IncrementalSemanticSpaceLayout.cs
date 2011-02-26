@@ -52,7 +52,7 @@ namespace Latino.Experimental.Visualization
             = null;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(IncrementalSemanticSpaceLayout).ToString());
+            = Logger.GetLogger(typeof(IncrementalSemanticSpaceLayout));
 
         public IncrementalSemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {

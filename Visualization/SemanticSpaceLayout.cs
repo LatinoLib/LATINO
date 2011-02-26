@@ -37,7 +37,7 @@ namespace Latino.Visualization
             = 10;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(SemanticSpaceLayout).ToString());
+            = Logger.GetLogger(typeof(SemanticSpaceLayout));
 
         public SemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {

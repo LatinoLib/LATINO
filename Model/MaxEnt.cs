@@ -27,7 +27,7 @@ namespace Latino.Model
     internal static class MaxEnt
     {
         private static Logger mLogger
-            = Logger.GetLogger(typeof(MaxEnt).ToString());
+            = Logger.GetLogger(typeof(MaxEnt));
 
         private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idxToLbl)
         {

@@ -64,7 +64,7 @@ namespace Latino.Experimental.TextMining
             = 500;
 
         private static Logger mLogger
-            = Logger.GetLogger(typeof(IncrementalBowSpace).ToString());
+            = Logger.GetLogger(typeof(IncrementalBowSpace));
 
         public IncrementalBowSpace()
         {
