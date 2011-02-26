@@ -36,6 +36,9 @@ namespace Latino.Visualization
         private int mKNN
             = 10;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(SemanticSpaceLayout).ToString());
+
         public SemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
@@ -103,7 +106,7 @@ namespace Latino.Visualization
         {
             UnlabeledDataset<SparseVector<double>.ReadOnly> dataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(mDataset);
             // clustering 
-            Utils.VerboseLine("Clustering ...");
+            mLogger.Info("ComputeLayout", "Clustering ...");
             KMeansFast kMeans = new KMeansFast(mKClust);
             kMeans.Eps = mKMeansEps;
             kMeans.Random = mRandom;
@@ -119,21 +122,21 @@ namespace Latino.Visualization
                 dataset.Add(centroid); // add centroids to the main dataset
             }
             // position reference instances
-            Utils.VerboseLine("Positioning reference instances ...");
+            mLogger.Info("ComputeLayout", "Positioning reference instances ...");
             SparseMatrix<double> simMtx = ModelUtils.GetDotProductSimilarity(dsRefInst, mSimThresh, /*fullMatrix=*/false);
             StressMajorizationLayout sm = new StressMajorizationLayout(dsRefInst.Count, new DistFunc(simMtx));
             sm.Random = mRandom;
             Vector2D[] centrPos = sm.ComputeLayout();
             // k-NN
-            Utils.VerboseLine("Computing similarities ...");
+            mLogger.Info("ComputeLayout", "Computing similarities ...");
             simMtx = ModelUtils.GetDotProductSimilarity(dataset, mSimThresh, /*fullMatrix=*/true);
-            Utils.VerboseLine("Constructing system of linear equations ...");
+            mLogger.Info("ComputeLayout", "Constructing system of linear equations ...");
             LabeledDataset<double, SparseVector<double>.ReadOnly> lsqrDs = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
             foreach (IdxDat<SparseVector<double>> simMtxRow in simMtx)
             {
                 if (simMtxRow.Dat.Count <= 1)
                 {
-                    Utils.VerboseLine("*** Warning: instance #{0} has no neighborhood.", simMtxRow.Idx);
+                    mLogger.Warn("ComputeLayout", "Instance #{0} has no neighborhood.", simMtxRow.Idx);
                 }
                 ArrayList<KeyDat<double, int>> knn = new ArrayList<KeyDat<double, int>>(simMtxRow.Dat.Count);
                 foreach (IdxDat<double> item in simMtxRow.Dat)

@@ -33,6 +33,9 @@ namespace Latino.Visualization
         private int mNumPoints;
         private IDistance<int> mDistFunc;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(StressMajorizationLayout).ToString());
+
         public StressMajorizationLayout(int numPoints, IDistance<int> distFunc)
         {
             Utils.ThrowException(numPoints <= 0 ? new ArgumentOutOfRangeException("numPoints") : null);
@@ -163,12 +166,12 @@ namespace Latino.Visualization
                 stressDiff = oldGlobalStress - globalStress;
                 if ((step - 1) % 100 == 0)
                 {
-                    Utils.VerboseLine("Global stress: {0:0.00} Diff: {1:0.0000}", globalStress, stressDiff);
+                    mLogger.Info("ComputeLayout", "Global stress: {0:0.00} Diff: {1:0.0000}", globalStress, stressDiff);
                 }
                 oldGlobalStress = globalStress;
                 if (stressDiff <= mMinDiff) { break; }
             }
-            Utils.VerboseLine("Final global stress: {0:0.00} Diff: {1:0.0000}", globalStress, stressDiff);
+            mLogger.Info("ComputeLayout", "Final global stress: {0:0.00} Diff: {1:0.0000}", globalStress, stressDiff);
             return settings.AdjustLayout(layout);
         }
     }

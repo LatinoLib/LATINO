@@ -63,6 +63,9 @@ namespace Latino.Experimental.TextMining
         private int mWordFormUpdate
             = 500;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(IncrementalBowSpace).ToString());
+
         public IncrementalBowSpace()
         {
             // configure tokenizer
@@ -279,12 +282,12 @@ namespace Latino.Experimental.TextMining
             mIdxInfo.Clear();
             mTfVectors.Clear();
             // build vocabulary
-            Utils.VerboseLine("Building vocabulary ...");
+            mLogger.Info("Initialize", "Building vocabulary ...");
             int docCount = 0;
             foreach (string document in documents)
             {
                 docCount++;
-                Utils.VerboseProgress("Document {0} ...", docCount);
+                Utils.VerboseProgress("Document {0} ...", docCount, /*numSteps=*/0);
                 Set<string> docWords = new Set<string>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 mTokenizer.Text = document;
@@ -334,7 +337,7 @@ namespace Latino.Experimental.TextMining
                 }
             }
             // compute bag-of-words vectors
-            Utils.VerboseLine("Computing bag-of-words vectors ...");           
+            mLogger.Info("Initialize", "Computing bag-of-words vectors ...");           
             int docNum = 1;
             foreach (string document in documents)
             {                

@@ -30,41 +30,188 @@ namespace Latino
     */
     public static class Utils
     {
+        public const string DATE_TIME_SIMPLE
+            = "yyyy-MM-dd HH:mm:ss K"; // simple date-time format (incl. time zone, if available)
+        #region mTimeZones
+        private static KeyDat<string, string>[] mTimeZones = new KeyDat<string, string>[] {
+            new KeyDat<string, string>("ACDT", "+10:30"),
+            new KeyDat<string, string>("ACST", "+09:30"),
+            new KeyDat<string, string>("ACT", "+08:00"),
+            new KeyDat<string, string>("ADT", "-03:00"),
+            new KeyDat<string, string>("AEDT", "+11:00"),
+            new KeyDat<string, string>("AEST", "+10:00"),
+            new KeyDat<string, string>("AFT", "+04:30"),
+            new KeyDat<string, string>("AKDT", "-08:00"),
+            new KeyDat<string, string>("AKST", "-09:00"),
+            new KeyDat<string, string>("AMST", "+05:00"),
+            new KeyDat<string, string>("AMT", "+04:00"),
+            new KeyDat<string, string>("ART", "-03:00"),
+            new KeyDat<string, string>("AST", "+03:00"),
+            new KeyDat<string, string>("AST", "+04:00"),
+            new KeyDat<string, string>("AST", "+03:00"),
+            new KeyDat<string, string>("AST", "-04:00"),
+            new KeyDat<string, string>("AWDT", "+09:00"),
+            new KeyDat<string, string>("AWST", "+08:00"),
+            new KeyDat<string, string>("AZOST", "-01:00"),
+            new KeyDat<string, string>("AZT", "+04:00"),
+            new KeyDat<string, string>("BDT", "+08:00"),
+            new KeyDat<string, string>("BIOT", "+06:00"),
+            new KeyDat<string, string>("BIT", "-12:00"),
+            new KeyDat<string, string>("BOT", "-04:00"),
+            new KeyDat<string, string>("BRT", "-03:00"),
+            new KeyDat<string, string>("BST", "+06:00"),
+            new KeyDat<string, string>("BST", "+01:00"),
+            new KeyDat<string, string>("BTT", "+06:00"),
+            new KeyDat<string, string>("CAT", "+02:00"),
+            new KeyDat<string, string>("CCT", "+06:30"),
+            new KeyDat<string, string>("CDT", "-05:00"),
+            new KeyDat<string, string>("CEDT", "+02:00"),
+            new KeyDat<string, string>("CEST", "+02:00"),
+            new KeyDat<string, string>("CET", "+01:00"),
+            new KeyDat<string, string>("CHAST", "+12:45"),
+            new KeyDat<string, string>("CIST", "-08:00"),
+            new KeyDat<string, string>("CKT", "-10:00"),
+            new KeyDat<string, string>("CLST", "-03:00"),
+            new KeyDat<string, string>("CLT", "-04:00"),
+            new KeyDat<string, string>("COST", "-04:00"),
+            new KeyDat<string, string>("COT", "-05:00"),
+            new KeyDat<string, string>("CST", "-06:00"),
+            new KeyDat<string, string>("CST", "+08:00"),
+            new KeyDat<string, string>("CVT", "-01:00"),
+            new KeyDat<string, string>("CXT", "+07:00"),
+            new KeyDat<string, string>("ChST", "+10:00"),
+            new KeyDat<string, string>("DFT", "+01:00"),
+            new KeyDat<string, string>("EAST", "-06:00"),
+            new KeyDat<string, string>("EAT", "+03:00"),
+            new KeyDat<string, string>("ECT", "-04:00"),
+            new KeyDat<string, string>("ECT", "-05:00"),
+            new KeyDat<string, string>("EDT", "-04:00"),
+            new KeyDat<string, string>("EEDT", "+03:00"),
+            new KeyDat<string, string>("EEST", "+03:00"),
+            new KeyDat<string, string>("EET", "+02:00"),
+            new KeyDat<string, string>("EST", "-05:00"),
+            new KeyDat<string, string>("FJT", "+12:00"),
+            new KeyDat<string, string>("FKST", "-03:00"),
+            new KeyDat<string, string>("FKT", "-04:00"),
+            new KeyDat<string, string>("GALT", "-06:00"),
+            new KeyDat<string, string>("GET", "+04:00"),
+            new KeyDat<string, string>("GFT", "-03:00"),
+            new KeyDat<string, string>("GILT", "+12:00"),
+            new KeyDat<string, string>("GIT", "-09:00"),
+            new KeyDat<string, string>("GMT", "+00:00"),
+            new KeyDat<string, string>("GST", "-02:00"),
+            new KeyDat<string, string>("GYT", "-04:00"),
+            new KeyDat<string, string>("HADT", "-09:00"),
+            new KeyDat<string, string>("HAST", "-10:00"),
+            new KeyDat<string, string>("HKT", "+08:00"),
+            new KeyDat<string, string>("HMT", "+05:00"),
+            new KeyDat<string, string>("HST", "-10:00"),
+            new KeyDat<string, string>("IRKT", "+08:00"),
+            new KeyDat<string, string>("IRST", "+03:30"),
+            new KeyDat<string, string>("IST", "+05:30"),
+            new KeyDat<string, string>("IST", "+01:00"),
+            new KeyDat<string, string>("IST", "+02:00"),
+            new KeyDat<string, string>("JST", "+09:00"),
+            new KeyDat<string, string>("KRAT", "+07:00"),
+            new KeyDat<string, string>("KST", "+09:00"),
+            new KeyDat<string, string>("LHST", "+10:30"),
+            new KeyDat<string, string>("LINT", "+14:00"),
+            new KeyDat<string, string>("MAGT", "+11:00"),
+            new KeyDat<string, string>("MDT", "-06:00"),
+            new KeyDat<string, string>("MIT", "-09:30"),
+            new KeyDat<string, string>("MSD", "+04:00"),
+            new KeyDat<string, string>("MSK", "+03:00"),
+            new KeyDat<string, string>("MST", "+08:00"),
+            new KeyDat<string, string>("MST", "-07:00"),
+            new KeyDat<string, string>("MST", "+06:30"),
+            new KeyDat<string, string>("MUT", "+04:00"),
+            new KeyDat<string, string>("NDT", "-02:30"),
+            new KeyDat<string, string>("NFT", "+11:30"),
+            new KeyDat<string, string>("NPT", "+05:45"),
+            new KeyDat<string, string>("NST", "-03:30"),
+            new KeyDat<string, string>("NT", "-03:30"),
+            new KeyDat<string, string>("OMST", "+06:00"),
+            new KeyDat<string, string>("PDT", "-07:00"),
+            new KeyDat<string, string>("PETT", "+12:00"),
+            new KeyDat<string, string>("PHOT", "+13:00"),
+            new KeyDat<string, string>("PKT", "+05:00"),
+            new KeyDat<string, string>("PST", "-08:00"),
+            new KeyDat<string, string>("PST", "+08:00"),
+            new KeyDat<string, string>("RET", "+04:00"),
+            new KeyDat<string, string>("SAMT", "+04:00"),
+            new KeyDat<string, string>("SAST", "+02:00"),
+            new KeyDat<string, string>("SBT", "+11:00"),
+            new KeyDat<string, string>("SCT", "+04:00"),
+            new KeyDat<string, string>("SLT", "+05:30"),
+            new KeyDat<string, string>("SST", "-11:00"),
+            new KeyDat<string, string>("SST", "+08:00"),
+            new KeyDat<string, string>("TAHT", "-10:00"),
+            new KeyDat<string, string>("THA", "+07:00"),
+            new KeyDat<string, string>("UTC", "+00:00"),
+            new KeyDat<string, string>("UYST", "-02:00"),
+            new KeyDat<string, string>("UYT", "-03:00"),
+            new KeyDat<string, string>("VET", "-04:30"),
+            new KeyDat<string, string>("VLAT", "+10:00"),
+            new KeyDat<string, string>("WAT", "+01:00"),
+            new KeyDat<string, string>("WEDT", "+01:00"),
+            new KeyDat<string, string>("WEST", "+01:00"),
+            new KeyDat<string, string>("WET", "+00:00"),
+            new KeyDat<string, string>("YAKT", "+09:00"),
+            new KeyDat<string, string>("YEKT", "+05:00") };
+        #endregion
+
         private static bool mVerbose
             = true;
-        private static VerboseDelegate mVerboseProc
-            = new VerboseDelegate(DefaultVerbose);
-        private static VerboseDelegate mVerboseLineProc
-            = new VerboseDelegate(DefaultVerboseLine);
-        private static VerboseProgressDelegate mVerboseProgressProc
-            = new VerboseProgressDelegate(DefaultVerboseProgress);
+        //private static VerboseDelegate mVerboseProc
+        //    = new VerboseDelegate(DefaultVerbose);
+        //private static VerboseDelegate mVerboseLineProc
+        //    = new VerboseDelegate(DefaultVerboseLine);
 
-        public delegate void VerboseDelegate(string format, params object[] args);
-        public delegate void VerboseProgressDelegate(string format, int step, int numSteps);
+        //public delegate void VerboseDelegate(string format, params object[] args);
 
-        private static void DefaultVerbose(string format, params object[] args)
+        //private static void DefaultVerbose(string format, params object[] args)
+        //{
+        //    Console.Write(format, args); // throws ArgumentNullException, FormatException
+        //}
+
+        //private static void DefaultVerboseLine(string format, params object[] args)
+        //{
+        //    Console.WriteLine(format, args); // throws ArgumentNullException, FormatException
+        //}
+
+        //public static void Verbose(string format, params object[] args)
+        //{
+        //    if (mVerbose && mVerboseProc != null) { mVerboseProc(format, args); } 
+        //}
+
+        //public static void VerboseLine(string format, params object[] args)
+        //{
+        //    if (mVerbose && mVerboseLineProc != null) { mVerboseLineProc(format, args); } 
+        //}
+
+        //public static void VerboseLine()
+        //{
+        //    if (mVerbose && mVerboseLineProc != null) { mVerboseLineProc(""); } 
+        //}
+
+        public static void VerboseProgress(string format, int step, int numSteps)
         {
-            Console.Write(format, args); // throws ArgumentNullException, FormatException
+            VerboseProgress(format, step, numSteps, /*jump=*/100);
         }
 
-        private static void DefaultVerboseLine(string format, params object[] args)
-        {
-            Console.WriteLine(format, args); // throws ArgumentNullException, FormatException
-        }
-
-        private static void DefaultVerboseProgress(string format, int step, int numSteps)
+        public static void VerboseProgress(string format, int step, int numSteps, int jump)
         {
             ThrowException(step < 1 ? new ArgumentOutOfRangeException("step") : null);
             if (numSteps <= 0)
             {
-                if (mVerbose && step % 100 == 0)
+                if (mVerbose && step % jump == 0)
                 {
                     Console.Write("\r" + format, step); // throws ArgumentNullException, FormatException
                 }
             }
             else
             {
-                if (mVerbose && (step % 100 == 0 || step == numSteps))
+                if (mVerbose && (step % jump == 0 || step == numSteps))
                 {
                     Console.Write("\r" + format, step, numSteps); // throws ArgumentNullException, FormatException
                     if (step == numSteps) { Console.WriteLine(); }
@@ -72,54 +219,34 @@ namespace Latino
             }
         }
 
-        public static void Verbose(string format, params object[] args)
-        {
-            if (mVerbose && mVerboseProc != null) { mVerboseProc(format, args); } 
-        }
+        //public static void VerboseProgress(string format, int step)
+        //{
+        //    VerboseProgress(format, step, /*numSteps=*/-1);
+        //}
 
-        public static void VerboseLine(string format, params object[] args)
-        {
-            if (mVerbose && mVerboseLineProc != null) { mVerboseLineProc(format, args); } 
-        }
+        //public static bool VerboseEnabled
+        //{
+        //    get { return mVerbose; }
+        //    set { mVerbose = value; }
+        //}
 
-        public static void VerboseLine()
-        {
-            if (mVerbose && mVerboseLineProc != null) { mVerboseLineProc(""); } 
-        }
+        //public static VerboseDelegate VerboseFunc
+        //{
+        //    get { return mVerboseProc; }
+        //    set { mVerboseProc = value; }
+        //}
 
-        public static void VerboseProgress(string format, int step, int numSteps)
-        {
-            if (mVerbose && mVerboseProgressProc != null) { mVerboseProgressProc(format, step, numSteps); }
-        }
+        //public static VerboseDelegate VerboseLineFunc
+        //{
+        //    get { return mVerboseLineProc; }
+        //    set { mVerboseLineProc = value; }
+        //}
 
-        public static void VerboseProgress(string format, int step)
-        {
-            VerboseProgress(format, step, /*numSteps=*/-1);
-        }
-
-        public static bool VerboseEnabled
-        {
-            get { return mVerbose; }
-            set { mVerbose = value; }
-        }
-
-        public static VerboseDelegate VerboseFunc
-        {
-            get { return mVerboseProc; }
-            set { mVerboseProc = value; }
-        }
-
-        public static VerboseDelegate VerboseLineFunc
-        {
-            get { return mVerboseLineProc; }
-            set { mVerboseLineProc = value; }
-        }
-
-        public static VerboseProgressDelegate VerboseProgressFunc
-        {
-            get { return mVerboseProgressProc; }
-            set { mVerboseProgressProc = value; }
-        }
+        //public static VerboseProgressDelegate VerboseProgressFunc
+        //{
+        //    get { return mVerboseProgressProc; }
+        //    set { mVerboseProgressProc = value; }
+        //}
 
         [Conditional("THROW_EXCEPTIONS")]
         public static void ThrowException(Exception exception)
@@ -134,7 +261,7 @@ namespace Latino
 
         public static bool IsFiniteNumber(float val)
         {
-            return !double.IsInfinity(val) && !double.IsNaN(val);
+            return !float.IsInfinity(val) && !float.IsNaN(val);
         }
 
         public static bool VerifyFileNameCreate(string fileName)
@@ -185,13 +312,13 @@ namespace Latino
         {
             ThrowException(stream == null ? new ArgumentNullException("stream") : null);
             byte[] buffer = new byte[32768];
-            using (MemoryStream ms = new MemoryStream())
+            using (MemoryStream memStream = new MemoryStream())
             {
                 while (true)
                 {
                     int read = stream.Read(buffer, 0, buffer.Length); // throws IOException, ObjectDisposedException, NotSupportedException
-                    if (read <= 0) { return ms.ToArray(); }
-                    ms.Write(buffer, 0, read);
+                    if (read <= 0) { return memStream.ToArray(); }
+                    memStream.Write(buffer, 0, read);
                 }
             }
         }
@@ -341,146 +468,18 @@ namespace Latino
             return true;
         }
 
-        public const string DATE_TIME_SIMPLE
-            = "yyyy-MM-dd HH:mm:ss K"; // simple date-time format (incl. time zone, if available)
-        private static KeyDat<string, string>[] mTimeZones = new KeyDat<string, string>[] {
-            new KeyDat<string, string>("ACDT", "+10:30"),
-            new KeyDat<string, string>("ACST", "+09:30"),
-            new KeyDat<string, string>("ACT", "+08:00"),
-            new KeyDat<string, string>("ADT", "-03:00"),
-            new KeyDat<string, string>("AEDT", "+11:00"),
-            new KeyDat<string, string>("AEST", "+10:00"),
-            new KeyDat<string, string>("AFT", "+04:30"),
-            new KeyDat<string, string>("AKDT", "-08:00"),
-            new KeyDat<string, string>("AKST", "-09:00"),
-            new KeyDat<string, string>("AMST", "+05:00"),
-            new KeyDat<string, string>("AMT", "+04:00"),
-            new KeyDat<string, string>("ART", "-03:00"),
-            new KeyDat<string, string>("AST", "+03:00"),
-            new KeyDat<string, string>("AST", "+04:00"),
-            new KeyDat<string, string>("AST", "+03:00"),
-            new KeyDat<string, string>("AST", "-04:00"),
-            new KeyDat<string, string>("AWDT", "+09:00"),
-            new KeyDat<string, string>("AWST", "+08:00"),
-            new KeyDat<string, string>("AZOST", "-01:00"),
-            new KeyDat<string, string>("AZT", "+04:00"),
-            new KeyDat<string, string>("BDT", "+08:00"),
-            new KeyDat<string, string>("BIOT", "+06:00"),
-            new KeyDat<string, string>("BIT", "-12:00"),
-            new KeyDat<string, string>("BOT", "-04:00"),
-            new KeyDat<string, string>("BRT", "-03:00"),
-            new KeyDat<string, string>("BST", "+06:00"),
-            new KeyDat<string, string>("BST", "+01:00"),
-            new KeyDat<string, string>("BTT", "+06:00"),
-            new KeyDat<string, string>("CAT", "+02:00"),
-            new KeyDat<string, string>("CCT", "+06:30"),
-            new KeyDat<string, string>("CDT", "-05:00"),
-            new KeyDat<string, string>("CEDT", "+02:00"),
-            new KeyDat<string, string>("CEST", "+02:00"),
-            new KeyDat<string, string>("CET", "+01:00"),
-            new KeyDat<string, string>("CHAST", "+12:45"),
-            new KeyDat<string, string>("CIST", "-08:00"),
-            new KeyDat<string, string>("CKT", "-10:00"),
-            new KeyDat<string, string>("CLST", "-03:00"),
-            new KeyDat<string, string>("CLT", "-04:00"),
-            new KeyDat<string, string>("COST", "-04:00"),
-            new KeyDat<string, string>("COT", "-05:00"),
-            new KeyDat<string, string>("CST", "-06:00"),
-            new KeyDat<string, string>("CST", "+08:00"),
-            new KeyDat<string, string>("CVT", "-01:00"),
-            new KeyDat<string, string>("CXT", "+07:00"),
-            new KeyDat<string, string>("ChST", "+10:00"),
-            new KeyDat<string, string>("DFT", "+01:00"),
-            new KeyDat<string, string>("EAST", "-06:00"),
-            new KeyDat<string, string>("EAT", "+03:00"),
-            new KeyDat<string, string>("ECT", "-04:00"),
-            new KeyDat<string, string>("ECT", "-05:00"),
-            new KeyDat<string, string>("EDT", "-04:00"),
-            new KeyDat<string, string>("EEDT", "+03:00"),
-            new KeyDat<string, string>("EEST", "+03:00"),
-            new KeyDat<string, string>("EET", "+02:00"),
-            new KeyDat<string, string>("EST", "-05:00"),
-            new KeyDat<string, string>("FJT", "+12:00"),
-            new KeyDat<string, string>("FKST", "-03:00"),
-            new KeyDat<string, string>("FKT", "-04:00"),
-            new KeyDat<string, string>("GALT", "-06:00"),
-            new KeyDat<string, string>("GET", "+04:00"),
-            new KeyDat<string, string>("GFT", "-03:00"),
-            new KeyDat<string, string>("GILT", "+12:00"),
-            new KeyDat<string, string>("GIT", "-09:00"),
-            new KeyDat<string, string>("GMT", "+00:00"),
-            new KeyDat<string, string>("GST", "-02:00"),
-            new KeyDat<string, string>("GYT", "-04:00"),
-            new KeyDat<string, string>("HADT", "-09:00"),
-            new KeyDat<string, string>("HAST", "-10:00"),
-            new KeyDat<string, string>("HKT", "+08:00"),
-            new KeyDat<string, string>("HMT", "+05:00"),
-            new KeyDat<string, string>("HST", "-10:00"),
-            new KeyDat<string, string>("IRKT", "+08:00"),
-            new KeyDat<string, string>("IRST", "+03:30"),
-            new KeyDat<string, string>("IST", "+05:30"),
-            new KeyDat<string, string>("IST", "+01:00"),
-            new KeyDat<string, string>("IST", "+02:00"),
-            new KeyDat<string, string>("JST", "+09:00"),
-            new KeyDat<string, string>("KRAT", "+07:00"),
-            new KeyDat<string, string>("KST", "+09:00"),
-            new KeyDat<string, string>("LHST", "+10:30"),
-            new KeyDat<string, string>("LINT", "+14:00"),
-            new KeyDat<string, string>("MAGT", "+11:00"),
-            new KeyDat<string, string>("MDT", "-06:00"),
-            new KeyDat<string, string>("MIT", "-09:30"),
-            new KeyDat<string, string>("MSD", "+04:00"),
-            new KeyDat<string, string>("MSK", "+03:00"),
-            new KeyDat<string, string>("MST", "+08:00"),
-            new KeyDat<string, string>("MST", "-07:00"),
-            new KeyDat<string, string>("MST", "+06:30"),
-            new KeyDat<string, string>("MUT", "+04:00"),
-            new KeyDat<string, string>("NDT", "-02:30"),
-            new KeyDat<string, string>("NFT", "+11:30"),
-            new KeyDat<string, string>("NPT", "+05:45"),
-            new KeyDat<string, string>("NST", "-03:30"),
-            new KeyDat<string, string>("NT", "-03:30"),
-            new KeyDat<string, string>("OMST", "+06:00"),
-            new KeyDat<string, string>("PDT", "-07:00"),
-            new KeyDat<string, string>("PETT", "+12:00"),
-            new KeyDat<string, string>("PHOT", "+13:00"),
-            new KeyDat<string, string>("PKT", "+05:00"),
-            new KeyDat<string, string>("PST", "-08:00"),
-            new KeyDat<string, string>("PST", "+08:00"),
-            new KeyDat<string, string>("RET", "+04:00"),
-            new KeyDat<string, string>("SAMT", "+04:00"),
-            new KeyDat<string, string>("SAST", "+02:00"),
-            new KeyDat<string, string>("SBT", "+11:00"),
-            new KeyDat<string, string>("SCT", "+04:00"),
-            new KeyDat<string, string>("SLT", "+05:30"),
-            new KeyDat<string, string>("SST", "-11:00"),
-            new KeyDat<string, string>("SST", "+08:00"),
-            new KeyDat<string, string>("TAHT", "-10:00"),
-            new KeyDat<string, string>("THA", "+07:00"),
-            new KeyDat<string, string>("UTC", "+00:00"),
-            new KeyDat<string, string>("UYST", "-02:00"),
-            new KeyDat<string, string>("UYT", "-03:00"),
-            new KeyDat<string, string>("VET", "-04:30"),
-            new KeyDat<string, string>("VLAT", "+10:00"),
-            new KeyDat<string, string>("WAT", "+01:00"),
-            new KeyDat<string, string>("WEDT", "+01:00"),
-            new KeyDat<string, string>("WEST", "+01:00"),
-            new KeyDat<string, string>("WET", "+00:00"),
-            new KeyDat<string, string>("YAKT", "+09:00"),
-            new KeyDat<string, string>("YEKT", "+05:00") };
-
-        public static string NormalizeDateTimeStr(string dateTime)
+        public static string NormalizeDateTimeStr(string dateTimeStr)
         {
-            ThrowException(dateTime == null ? new ArgumentNullException("dateTime") : null);
-            dateTime = dateTime.Trim();
+            ThrowException(dateTimeStr == null ? new ArgumentNullException("dateTimeStr") : null);
+            dateTimeStr = dateTimeStr.Trim();
             foreach (KeyDat<string, string> timeZone in mTimeZones)
             {
-                if (dateTime.EndsWith(" " + timeZone.Key)) { dateTime = dateTime.Replace(timeZone.Key, timeZone.Dat); break; }
+                if (dateTimeStr.EndsWith(" " + timeZone.Key)) { dateTimeStr = dateTimeStr.Replace(timeZone.Key, timeZone.Dat); break; }
             }
             DateTime dt;
             try
             {
-                dt = DateTime.Parse(dateTime);
+                dt = DateTime.Parse(dateTimeStr);
             }
             catch
             {
@@ -491,19 +490,17 @@ namespace Latino
 
         public static string Trunc(string str, int len)
         {
-            //ThrowException(str == null ? new ArgumentNullException("str") : null); // *** nulls are allowed
             ThrowException(len < 0 ? new ArgumentOutOfRangeException("len") : null);
             return (str != null && str.Length > len) ? str.Substring(0, len) : str;
         }
 
-        public static string MakeOneLine(string str)
+        public static string ToOneLine(string str)
         {
-            return MakeOneLine(str, /*compact=*/false);
+            return ToOneLine(str, /*compact=*/false);
         }
 
-        public static string MakeOneLine(string str, bool compact)
+        public static string ToOneLine(string str, bool compact)
         {
-            //ThrowException(str == null ? new ArgumentNullException("str") : null); // *** nulls are allowed
             if (str == null) { return null; }
             str = str.Replace("\r", "").Replace('\n', ' ').Trim();
             if (compact)

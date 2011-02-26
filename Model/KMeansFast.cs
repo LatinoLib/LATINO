@@ -24,6 +24,9 @@ namespace Latino.Model
         private int mTrials
             = 1;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(KMeansFast).ToString());
+
         public KMeansFast(int k)
         {
             Utils.ThrowException(k < 2 ? new ArgumentOutOfRangeException("k") : null);
@@ -75,7 +78,7 @@ namespace Latino.Model
             double globalBestClustQual = 0;
             for (int trial = 1; trial <= mTrials; trial++)
             {
-                Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, mTrials);
+                mLogger.Info("Cluster", "Clustering trial {0} of {1} ...", trial, mTrials);
                 ArrayList<CentroidData> centroids = new ArrayList<CentroidData>(mK);
                 ArrayList<int> bestSeeds = null;
                 for (int i = 0; i < mK; i++)
@@ -130,6 +133,7 @@ namespace Latino.Model
                 while (true)
                 {
                     iter++;
+                    mLogger.Info("Cluster", "Iteration {0} ...", iter);
                     clustQual = 0;
                     // assign items to clusters
                     int j = 0;
@@ -167,9 +171,8 @@ namespace Latino.Model
                             clustQual += maxSim;
                         }
                     }
-                    clustQual /= (double)dataset.Count;
-                    Utils.VerboseLine("*** Iteration {0} ***", iter);
-                    Utils.VerboseLine("Quality: {0:0.0000}", clustQual);
+                    clustQual /= (double)dataset.Count;                    
+                    mLogger.Info("Cluster", "Quality: {0:0.0000}", clustQual);
                     // check if done
                     if (iter > 1 && clustQual - bestClustQual <= mEps)
                     {

@@ -28,7 +28,10 @@ namespace Latino.TextMining
     public class LanguageDetector : ISerializable
     {
         private int n;
-        private ArrayList<LanguageProfile> languageProfiles;        
+        private ArrayList<LanguageProfile> languageProfiles;
+
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(LanguageDetector).ToString());
 
         public LanguageDetector(int n)
         {
@@ -59,7 +62,7 @@ namespace Latino.TextMining
                     LanguageProfile langProfile = new LanguageProfile(ser);
                     ser.Close();
                     ld.AddLanguageProfile(langProfile);
-                    //Utils.VerboseLine("Loaded resource {0}.", resName);
+                    mLogger.Debug("GetLanguageDetectorPrebuilt", "Loaded resource {0}.", resName);
                 }
             }
             return ld;
@@ -98,7 +101,7 @@ namespace Latino.TextMining
                 if (lang.Equals(lastLang) == false)
                 {
                     // Adds new language
-                    Utils.VerboseLine(lang + ":\t" + Path.GetFileName(f));
+                    mLogger.Debug("ReadCorpus", lang + ":\t" + Path.GetFileName(f));
                     langProfile = new LanguageProfile(n, lang);
                     langProfile.AddTokensFromFile(f);
                     languageProfiles.Add(langProfile);
@@ -107,7 +110,7 @@ namespace Latino.TextMining
                 else
                 {
                     // Adds corpus file to the last language added
-                    Utils.VerboseLine(lang + ":\t" + Path.GetFileName(f));
+                    mLogger.Debug("ReadCorpus", lang + ":\t" + Path.GetFileName(f));
                     langProfile.AddTokensFromFile(f);
                 }
             }

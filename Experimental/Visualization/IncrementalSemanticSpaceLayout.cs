@@ -51,6 +51,9 @@ namespace Latino.Experimental.Visualization
         private ArrayList<double> mSolY 
             = null;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(IncrementalSemanticSpaceLayout).ToString());
+
         public IncrementalSemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
@@ -117,7 +120,7 @@ namespace Latino.Experimental.Visualization
         public Vector2D[] ComputeLayout(LayoutSettings settings)
         {
             // clustering 
-            Utils.VerboseLine("Clustering ...");
+            mLogger.Info("ComputeLayout", "Clustering ...");
             mKMeans = new IncrementalKMeans(mKClust);
             mKMeans.Eps = mKMeansEps;
             mKMeans.Random = mRandom;
@@ -131,7 +134,7 @@ namespace Latino.Experimental.Visualization
                 mDataset.Add(centroid); // add centroids to the main dataset
             }
             // position reference instances
-            Utils.VerboseLine("Positioning reference instances ...");
+            mLogger.Info("ComputeLayout", "Positioning reference instances ...");
             SparseMatrix<double> simMtx = ModelUtils.GetDotProductSimilarity(dsRefInst, mSimThresh, /*fullMatrix=*/false);
             StressMajorizationLayout sm = new StressMajorizationLayout(dsRefInst.Count, new DistFunc(simMtx));
             sm.Random = mRandom;
@@ -139,9 +142,9 @@ namespace Latino.Experimental.Visualization
             sm.MinDiff = 0.00001;
             mRefPos = sm.ComputeLayout();
             // k-NN
-            Utils.VerboseLine("Computing similarities ...");           
+            mLogger.Info("ComputeLayout", "Computing similarities ...");           
             simMtx = ModelUtils.GetDotProductSimilarity(mDataset, mSimThresh, /*fullMatrix=*/true);
-            Utils.VerboseLine("Constructing system of linear equations ...");
+            mLogger.Info("ComputeLayout", "Constructing system of linear equations ...");
             LabeledDataset<double, SparseVector<double>.ReadOnly> lsqrDs = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
             mPatches = new ArrayList<Patch>(mDataset.Count);
             for (int i = 0; i < mDataset.Count; i++)
@@ -152,7 +155,7 @@ namespace Latino.Experimental.Visualization
             {
                 if (simMtxRow.Dat.Count <= 1)
                 {
-                    Utils.VerboseLine("*** Warning: instance #{0} has no neighborhood.", simMtxRow.Idx);
+                    mLogger.Warn("ComputeLayout", "Instance #{0} has no neighborhood.", simMtxRow.Idx);
                 }
                 ArrayList<KeyDat<double, int>> knn = new ArrayList<KeyDat<double, int>>(simMtxRow.Dat.Count);
                 foreach (IdxDat<double> item in simMtxRow.Dat)
@@ -227,7 +230,7 @@ namespace Latino.Experimental.Visualization
         public Vector2D[] Update(int numDequeue, IEnumerable<SparseVector<double>.ReadOnly> newInst, bool test, LayoutSettings settings, ref PtInfo[] ptInfo, int _count)
         {
             // clustering             
-            Utils.VerboseLine("Clustering ...");
+            mLogger.Info("Update", "Clustering ...");
             /*prof*/StopWatch sw = new StopWatch();
             mKMeans.Eps = mKMeansEps;
             int iter = 0;
@@ -243,7 +246,7 @@ namespace Latino.Experimental.Visualization
                 dsNewInst.Add(centroid); // dataset of new instances
             }
             // position reference instances
-            Utils.VerboseLine("Positioning reference instances ...");
+            mLogger.Info("Update", "Positioning reference instances ...");
             SparseMatrix<double> simMtx = ModelUtils.GetDotProductSimilarity(dsRefInst, mSimThresh, /*fullMatrix=*/false);
             StressMajorizationLayout sm = new StressMajorizationLayout(dsRefInst.Count, new DistFunc(simMtx));
             sm.Random = mRandom;
@@ -254,7 +257,7 @@ namespace Latino.Experimental.Visualization
             // k-NN
             /*prof*/sw.Reset();
             DateTime t = DateTime.Now;
-            Utils.VerboseLine("Computing similarities ...");
+            mLogger.Info("Update", "Computing similarities ...");
             // update list of neighborhoods
             mPatches.RemoveRange(mDataset.Count - mKClust, mKClust);
             mPatches.RemoveRange(0, numDequeue);
@@ -398,7 +401,7 @@ namespace Latino.Experimental.Visualization
                 {
                     if (simMtxRow.Dat.Count <= 1)
                     {
-                        Utils.VerboseLine("*** Warning: instance #{0} has no neighborhood.", simMtxRow.Idx);
+                        mLogger.Warn("Update", "Instance #{0} has no neighborhood.", simMtxRow.Idx);
                     }
                     ArrayList<KeyDat<double, int>> knn = new ArrayList<KeyDat<double, int>>(simMtxRow.Dat.Count);
                     foreach (IdxDat<double> item in simMtxRow.Dat)
@@ -455,7 +458,7 @@ namespace Latino.Experimental.Visualization
             //Console.WriteLine("Avg list size: {0}", (double)waka / (double)mPatches.Count);
             Console.WriteLine((DateTime.Now - t).TotalMilliseconds);
             /*prof*/sw.Reset();
-            Utils.VerboseLine("Constructing system of linear equations ...");
+            mLogger.Info("Update", "Constructing system of linear equations ...");
             LabeledDataset<double, SparseVector<double>.ReadOnly> lsqrDs = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
             Vector2D[] layout = new Vector2D[mDataset.Count - mKClust];
             foreach (Patch patch in mPatches)

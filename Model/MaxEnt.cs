@@ -26,6 +26,9 @@ namespace Latino.Model
     */
     internal static class MaxEnt
     {
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(MaxEnt).ToString());
+
         private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idxToLbl)
         {
             ArrayList<LblT> tmp = new ArrayList<LblT>();
@@ -201,7 +204,7 @@ namespace Latino.Model
             double[][] mtx = new double[numClasses][];
             for (int j = 0; j < numClasses; j++) { mtx[j] = new double[trainSetSize]; }
             double[] z = new double[trainSetSize];
-            Utils.VerboseLine("Initiating {0} threads ...", numThreads);
+            mLogger.Info("UpdateExpectationMatrix", "Initiating {0} threads ...", numThreads);
             int lambdaRowCount = lambda.GetRowCount();
             IdxDat<SparseVector<double>.ReadOnly>[] aux = new IdxDat<SparseVector<double>.ReadOnly>[lambdaRowCount];
             int i = 0;
@@ -230,7 +233,7 @@ namespace Latino.Model
                 {
                     aggrProgress += progress;
                 }
-                Utils.Verbose("Pass 1: {0} / {1}\r", aggrProgress, lambdaRowCount);
+                Utils.VerboseProgress("Pass 1: {0} / {1}", aggrProgress, lambdaRowCount, /*jump=*/1);
                 isAlive = false;
                 foreach (Thread thread in threads)
                 {
@@ -238,7 +241,7 @@ namespace Latino.Model
                 }
                 Thread.Sleep(100);               
             }
-            Utils.VerboseLine("Pass 1: {0} / {0}\r", lambdaRowCount);
+            Utils.VerboseProgress("Pass 1: {0} / {0}", lambdaRowCount, lambdaRowCount, /*jump=*/1);
             for (i = 0; i < numClasses; i++)
             {
                 for (int j = 0; j < trainSetSize; j++)
@@ -272,7 +275,7 @@ namespace Latino.Model
                 {
                     aggrProgress += progress;
                 }
-                Utils.Verbose("Pass 2: {0} / {1}\r", aggrProgress, expeRowCount);
+                Utils.VerboseProgress("Pass 2: {0} / {1}", aggrProgress, expeRowCount, /*jump=*/1);
                 isAlive = false;
                 foreach (Thread thread in threads)
                 {
@@ -280,7 +283,7 @@ namespace Latino.Model
                 }
                 Thread.Sleep(100);
             }
-            Utils.VerboseLine("Pass 2: {0} / {0}\r", expeRowCount);
+            Utils.VerboseProgress("Pass 2: {0} / {0}", expeRowCount, expeRowCount, /*jump=*/1);
         }
 
         private static void UpdateExpectationMatrix(int numClasses, int trainSetSize, SparseMatrix<double>.ReadOnly trainMtxTr, SparseMatrix<double>.ReadOnly lambda, SparseMatrix<double> expectations)
@@ -290,7 +293,7 @@ namespace Latino.Model
             double[] z = new double[trainSetSize];
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambda)
             {
-                Utils.Verbose("Pass 1: {0} / {1}\r", row.Idx + 1, lambda.GetLastNonEmptyRowIdx() + 1);
+                Utils.VerboseProgress("Pass 1: {0} / {1}", row.Idx + 1, lambda.GetLastNonEmptyRowIdx() + 1, /*jump=*/1);
                 foreach (IdxDat<double> item in row.Dat)
                 {
                     if (trainMtxTr.ContainsRowAt(item.Idx))
@@ -303,7 +306,6 @@ namespace Latino.Model
                     }
                 }
             }
-            Utils.VerboseLine();
             for (int i = 0; i < numClasses; i++)
             {
                 for (int j = 0; j < trainSetSize; j++)
@@ -314,7 +316,7 @@ namespace Latino.Model
             }
             foreach (IdxDat<SparseVector<double>> row in expectations)
             {
-                Utils.Verbose("Pass 2: {0} / {1}\r", row.Idx + 1, expectations.GetLastNonEmptyRowIdx() + 1);
+                Utils.VerboseProgress("Pass 2: {0} / {1}", row.Idx + 1, expectations.GetLastNonEmptyRowIdx() + 1, /*jump=*/1);
                 int itemIdx = 0;
                 foreach (IdxDat<double> item in row.Dat)
                 {
@@ -326,7 +328,6 @@ namespace Latino.Model
                     itemIdx++;
                 }
             }
-            Utils.VerboseLine();
         }
 
         private static SparseMatrix<double> TransposeDataset<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, bool clearDataset)
@@ -353,7 +354,7 @@ namespace Latino.Model
 
         public static SparseMatrix<double> Gis<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, int cutOff, int numIter, bool clearDataset, string mtxFileName, ref LblT[] idxToLbl, int numThreads, double allowedDiff) 
         {
-            Utils.VerboseLine("Creating observation matrix ...");
+            mLogger.Info("Gis", "Creating observation matrix ...");
             SparseMatrix<double> observations = null;
             if (Utils.VerifyFileNameOpen(mtxFileName))
             {
@@ -377,15 +378,15 @@ namespace Latino.Model
             int numExamples = dataset.Count;
             if (cutOff > 0)
             {
-                Utils.VerboseLine("Performing cut-off ...");
+                mLogger.Info("Gis", "Performing cut-off ...");
                 observations = CutOff(observations, cutOff);
             }
-            Utils.VerboseLine("Preparing structures ...");
+            mLogger.Info("Gis", "Preparing structures ...");
             SparseMatrix<double> lambda = CopyStructure(observations);
             SparseMatrix<double> expectations = CopyStructure(observations);
             double f = GisFindMaxF(dataset);
-            SparseMatrix<double> trainMtxTr = TransposeDataset(dataset, clearDataset);            
-            Utils.VerboseLine("Entering main loop ...");
+            SparseMatrix<double> trainMtxTr = TransposeDataset(dataset, clearDataset);
+            mLogger.Info("Gis", "Entering main loop ...");
             double[] oldLambda = null;
             if (allowedDiff > 0)
             {
@@ -393,8 +394,8 @@ namespace Latino.Model
             }
             for (int i = 0; i < numIter; i++)
             {
-                Utils.VerboseLine("Iteration {0} / {1} ...", i + 1, numIter);
-                Utils.VerboseLine("Updating expectations ...");
+                mLogger.Info("Gis", "Iteration {0} / {1} ...", i + 1, numIter);
+                mLogger.Info("Gis", "Updating expectations ...");
                 if (numThreads > 1)
                 {
                     UpdateExpectationMatrix(numClasses, numExamples, trainMtxTr, lambda, expectations, numThreads);
@@ -403,7 +404,7 @@ namespace Latino.Model
                 {
                     UpdateExpectationMatrix(numClasses, numExamples, trainMtxTr, lambda, expectations);
                 }
-                Utils.VerboseLine("Updating lambdas ...");
+                mLogger.Info("Gis", "Updating lambdas ...");
                 GisUpdate(lambda, expectations, observations, f);
                 Reset(expectations);
                 // check lambda change
@@ -421,10 +422,10 @@ namespace Latino.Model
                             j++;
                         }
                     }
-                    Utils.VerboseLine("Max lambda diff: {0:0.0000}", maxDiff);
+                    mLogger.Info("Gis", "Max lambda diff: {0:0.0000}", maxDiff);
                     if (maxDiff <= allowedDiff)
                     {
-                        Utils.VerboseLine("Max lambda diff is small enough. Exiting optimization loop.");
+                        mLogger.Info("Gis", "Max lambda diff is small enough. Exiting optimization loop.");
                         break;
                     }
                 }

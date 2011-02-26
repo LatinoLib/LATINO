@@ -177,6 +177,9 @@ namespace Latino.TextMining
         private bool mKeepWordForms
             = false;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(BowSpace).ToString());
+
         public BowSpace()
         {
             // configure tokenizer
@@ -395,14 +398,14 @@ namespace Latino.TextMining
             mBowVectors.Clear();
             ArrayList<SparseVector<double>> bows = keepBowVectors ? null : new ArrayList<SparseVector<double>>();
             // build vocabulary
-            Utils.VerboseLine("Building vocabulary ...");
+            mLogger.Info("Initialize", "Building vocabulary ...");
             int docCount = 0;
             if (!largeScale)
             {                
                 foreach (string document in documents)
                 {
                     docCount++;
-                    Utils.VerboseProgress("Document {0} ...", docCount);
+                    Utils.VerboseProgress("Document {0} ...", docCount, /*numSteps=*/0);
                     Set<string> docWords = new Set<string>();
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                     mTokenizer.Text = document;
@@ -444,11 +447,11 @@ namespace Latino.TextMining
                 for (int n = 1; n <= mMaxNGramLen; n++)
                 {
                     docCount = 0;
-                    Utils.VerboseLine("Pass {0} of {1} ...", n, mMaxNGramLen);
+                    mLogger.Info("Initialize", "Pass {0} of {1} ...", n, mMaxNGramLen);
                     foreach (string document in documents)
                     {
                         docCount++;
-                        Utils.VerboseProgress("Document {0} ...", docCount);
+                        Utils.VerboseProgress("Document {0} ...", docCount, /*numSteps=*/0);
                         ArrayList<WordStem> nGrams = new ArrayList<WordStem>(n);
                         Set<string> docWords = new Set<string>();
                         mTokenizer.Text = document;
@@ -555,7 +558,7 @@ namespace Latino.TextMining
                 if (!mKeepWordForms) { wordInfo.mForms.Clear(); } 
             }
             // compute bag-of-words vectors
-            Utils.VerboseLine("Computing bag-of-words vectors ...");           
+            mLogger.Info("Initialize", "Computing bag-of-words vectors ...");           
             int docNum = 1;
             foreach (string document in documents)
             {                

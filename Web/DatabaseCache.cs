@@ -36,6 +36,9 @@ namespace Latino.Web
         public WebUtils.NormalizeQueryDelegate NormalizeQuery
             = WebUtils.NormalizeQuery;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(DatabaseCache).ToString());
+
         public DatabaseCache(string connectionString, string username, string password, string database, string server)
 		{
             mConnection = new DatabaseConnection();
@@ -109,12 +112,12 @@ namespace Latino.Web
                         totalHits = totalHitsCached;
                         XmlTextReader xmlReader = new XmlTextReader(new StringReader((string)dataTable.Rows[0]["ResultSetXml"]));
                         resultSet = new SearchEngineResultSet(xmlReader, maxSize);
-                        Utils.VerboseLine("Cache hit.");
+                        mLogger.Trace("GetFromCache", "Cache hit.");
                         cacheMiss = false;
                     }
                 }
             }
-            if (cacheMiss) { Utils.VerboseLine("Cache miss."); }
+            if (cacheMiss) { mLogger.Trace("GetFromCache", "Cache miss."); }
             return !cacheMiss;
         }
 

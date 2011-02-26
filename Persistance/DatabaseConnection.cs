@@ -57,6 +57,9 @@ namespace Latino.Persistance
         private string mServer
             = "(local)";
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(DatabaseConnection).ToString());
+
         public string ConnectionString
         {
             get { return mConnectionString; }
@@ -141,7 +144,7 @@ namespace Latino.Persistance
             Utils.ThrowException(mConnection != null ? new InvalidOperationException() : null);
             string connectionString = mConnectionString.Replace("${username}", mUsername).Replace("${password}", mPassword)
                 .Replace("${database}", mDatabase).Replace("${server}", mServer);
-            Utils.VerboseLine("Connecting with {0} ...", connectionString);
+            mLogger.Info("Connect", "Connecting with {0} ...", connectionString);
             try
             {
                 mConnection = new OleDbConnection(connectionString);
@@ -150,19 +153,19 @@ namespace Latino.Persistance
             }
             catch (Exception e)
             {
-                Utils.VerboseLine("Not successful: {0}", e);
+                mLogger.Fatal("Connect", e);
                 throw;
             }
-            Utils.VerboseLine("Success.");
+            mLogger.Info("Connect", "Success.");
         }
 
         public void Disconnect()
         {
             Utils.ThrowException(mConnection == null ? new InvalidOperationException() : null);
-            Utils.VerboseLine("Disconnecting ...");
+            mLogger.Info("Disconnect", "Disconnecting ...");
             mConnection.Close();
             mConnection = null;
-            Utils.VerboseLine("Success.");
+            mLogger.Info("Disconnect", "Success.");
         }
 
         //private void ConnectionStateChange(object sender, StateChangeEventArgs args)
@@ -173,14 +176,14 @@ namespace Latino.Persistance
         public void StartTransaction()
         {
             Utils.ThrowException((mConnection == null || mTransaction != null) ? new InvalidOperationException() : null);
-            Utils.VerboseLine("Starting transaction.");
+            mLogger.Trace("StartTransaction", "Starting transaction.");
             mTransaction = mConnection.BeginTransaction();
         }
 
         public void Commit()
         {
             Utils.ThrowException((mConnection == null || mTransaction == null) ? new InvalidOperationException() : null);
-            Utils.VerboseLine("Committing transaction.");
+            mLogger.Trace("Commit", "Committing transaction.");
             mTransaction.Commit();
             mTransaction = null;
         }
@@ -188,7 +191,7 @@ namespace Latino.Persistance
         public void Rollback()
         {
             Utils.ThrowException((mConnection == null || mTransaction == null) ? new InvalidOperationException() : null);
-            Utils.VerboseLine("Rollbacking transaction.");
+            mLogger.Trace("Rollback", "Rollbacking transaction.");
             mTransaction.Rollback();
             mTransaction = null;
         }
@@ -208,19 +211,19 @@ namespace Latino.Persistance
             Utils.ThrowException(mConnection == null ? new InvalidOperationException() : null);
             Utils.ThrowException(sqlStatement == null ? new ArgumentNullException("sqlStatement") : null);
             Utils.ThrowException(args == null ? new ArgumentNullException("args") : null);
-            Utils.VerboseLine("Executing SQL command ...");
+            mLogger.Trace("ExecuteNonQuery", "Executing SQL command ...");
             try
             {
                 OleDbCommand command = new OleDbCommand(sqlStatement, mConnection);
                 if (mTransaction != null) { command.Transaction = mTransaction; }
                 AssignParamsToCommand(command, args);
                 int rowsAffected = command.ExecuteNonQuery(); // throws OleDbException
-                Utils.VerboseLine("Success. {0} rows affected.", rowsAffected);
+                mLogger.Trace("ExecuteNonQuery", "Success. {0} rows affected.", rowsAffected);
                 return rowsAffected > 0;
             }
             catch (Exception e)
             {
-                Utils.VerboseLine("Not successful: {0}", e);
+                mLogger.Fatal("ExecuteNonQuery", e);
                 throw;
             }
         }
@@ -230,7 +233,7 @@ namespace Latino.Persistance
             Utils.ThrowException(mConnection == null ? new InvalidOperationException() : null);
             Utils.ThrowException(sqlSelectStatement == null ? new ArgumentNullException("sqlSelectStatement") : null);
             Utils.ThrowException(args == null ? new ArgumentNullException("args") : null);
-            Utils.VerboseLine("Executing SQL query ...");
+            mLogger.Trace("ExecuteQuery", "Executing SQL query ...");
             try
             {
                 OleDbCommand command = new OleDbCommand(sqlSelectStatement, mConnection);
@@ -238,12 +241,12 @@ namespace Latino.Persistance
                 AssignParamsToCommand(command, args);
                 DataTable dataTable;
                 new OleDbDataAdapter(command).Fill(dataTable = new DataTable()); // throws OleDbException
-                Utils.VerboseLine("Success.");
+                mLogger.Trace("ExecuteQuery", "Success.");
                 return dataTable;
             }
             catch (Exception e)
             {
-                Utils.VerboseLine("Not successful: {0}", e);
+                mLogger.Fatal("ExecuteQuery", e);
                 throw;
             }
         }
@@ -253,19 +256,19 @@ namespace Latino.Persistance
             Utils.ThrowException(mConnection == null ? new InvalidOperationException() : null);
             Utils.ThrowException(sqlSelectStatement == null ? new ArgumentNullException("sqlSelectStatement") : null);
             Utils.ThrowException(args == null ? new ArgumentNullException("args") : null);
-            Utils.VerboseLine("Executing SQL query ...");
+            mLogger.Trace("ExecuteReader", "Executing SQL query ...");
             try
             {
                 OleDbCommand command = new OleDbCommand(sqlSelectStatement, mConnection);
                 if (mTransaction != null) { command.Transaction = mTransaction; }
                 AssignParamsToCommand(command, args);
                 OleDbDataReader dataReader = command.ExecuteReader(); // throws OleDbException
-                Utils.VerboseLine("Success.");
+                mLogger.Trace("ExecuteReader", "Success.");
                 return dataReader;
             }
             catch (Exception e)
             {
-                Utils.VerboseLine("Not successful: {0}", e);
+                mLogger.Fatal("ExecuteReader", e);
                 throw;
             }
         }

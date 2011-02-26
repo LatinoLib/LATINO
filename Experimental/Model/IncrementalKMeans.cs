@@ -32,6 +32,9 @@ namespace Latino.Experimental.Model
         private UnlabeledDataset<SparseVector<double>.ReadOnly> mDataset
             = null;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(IncrementalKMeans).ToString());
+
         public IncrementalKMeans(int k)
         {
             Utils.ThrowException(k < 2 ? new ArgumentOutOfRangeException("k") : null);
@@ -84,7 +87,7 @@ namespace Latino.Experimental.Model
             double globalBestClustQual = 0;
             for (int trial = 1; trial <= mTrials; trial++)
             {
-                Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, mTrials);
+                mLogger.Info("Cluster", "Clustering trial {0} of {1} ...", trial, mTrials);
                 ArrayList<CentroidData> centroids = new ArrayList<CentroidData>(mK);
                 ArrayList<int> bestSeeds = null;
                 for (int i = 0; i < mK; i++)
@@ -141,6 +144,7 @@ namespace Latino.Experimental.Model
                 while (true)
                 {
                     iter++;
+                    mLogger.Info("Cluster", "Iteration {0} ...", iter);
                     clustQual = 0;
                     // assign items to clusters
                     //StopWatch stopWatch = new StopWatch();               
@@ -192,8 +196,7 @@ namespace Latino.Experimental.Model
                     }
                     //Console.WriteLine(stopWatch.TotalMilliseconds);
                     clustQual /= (double)mDataset.Count;
-                    Utils.VerboseLine("*** Iteration {0} ***", iter);
-                    Utils.VerboseLine("Quality: {0:0.0000}", clustQual);
+                    mLogger.Info("Cluster", "Quality: {0:0.0000}", clustQual);
                     // compute new centroids
                     for (int i = 0; i < mK; i++)
                     {
@@ -302,6 +305,7 @@ namespace Latino.Experimental.Model
             // assign new instances
             double bestClustQual = 0;
             {
+                mLogger.Info("Update", "Initializing ...");
                 int i = 0;
                 foreach (SparseVector<double>.ReadOnly example in addList)
                 {
@@ -345,9 +349,8 @@ namespace Latino.Experimental.Model
                         bestClustQual += centroid.GetDotProduct(mDataset[itemIdx]);
                     }
                 }
-                bestClustQual /= (double)mDataset.Count;
-                Utils.VerboseLine("*** Initialization ***");
-                Utils.VerboseLine("Quality: {0:0.0000}", bestClustQual);
+                bestClustQual /= (double)mDataset.Count;                
+                mLogger.Info("Update", "Quality: {0:0.0000}", bestClustQual);
             }
             //Console.WriteLine(">>> {0} >>> assign new instances", stopWatch.TotalMilliseconds);
             stopWatch.Reset();
@@ -356,6 +359,7 @@ namespace Latino.Experimental.Model
             while (true)
             {
                 iter++;
+                mLogger.Info("Update", "Iteration {0} ...", iter);
                 // assign items to clusters
                 for (int i = 0; i < mDataset.Count; i++)
                 {
@@ -408,8 +412,7 @@ namespace Latino.Experimental.Model
                 clustQual /= (double)mDataset.Count;
                 //Console.WriteLine(">>> {0} >>> loop: update centroids", stopWatch.TotalMilliseconds);
                 stopWatch.Reset();
-                Utils.VerboseLine("*** Iteration {0} ***", iter);
-                Utils.VerboseLine("Quality: {0:0.0000} Diff: {1:0.0000}", clustQual, clustQual - bestClustQual);
+                mLogger.Info("Update", "Quality: {0:0.0000} Diff: {1:0.0000}", clustQual, clustQual - bestClustQual);
                 // check if done
                 if (clustQual - bestClustQual <= mEps)
                 {

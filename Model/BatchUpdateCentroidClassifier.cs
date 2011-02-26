@@ -36,6 +36,9 @@ namespace Latino.Model
         private ArrayList<LblT> mLabels
             = null;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(BatchUpdateCentroidClassifier<LblT>).ToString());
+
         public BatchUpdateCentroidClassifier()
         {
         }
@@ -139,9 +142,9 @@ namespace Latino.Model
             }
             for (int iter = 1; iter <= mIterations; iter++)
             {
-                Utils.VerboseLine("Iteration {0} / {1} ...", iter, mIterations);
+                mLogger.Info("Train", "Iteration {0} / {1} ...", iter, mIterations);
                 // compute dot products
-                Utils.VerboseLine("Computing dot products ...");
+                mLogger.Info("Train", "Computing dot products ...");
                 int j = 0;
                 foreach (KeyValuePair<LblT, CentroidData> labeledCentroid in centroids)
                 {
@@ -151,7 +154,7 @@ namespace Latino.Model
                     j++;
                 }
                 // classify training examples
-                Utils.VerboseLine("Classifying training examples ...");
+                mLogger.Info("Train", "Classifying training examples ...");
                 int errCount = 0;
                 for (int instIdx = 0; instIdx < dataset.Count; instIdx++)
                 {
@@ -176,7 +179,7 @@ namespace Latino.Model
                         errCount++;
                     }                        
                 }
-                Utils.VerboseLine("Training set error rate: {0:0.00}%", (double)errCount / (double)dataset.Count * 100.0);
+                mLogger.Info("Train", "Training set error rate: {0:0.00}%", (double)errCount / (double)dataset.Count * 100.0);
                 // update centroids
                 int k = 0;
                 foreach (CentroidData centroidData in centroids.Values)

@@ -27,6 +27,9 @@ namespace Latino.Model
         private int mTrials
             = 1;
         private int mK;
+        
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(KMeans).ToString());
 
         public KMeans(int k)
         {
@@ -96,7 +99,7 @@ namespace Latino.Model
             double globalBestClustQual = 0;
             for (int trial = 1; trial <= mTrials; trial++)
             {
-                Utils.VerboseLine("*** CLUSTERING TRIAL {0} OF {1} ***", trial, mTrials);
+                mLogger.Info("Cluster", "Clustering trial {0} of {1} ...", trial, mTrials);
                 ArrayList<SparseVector<double>.ReadOnly> centroids = null;
                 clustering = new ClusteringResult();
                 for (int i = 0; i < mK; i++) { clustering.AddRoot(new Cluster()); }
@@ -139,6 +142,7 @@ namespace Latino.Model
                 while (true)
                 {
                     iter++;
+                    mLogger.Info("Cluster", "Iteration {0} ...", iter);
                     clustQual = 0;
                     // assign items to clusters
                     foreach (Cluster cluster in clustering.Roots) { cluster.Items.Clear(); }
@@ -172,9 +176,8 @@ namespace Latino.Model
                             clustQual += maxSim;
                         }
                     }
-                    clustQual /= (double)dataset.Count;
-                    Utils.VerboseLine("*** Iteration {0} ***", iter);
-                    Utils.VerboseLine("Quality: {0:0.0000}", clustQual);
+                    clustQual /= (double)dataset.Count;                    
+                    mLogger.Info("Cluster", "Quality: {0:0.0000}", clustQual);
                     // check if done
                     if (iter > 1 && clustQual - bestClustQual <= mEps)
                     {

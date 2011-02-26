@@ -37,6 +37,9 @@ namespace Latino.Web
         public WebUtils.NormalizeQueryDelegate NormalizeQuery
             = WebUtils.NormalizeQuery;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(MemoryCache).ToString());
+
         public MemoryCache()
         {
         }
@@ -74,12 +77,12 @@ namespace Latino.Web
                         totalHits = cacheRecord.TotalHits;
                         XmlTextReader xmlReader = new XmlTextReader(new StringReader(cacheRecord.ResultSetXml));
                         resultSet = new SearchEngineResultSet(xmlReader, maxSize);
-                        Utils.VerboseLine("Cache hit.");
+                        mLogger.Trace("GetFromCache", "Cache hit.");
                         return true;
                     }
                 }
             }
-            Utils.VerboseLine("Cache miss.");
+            mLogger.Trace("GetFromCache", "Cache miss.");
             return false;
         }
 
