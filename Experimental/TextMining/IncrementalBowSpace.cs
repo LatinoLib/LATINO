@@ -287,7 +287,7 @@ namespace Latino.Experimental.TextMining
             foreach (string document in documents)
             {
                 docCount++;
-                Utils.VerboseProgress("Document {0} ...", docCount, /*numSteps=*/0);
+                mLogger.ProgressFast(this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                 Set<string> docWords = new Set<string>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 mTokenizer.Text = document;
@@ -322,7 +322,7 @@ namespace Latino.Experimental.TextMining
                     ProcessNGramsPass1(nGrams, i, docWords);
                 }
             }
-            Utils.VerboseProgress("Document {0} ...", docCount, docCount);
+            mLogger.ProgressFast(this, "Initialize", "Document {0} ...", docCount, docCount);
             // determine most frequent word and n-gram forms
             foreach (Word wordInfo in mWordInfo.Values)
             { 
@@ -340,8 +340,8 @@ namespace Latino.Experimental.TextMining
             mLogger.Info("Initialize", "Computing bag-of-words vectors ...");           
             int docNum = 1;
             foreach (string document in documents)
-            {                
-                Utils.VerboseProgress("Document {0} / {1} ...", docNum++, docCount);
+            {
+                mLogger.ProgressFast(this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 mTokenizer.Text = document;

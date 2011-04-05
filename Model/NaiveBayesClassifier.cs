@@ -36,6 +36,9 @@ namespace Latino.Model
         private bool mNormalize
             = false;
 
+        private static Logger mLogger
+            = Logger.GetLogger(typeof(NaiveBayesClassifier<LblT>));
+
         private static Dictionary<int, double>[] PrecomputeProbabilities(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, 
             out LblT[] idxToLbl, out Dictionary<int, double> featurePriors, out int[] exampleCount)
         {
@@ -57,9 +60,10 @@ namespace Latino.Model
             Dictionary<int, int> featureCounter = new Dictionary<int, int>();
             // count features
             int i = 0;
+            object id = new object();
             foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
             {
-                Utils.VerboseProgress("{0} / {1}", ++i, dataset.Count);
+                mLogger.ProgressFast(id, "PrecomputeProbabilities", "{0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
                 exampleCount[lblIdx]++;
                 double val;

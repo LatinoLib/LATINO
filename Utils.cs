@@ -12,7 +12,6 @@
 
 using System;
 using System.IO;
-using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -159,94 +158,6 @@ namespace Latino
             new KeyDat<string, string>("YAKT", "+09:00"),
             new KeyDat<string, string>("YEKT", "+05:00") };
         #endregion
-
-        private static bool mVerbose
-            = true;
-        //private static VerboseDelegate mVerboseProc
-        //    = new VerboseDelegate(DefaultVerbose);
-        //private static VerboseDelegate mVerboseLineProc
-        //    = new VerboseDelegate(DefaultVerboseLine);
-
-        //public delegate void VerboseDelegate(string format, params object[] args);
-
-        //private static void DefaultVerbose(string format, params object[] args)
-        //{
-        //    Console.Write(format, args); // throws ArgumentNullException, FormatException
-        //}
-
-        //private static void DefaultVerboseLine(string format, params object[] args)
-        //{
-        //    Console.WriteLine(format, args); // throws ArgumentNullException, FormatException
-        //}
-
-        //public static void Verbose(string format, params object[] args)
-        //{
-        //    if (mVerbose && mVerboseProc != null) { mVerboseProc(format, args); } 
-        //}
-
-        //public static void VerboseLine(string format, params object[] args)
-        //{
-        //    if (mVerbose && mVerboseLineProc != null) { mVerboseLineProc(format, args); } 
-        //}
-
-        //public static void VerboseLine()
-        //{
-        //    if (mVerbose && mVerboseLineProc != null) { mVerboseLineProc(""); } 
-        //}
-
-        public static void VerboseProgress(string format, int step, int numSteps)
-        {
-            VerboseProgress(format, step, numSteps, /*jump=*/100);
-        }
-
-        public static void VerboseProgress(string format, int step, int numSteps, int jump)
-        {
-            ThrowException(step < 1 ? new ArgumentOutOfRangeException("step") : null);
-            if (numSteps <= 0)
-            {
-                if (mVerbose && step % jump == 0)
-                {
-                    Console.Write("\r" + format, step); // throws ArgumentNullException, FormatException
-                }
-            }
-            else
-            {
-                if (mVerbose && (step % jump == 0 || step == numSteps))
-                {
-                    Console.Write("\r" + format, step, numSteps); // throws ArgumentNullException, FormatException
-                    if (step == numSteps) { Console.WriteLine(); }
-                }
-            }
-        }
-
-        //public static void VerboseProgress(string format, int step)
-        //{
-        //    VerboseProgress(format, step, /*numSteps=*/-1);
-        //}
-
-        //public static bool VerboseEnabled
-        //{
-        //    get { return mVerbose; }
-        //    set { mVerbose = value; }
-        //}
-
-        //public static VerboseDelegate VerboseFunc
-        //{
-        //    get { return mVerboseProc; }
-        //    set { mVerboseProc = value; }
-        //}
-
-        //public static VerboseDelegate VerboseLineFunc
-        //{
-        //    get { return mVerboseLineProc; }
-        //    set { mVerboseLineProc = value; }
-        //}
-
-        //public static VerboseProgressDelegate VerboseProgressFunc
-        //{
-        //    get { return mVerboseProgressProc; }
-        //    set { mVerboseProgressProc = value; }
-        //}
 
         [Conditional("THROW_EXCEPTIONS")]
         public static void ThrowException(Exception exception)

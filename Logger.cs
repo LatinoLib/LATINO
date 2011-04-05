@@ -83,7 +83,21 @@ namespace Latino
             Inherit = 0,
             Console = 1,                       
             Writer  = 2,
-            Custom  = 4
+            //Custom  = 4
+        }
+
+        /* .-----------------------------------------------------------------------
+           |
+           |  Enum ProgressOutputType
+           |
+           '-----------------------------------------------------------------------
+        */
+        public enum ProgressOutputType
+        {
+            Inherit = 0,
+            Console = 1,
+            //Custom = 2,
+            Off = 3
         }
 
         /* .-----------------------------------------------------------------------
@@ -108,6 +122,8 @@ namespace Latino
 
         private static object mConsoleLock
             = new object();
+        private static object mProgressSender
+            = null;
 
         // node settings         
         private string mName; // set by constructor
@@ -291,6 +307,7 @@ namespace Latino
                 {
                     lock (mConsoleLock)
                     {
+                        if (mProgressSender != null) { mProgressSender = null; Console.WriteLine(); }
                         Output(Console.Out, level, funcName, e, message, args);
                     }
                 }
@@ -299,6 +316,36 @@ namespace Latino
                     lock (activeWriter)
                     {
                         Output(activeWriter, level, funcName, e, message, args);
+                    }
+                }
+            }
+        }
+
+        private void Progress(object sender, int freq, string funcName, string message, int step, int numSteps, params object[] args)
+        {
+            //if (ActiveOutputProgress)
+            {
+                if (numSteps <= 0)
+                {
+                    if (step % freq == 0)
+                    {
+                        lock (mConsoleLock)
+                        {
+                            if (mProgressSender != null /*&& mProgressSender != sender*/) { mProgressSender = sender; Console.WriteLine(); }
+                            Console.Write("\r" + message, step); // throws FormatException
+                        }
+                    }
+                }
+                else
+                {
+                    if (step % freq == 0 || step == numSteps)
+                    {
+                        lock (mConsoleLock)
+                        {
+                            if (mProgressSender != null /*&& mProgressSender != sender*/) { mProgressSender = sender; Console.WriteLine(); }
+                            Console.Write("\r" + message, step, numSteps); // throws FormatException
+                            if (step == numSteps) { Console.WriteLine(); }
+                        }
                     }
                 }
             }
@@ -349,6 +396,24 @@ namespace Latino
         public void Fatal(string funcName, Exception e)
         {
             Output(Level.Fatal, funcName, e, /*message=*/null);
+        }
+
+        public void ProgressNormal(object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        {
+            Utils.ThrowException(step < 0 ? new ArgumentOutOfRangeException("step") : null);
+            Progress(sender, /*freq=*/1, funcName, message, step, numSteps, args); // throws FormatException
+        }
+
+        public void ProgressFast(object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        {
+            Utils.ThrowException(step < 0 ? new ArgumentOutOfRangeException("step") : null);
+            Progress(sender, /*freq=*/100, funcName, message, step, numSteps, args); // throws FormatException 
+        }
+
+        public void ProgressVeryFast(object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        {
+            Utils.ThrowException(step < 0 ? new ArgumentOutOfRangeException("step") : null);
+            Progress(sender, /*freq=*/1000, funcName, message, step, numSteps, args); // throws FormatException 
         }
     }
 }

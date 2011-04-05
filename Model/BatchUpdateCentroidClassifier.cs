@@ -148,7 +148,7 @@ namespace Latino.Model
                 int j = 0;
                 foreach (KeyValuePair<LblT, CentroidData> labeledCentroid in centroids)
                 {
-                    Utils.VerboseProgress("Centroid {0} / {1} ...", j + 1, centroids.Count);
+                    mLogger.ProgressFast(this, "Train", "Centroid {0} / {1} ...", j + 1, centroids.Count);
                     SparseVector<double> cenVec = labeledCentroid.Value.GetSparseVector();
                     dotProd[j] = ModelUtils.GetDotProductSimilarity(dsMtx, dataset.Count, cenVec); 
                     j++;
@@ -158,7 +158,7 @@ namespace Latino.Model
                 int errCount = 0;
                 for (int instIdx = 0; instIdx < dataset.Count; instIdx++)
                 {
-                    Utils.VerboseProgress("Example {0} / {1} ...", instIdx + 1, dataset.Count); 
+                    mLogger.ProgressFast(this, "Train", "Example {0} / {1} ...", instIdx + 1, dataset.Count); 
                     double maxSim = double.MinValue;
                     CentroidData assignedCentroid = null;
                     CentroidData actualCentroid = null;
@@ -184,7 +184,7 @@ namespace Latino.Model
                 int k = 0;
                 foreach (CentroidData centroidData in centroids.Values)
                 {
-                    Utils.VerboseProgress("Centroid {0} / {1} ...", ++k, centroids.Count);
+                    mLogger.ProgressFast(this, "Trainn", "Centroid {0} / {1} ...", ++k, centroids.Count);
                     centroidData.Update(mPositiveValuesOnly);
                     centroidData.UpdateCentroidLen();
                 }

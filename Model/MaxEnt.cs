@@ -46,9 +46,10 @@ namespace Latino.Model
             for (int j = 0; j < counter.Length; j++) { counter[j] = new Dictionary<int, int>(); }
             // count features
             int i = 0;
+            object id = new object();
             foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
             {
-                Utils.VerboseProgress("{0} / {1}", ++i, dataset.Count);
+                mLogger.ProgressFast(id, "CreateObservationMatrix", "{0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
                 int val;
                 foreach (int idx in labeledExample.Example)
@@ -200,7 +201,7 @@ namespace Latino.Model
         }
 
         private static void UpdateExpectationMatrix(int numClasses, int trainSetSize, SparseMatrix<double>.ReadOnly trainMtxTr, SparseMatrix<double>.ReadOnly lambda, SparseMatrix<double> expectations, int numThreads)
-        {
+        {            
             double[][] mtx = new double[numClasses][];
             for (int j = 0; j < numClasses; j++) { mtx[j] = new double[trainSetSize]; }
             double[] z = new double[trainSetSize];
@@ -225,6 +226,7 @@ namespace Latino.Model
                 threads[i].Start(new object[] { startIdx, endIdx, trainMtxTr, aux, mtx, progressInfo[i] });
                 startIdx += chunkSz;
             }
+            object id = new object();
             bool isAlive = true;
             while (isAlive)
             {
@@ -233,7 +235,7 @@ namespace Latino.Model
                 {
                     aggrProgress += progress;
                 }
-                Utils.VerboseProgress("Pass 1: {0} / {1}", aggrProgress, lambdaRowCount, /*jump=*/1);
+                mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 1: {0} / {1}", aggrProgress, lambdaRowCount);
                 isAlive = false;
                 foreach (Thread thread in threads)
                 {
@@ -241,7 +243,7 @@ namespace Latino.Model
                 }
                 Thread.Sleep(100);               
             }
-            Utils.VerboseProgress("Pass 1: {0} / {0}", lambdaRowCount, lambdaRowCount, /*jump=*/1);
+            mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 1: {0} / {0}", lambdaRowCount, lambdaRowCount);
             for (i = 0; i < numClasses; i++)
             {
                 for (int j = 0; j < trainSetSize; j++)
@@ -275,7 +277,7 @@ namespace Latino.Model
                 {
                     aggrProgress += progress;
                 }
-                Utils.VerboseProgress("Pass 2: {0} / {1}", aggrProgress, expeRowCount, /*jump=*/1);
+                mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 2: {0} / {1}", aggrProgress, expeRowCount);
                 isAlive = false;
                 foreach (Thread thread in threads)
                 {
@@ -283,7 +285,7 @@ namespace Latino.Model
                 }
                 Thread.Sleep(100);
             }
-            Utils.VerboseProgress("Pass 2: {0} / {0}", expeRowCount, expeRowCount, /*jump=*/1);
+            mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 2: {0} / {0}", expeRowCount, expeRowCount);
         }
 
         private static void UpdateExpectationMatrix(int numClasses, int trainSetSize, SparseMatrix<double>.ReadOnly trainMtxTr, SparseMatrix<double>.ReadOnly lambda, SparseMatrix<double> expectations)
@@ -291,9 +293,10 @@ namespace Latino.Model
             double[][] mtx = new double[numClasses][];
             for (int j = 0; j < numClasses; j++) { mtx[j] = new double[trainSetSize]; }
             double[] z = new double[trainSetSize];
+            object id = new object();
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambda)
             {
-                Utils.VerboseProgress("Pass 1: {0} / {1}", row.Idx + 1, lambda.GetLastNonEmptyRowIdx() + 1, /*jump=*/1);
+                mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 1: {0} / {1}", row.Idx + 1, lambda.GetLastNonEmptyRowIdx() + 1);
                 foreach (IdxDat<double> item in row.Dat)
                 {
                     if (trainMtxTr.ContainsRowAt(item.Idx))
@@ -316,7 +319,7 @@ namespace Latino.Model
             }
             foreach (IdxDat<SparseVector<double>> row in expectations)
             {
-                Utils.VerboseProgress("Pass 2: {0} / {1}", row.Idx + 1, expectations.GetLastNonEmptyRowIdx() + 1, /*jump=*/1);
+                mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 2: {0} / {1}", row.Idx + 1, expectations.GetLastNonEmptyRowIdx() + 1);
                 int itemIdx = 0;
                 foreach (IdxDat<double> item in row.Dat)
                 {

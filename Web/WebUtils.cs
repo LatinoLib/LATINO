@@ -26,7 +26,6 @@ namespace Latino.Web
        |
        '-----------------------------------------------------------------------
     */
-    // TODO: remove jsint support 
     public static class WebUtils
     {
         // *** fetching Web pages ***
@@ -36,8 +35,6 @@ namespace Latino.Web
 
         private static IWebProxy mWebProxy
             = WebRequest.DefaultWebProxy;
-        private static string mJsintProxyUrl
-            = null;
         private static int mDefaultTimeout
             = 100000;
         private static int mNumRetries
@@ -48,17 +45,6 @@ namespace Latino.Web
         public static void UseDefaultWebProxy()
         {
             mWebProxy = WebRequest.DefaultWebProxy;
-        }
-
-        public static string JsintProxyUrl
-        { 
-            get { return mJsintProxyUrl; }
-            set 
-            {
-                Utils.ThrowException((value != null && !Uri.IsWellFormedUriString(value, UriKind.Absolute)) ? new ArgumentValueException("JsintProxyUrl") : null);
-                Utils.ThrowException((value != null && Array.IndexOf(new string[] { "http", "https" }, new Uri(value).Scheme) < 0) ? new ArgumentValueException("JsintProxyUrl") : null);
-                mJsintProxyUrl = value; 
-            }
         }
 
         public static void SetWebProxy(string url)
@@ -111,6 +97,31 @@ namespace Latino.Web
             }
         }
 
+        // TODO: remove 
+        /*public static string FixUriPath(string uri) 
+        {
+            Utils.ThrowException(uri == null ? new ArgumentNullException("uri") : null);
+            if (Uri.IsWellFormedUriString(uri, UriKind.Absolute)) { return uri; }
+            Uri tmp = new Uri(uri); // throws UriFormatException
+            string path = tmp.PathAndQuery;
+            string[] parts = path.Split('/', '?', '&', '=', '#', '$', ';', ',', '@', ':');
+            char[] separators = new char[parts.Length - 1];
+            int idx = 0;
+            for (int i = 0; i < parts.Length - 1; i++)
+            {
+                idx += parts[i].Length;
+                separators[i] = path[idx];
+                idx++;
+            }
+            string escPath = "";
+            for (int i = 0; i < parts.Length; i++)
+            {
+                escPath += Uri.EscapeDataString(HttpUtility.UrlDecode(parts[i]));
+                if (i < parts.Length - 1) { escPath += separators[i]; }
+            }
+            return new Uri(tmp, escPath).OriginalString;
+        }*/
+
         public static string GetWebPage(string url)
         {
             CookieContainer cookies = null;
@@ -131,8 +142,6 @@ namespace Latino.Web
         public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies, Encoding htmlEncoding, int timeout) 
         {            
             Utils.ThrowException(url == null ? new ArgumentNullException("url") : null);
-            Utils.ThrowException(!Uri.IsWellFormedUriString(url, UriKind.Absolute) ? new ArgumentValueException("url") : null);
-            Utils.ThrowException(Array.IndexOf(new string[] { "http", "https" }, new Uri(url).Scheme) < 0 ? new ArgumentValueException("url") : null);
             Utils.ThrowException(htmlEncoding == null ? new ArgumentNullException("htmlEncoding") : null);
             Utils.ThrowException(timeout <= 0 ? new ArgumentOutOfRangeException("timeout") : null);
             string pageHtml;
@@ -223,21 +232,6 @@ namespace Latino.Web
                 }
             }
             return html;
-        }
-
-        // *** jsint support ***
-
-        public static string GetWebPageJsint(string url)
-        {
-            if (mJsintProxyUrl == null)
-            {
-                return GetWebPageDetectEncoding(url); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException  
-            }
-            else
-            {
-                string jsintUrl = mJsintProxyUrl + (mJsintProxyUrl.Contains("?") ? "&t=" : "?t=") + HttpUtility.UrlEncode(url);
-                return GetWebPage(jsintUrl); // throws ArgumentNullException, ArgumentValueException, UriFormatException, WebException
-            }
         }
 
         // *** search query normalization ***
