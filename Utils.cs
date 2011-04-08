@@ -421,6 +421,8 @@ namespace Latino
             return str;
         }
 
+        // *** XML ***
+
         public static string XmlReadValue(XmlReader reader, string attrName)
         {
             ThrowException(reader == null ? new ArgumentNullException("reader") : null);
@@ -449,10 +451,12 @@ namespace Latino
             while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) { }
         }
 
+        // *** Resources ***
+
         public static string GetManifestResourceString(Type type, string resName)
         {
-            Utils.ThrowException(type == null ? new ArgumentNullException("type") : null);
-            Utils.ThrowException(resName == null ? new ArgumentNullException("resName") : null);
+            ThrowException(type == null ? new ArgumentNullException("type") : null);
+            ThrowException(resName == null ? new ArgumentNullException("resName") : null);
             foreach (string res in type.Assembly.GetManifestResourceNames())
             {
                 if (res.EndsWith(resName))
@@ -465,8 +469,8 @@ namespace Latino
 
         public static Stream GetManifestResourceStream(Type type, string resName)
         {
-            Utils.ThrowException(type == null ? new ArgumentNullException("type") : null);
-            Utils.ThrowException(resName == null ? new ArgumentNullException("resName") : null);
+            ThrowException(type == null ? new ArgumentNullException("type") : null);
+            ThrowException(resName == null ? new ArgumentNullException("resName") : null);
             foreach (string res in type.Assembly.GetManifestResourceNames())
             {
                 if (res.EndsWith(resName))
