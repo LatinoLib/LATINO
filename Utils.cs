@@ -241,10 +241,10 @@ namespace Latino
             byte[] bom = new byte[4]; // get the byte-order mark, if there is one
             file.Read(bom, 0, 4);
             file.Close();
-            return ((bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) || // utf-8
-                (bom[0] == 0xff && bom[1] == 0xfe) || // ucs-2le, ucs-4le, and ucs-16le
-                (bom[0] == 0xfe && bom[1] == 0xff) || // utf-16 and ucs-2
-                (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff)); // ucs-4
+            return ((bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) || // UTF-8
+                (bom[0] == 0xff && bom[1] == 0xfe) || // UCS-2LE, UCS-4LE, and UCS-16LE
+                (bom[0] == 0xfe && bom[1] == 0xff) || // UTF-16 and UCS-2
+                (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff)); // UCS-4
         }
 
         public static object Clone(object obj, bool deepClone)
