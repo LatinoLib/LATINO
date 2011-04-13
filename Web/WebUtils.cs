@@ -16,7 +16,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Threading;
-using System.Web;
 
 namespace Latino.Web
 {
@@ -28,9 +27,9 @@ namespace Latino.Web
     */
     public static class WebUtils
     {
-        // *** fetching Web pages ***
-
-        private static Regex mCharsetRegex
+        private static Regex mHeaderCharsetRegex
+            = new Regex(@"charset\s*=\s*(([""'](?<enc>[^""']+)[""'])|((?<enc>[^\s>""';]+)))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static Regex mContentCharsetRegex
             = new Regex(@"(\<\?xml[^>]+encoding\s*=\s*(([""'](?<enc>[^""']+)[""'])|((?<enc>[^\s>""']+))))|(\<meta[^>]+charset\s*=\s*(([""'](?<enc>[^""']+)[""'])|((?<enc>[^\s>""']+))))|(\<meta[^>]+charset[^>]+content\s*=\s*(([""'](?<enc>[^""']+)[""'])|((?<enc>[^\s>""']+))))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static Regex mHtmlOrXmlMimeTypeRegex
             = new Regex(@"(text/html)|(application/xhtml\+xml)|(application/xml)|(application/[^+]+\+xml)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -43,6 +42,8 @@ namespace Latino.Web
             = 1;
         private static int mWaitBetweenRetries
             = 5000;
+
+        // *** Getting Web content ***
 
         public static void UseDefaultWebProxy()
         {
@@ -99,31 +100,6 @@ namespace Latino.Web
             }
         }
 
-        // TODO: remove 
-        /*public static string FixUriPath(string uri) 
-        {
-            Utils.ThrowException(uri == null ? new ArgumentNullException("uri") : null);
-            if (Uri.IsWellFormedUriString(uri, UriKind.Absolute)) { return uri; }
-            Uri tmp = new Uri(uri); // throws UriFormatException
-            string path = tmp.PathAndQuery;
-            string[] parts = path.Split('/', '?', '&', '=', '#', '$', ';', ',', '@', ':');
-            char[] separators = new char[parts.Length - 1];
-            int idx = 0;
-            for (int i = 0; i < parts.Length - 1; i++)
-            {
-                idx += parts[i].Length;
-                separators[i] = path[idx];
-                idx++;
-            }
-            string escPath = "";
-            for (int i = 0; i < parts.Length; i++)
-            {
-                escPath += Uri.EscapeDataString(HttpUtility.UrlDecode(parts[i]));
-                if (i < parts.Length - 1) { escPath += separators[i]; }
-            }
-            return new Uri(tmp, escPath).OriginalString;
-        }*/
-
         public static string GetWebPage(string url)
         {
             CookieContainer cookies = null;
@@ -141,7 +117,7 @@ namespace Latino.Web
             return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
         }
 
-        public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies, Encoding htmlEncoding, int timeout) 
+        public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies, Encoding htmlEncoding, int timeout)
         {            
             Utils.ThrowException(url == null ? new ArgumentNullException("url") : null);
             Utils.ThrowException(htmlEncoding == null ? new ArgumentNullException("htmlEncoding") : null);
@@ -181,7 +157,7 @@ namespace Latino.Web
         {
             CookieContainer foo = null;
             bool bar;
-            return GetWebPageDetectEncoding(url, Encoding.UTF8, /*refUrl=*/null, ref foo, out bar, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException  
+            return GetWebPageDetectEncoding(url, Encoding.GetEncoding("ISO-8859-1"), /*refUrl=*/null, ref foo, out bar, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException  
         }
 
         public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding)
@@ -198,48 +174,33 @@ namespace Latino.Web
             return GetWebPageDetectEncoding(url, defaultEncoding, refUrl, ref foo, out bar, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException  
         }
 
-        public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding, string refUrl, ref CookieContainer cookies, out bool success, int timeout) 
+        public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding, string refUrl, ref CookieContainer cookies, out bool success, int timeout)
         {
             Utils.ThrowException(defaultEncoding == null ? new ArgumentNullException("defaultEncoding") : null);
-            Encoding extAsciiEnc = Encoding.GetEncoding("ISO-8859-1");
-            string html = GetWebPage(url, refUrl, ref cookies, extAsciiEnc, timeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException, ArgumentOutOfRangeException
-            // try to get encoding info from HTML
-            success = false;
-            Match match = mCharsetRegex.Match(html);
-            if (match.Success)
-            {
-                string encStr = match.Result("${enc}");          
-                try
-                {
-                    byte[] bytes = extAsciiEnc.GetBytes(html);
-                    Encoding enc = Encoding.GetEncoding(encStr);                    
-                    html = enc.GetString(bytes);
-                    success = true;
-                }
-                catch 
-                {
-                    if (defaultEncoding != extAsciiEnc)
-                    {
-                        byte[] bytes = extAsciiEnc.GetBytes(html);
-                        html = defaultEncoding.GetString(bytes);
-                    }
-                }
+            string mimeType, charSet;
+            byte[] bytes = GetWebResource(url, refUrl, ref cookies, timeout, out mimeType, out charSet, /*sizeLimit=*/0); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException, ArgumentOutOfRangeException
+            if (charSet == null) 
+            { 
+                success = false; 
+                return defaultEncoding.GetString(bytes); 
             }
             else 
-            {
-                if (defaultEncoding != extAsciiEnc)
-                {
-                    byte[] bytes = extAsciiEnc.GetBytes(html);
-                    html = defaultEncoding.GetString(bytes);
-                }
-            }
-            return html;
+            { 
+                success = true;
+                return Encoding.GetEncoding(charSet).GetString(bytes); // throws ArgumentException
+            } 
         }
 
-        public static byte[] GetWebResource(string url, out string mimeType, out string serverEncoding)
+        public static byte[] GetWebResource(string url, out string mimeType, out string charSet, int sizeLimit)
         {
             CookieContainer cookies = null;
-            return GetWebResource(url, /*refUrl=*/null, ref cookies, mDefaultTimeout, out mimeType, out serverEncoding); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
+            return GetWebResource(url, /*refUrl=*/null, ref cookies, mDefaultTimeout, out mimeType, out charSet, sizeLimit); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
+        }
+
+        public static byte[] GetWebResource(string url, out string mimeType, out string charSet)
+        {
+            CookieContainer cookies = null;
+            return GetWebResource(url, /*refUrl=*/null, ref cookies, mDefaultTimeout, out mimeType, out charSet, /*sizeLimit=*/0); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
         }
 
         // From http://www.w3.org/TR/html4/charset.html#h-5.2.2:
@@ -248,7 +209,7 @@ namespace Latino.Web
         // 2. A META declaration with "http-equiv" set to "Content-Type" and a value set for "charset".
         // 3. The charset attribute set on an element that designates an external resource.
         // The same for XML. See http://www.apps.ietf.org/rfc/rfc3023.html.
-        public static byte[] GetWebResource(string url, string refUrl, ref CookieContainer cookies, int timeout, out string mimeType, out string charSet)
+        public static byte[] GetWebResource(string url, string refUrl, ref CookieContainer cookies, int timeout, out string mimeType, out string charSet, int sizeLimit)
         {
             Utils.ThrowException(url == null ? new ArgumentNullException("url") : null);
             Utils.ThrowException(timeout <= 0 ? new ArgumentOutOfRangeException("timeout") : null);
@@ -272,18 +233,19 @@ namespace Latino.Web
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse(); // throws WebException
                     mimeType = response.ContentType;
                     responseStream = response.GetResponseStream();
-                    bytes = Utils.ReadAllBytes(responseStream);
+                    bytes = Utils.ReadAllBytes(responseStream, sizeLimit);
                     responseStream.Close();
                     charSet = null;
+                    if (bytes == null) { return null; } // size limit exceeded                                     
                     Match m;
-                    if ((m = mCharsetRegex.Match(mimeType)).Success)
+                    if ((m = mHeaderCharsetRegex.Match(mimeType)).Success)
                     {
                         charSet = m.Result("${enc}");
                     }
                     else if (mHtmlOrXmlMimeTypeRegex.Match(mimeType).Success) // HTML or XML-based data format
                     {
                         string str = Encoding.GetEncoding("ISO-8859-1").GetString(bytes);
-                        m = mCharsetRegex.Match(str);
+                        m = mContentCharsetRegex.Match(str);
                         if (m.Success) { charSet = m.Result("${enc}"); }
                     }
                     break;
@@ -298,9 +260,7 @@ namespace Latino.Web
             return bytes;
         }
 
-        //public delegate bool AcceptWebResourceDelegate(HttpWebResponse response);
-
-        // *** search query normalization ***
+        // *** Search query normalization ***
 
         public static string NormalizeQuery(string query)
         {
