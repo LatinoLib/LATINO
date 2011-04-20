@@ -338,42 +338,6 @@ namespace HtmlAgilityPack
         }
 
         /// <summary>
-        /// Gets the start index of the HTML fragment between the start and end tags of the object.
-        /// *** This must not be used after the DOM tree has been modified. ***
-        /// </summary>
-        public virtual int InnerStartIndex
-        {
-            get { return _innerstartindex; }
-        }
-
-        /// <summary>
-        /// Gets the length of the HTML fragment between the start and end tags of the object.
-        /// *** This must not be used after the DOM tree has been modified. ***
-        /// </summary>
-        public virtual int InnerLength
-        {
-            get { return _innerlength; }
-        }
-
-        /// <summary>
-        /// Gets the start index of the HTML fragment between and including the start and end tags of the object.
-        /// *** This must not be used after the DOM tree has been modified. ***
-        /// </summary>
-        public virtual int OuterStartIndex
-        {
-            get { return _outerstartindex; }
-        }
-
-        /// <summary>
-        /// Gets the length of the HTML fragment between and including the start and end tags of the object.
-        /// *** This must not be used after the DOM tree has been modified. ***
-        /// </summary>
-        public virtual int OuterLength
-        {
-            get { return _outerlength; }
-        }
-
-        /// <summary>
         /// Gets or Sets the HTML between the start and end tags of the object.
         /// </summary>
         public virtual string InnerHtml

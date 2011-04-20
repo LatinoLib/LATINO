@@ -14,8 +14,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
 using System.Web;
+using HtmlAgilityPack;
 
 namespace Latino.TextMining
 {
@@ -76,8 +76,6 @@ namespace Latino.TextMining
             = new Regex("^" + mWordRegexStr + "$", RegexOptions.Compiled);
         private static Regex mTagRegex
             = new Regex("^" + mTagRegexStr + "$", RegexOptions.Compiled | RegexOptions.Singleline);
-        private static Regex mEmptyTagPairRegex
-            = new Regex(@"^(?<startTag><[^\s]+.*>)(?<endTag></[^\s]+.*>)$", RegexOptions.Compiled | RegexOptions.Singleline);
         
         private ArrayList<Token> mTokenList
             = new ArrayList<Token>();
@@ -96,7 +94,8 @@ namespace Latino.TextMining
             mDecodeTextBlocks = decodeTextBlocks;
             mTokenizeTextBlocks = tokenizeTextBlocks;            
             HtmlDocument htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(text); 
+            Configure(htmlDoc);
+            htmlDoc.LoadHtml(text);            
             HtmlNodeCollection nodes = new HtmlNodeCollection(/*parentNode=*/null);
             nodes.Add(htmlDoc.DocumentNode);
             RegexTokenizer textBlockTokenizer = null;
@@ -118,36 +117,52 @@ namespace Latino.TextMining
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
+        private void Configure(HtmlDocument htmlDoc)
+        {
+            htmlDoc.OptionCheckSyntax = false;
+            htmlDoc.OptionReadEncoding = false;
+            // *** what is the following option for?
+            //htmlDoc.OptionUseIdAttribute = false;
+        }
+
         private IEnumerable<Token> CreateToken(HtmlNode node, out Token endTag, RegexTokenizer textBlockTokenizer)
         {
             IEnumerable<Token> tokens = null;
             endTag = null;
             if (node.NodeType == HtmlNodeType.Element)
             {                
-                // case 1: open tag like <i> without </i>
-                if (node.InnerLength <= 0 && node.OuterLength <= 0)
+                // case 1: open tag like <i> without </i> (inside another tag like <b><i></b>)
+                if (node._innerlength <= 0 && node._outerlength <= 0)
                 {
                     Token token = new Token();
                     token.mTokenType = TokenType.OpenTag;
-                    token.mStartIndex = node.OuterStartIndex;
-                    token.mLength = node.InnerStartIndex - node.OuterStartIndex;
+                    token.mStartIndex = node._outerstartindex;
+                    token.mLength = node._innerstartindex - node._outerstartindex;
                     token.mTokenStr = mText.Substring(token.mStartIndex, token.mLength);
                     tokens = new Token[] { token };
                 }
-                // case 2: empty tag like <br> or <br/>
-                else if (node.InnerLength <= 0)
+                // case 2: open tag like <i> without </i> (other cases)
+                else if (node._innerlength <= 0 && node.EndNode == null)
                 {
-                    string tokenStr = mText.Substring(node.OuterStartIndex, node.OuterLength);                    
-                    Match m;
-                    if ((m = mEmptyTagPairRegex.Match(tokenStr)).Success) // handle <tag></tag> pair 
+                    Token token = new Token();
+                    token.mTokenType = TokenType.OpenTag;
+                    token.mStartIndex = node._outerstartindex;
+                    token.mLength = node._outerlength;
+                    token.mTokenStr = mText.Substring(token.mStartIndex, token.mLength);
+                    tokens = new Token[] { token };
+                }
+                // case 3: empty tag like <br> or <br/>
+                else if (node._innerlength <= 0)
+                {
+                    if (node.EndNode._outerstartindex != node._outerstartindex) // handle <tag></tag> pair 
                     {
-                        string startTagStr = m.Result("${startTag}");
+                        string startTagStr = mText.Substring(node._outerstartindex, node.EndNode._outerstartindex - node._outerstartindex);
                         Token firstTag = new Token();
                         firstTag.mTokenType = TokenType.StartTag;
-                        firstTag.mStartIndex = node.OuterStartIndex;
+                        firstTag.mStartIndex = node._outerstartindex;
                         firstTag.mLength = startTagStr.Length;
                         firstTag.mTokenStr = startTagStr;
-                        string endTagStr = m.Result("${endTag}");
+                        string endTagStr = mText.Substring(node.EndNode._outerstartindex, node.EndNode._outerlength);
                         Token secondTag = new Token();
                         secondTag.mTokenType = TokenType.EndTag;
                         secondTag.mStartIndex = firstTag.mStartIndex + firstTag.mLength;
@@ -159,25 +174,25 @@ namespace Latino.TextMining
                     {
                         Token token = new Token();
                         token.mTokenType = TokenType.EmptyTag;
-                        token.mStartIndex = node.OuterStartIndex;
-                        token.mLength = node.OuterLength;
-                        token.mTokenStr = tokenStr;
+                        token.mStartIndex = node._outerstartindex;
+                        token.mLength = node._outerlength;
+                        token.mTokenStr = mText.Substring(node._outerstartindex, node._outerlength);
                         tokens = new Token[] { token };
                     }
                 }
-                // case 3: closed tag like <b>some text</b>
+                // case 4: closed tag like <b>some text</b>
                 else
                 {
                     Token token = new Token();
                     token.mTokenType = TokenType.StartTag;
-                    token.mStartIndex = node.OuterStartIndex;
-                    token.mLength = node.InnerStartIndex - node.OuterStartIndex;
+                    token.mStartIndex = node._outerstartindex;
+                    token.mLength = node._innerstartindex - node._outerstartindex;
                     token.mTokenStr = mText.Substring(token.mStartIndex, token.mLength);
                     tokens = new Token[] { token };
                     endTag = new Token();
                     endTag.mTokenType = TokenType.EndTag;
-                    endTag.mStartIndex = node.InnerStartIndex + node.InnerLength;
-                    endTag.mLength = node.OuterStartIndex + node.OuterLength - endTag.mStartIndex;
+                    endTag.mStartIndex = node._innerstartindex + node._innerlength;
+                    endTag.mLength = node._outerstartindex + node._outerlength - endTag.mStartIndex;
                     endTag.mTokenStr = mText.Substring(endTag.mStartIndex, endTag.mLength);
                 }
             }
@@ -189,20 +204,20 @@ namespace Latino.TextMining
                     token.mTokenType = TokenType.Text;
                     if (!mDecodeTextBlocks)
                     {
-                        token.mStartIndex = node.InnerStartIndex;
-                        token.mLength = node.InnerLength;
+                        token.mStartIndex = node._innerstartindex;
+                        token.mLength = node._innerlength;
                     }
-                    token.mTokenStr = mText.Substring(token.mStartIndex, token.mLength);
+                    token.mTokenStr = mText.Substring(node._innerstartindex, node._innerlength);
                     if (mDecodeTextBlocks) { token.mTokenStr = HttpUtility.HtmlDecode(token.mTokenStr); }
                     tokens = new Token[] { token };
                 }
                 else // tokenize text block
                 {
                     tokens = new ArrayList<Token>();
-                    string text = mText.Substring(node.InnerStartIndex, node.InnerLength);
+                    string text = mText.Substring(node._innerstartindex, node._innerlength);
                     textBlockTokenizer.Text = mDecodeTextBlocks ? HttpUtility.HtmlDecode(text) : text;
                     RegexTokenizer.Enumerator tokEnum = (RegexTokenizer.Enumerator)textBlockTokenizer.GetEnumerator();
-                    int baseIdx = node.InnerStartIndex;
+                    int baseIdx = node._innerstartindex;
                     while (tokEnum.MoveNext())
                     {
                         string tokenStr = tokEnum.Current;
@@ -342,6 +357,7 @@ namespace Latino.TextMining
                 Utils.ThrowException(value == null ? new ArgumentNullException("Text") : null);
                 mText = value;
                 HtmlDocument htmlDoc = new HtmlDocument();
+                Configure(htmlDoc);
                 htmlDoc.LoadHtml(value);
                 HtmlNodeCollection nodes = new HtmlNodeCollection(/*parentNode=*/null);
                 nodes.Add(htmlDoc.DocumentNode);
