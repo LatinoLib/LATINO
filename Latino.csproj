@@ -62,8 +62,9 @@
     <Compile Include="Model\SvmMulticlassFast.cs" />
     <Compile Include="Persistance\DatabaseConnection.cs" />
     <Compile Include="TextMining\BoilerplateRemover.cs" />
+    <None Include="TextMining\HtmlTokenizer.cs" />
     <Compile Include="TextMining\CustomStemmer.cs" />
-    <Compile Include="TextMining\HtmlTokenizer.cs" />
+    <Compile Include="TextMining\HtmlTokenizerHap.cs" />
     <Compile Include="TextMining\SimHash.cs" />
     <Compile Include="TextMining\StopWords\SerbianStopWordsCyrillic.cs" />
     <Compile Include="Visualization\DrawableObjects\Label.cs" />
@@ -280,6 +281,12 @@
     <EmbeddedResource Include="Resources\LanguageDetector\Slovene.ldp" />
     <EmbeddedResource Include="Resources\LanguageDetector\Spanish.ldp" />
     <EmbeddedResource Include="Resources\LanguageDetector\Swedish.ldp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\JsintProxy\HtmlAgilityPack\HtmlAgilityPack.csproj">
+      <Project>{34B63EAF-E0D0-4B07-85C5-42E0559FAC9F}</Project>
+      <Name>HtmlAgilityPack</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

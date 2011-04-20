@@ -239,7 +239,7 @@ namespace Latino.TextMining
 				tokenCount++;
 				if (isTag == false)
 				{
-					if (HtmlTokenizer.IsWord (t))
+					if (HtmlTokenizerHap.GetTokenType (t) == HtmlTokenizerHap.TokenType.Word)
 					{
 						numWords++;
 						wordLengthSum += t.Length;
@@ -651,7 +651,7 @@ namespace Latino.TextMining
 			new Regex (tagRegexStrings[(int)TagNames.Paragraph], RegexOptions.Compiled | RegexOptions.IgnoreCase),
 			new Regex (tagRegexStrings[(int)TagNames.Headline], RegexOptions.Compiled | RegexOptions.IgnoreCase)
 		};
-		private HtmlTokenizer tokenizer = new HtmlTokenizer (new PorterStemmer ());
+		private HtmlTokenizerHap tokenizer = new HtmlTokenizerHap ("");
 		public DecisionTree decisionTree = new DecisionTree();
 		private Set<string> ignorableTags = new Set<string>(new string[]
 		{
@@ -663,7 +663,6 @@ namespace Latino.TextMining
 		public BoilerplateRemover()
 		{
 			tokenizer.Normalize = false;
-			tokenizer.DecodeHtml = true;
 		}
 
 		private static bool IsTagOpening(TagNames tagName, string token)
@@ -702,23 +701,23 @@ namespace Latino.TextMining
 			return SpanTagType.KnownOpeningSpanTag;
 		}
 
-		private HtmlTokenizer.Enumerator TokenizeHtml (string filePath)
+		private HtmlTokenizerHap.Enumerator TokenizeHtml (string filePath)
 		{
 			if(File.Exists(filePath) == false)
 				return null;
 			tokenizer.Text = File.ReadAllText(filePath);
 			
-			return (HtmlTokenizer.Enumerator) tokenizer.GetEnumerator();
+			return (HtmlTokenizerHap.Enumerator) tokenizer.GetEnumerator();
 		}
 
 		private bool IsTagIgnorable (string t)
 		{
-			return ignorableTags.Contains(HtmlTokenizer.GetTagName(t));
+			return ignorableTags.Contains(HtmlTokenizerHap.GetTagName(t));
 		}
 
 		public List<HtmlBlock> GetHtmlBlocks(string fileName, bool isAnnotated)
 		{
-			HtmlTokenizer.Enumerator tokensEnum = TokenizeHtml (fileName);
+			HtmlTokenizerHap.Enumerator tokensEnum = TokenizeHtml (fileName);
 			if (tokensEnum == null)
 				return null;
 			
@@ -809,7 +808,7 @@ namespace Latino.TextMining
 				{
 					continue;	
 				}
-				if(HtmlTokenizer.IsTag(t))
+				if(HtmlTokenizerHap.IsTag(t))
 				{
 //					if(IsTagIgnorable(t))
 //					{

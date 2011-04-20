@@ -26,27 +26,33 @@ namespace Latino.TextMining
     */
     public class HtmlTokenizer : ITokenizer
     {
-        private static string tag 
+        private static string mTagRegexStr 
             = @"<(?<startMark>/?)(?<tagName>\w([-_:]?\w)*)((\s+\w([-_:]?\w)*(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)(?<endMark>/?)>";
-        private static string number 
+        private static string mNumberRegexStr 
             = @"[0-9][\.,0-9]*";
-        private static string word 
+        private static string mWordRegexStr 
             = @"\p{L}+";
-        private static string comment 
-            = "(<!--)|(-->)";
-        private static Regex tagRegex
-            = new Regex("^" + tag + "$", RegexOptions.Compiled | RegexOptions.Singleline);
-        private static Regex numberRegex
-            = new Regex("^" + number + "$", RegexOptions.Compiled | RegexOptions.Singleline);
-        private static Regex wordRegex
-            = new Regex("^" + word + "$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static string mCommentRegexStr 
+            = @"(<!--)|(-->)";
+        private static string mCharRefRegexStr
+            = @"&((#\d+)|(#[xX][0-9A-Fa-f]+)|([a-zA-Z0-9]+));";
+        private static Regex mTagRegex
+            = new Regex("^" + mTagRegexStr + "$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static Regex mNumberRegex
+            = new Regex("^" + mNumberRegexStr + "$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static Regex mWordRegex
+            = new Regex("^" + mWordRegexStr + "$", RegexOptions.Compiled | RegexOptions.Singleline);
+        public/*private*/ static Regex mCharRefRegex
+            = new Regex("^" + mCharRefRegexStr + "$", RegexOptions.Compiled | RegexOptions.Singleline);
 
         private RegexTokenizer mRegexTokenizer
             = new RegexTokenizer();
         private IStemmer mStemmer;
         private bool mNormalize 
             = true;
-        private bool mDecodeHtml
+        private bool mPreprocessHtml
+            = true;
+        private bool mSkipCharRefs
             = true;
 
         public HtmlTokenizer() : this(/*stemmer=*/null, "")
@@ -60,24 +66,24 @@ namespace Latino.TextMining
         public HtmlTokenizer(IStemmer stemmer, string text)
         {
             Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
-            mRegexTokenizer.Text = PreprocHtml(text);
+            mRegexTokenizer.Text = TranscodeHtml(text);
             mStemmer = stemmer;
-            mRegexTokenizer.TokenRegex = string.Format("({0})|({1})|({2})|({3})", tag, number, word, comment);
+            mRegexTokenizer.TokenRegex = string.Format("({0})|({1})|({2})|({3})|({4})", mTagRegexStr, mNumberRegexStr, mWordRegexStr, mCommentRegexStr, mCharRefRegexStr);
             mRegexTokenizer.IgnoreUnknownTokens = true;
             mRegexTokenizer.TokenRegexOptions |= RegexOptions.Singleline;
         }
 
         private string CleanText(string text)
         {
-            text = Regex.Replace(text, tag, " ", RegexOptions.Singleline); // remove tags
+            text = Regex.Replace(text, mTagRegexStr, " ", RegexOptions.Singleline); // remove tags
             text = Regex.Replace(text.Trim(), @"\s\s+", " "); // compress text
             return text;
         }
 
-        private string PreprocHtml(string html)
+        private string TranscodeHtml(string html)
         {
             html = Regex.Replace(html, @"<!doctype\s+[^>]*>", "", RegexOptions.IgnoreCase);
-            if (mDecodeHtml)
+            if (mPreprocessHtml)
             {
                 html = html.Replace("&lt;", " ");
                 html = html.Replace("&gt;", " ");
@@ -92,16 +98,22 @@ namespace Latino.TextMining
             set { mNormalize = value; }
         }
 
-        public bool DecodeHtml
+        public bool PreprocessHtml
         {
-            get { return mDecodeHtml; }
-            set { mDecodeHtml = value; }
+            get { return mPreprocessHtml; }
+            set { mPreprocessHtml = value; }
+        }
+
+        public bool SkipCharRefs
+        {
+            get { return mSkipCharRefs; }
+            set { mSkipCharRefs = value; }
         }
 
         public static string GetTagName(string tag)
         {
             Utils.ThrowException(tag == null ? new ArgumentNullException("tag") : null);
-            Match m = tagRegex.Match(tag);
+            Match m = mTagRegex.Match(tag);
             if (m.Success)
             {
                 return m.Result("${tagName}").ToLower();
@@ -112,19 +124,19 @@ namespace Latino.TextMining
         public static bool IsTag(string token)
         {
             Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
-            return tagRegex.Match(token).Success;
+            return mTagRegex.Match(token).Success;
         }
 
         public static bool IsWord(string token)
         {
             Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
-            return wordRegex.Match(token).Success;
+            return mWordRegex.Match(token).Success;
         }
 
         public static bool IsOpeningTag(string token)
         {
             Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
-            Match m = tagRegex.Match(token);
+            Match m = mTagRegex.Match(token);
             if (!m.Success) { return false; }
             return m.Result("${startMark}") != "/";
         }
@@ -132,7 +144,7 @@ namespace Latino.TextMining
         public static bool IsClosingTag(string token)
         {
             Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
-            Match m = tagRegex.Match(token);
+            Match m = mTagRegex.Match(token);
             if (!m.Success) { return false; }
             return (m.Result("${startMark}") == "/");
         }
@@ -140,7 +152,13 @@ namespace Latino.TextMining
         public static bool IsNumber(string token)
         {
             Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
-            return numberRegex.Match(token).Success;
+            return mNumberRegex.Match(token).Success;
+        }
+
+        public static bool IsCharRef(string token)
+        {
+            Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
+            return mCharRefRegex.Match(token).Success;
         }
 
         public string GetTextBlock(int startIdx, int len)
@@ -165,13 +183,13 @@ namespace Latino.TextMining
             set
             {
                 Utils.ThrowException(value == null ? new ArgumentNullException("Text") : null);
-                mRegexTokenizer.Text = PreprocHtml(value);
+                mRegexTokenizer.Text = TranscodeHtml(value);
             }
         }
 
         public IEnumerator<string> GetEnumerator()
         {
-            return new Enumerator(mRegexTokenizer, mStemmer, mNormalize);
+            return new Enumerator(mRegexTokenizer, mStemmer, mNormalize, mSkipCharRefs);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -186,7 +204,7 @@ namespace Latino.TextMining
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
             writer.WriteBool(mNormalize);
-            writer.WriteBool(mDecodeHtml);
+            writer.WriteBool(mPreprocessHtml);
             writer.WriteObject(mStemmer);
         }
 
@@ -195,7 +213,7 @@ namespace Latino.TextMining
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
             mNormalize = reader.ReadBool();
-            mDecodeHtml = reader.ReadBool();
+            mPreprocessHtml = reader.ReadBool();
             mStemmer = reader.ReadObject<IStemmer>();
         }
 
@@ -219,24 +237,26 @@ namespace Latino.TextMining
                 = -1;
             private string mNextToken
                 = null;
+            private bool mSkipCharRefs;
 
-            internal Enumerator(RegexTokenizer tokenizer, IStemmer stemmer, bool normalize)
+            internal Enumerator(RegexTokenizer tokenizer, IStemmer stemmer, bool normalize, bool skipCharRefs)
             {
                 mTokenizer = tokenizer;
                 mEnum = (RegexTokenizer.Enumerator)tokenizer.GetEnumerator();
                 mStemmer = stemmer;
                 mNormalize = normalize;
+                mSkipCharRefs = skipCharRefs;
             }
 
             private string NormalizeToken(string token, out string nextToken)
             {
                 nextToken = null;
-                if (token == "<!--" || token == "-->")
+                if (token == "<!--" || token == "-->" || mCharRefRegex.Match(token).Success)
                 {
                     return token;
                 }
                 Match m = null;
-                if ((m = tagRegex.Match(token)).Success)
+                if ((m = mTagRegex.Match(token)).Success)
                 {
                     if (m.Result("${startMark}") == "/")
                     {
@@ -249,11 +269,11 @@ namespace Latino.TextMining
                     }
                     return "<" + m.Result("${tagName}").ToLower() + ">";
                 }
-                if ((m = numberRegex.Match(token)).Success)
+                if ((m = mNumberRegex.Match(token)).Success)
                 {
                     return "1";
                 }
-                if ((m = wordRegex.Match(token)).Success)
+                if ((m = mWordRegex.Match(token)).Success)
                 {
                     return mStemmer == null ? token : mStemmer.GetStem(token.ToLower());
                 }
@@ -302,7 +322,9 @@ namespace Latino.TextMining
                     mNextToken = null;
                     return true;
                 }
-                if (mEnum.MoveNext())
+                bool gotNext = mEnum.MoveNext();
+                if (mSkipCharRefs) { while (gotNext && mCharRefRegex.Match(mEnum.Current).Success) { gotNext = mEnum.MoveNext(); } }
+                if (gotNext)
                 {
                     mCurrentToken = mEnum.Current;
                     mCurrentTokenIdx = mEnum.CurrentTokenIdx;
