@@ -64,6 +64,34 @@
     <Compile Include="TextMining\BoilerplateRemover.cs" />
     <None Include="TextMining\HtmlTokenizer.cs" />
     <Compile Include="TextMining\CustomStemmer.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\EncodingFoundException.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlAttributeCollection.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlCommentNode.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlConsoleListener.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlElementFlag.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlNameTable.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlNodeCollection.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlNodeType.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlParseError.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlParseErrorCode.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlTextNode.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlWebException.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\IOLibrary.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\MixedCodeDocumentCodeFragment.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\MixedCodeDocumentFragment.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\MixedCodeDocumentFragmentList.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\MixedCodeDocumentFragmentType.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\MixedCodeDocumentTextFragment.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\crc32.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\NameValuePairList.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlAttribute.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlDocument.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlEntity.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlNode.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlNodeNavigator.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlWeb.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\MixedCodeDocument.cs" />
+    <Compile Include="TextMining\HtmlAgilityPack\HtmlCmdLine.cs" />
     <Compile Include="TextMining\HtmlTokenizerHap.cs" />
     <Compile Include="TextMining\SimHash.cs" />
     <Compile Include="TextMining\StopWords\SerbianStopWordsCyrillic.cs" />
@@ -281,12 +309,6 @@
     <EmbeddedResource Include="Resources\LanguageDetector\Slovene.ldp" />
     <EmbeddedResource Include="Resources\LanguageDetector\Spanish.ldp" />
     <EmbeddedResource Include="Resources\LanguageDetector\Swedish.ldp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\JsintProxy\HtmlAgilityPack\HtmlAgilityPack.csproj">
-      <Project>{34B63EAF-E0D0-4B07-85C5-42E0559FAC9F}</Project>
-      <Name>HtmlAgilityPack</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
