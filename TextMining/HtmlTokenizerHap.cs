@@ -76,6 +76,8 @@ namespace Latino.TextMining
             = new Regex("^" + mWordRegexStr + "$", RegexOptions.Compiled);
         private static Regex mTagRegex
             = new Regex("^" + mTagRegexStr + "$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static Regex mEmptyTagPairRegex
+            = new Regex(@"^(?<startTag><[^\s]+.*>)(?<endTag></[^\s]+.*>)$", RegexOptions.Compiled | RegexOptions.Singleline);
         
         private ArrayList<Token> mTokenList
             = new ArrayList<Token>();
@@ -135,12 +137,33 @@ namespace Latino.TextMining
                 // case 2: empty tag like <br> or <br/>
                 else if (node.InnerLength <= 0)
                 {
-                    Token token = new Token();
-                    token.mTokenType = TokenType.EmptyTag;
-                    token.mStartIndex = node.OuterStartIndex;
-                    token.mLength = node.OuterLength;
-                    token.mTokenStr = mText.Substring(token.mStartIndex, token.mLength);
-                    tokens = new Token[] { token };
+                    string tokenStr = mText.Substring(node.OuterStartIndex, node.OuterLength);                    
+                    Match m;
+                    if ((m = mEmptyTagPairRegex.Match(tokenStr)).Success) // handle <tag></tag> pair 
+                    {
+                        string startTagStr = m.Result("${startTag}");
+                        Token firstTag = new Token();
+                        firstTag.mTokenType = TokenType.StartTag;
+                        firstTag.mStartIndex = node.OuterStartIndex;
+                        firstTag.mLength = startTagStr.Length;
+                        firstTag.mTokenStr = startTagStr;
+                        string endTagStr = m.Result("${endTag}");
+                        Token secondTag = new Token();
+                        secondTag.mTokenType = TokenType.EndTag;
+                        secondTag.mStartIndex = firstTag.mStartIndex + firstTag.mLength;
+                        secondTag.mLength = endTagStr.Length;
+                        secondTag.mTokenStr = endTagStr;
+                        tokens = new Token[] { firstTag, secondTag };
+                    }
+                    else // handle <tag/>
+                    {
+                        Token token = new Token();
+                        token.mTokenType = TokenType.EmptyTag;
+                        token.mStartIndex = node.OuterStartIndex;
+                        token.mLength = node.OuterLength;
+                        token.mTokenStr = tokenStr;
+                        tokens = new Token[] { token };
+                    }
                 }
                 // case 3: closed tag like <b>some text</b>
                 else
@@ -179,6 +202,7 @@ namespace Latino.TextMining
                     string text = mText.Substring(node.InnerStartIndex, node.InnerLength);
                     textBlockTokenizer.Text = mDecodeTextBlocks ? HttpUtility.HtmlDecode(text) : text;
                     RegexTokenizer.Enumerator tokEnum = (RegexTokenizer.Enumerator)textBlockTokenizer.GetEnumerator();
+                    int baseIdx = node.InnerStartIndex;
                     while (tokEnum.MoveNext())
                     {
                         string tokenStr = tokEnum.Current;
@@ -186,7 +210,7 @@ namespace Latino.TextMining
                         token.mTokenType = GetTokenType(tokenStr);
                         if (!mDecodeTextBlocks)
                         {
-                            token.mStartIndex = tokEnum.CurrentTokenIdx;
+                            token.mStartIndex = baseIdx + tokEnum.CurrentTokenIdx;
                             token.mLength = tokenStr.Length;
                         }
                         token.mTokenStr = tokenStr;
@@ -365,7 +389,7 @@ namespace Latino.TextMining
             mTokenizeTextBlocks = reader.ReadBool();
         }
 
-        // TODO: simplify the code below
+        // TODO: simplify the code below (?)
         /* .-----------------------------------------------------------------------
            |
            |  Class Enumerator
@@ -400,7 +424,7 @@ namespace Latino.TextMining
                 get
                 {
                     Utils.ThrowException(mCurrentToken == null ? new InvalidOperationException() : null);
-                    Utils.ThrowException(mCurrentTokenIdx == -1 ? new InvalidOperationException() : null); // TODO: remove this!!!
+                    //Utils.ThrowException(mCurrentTokenIdx == -1 ? new InvalidOperationException() : null); // TODO: remove this!!!
                     return mCurrentTokenIdx;
                 }
             }
@@ -410,7 +434,7 @@ namespace Latino.TextMining
                 get
                 {
                     Utils.ThrowException(mCurrentToken == null ? new InvalidOperationException() : null);
-                    Utils.ThrowException(mCurrentTokenLen == 0 ? new InvalidOperationException() : null); // TODO: remove this!!!
+                    //Utils.ThrowException(mCurrentTokenLen == 0 ? new InvalidOperationException() : null); // TODO: remove this!!!
                     return mCurrentTokenLen;
                 }
             }

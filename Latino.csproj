@@ -62,7 +62,6 @@
     <Compile Include="Model\SvmMulticlassFast.cs" />
     <Compile Include="Persistance\DatabaseConnection.cs" />
     <Compile Include="TextMining\BoilerplateRemover.cs" />
-    <None Include="TextMining\HtmlTokenizer.cs" />
     <Compile Include="TextMining\CustomStemmer.cs" />
     <Compile Include="TextMining\HtmlAgilityPack\EncodingFoundException.cs" />
     <Compile Include="TextMining\HtmlAgilityPack\HtmlAttributeCollection.cs" />
