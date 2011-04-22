@@ -952,7 +952,7 @@ namespace Latino.TextMining
 				int lastIndx = e.Current;
 				if(firstIndx < lastIndx)
 				{
-					sb.Append(tokenizer.GetTextBlockCleaned(firstIndx, (lastIndx-firstIndx)));
+					sb.Append(tokenizer.GetTextBlock(firstIndx, (lastIndx-firstIndx)));
 					sb.Append(" ");	
 				}
 			}

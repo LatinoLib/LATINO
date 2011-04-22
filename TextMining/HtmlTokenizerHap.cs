@@ -202,11 +202,8 @@ namespace Latino.TextMining
                 {
                     Token token = new Token();
                     token.mTokenType = TokenType.Text;
-                    if (!mDecodeTextBlocks)
-                    {
-                        token.mStartIndex = node._innerstartindex;
-                        token.mLength = node._innerlength;
-                    }
+                    token.mStartIndex = node._innerstartindex;
+                    token.mLength = node._innerlength;
                     token.mTokenStr = mText.Substring(node._innerstartindex, node._innerlength);
                     if (mDecodeTextBlocks) { token.mTokenStr = HttpUtility.HtmlDecode(token.mTokenStr); }
                     tokens = new Token[] { token };
@@ -255,25 +252,11 @@ namespace Latino.TextMining
             set { mNormalize = value; }
         }
 
-        private string CleanText(string text) // TODO: implement this with HtmlAgilityPack
-        {
-            text = Regex.Replace(text, mTagRegexStr, " ", RegexOptions.Singleline); // remove tags
-            text = Regex.Replace(text.Trim(), @"\s\s+", " "); // compress text
-            return text;
-        }
-
         public string GetTextBlock(int startIdx, int len)
         {
             Utils.ThrowException((startIdx < 0 || startIdx >= mText.Length) ? new ArgumentOutOfRangeException("startIdx") : null);
             Utils.ThrowException((len < 0 || startIdx + len > mText.Length) ? new ArgumentOutOfRangeException("len") : null);
-            return mText.Substring(startIdx, len);
-        }
-
-        public string GetTextBlockCleaned(int startIdx, int len) 
-        {
-            Utils.ThrowException((startIdx < 0 || startIdx >= mText.Length) ? new ArgumentOutOfRangeException("startIdx") : null);
-            Utils.ThrowException((len < 0 || startIdx + len > mText.Length) ? new ArgumentOutOfRangeException("len") : null);
-            return CleanText(mText.Substring(startIdx, len));
+            return mDecodeTextBlocks ? HttpUtility.HtmlDecode(mText.Substring(startIdx, len)) : mText.Substring(startIdx, len);
         }
 
         public static TokenType GetTokenType(string token)
