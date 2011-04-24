@@ -235,12 +235,12 @@ namespace Latino.TextMining
 				relPosition = pos;
 			}
 
-			public void Add (string t, bool isInAnchor, bool isTag)
+			public void Add (string t, HtmlTokenizerHap.TokenType tokenType, bool isInAnchor, bool isTag)
 			{
 				tokenCount++;
 				if (isTag == false)
 				{
-					if (HtmlTokenizerHap.GetTokenType (t) == HtmlTokenizerHap.TokenType.Word)
+					if (tokenType == HtmlTokenizerHap.TokenType.Word)
 					{
 						numWords++;
 						wordLengthSum += t.Length;
@@ -702,11 +702,6 @@ namespace Latino.TextMining
 			return (HtmlTokenizerHap.Enumerator) tokenizer.GetEnumerator();
 		}
 
-		private bool IsTagIgnorable (string t)
-		{
-			return ignorableTags.Contains(HtmlTokenizerHap.GetTagName(t));
-		}
-
 		public List<HtmlBlock> GetHtmlBlocks(string fileName, bool isAnnotated)
 		{
 			HtmlTokenizerHap.Enumerator tokensEnum = TokenizeHtml (fileName);
@@ -732,21 +727,21 @@ namespace Latino.TextMining
 			{
 				string t = tokensEnum.Current;
                 //Console.WriteLine(t + " " + tokensEnum.CurrentToken.TokenType);
-				if(HtmlTokenizerHap.IsTag(t))
+				if(tokensEnum.CurrentToken.IsTag)
 				{
-//                  if(IsTagIgnorable(t))
-//                  {
-//                      continue;
-//                  }
+                    //if(ignorableTags.Contains(tokensEnum.CurrentToken.TagName))
+                    //{
+                    //    continue;
+                    //}
 					if(IsTagOpening(TagNames.Anchor, t))
 					{
 						isInAnchor = true;
-						currentBlock.Add(t, false, true);
+                        currentBlock.Add(t, tokensEnum.CurrentToken.TokenType, false, true);
 					}
 					else if(IsTagClosing(TagNames.Anchor, t))
 					{
 						isInAnchor = false;
-						currentBlock.Add(t, false, true);
+                        currentBlock.Add(t, tokensEnum.CurrentToken.TokenType, false, true);
 					}
 					else
 					{
@@ -804,7 +799,7 @@ namespace Latino.TextMining
 				}
 				else
 				{
-					currentBlock.Add(t, isInAnchor, false);
+                    currentBlock.Add(t, tokensEnum.CurrentToken.TokenType, isInAnchor, false);
 					if(isAnnotated)
 						currentBlock.textClass = currentClass;
 				}

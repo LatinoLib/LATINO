@@ -35,7 +35,6 @@ namespace Latino.TextMining
         */
         public enum TokenType
         {
-            Tag,
             OpenTag,
             EmptyTag,
             StartTag,
@@ -62,6 +61,8 @@ namespace Latino.TextMining
                 = -1;
             internal int mLength
                 = -1;
+            internal string mTagName
+                = null;
 
             public TokenType TokenType
             {
@@ -85,11 +86,36 @@ namespace Latino.TextMining
 
             public bool IsTag
             {
-                get 
+                get
                 {
-                    Utils.ThrowException(mTokenStr == null ? new InvalidOperationException() : null);
-                    return HtmlTokenizerHap.IsTag(mTokenStr); 
+                    return TokenType == TokenType.OpenTag || TokenType == TokenType.EmptyTag ||
+                        TokenType == TokenType.StartTag || TokenType == TokenType.EndTag;
                 } 
+            }
+
+            public string TagName
+            {
+                get { return mTagName; }
+            }
+
+            public string GetNormalized(IStemmer stemmer)
+            {
+                switch (mTokenType)
+                { 
+                    case TokenType.OpenTag:
+                    case TokenType.StartTag:
+                        return string.Format("<{0}>", mTagName);
+                    case TokenType.EndTag:
+                        return string.Format("</{0}>", mTagName);
+                    case TokenType.EmptyTag:
+                        return string.Format("<{0}/>", mTagName);
+                    case TokenType.Number:
+                        return "1";
+                    case TokenType.Word:
+                        return stemmer == null ? mTokenStr : stemmer.GetStem(mTokenStr);
+                    default:
+                        return mTokenStr;                     
+                }
             }
         }
 
@@ -97,14 +123,14 @@ namespace Latino.TextMining
             = @"[0-9][\.,0-9]*";
         private static string mWordRegexStr
             = @"\p{L}+";
-        private static string mTagRegexStr
-            = @"<(?<startSlash>/?)(?<tagName>[^\s]+).*?(?<endSlash>/?)>";
+        //private static string mTagRegexStr
+        //    = @"<(?<startSlash>/?)(?<tagName>[^\s]+).*?(?<endSlash>/?)>";
         private static Regex mNumberRegex 
             = new Regex("^" + mNumberRegexStr + "$", RegexOptions.Compiled);
         private static Regex mWordRegex
             = new Regex("^" + mWordRegexStr + "$", RegexOptions.Compiled);
-        private static Regex mTagRegex
-            = new Regex("^" + mTagRegexStr + "$", RegexOptions.Compiled | RegexOptions.Singleline);
+        //private static Regex mTagRegex
+        //    = new Regex("^" + mTagRegexStr + "$", RegexOptions.Compiled | RegexOptions.Singleline);
         
         private ArrayList<Token> mTokenList
             = new ArrayList<Token>();
@@ -172,6 +198,7 @@ namespace Latino.TextMining
                     token.mStartIndex = node._outerstartindex;
                     token.mLength = node._innerstartindex - node._outerstartindex;
                     token.mTokenStr = mText.Substring(token.mStartIndex, token.mLength);
+                    token.mTagName = node.Name.ToString();
                     tokens = new Token[] { token };
                 }
                 // case 2: open tag like <i> without </i> (other cases)
@@ -182,6 +209,7 @@ namespace Latino.TextMining
                     token.mStartIndex = node._outerstartindex;
                     token.mLength = node._outerlength;
                     token.mTokenStr = mText.Substring(token.mStartIndex, token.mLength);
+                    token.mTagName = node.Name.ToLower();
                     tokens = new Token[] { token };
                 }
                 // case 3: empty tag like <br> or <br/>
@@ -195,12 +223,14 @@ namespace Latino.TextMining
                         firstTag.mStartIndex = node._outerstartindex;
                         firstTag.mLength = startTagStr.Length;
                         firstTag.mTokenStr = startTagStr;
+                        firstTag.mTagName = node.Name.ToLower();
                         string endTagStr = mText.Substring(node.EndNode._outerstartindex, node.EndNode._outerlength);
                         Token secondTag = new Token();
                         secondTag.mTokenType = TokenType.EndTag;
                         secondTag.mStartIndex = firstTag.mStartIndex + firstTag.mLength;
                         secondTag.mLength = endTagStr.Length;
                         secondTag.mTokenStr = endTagStr;
+                        secondTag.mTagName = firstTag.mTagName;
                         tokens = new Token[] { firstTag, secondTag };
                     }
                     else // handle <tag/>
@@ -210,6 +240,7 @@ namespace Latino.TextMining
                         token.mStartIndex = node._outerstartindex;
                         token.mLength = node._outerlength;
                         token.mTokenStr = mText.Substring(node._outerstartindex, node._outerlength);
+                        token.mTagName = node.Name.ToLower();
                         tokens = new Token[] { token };
                     }
                 }
@@ -221,12 +252,14 @@ namespace Latino.TextMining
                     token.mStartIndex = node._outerstartindex;
                     token.mLength = node._innerstartindex - node._outerstartindex;
                     token.mTokenStr = mText.Substring(token.mStartIndex, token.mLength);
+                    token.mTagName = node.Name.ToLower();
                     tokens = new Token[] { token };
                     endTag = new Token();
                     endTag.mTokenType = TokenType.EndTag;
                     endTag.mStartIndex = node._innerstartindex + node._innerlength;
                     endTag.mLength = node._outerstartindex + node._outerlength - endTag.mStartIndex;
                     endTag.mTokenStr = mText.Substring(endTag.mStartIndex, endTag.mLength);
+                    endTag.mTagName = token.mTagName;
                 }
             }
             else if (node.NodeType == HtmlNodeType.Text)
@@ -293,23 +326,9 @@ namespace Latino.TextMining
             set { mNormalize = value; }
         }
 
-        public static TokenType GetTokenType(string token)
+        private static TokenType GetTokenType(string token)
         {
-            Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
-            Match m;
-            if ((m = mTagRegex.Match(token)).Success)
-            {
-                if (m.Result("${startSlash}") == "/")
-                {
-                    return TokenType.EndTag;
-                }
-                else if (m.Result("${endSlash}") == "/")
-                {
-                    return TokenType.EmptyTag;
-                }
-                return TokenType.Tag;
-            }
-            else if (mWordRegex.Match(token).Success)
+            if (mWordRegex.Match(token).Success)
             {
                 return TokenType.Word;
             }
@@ -317,52 +336,35 @@ namespace Latino.TextMining
             {
                 return TokenType.Number;
             }
-            return TokenType.Unknown; 
+            return TokenType.Unknown;
         }
 
-        public static string NormalizeToken(string token, IStemmer stemmer)
-        {
-            Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
-            Match m;
-            if ((m = mTagRegex.Match(token)).Success)
-            {
-                if (m.Result("${startSlash}") == "/")
-                {
-                    return "</" + m.Result("${tagName}") + ">";
-                }
-                else if (m.Result("${endSlash}") == "/")
-                {
-                    return "<" + m.Result("${tagName}") + "/>";
-                }
-                return "<" + m.Result("${tagName}") + ">";
-            }
-            else if (mWordRegex.Match(token).Success)
-            {
-                return stemmer != null ? stemmer.GetStem(token) : token;
-            }
-            else if (mNumberRegex.Match(token).Success)
-            {
-                return "1";
-            }
-            return token;
-        }
-
-        public static bool IsTag(string token)
-        {
-            TokenType type = GetTokenType(token); // throws ArgumentNullException
-            return type == TokenType.EmptyTag || type == TokenType.EndTag || type == TokenType.Tag;
-        }
-
-        public static string GetTagName(string token)
-        {
-            Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
-            Match m;
-            if ((m = mTagRegex.Match(token)).Success)
-            {
-                return m.Result("${tagName}");
-            }
-            return null;
-        }
+        //public static string NormalizeToken(string token, IStemmer stemmer)
+        //{
+        //    Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
+        //    Match m;
+        //    if ((m = mTagRegex.Match(token)).Success)
+        //    {
+        //        if (m.Result("${startSlash}") == "/")
+        //        {
+        //            return "</" + m.Result("${tagName}") + ">";
+        //        }
+        //        else if (m.Result("${endSlash}") == "/")
+        //        {
+        //            return "<" + m.Result("${tagName}") + "/>";
+        //        }
+        //        return "<" + m.Result("${tagName}") + ">";
+        //    }
+        //    else if (mWordRegex.Match(token).Success)
+        //    {
+        //        return stemmer != null ? stemmer.GetStem(token) : token;
+        //    }
+        //    else if (mNumberRegex.Match(token).Success)
+        //    {
+        //        return "1";
+        //    }
+        //    return token;
+        //}
 
         // *** ITokenizer interface implementation ***
 
@@ -505,7 +507,7 @@ namespace Latino.TextMining
             {
                 if (mEnum.MoveNext())
                 {
-                    mTokenStr = mNormalize ? NormalizeToken(mEnum.Current.mTokenStr, mStemmer) : mEnum.Current.mTokenStr;
+                    mTokenStr = mNormalize ? mEnum.Current.GetNormalized(mStemmer) : mEnum.Current.mTokenStr;
                     mTokenListIdx++;
                     return true;
                 }
