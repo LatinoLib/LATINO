@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Web;
 
 namespace Latino.TextMining
 {
@@ -161,7 +162,7 @@ namespace Latino.TextMining
 			}
 		}
 
-		public class Features			
+		public class Features
 		{
 			private Dictionary<string, FeatureValue> features = new Dictionary<string, FeatureValue>();
 
@@ -194,8 +195,6 @@ namespace Latino.TextMining
 				public static string Next = "n.";
 			}
 			
-//			public List<string> tokens = new List<string> ();
-			
 			public TextClass textClass = TextClass.Boilerplate;
 			public double relPosition = 0;
 			public int numTokensInsideAnchors = 0;
@@ -218,12 +217,14 @@ namespace Latino.TextMining
 			public double predConf = 0.0;
 			public int tokenCount = 0;
 			public string text;
-			public List<int> tokens = new List<int>();
+            public int startListIdx = -1;
+            public int endListIdx = -1;
 			public string trace;
 				
-			public HtmlBlock (double pos)
+			public HtmlBlock (double pos, int startIdx)
 			{
 				relPosition = pos;
+                startListIdx = startIdx;
 			}
 
 			public HtmlBlock (HtmlBlock b, bool isInAnchor, double pos)
@@ -254,7 +255,7 @@ namespace Latino.TextMining
 					numTokensInsideAnchors++;
 			}
 
-			public new string ToString (FeaturesEnum fe)
+			public string ToString (FeaturesEnum fe)
 			{
 				StringBuilder sb = new StringBuilder(50);
 
@@ -623,9 +624,6 @@ namespace Latino.TextMining
 		private enum TagNames
 		{
 			Anchor = 0,
-			Script,
-			NoScript,
-			Style,
 			Span,
 			Paragraph,
 			Headline
@@ -634,9 +632,6 @@ namespace Latino.TextMining
 		private static string [] tagRegexStrings = new string []
 		{
 			@"<(?<startMark>/?)a((\s+\w([-_]?\w)*(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)>",
-			@"<(?<startMark>/?)script((\s+\w([-_]?\w)*(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)>",
-			@"<(?<startMark>/?)noscript((\s+\w([-_]?\w)*(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)>",
-			@"<(?<startMark>/?)style((\s+\w([-_]?\w)*(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)>",
 			@"<(?<startMark>/?)span(\sclass=""x-nc-sel(?<blockClassID>[012345]?)"")?>",		
 			@"<(?<startMark>/?)p((\s+\w([-_]?\w)*(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)>",
 			@"<(?<startMark>/?)h[1-3]((\s+\w([-_]?\w)*(\s*=\s*(?:"".*?""|'.*?'|[^'"">\s]+))?)+\s*|\s*)>"
@@ -644,9 +639,6 @@ namespace Latino.TextMining
 		private static Regex [] tagRegexes = new Regex []
 		{
 			new Regex (tagRegexStrings[(int)TagNames.Anchor], RegexOptions.Compiled | RegexOptions.IgnoreCase),
-			new Regex (tagRegexStrings[(int)TagNames.Script], RegexOptions.Compiled | RegexOptions.IgnoreCase),
-			new Regex (tagRegexStrings[(int)TagNames.NoScript], RegexOptions.Compiled | RegexOptions.IgnoreCase),
-			new Regex (tagRegexStrings[(int)TagNames.Style], RegexOptions.Compiled | RegexOptions.IgnoreCase),
 			new Regex (tagRegexStrings[(int)TagNames.Span], RegexOptions.Compiled | RegexOptions.IgnoreCase),
 			new Regex (tagRegexStrings[(int)TagNames.Paragraph], RegexOptions.Compiled | RegexOptions.IgnoreCase),
 			new Regex (tagRegexStrings[(int)TagNames.Headline], RegexOptions.Compiled | RegexOptions.IgnoreCase)
@@ -722,19 +714,14 @@ namespace Latino.TextMining
 				return null;
 			
 			int pos = 0;
-			bool isInComment = false;
 			bool isInAnchor = false;
-			bool isInStyle = false;
-			bool isInScript = false;
-			bool isInNoScript = false;
 			bool isInP = false;
 			bool isInH = false;
 			
 			List<HtmlBlock> blocks = new List<HtmlBlock>();
-			HtmlBlock prevBlock = new HtmlBlock (pos);
+			HtmlBlock prevBlock = new HtmlBlock (pos, -1);
 			blocks.Add (prevBlock);
-			HtmlBlock currentBlock = new HtmlBlock (++pos);
-			currentBlock.tokens.Add(0);
+			HtmlBlock currentBlock = new HtmlBlock (++pos, 0);
 			
 			Stack<TextClass> textClasses = new Stack<TextClass>();
 			textClasses.Push(TextClass.Boilerplate);
@@ -744,78 +731,13 @@ namespace Latino.TextMining
 			while(tokensEnum.MoveNext())
 			{
 				string t = tokensEnum.Current;
-				if(IsTagOpening(TagNames.Style, t))
-				{
-					isInStyle = true;
-					if(currentBlock.tokens.Count > 0)
-						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);
-					continue;
-				}
-				else if(IsTagClosing(TagNames.Style, t))
-				{
-					isInStyle = false;
-					if(currentBlock.tokens.Count > 0)
-						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);					
-					continue;
-				}
-				else if(IsTagOpening(TagNames.Script, t))
-				{
-					isInScript = true;	
-					if(currentBlock.tokens.Count > 0)
-						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);					
-					continue;
-				}
-				else if(IsTagClosing(TagNames.Script, t))
-				{
-					isInScript = false;	
-					if(currentBlock.tokens.Count > 0)
-						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);					
-					continue;
-				}
-				else if(IsTagOpening(TagNames.NoScript, t))
-				{
-					isInNoScript = true;	
-					if(currentBlock.tokens.Count > 0)
-						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);					
-					continue;
-				}
-				else if(IsTagClosing(TagNames.NoScript, t))
-				{
-					isInNoScript = false;	
-					if(currentBlock.tokens.Count > 0)
-						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);					
-					continue;
-				}
-				else if(isInNoScript || isInStyle || isInScript)
-				{
-					continue;
-				}
-				else if(t == "<!--")
-				{
-					isInComment = true;
-					if(currentBlock.tokens.Count > 0)
-						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);
-					continue;
-				}
-				else if(t == "-->")
-				{
-					isInComment = false;
-					if(currentBlock.tokens.Count > 0)
-						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx + tokensEnum.CurrentTokenLen);
-					continue;
-				}
-				else if(isInComment)
-				{
-					continue;	
-				}
+                //Console.WriteLine(t + " " + tokensEnum.CurrentToken.TokenType);
 				if(HtmlTokenizerHap.IsTag(t))
 				{
-//					if(IsTagIgnorable(t))
-//					{
-//						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);
-//						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx + tokensEnum.CurrentTokenLen);
-//						continue;
-//					}
+//                  if(IsTagIgnorable(t))
+//                  {
+//                      continue;
+//                  }
 					if(IsTagOpening(TagNames.Anchor, t))
 					{
 						isInAnchor = true;
@@ -836,7 +758,6 @@ namespace Latino.TextMining
 						{
 							isInH = true;	
 						}
-						currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);
 						if(isAnnotated)
 						{
 							if((spanType = GetSpanTagType(t, out textClass)) != SpanTagType.NotSpanTag)
@@ -851,7 +772,6 @@ namespace Latino.TextMining
 										currentClass = c;
 										break;
 									}
-								currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx + tokensEnum.CurrentTokenLen);
 								continue;
 							}
 						}
@@ -859,16 +779,16 @@ namespace Latino.TextMining
 						{
 							currentBlock.isInP = isInP;
 							currentBlock.isInH = isInH;
+                            currentBlock.endListIdx = tokensEnum.CurrentTokenListIdx;
 							CalcBlockFeatures(currentBlock, prevBlock);
 							prevBlock = currentBlock;
 							blocks.Add(currentBlock);
-							currentBlock = new HtmlBlock(++pos);
-							currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx + tokensEnum.CurrentTokenLen);
+                            currentBlock = new HtmlBlock(++pos, tokensEnum.CurrentTokenListIdx + 1);
 						}
 						else
 						{
-							currentBlock.tokens.Clear();
-							currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx + tokensEnum.CurrentTokenLen);
+                            currentBlock.startListIdx = tokensEnum.CurrentTokenListIdx + 1;
+                            currentBlock.endListIdx = -1;
 						}
 						
 						if(IsTagClosing(TagNames.Paragraph, t))
@@ -890,15 +810,15 @@ namespace Latino.TextMining
 				}
 			}
 			// flush
-			if(currentBlock.HasWords)
+            if(currentBlock.HasWords)
 			{
-				currentBlock.tokens.Add(tokensEnum.CurrentTokenIdx);
+				currentBlock.endListIdx = tokenizer.Tokens.Count;
 				CalcBlockFeatures(currentBlock, prevBlock);
 				blocks.Add(currentBlock);
 			}
 			
 			// dummy
-			blocks.Add (new HtmlBlock (++pos));
+			blocks.Add (new HtmlBlock (++pos, -1));
 
 			// calc relative position
 			foreach(HtmlBlock b in blocks)
@@ -907,7 +827,42 @@ namespace Latino.TextMining
 			return blocks;
 		}
 
-		private void CalcBlockFeatures (HtmlBlock b, HtmlBlock prevB)
+        private string GetTextBlock(int startListIdx, int endListIdx, bool decode, bool compact)
+        {
+            if (startListIdx >= tokenizer.Tokens.Count) { return ""; }
+            int startTextIdx = 0;
+            if (tokenizer.Tokens[startListIdx].IsTag)
+            {
+                startTextIdx = tokenizer.Tokens[startListIdx].StartIndex;
+            }
+            else if (startListIdx - 1 >= 0)
+            {
+                startTextIdx = tokenizer.Tokens[startListIdx - 1].StartIndex + tokenizer.Tokens[startListIdx - 1].Length;
+            }
+            StringBuilder textBlock = new StringBuilder();
+            for (int i = startListIdx + 1; i <= endListIdx; i++)
+            {
+                if (i == tokenizer.Tokens.Count)
+                {
+                    string text = tokenizer.Text.Substring(startTextIdx, tokenizer.Text.Length - startTextIdx);
+                    if (decode) { text = HttpUtility.HtmlDecode(text); }
+                    if (compact) { text = Utils.ToOneLine(text, /*compact=*/true); }
+                    textBlock.Append(text);
+                    return textBlock.ToString();
+                }
+                if (tokenizer.Tokens[i].IsTag)
+                {
+                    string text = tokenizer.Text.Substring(startTextIdx, tokenizer.Tokens[i].StartIndex - startTextIdx);
+                    if (decode) { text = HttpUtility.HtmlDecode(text); }
+                    if (compact) { text = Utils.ToOneLine(text, /*compact=*/true); }
+                    textBlock.Append(text + " ");
+                    startTextIdx = tokenizer.Tokens[i].StartIndex + tokenizer.Tokens[i].Length;
+                }
+            }
+            return textBlock.ToString().Remove(textBlock.Length - 1);
+        }
+
+        private void CalcBlockFeatures(HtmlBlock b, HtmlBlock prevB)
 		{
 			if (b.Empty) {
 				b.linkDensity = 0.0;
@@ -942,21 +897,8 @@ namespace Latino.TextMining
 				b.numWordsQuotPC = 0;
 				b.capitalWordsRatio = 0;
 			}
-			
-			StringBuilder sb = new StringBuilder();
-			IEnumerator<int> e = b.tokens.GetEnumerator();
-			while(e.MoveNext())
-			{
-				int firstIndx = e.Current;
-				e.MoveNext();
-				int lastIndx = e.Current;
-				if(firstIndx < lastIndx)
-				{
-					//sb.Append(tokenizer.GetTextBlock(firstIndx, (lastIndx-firstIndx)));
-					sb.Append(" ");	
-				}
-			}
-			b.text = sb.ToString();
+
+            b.text = GetTextBlock(b.startListIdx, b.endListIdx, /*decode=*/true, /*compact=*/true);
 			int indx = -1;
 			while( (indx = b.text.IndexOf(".", indx+1)) != -1)
 				b.numFullstops++;
@@ -994,13 +936,13 @@ namespace Latino.TextMining
 				{
 					if( (tc & textClass) > 0 )
 					{
-						sb.Append(blocks[i].text);
+						sb.Append(blocks[i].text + " ");
 //						confAvg += conf;
 					}
 				}
 			}
 //			confAvg /= (blocks.Length - 2);
-			return sb.ToString();
+            return sb.Length == 0 ? "" : sb.ToString().Remove(sb.Length - 1);
 		}
 				
 	}
