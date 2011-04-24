@@ -52,16 +52,45 @@ namespace Latino.TextMining
            |
            '-----------------------------------------------------------------------
         */
-        internal class Token
+        public class Token
         {
-            public TokenType mTokenType
+            internal TokenType mTokenType
                 = TokenType.Unknown;
-            public string mTokenStr
+            internal string mTokenStr
                 = null;
-            public int mStartIndex
+            internal int mStartIndex
                 = -1;
-            public int mLength
-                = 0;
+            internal int mLength
+                = -1;
+
+            public TokenType TokenType
+            {
+                get { return mTokenType; }
+            }
+
+            public string TokenStr
+            {
+                get { return mTokenStr; }
+            }
+
+            public int StartIndex
+            {
+                get { return mStartIndex; }
+            }
+
+            public int Length
+            {
+                get { return mLength; }
+            }
+
+            public bool IsTag
+            {
+                get 
+                {
+                    Utils.ThrowException(mTokenStr == null ? new InvalidOperationException() : null);
+                    return HtmlTokenizerHap.IsTag(mTokenStr); 
+                } 
+            }
         }
 
         private static string mNumberRegexStr
@@ -84,15 +113,20 @@ namespace Latino.TextMining
         private string mText;
         private IStemmer mStemmer;
         private bool mDecodeTextBlocks;
-        private bool mTokenizeTextBlocks;                
+        private bool mTokenizeTextBlocks;
+        private bool mApplySkipRules;
 
-        public HtmlTokenizerHap(string text, IStemmer stemmer, bool decodeTextBlocks, bool tokenizeTextBlocks)
+        private static Set<string> mSkipTagList
+            = new Set<string>(new string[] { "script", "noscript", "style", "noxhtml" });
+
+        public HtmlTokenizerHap(string text, IStemmer stemmer, bool decodeTextBlocks, bool tokenizeTextBlocks, bool applySkipRules)
         {
             Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
             mText = text;
             mStemmer = stemmer;
             mDecodeTextBlocks = decodeTextBlocks;
-            mTokenizeTextBlocks = tokenizeTextBlocks;            
+            mTokenizeTextBlocks = tokenizeTextBlocks;
+            mApplySkipRules = applySkipRules;
             HtmlDocument htmlDoc = new HtmlDocument();
             Configure(htmlDoc);
             htmlDoc.LoadHtml(text);            
@@ -108,7 +142,7 @@ namespace Latino.TextMining
             CreateTokens(nodes, textBlockTokenizer);
         }
 
-        public HtmlTokenizerHap(string text) : this(text, /*stemmer=*/null, /*decodeTextBlocks=*/true, /*tokenizeTextBlocks=*/true) // throws ArgumentNullException
+        public HtmlTokenizerHap(string text) : this(text, /*stemmer=*/null, /*decodeTextBlocks=*/true, /*tokenizeTextBlocks=*/true, /*applySkipRules=*/true) // throws ArgumentNullException
         { 
         }
 
@@ -121,8 +155,7 @@ namespace Latino.TextMining
         {
             htmlDoc.OptionCheckSyntax = false;
             htmlDoc.OptionReadEncoding = false;
-            // *** what is the following option for?
-            //htmlDoc.OptionUseIdAttribute = false;
+            // *** set htmlDoc.OptionUseIdAttribute?
         }
 
         private IEnumerable<Token> CreateToken(HtmlNode node, out Token endTag, RegexTokenizer textBlockTokenizer)
@@ -241,22 +274,23 @@ namespace Latino.TextMining
                 Token endTag;
                 IEnumerable<Token> tokens = CreateToken(node, out endTag, textBlockTokenizer);
                 if (tokens != null) { mTokenList.AddRange(tokens); }
-                CreateTokens(node.ChildNodes, textBlockTokenizer);
+                if (!mApplySkipRules || !mSkipTagList.Contains(node.Name.ToLower()))
+                {
+                    CreateTokens(node.ChildNodes, textBlockTokenizer);
+                }
                 if (endTag != null) { mTokenList.Add(endTag); }
             }
+        }
+
+        public ArrayList<Token>.ReadOnly Tokens
+        {
+            get { return mTokenList; }
         }
 
         public bool Normalize
         {
             get { return mNormalize; }
             set { mNormalize = value; }
-        }
-
-        public string GetTextBlock(int startIdx, int len)
-        {
-            Utils.ThrowException((startIdx < 0 || startIdx >= mText.Length) ? new ArgumentOutOfRangeException("startIdx") : null);
-            Utils.ThrowException((len < 0 || startIdx + len > mText.Length) ? new ArgumentOutOfRangeException("len") : null);
-            return mDecodeTextBlocks ? HttpUtility.HtmlDecode(mText.Substring(startIdx, len)) : mText.Substring(startIdx, len);
         }
 
         public static TokenType GetTokenType(string token)
@@ -375,7 +409,8 @@ namespace Latino.TextMining
             writer.WriteBool(mNormalize);
             writer.WriteObject(mStemmer);
             writer.WriteBool(mDecodeTextBlocks);
-            writer.WriteBool(mTokenizeTextBlocks);            
+            writer.WriteBool(mTokenizeTextBlocks);
+            writer.WriteBool(mApplySkipRules);
         }
 
         public void Load(BinarySerializer reader)
@@ -386,9 +421,9 @@ namespace Latino.TextMining
             mStemmer = reader.ReadObject<IStemmer>();
             mDecodeTextBlocks = reader.ReadBool();
             mTokenizeTextBlocks = reader.ReadBool();
+            mApplySkipRules = reader.ReadBool();
         }
 
-        // TODO: simplify the code below (?)
         /* .-----------------------------------------------------------------------
            |
            |  Class Enumerator
@@ -401,14 +436,10 @@ namespace Latino.TextMining
             private IStemmer mStemmer;
             private IEnumerator<Token> mEnum;
             private bool mNormalize;
-            private string mCurrentToken 
-                = null;
-            private int mCurrentTokenIdx
+            private int mTokenListIdx
                 = -1;
-            private int mCurrentTokenLen
-                = 0;
-            private TokenType mCurrentTokenType
-                = TokenType.Unknown;
+            private string mTokenStr 
+                = null;
 
             internal Enumerator(ArrayList<Token> tokenList, IStemmer stemmer, bool normalize)
             {
@@ -422,9 +453,8 @@ namespace Latino.TextMining
             {
                 get
                 {
-                    Utils.ThrowException(mCurrentToken == null ? new InvalidOperationException() : null);
-                    //Utils.ThrowException(mCurrentTokenIdx == -1 ? new InvalidOperationException() : null); // TODO: remove this!!!
-                    return mCurrentTokenIdx;
+                    Utils.ThrowException(mTokenStr == null || mEnum.Current.mStartIndex == -1 ? new InvalidOperationException() : null);
+                    return mEnum.Current.mStartIndex;
                 }
             }
 
@@ -432,18 +462,26 @@ namespace Latino.TextMining
             {
                 get
                 {
-                    Utils.ThrowException(mCurrentToken == null ? new InvalidOperationException() : null);
-                    //Utils.ThrowException(mCurrentTokenLen == 0 ? new InvalidOperationException() : null); // TODO: remove this!!!
-                    return mCurrentTokenLen;
+                    Utils.ThrowException(mTokenStr == null || mEnum.Current.Length == -1 ? new InvalidOperationException() : null);
+                    return mEnum.Current.Length;
                 }
             }
 
-            public TokenType CurrentTokenType
+            public int CurrentTokenListIdx
             {
                 get
                 {
-                    Utils.ThrowException(mCurrentToken == null ? new InvalidOperationException() : null);
-                    return mCurrentTokenType;
+                    Utils.ThrowException(mTokenListIdx == -1 ? new InvalidOperationException() : null);
+                    return mTokenListIdx;
+                }
+            }
+
+            public Token CurrentToken
+            {
+                get
+                {
+                    Utils.ThrowException(mTokenStr == null ? new InvalidOperationException() : null);
+                    return mEnum.Current;
                 }
             }
 
@@ -453,8 +491,8 @@ namespace Latino.TextMining
             {
                 get 
                 {
-                    Utils.ThrowException(mCurrentToken == null ? new InvalidOperationException() : null);
-                    return mCurrentToken;
+                    Utils.ThrowException(mTokenStr == null ? new InvalidOperationException() : null);
+                    return mTokenStr;
                 }
             }
 
@@ -467,10 +505,8 @@ namespace Latino.TextMining
             {
                 if (mEnum.MoveNext())
                 {
-                    mCurrentToken = mNormalize ? NormalizeToken(mEnum.Current.mTokenStr, mStemmer) : mEnum.Current.mTokenStr;
-                    mCurrentTokenIdx = mEnum.Current.mStartIndex;
-                    mCurrentTokenLen = mEnum.Current.mLength;
-                    mCurrentTokenType = mEnum.Current.mTokenType;
+                    mTokenStr = mNormalize ? NormalizeToken(mEnum.Current.mTokenStr, mStemmer) : mEnum.Current.mTokenStr;
+                    mTokenListIdx++;
                     return true;
                 }
                 else
@@ -483,10 +519,8 @@ namespace Latino.TextMining
             public void Reset()
             {
                 mEnum.Reset();
-                mCurrentToken = null;
-                mCurrentTokenIdx = -1;
-                mCurrentTokenLen = 0;
-                mCurrentTokenType = TokenType.Unknown;
+                mTokenStr = null;
+                mTokenListIdx = -1;
             }
 
             public void Dispose()
