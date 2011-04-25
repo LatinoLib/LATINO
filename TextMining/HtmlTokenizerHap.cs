@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    HtmlTokenizerHap.cs
+ *  File:    HtmlTokenizer.cs
  *  Desc:    Tokenizer for HTML documents (based on HtmlAgilityPack)
  *  Created: Apr-2011
  *
@@ -21,11 +21,11 @@ namespace Latino.TextMining
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class HtmlTokenizerHap
+       |  Class HtmlTokenizer
        |
        '-----------------------------------------------------------------------
     */
-    public class HtmlTokenizerHap : ITokenizer
+    public class HtmlTokenizer : ITokenizer
     {
         /* .-----------------------------------------------------------------------
            |
@@ -145,7 +145,7 @@ namespace Latino.TextMining
         private static Set<string> mSkipTagList
             = new Set<string>(new string[] { "script", "noscript", "style", "noxhtml" });
 
-        public HtmlTokenizerHap(string text, IStemmer stemmer, bool decodeTextBlocks, bool tokenizeTextBlocks, bool applySkipRules)
+        public HtmlTokenizer(string text, IStemmer stemmer, bool decodeTextBlocks, bool tokenizeTextBlocks, bool applySkipRules)
         {
             Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
             mText = text;
@@ -168,11 +168,11 @@ namespace Latino.TextMining
             CreateTokens(nodes, textBlockTokenizer);
         }
 
-        public HtmlTokenizerHap(string text) : this(text, /*stemmer=*/null, /*decodeTextBlocks=*/true, /*tokenizeTextBlocks=*/true, /*applySkipRules=*/true) // throws ArgumentNullException
+        public HtmlTokenizer(string text) : this(text, /*stemmer=*/null, /*decodeTextBlocks=*/true, /*tokenizeTextBlocks=*/true, /*applySkipRules=*/true) // throws ArgumentNullException
         { 
         }
 
-        public HtmlTokenizerHap(BinarySerializer reader)
+        public HtmlTokenizer(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
