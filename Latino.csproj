@@ -91,7 +91,7 @@
     <Compile Include="TextMining\HtmlAgilityPack\HtmlWeb.cs" />
     <Compile Include="TextMining\HtmlAgilityPack\MixedCodeDocument.cs" />
     <Compile Include="TextMining\HtmlAgilityPack\HtmlCmdLine.cs" />
-    <Compile Include="TextMining\HtmlTokenizerHap.cs" />
+    <Compile Include="TextMining\HtmlTokenizer.cs" />
     <Compile Include="TextMining\SimHash.cs" />
     <Compile Include="TextMining\StopWords\SerbianStopWordsCyrillic.cs" />
     <Compile Include="Visualization\DrawableObjects\Label.cs" />

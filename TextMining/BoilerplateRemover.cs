@@ -557,19 +557,9 @@ namespace Latino.TextMining
                 return currentNode.textClass;
             }
 
-            public bool ReadFromFile(string filePath)
-            {
-                if (File.Exists(filePath) == false)
-                    return false;
-                using (StreamReader reader = new StreamReader(filePath))
-                    return ReadFromStream(reader);
-            }
-
-            internal bool ReadFromStream(StreamReader reader)
+            public void Read(TextReader reader)
             {
                 // reads a weka-style decision tree
-                if (reader == null)
-                    return false;
                 if (this.root != null)
                 {
                     this.root = null;
@@ -599,10 +589,9 @@ namespace Latino.TextMining
                     currentNode = newNode;
                     lastLevel = currentLevel;
                 }
-                return true;
             }
 
-            public new string ToString()
+            public override string ToString()
             {
                 StringBuilder sb = new StringBuilder();
                 ToStringTraverse(this.root, 0, ref sb);
@@ -621,7 +610,7 @@ namespace Latino.TextMining
             }
 
             private int ParseLine(string line, out string featureName, out Operator op,
-                                   out FeatureValue threshold, out TextClass textClass, out List<double> classDist)
+                out FeatureValue threshold, out TextClass textClass, out List<double> classDist)
             {
                 featureName = null;
                 op = Operator.Unknown;
@@ -683,13 +672,10 @@ namespace Latino.TextMining
 
         }
 
-        private static Regex spanRegex = new Regex(@"class=""x-nc-sel(?<blockClassID>[012345])""", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static Regex annotRegex = new Regex(@"class=""x-nc-sel(?<blockClassID>[012345])""", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private HtmlTokenizer tokenizer = new HtmlTokenizer("");
-        public DecisionTree decisionTree = new DecisionTree();
-        private Set<string> ignorableTags = new Set<string>(new string[] { 
-            "ins", "del", "bdo", "em", "strong", "dfn", "code", "samp", "kbd", "var", "cite", "abbr", 
-            "acronym", "q", "sub", "sup", "tt", "i", "b", "big", "small", "u", "s", "strike", 
-            "basefont", "font" });
+        private DecisionTree decisionTree = new DecisionTree();
+        private Set<string> ignorableTags = new Set<string>(new string[] { "b", "i", "em", "strong", "sub", "sup", "u" });
 
         public BoilerplateRemover()
         {
@@ -729,7 +715,7 @@ namespace Latino.TextMining
             else if (token.TokenType == HtmlTokenizer.TokenType.EndTag)
                 return SpanTagType.ClosingSpanTag;
 
-            Match m = spanRegex.Match(token.TokenStr);
+            Match m = annotRegex.Match(token.TokenStr);
             if (!m.Success)
                 return SpanTagType.UnknownOpeningSpanTag;
             int bcid = Convert.ToInt32(m.Result("${blockClassID}"));
@@ -740,18 +726,16 @@ namespace Latino.TextMining
             return SpanTagType.KnownOpeningSpanTag;
         }
 
-        private HtmlTokenizer.Enumerator TokenizeHtml(string filePath)
+        private HtmlTokenizer.Enumerator TokenizeHtml(TextReader reader)
         {
-            if (File.Exists(filePath) == false)
-                return null;
-            tokenizer.Text = File.ReadAllText(filePath);
+            tokenizer.Text = reader.ReadToEnd();
 
             return (HtmlTokenizer.Enumerator)tokenizer.GetEnumerator();
         }
 
-        public List<HtmlBlock> GetHtmlBlocks(string fileName, bool isAnnotated)
+        private List<HtmlBlock> GetHtmlBlocks(TextReader reader, bool isAnnotated)
         {
-            HtmlTokenizer.Enumerator tokensEnum = TokenizeHtml(fileName);
+            HtmlTokenizer.Enumerator tokensEnum = TokenizeHtml(reader);
             if (tokensEnum == null)
                 return null;
 
@@ -776,10 +760,10 @@ namespace Latino.TextMining
                 //Console.WriteLine(t + " " + tokensEnum.CurrentToken.TokenType);
                 if (tokensEnum.CurrentToken.IsTag)
                 {
-                    //if (ignorableTags.Contains(tokensEnum.CurrentToken.TagName))
-                    //{
-                    //    continue;
-                    //}
+                    if (ignorableTags.Contains(tokensEnum.CurrentToken.TagName))
+                    {
+                        continue;
+                    }
                     if (IsTagOpening("a", tokensEnum.CurrentToken))
                     {
                         isInAnchor = true;
@@ -869,6 +853,7 @@ namespace Latino.TextMining
             return blocks;
         }
 
+        // TODO: handle comments in HtmlTokenizer
         private string GetTextBlock(int startListIdx, int endListIdx, bool decode, bool compact)
         {
             if (startListIdx >= tokenizer.Tokens.Count) { return ""; }
@@ -901,7 +886,7 @@ namespace Latino.TextMining
                     startTextIdx = tokenizer.Tokens[i].StartIndex + tokenizer.Tokens[i].Length;
                 }
             }
-            return textBlock.ToString().Remove(textBlock.Length - 1);
+            return textBlock.Length > 0 ? textBlock.ToString().Remove(textBlock.Length - 1) : "";
         }
 
         private void CalcBlockFeatures(HtmlBlock b, HtmlBlock prevB)
@@ -948,50 +933,109 @@ namespace Latino.TextMining
             b.fullstopRatio = b.numFullstops / (double)b.numWords;
         }
 
-        public bool ReadDecisionTree(string fileName)
+        public void ReadDecisionTree(TextReader reader)
         {
-            return decisionTree.ReadFromFile(fileName);
+            decisionTree.Read(reader);
         }
 
-        public bool ReadDecisionTree(StreamReader streamReader)
+        public string ExtractMainContentText(TextReader reader)
         {
-            return decisionTree.ReadFromStream(streamReader);
+            List<HtmlBlock> foo;
+            return ExtractText(reader, TextClass.FullText, out foo);
         }
 
-        public string ExtractMainContentText(string fileName, out List<HtmlBlock> blocks)
+        public string ExtractMainContentText(TextReader reader, out List<HtmlBlock> blocks)
         {
-            return ExtractText(fileName, TextClass.FullText, out blocks);
+            return ExtractText(reader, TextClass.FullText, out blocks);
         }
 
-        public string ExtractAllButBoilerplate(string fileName, out List<HtmlBlock> blocks)
+        public string ExtractAllButBoilerplate(TextReader reader)
         {
-            return ExtractText(fileName, TextClass.FullText | TextClass.Headline |
-                               TextClass.RelatedContent | TextClass.Supplement | TextClass.UserComment, out blocks);
+            List<HtmlBlock> foo;
+            return ExtractText(reader, TextClass.FullText | TextClass.Headline |
+                TextClass.RelatedContent | TextClass.Supplement | TextClass.UserComment, out foo);
         }
 
-        public string ExtractText(string fileName, TextClass textClass, out List<HtmlBlock> blockList)
+        public string ExtractAllButBoilerplate(TextReader reader, out List<HtmlBlock> blocks)
         {
-            blockList = GetHtmlBlocks(fileName, false);
-            HtmlBlock[] blocks = blockList.ToArray();
+            return ExtractText(reader, TextClass.FullText | TextClass.Headline |
+                TextClass.RelatedContent | TextClass.Supplement | TextClass.UserComment, out blocks);
+        }
+
+        public string ExtractText(TextReader reader, TextClass textClass, out List<HtmlBlock> blocks)
+        {
+            blocks = GetHtmlBlocks(reader, false);
             StringBuilder sb = new StringBuilder();
             TextClass tc = TextClass.Unknown;
-            //double conf = 0.0;
-            //double confAvg = 0.0;
-
-            for (int i = 1; i < blocks.Length - 1; i++)
+            for (int i = 1; i < blocks.Count - 1; i++)
             {
                 if ((tc = decisionTree.Predict(blocks[i - 1], blocks[i], blocks[i + 1])) != TextClass.Unknown)
                 {
                     if ((tc & textClass) > 0)
                     {
                         sb.Append(blocks[i].text + " ");
-                        //confAvg += conf;
                     }
                 }
             }
-            //confAvg /= (blocks.Length - 2);
             return sb.Length == 0 ? "" : sb.ToString().Remove(sb.Length - 1);
         }
 
+        private string GetColorName(TextClass textClass)
+        {
+            switch (textClass)
+            { 
+                case TextClass.Boilerplate:
+                    return "gray";
+                case TextClass.FullText:
+                    return "yellow";
+                case TextClass.Headline:
+                    return "red";
+                default:
+                    return "lime";
+            }
+        }
+
+        public string AnnotateHtml(TextReader reader, bool encode)
+        {
+            List<HtmlBlock> blocks = GetHtmlBlocks(reader, false);
+            StringBuilder sb = new StringBuilder();
+            TextClass tc = TextClass.Unknown;
+            int currentIdx = 0; 
+            for (int i = 1; i < blocks.Count - 1; i++)
+            {
+                if ((tc = decisionTree.Predict(blocks[i - 1], blocks[i], blocks[i + 1])) != TextClass.Unknown)
+                {
+                    int startListIdx = blocks[i].startListIdx;
+                    int startTextIdx = 0;
+                    if (tokenizer.Tokens[startListIdx].IsTag)
+                    {
+                        startTextIdx = tokenizer.Tokens[startListIdx].StartIndex; 
+                    }
+                    else if (startListIdx - 1 >= 0)
+                    {
+                        startTextIdx = tokenizer.Tokens[startListIdx - 1].StartIndex + tokenizer.Tokens[startListIdx - 1].Length;
+                    }
+                    int endListIdx = blocks[i].endListIdx;
+                    int endTextIdx = tokenizer.Text.Length;
+                    if (endListIdx < tokenizer.Tokens.Count)
+                    {
+                        endTextIdx = tokenizer.Tokens[endListIdx].StartIndex;
+                    }
+                    if (currentIdx < startTextIdx) 
+                    {
+                        sb.Append(encode ? HttpUtility.HtmlEncode(tokenizer.Text.Substring(currentIdx, startTextIdx - currentIdx))
+                            : tokenizer.Text.Substring(currentIdx, startTextIdx - currentIdx));
+                    }
+                    sb.Append(string.Format("<span title=\"{0}\" style=\"background-color:{1}\">", tc, GetColorName(tc)));
+                    sb.Append(encode ? HttpUtility.HtmlEncode(tokenizer.Text.Substring(startTextIdx, endTextIdx - startTextIdx)) 
+                        : tokenizer.Text.Substring(startTextIdx, endTextIdx - startTextIdx));
+                    sb.Append("</span>");
+                    currentIdx = endTextIdx;
+                }
+            }
+            sb.Append(encode ? HttpUtility.HtmlEncode(tokenizer.Text.Substring(currentIdx, tokenizer.Text.Length - currentIdx))
+                : tokenizer.Text.Substring(currentIdx, tokenizer.Text.Length - currentIdx));
+            return sb.ToString();
+        }
     }
 }
