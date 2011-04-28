@@ -1592,6 +1592,10 @@ namespace HtmlAgilityPack
                     {
                         outText.Write(HtmlDocument.EncodeHtmlText(html));
                     }
+                    else
+                    {
+                        outText.Write(html);
+                    }
                     break;
 
                 case HtmlNodeType.Element:

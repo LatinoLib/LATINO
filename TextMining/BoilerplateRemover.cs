@@ -853,7 +853,7 @@ namespace Latino.TextMining
             return blocks;
         }
 
-        // TODO: handle comments in HtmlTokenizer
+        // TODO: handle comments 
         private string GetTextBlock(int startListIdx, int endListIdx, bool decode, bool compact)
         {
             if (startListIdx >= tokenizer.Tokens.Count) { return ""; }
