@@ -83,7 +83,7 @@ namespace Latino
             Inherit = 0,
             Console = 1,                       
             Writer  = 2,
-            //Custom  = 4
+            Custom  = 4
         }
 
         /* .-----------------------------------------------------------------------
@@ -92,12 +92,13 @@ namespace Latino
            |
            '-----------------------------------------------------------------------
         */
+        [Flags]
         public enum ProgressOutputType
         {
             Inherit = 0,
             Console = 1,
-            //Custom = 2,
-            Off = 3
+            Custom  = 2,
+            Off     = 4
         }
 
         /* .-----------------------------------------------------------------------
@@ -118,6 +119,10 @@ namespace Latino
             Off     = 7
         }
 
+        public delegate void CustomOutputDelegate(string loggerName, Level level, string funcName, Exception e, string message, object[] args);
+        public delegate void CustomProgressOutputDelegate(string loggerName, object sender, int freq, string funcName, string message, int step, 
+            int numSteps, object[] args);
+
         private static Node mRoot;
 
         private static object mConsoleLock
@@ -126,6 +131,11 @@ namespace Latino
             = null;
         private static object mDefaultProgressSender
             = new object();
+        
+        private static CustomOutputDelegate mCustomOutput
+            = null;
+        private static CustomProgressOutputDelegate mCustomProgressOutput
+            = null;
 
         // node settings         
         private string mName; // set by constructor
@@ -305,6 +315,18 @@ namespace Latino
             get { return mLocalProgressOutputType == ProgressOutputType.Inherit ? mInheritedProgressOutputType : mLocalProgressOutputType; }
         }
 
+        public CustomOutputDelegate CustomOutput
+        {
+            get { return mCustomOutput; }
+            set { mCustomOutput = value; }
+        }
+
+        public CustomProgressOutputDelegate CustomProgressOutput
+        {
+            get { return mCustomProgressOutput; }
+            set { mCustomProgressOutput = value; }
+        }  
+
         //public void DebugOut()
         //{
         //    mNode.DebugOut("");
@@ -347,36 +369,48 @@ namespace Latino
                         Output(activeWriter, level, funcName, e, message, args);
                     }
                 }
+                if ((activeOutType & OutputType.Custom) != 0 && mCustomOutput != null)
+                {
+                    mCustomOutput(mName, level, funcName, e, message, args);
+                }
             }
         }
 
         private void Progress(object sender, int freq, string funcName, string message, int step, int numSteps, params object[] args)
         {
-            if (ActiveProgressOutputType != ProgressOutputType.Off)
+            ProgressOutputType activeProgressOutType = ActiveProgressOutputType;
+            if ((activeProgressOutType & ProgressOutputType.Off) == 0)
             {
-                if (numSteps <= 0)
+                if ((activeProgressOutType & ProgressOutputType.Console) != 0)
                 {
-                    if (step % freq == 0)
+                    if (numSteps <= 0)
+                    {
+                        if (step % freq == 0)
+                        {
+                            lock (mConsoleLock)
+                            {
+                                if (message == null) { message = "{0}"; }
+                                if (mProgressSender != null && mProgressSender != sender) { Console.WriteLine(); }
+                                Console.Write("\r" + message, step); // throws FormatException
+                                mProgressSender = sender;
+                            }
+                        }
+                    }
+                    else if (step % freq == 0 || step == numSteps)
                     {
                         lock (mConsoleLock)
                         {
-                            if (message == null) { message = "{0}"; }
+                            if (message == null) { message = "{0} / {1}"; }
                             if (mProgressSender != null && mProgressSender != sender) { Console.WriteLine(); }
-                            Console.Write("\r" + message, step); // throws FormatException
+                            Console.Write("\r" + message, step, numSteps); // throws FormatException
                             mProgressSender = sender;
+                            if (step == numSteps) { mProgressSender = null; Console.WriteLine(); }
                         }
                     }
                 }
-                else if (step % freq == 0 || step == numSteps)
+                if ((activeProgressOutType & ProgressOutputType.Custom) != 0 && mCustomProgressOutput != null)
                 {
-                    lock (mConsoleLock)
-                    {
-                        if (message == null) { message = "{0} / {1}"; }
-                        if (mProgressSender != null && mProgressSender != sender) { Console.WriteLine(); }
-                        Console.Write("\r" + message, step, numSteps); // throws FormatException
-                        mProgressSender = sender;
-                        if (step == numSteps) { mProgressSender = null; Console.WriteLine(); }
-                    }
+                    mCustomProgressOutput(mName, sender, freq, funcName, message, step, numSteps, args);
                 }
             }
         }
@@ -445,9 +479,5 @@ namespace Latino
             Utils.ThrowException(step < 0 || (numSteps > 0 && step > numSteps) ? new ArgumentOutOfRangeException("step") : null);
             Progress(sender == null ? mDefaultProgressSender : sender, /*freq=*/1000, funcName, message, step, numSteps, args); // throws FormatException 
         }
-
-        // *** Support for customized logging ***
-
-        public delegate void OutputDelegate(Level level, string funcName, Exception e, string message, params object[] args);
     }
 }
