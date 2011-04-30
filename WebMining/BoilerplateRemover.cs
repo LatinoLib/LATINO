@@ -18,7 +18,7 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Web;
 
-namespace Latino.TextMining
+namespace Latino.WebMining
 {
     /* .-----------------------------------------------------------------------
        |

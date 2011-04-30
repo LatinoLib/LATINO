@@ -16,8 +16,9 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Web;
 using HtmlAgilityPack;
+using Latino.TextMining;
 
-namespace Latino.TextMining
+namespace Latino.WebMining
 {
     /* .-----------------------------------------------------------------------
        |

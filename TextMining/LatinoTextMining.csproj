@@ -1,0 +1,171 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FFA3AB32-D56A-4544-BCF2-CBC51B57550B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Latino.TextMining</RootNamespace>
+    <AssemblyName>LatinoTextMining</AssemblyName>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>C:\Program Files (x86)\Microsoft Visual Studio 8\Team Tools\Static Analysis Tools\FxCop\\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisRuleAssemblies>C:\Program Files (x86)\Microsoft Visual Studio 8\Team Tools\Static Analysis Tools\FxCop\\rules</CodeAnalysisRuleAssemblies>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CustomStemmer.cs" />
+    <Compile Include="StopWords\SerbianStopWordsCyrillic.cs" />
+    <Compile Include="LanguageDetector.cs" />
+    <Compile Include="StopWords\SerbianStopWordsLatin.cs" />
+    <Compile Include="StopWords\SloveneStopWords.cs" />
+    <Compile Include="TextMiningUtils.cs" />
+    <Compile Include="Lemmatizer.cs" />
+    <Compile Include="IStemmer.cs" />
+    <Compile Include="Snowball\ISnowballStemmer.cs" />
+    <Compile Include="Stemmer.cs" />
+    <Compile Include="StopWords\BulgarianStopWords.cs" />
+    <Compile Include="StopWords\CzechStopWords.cs" />
+    <Compile Include="StopWords\RomanianStopWords.cs" />
+    <Compile Include="StopWords\HungarianStopWords.cs" />
+    <Compile Include="StopWords\RussianStopWords.cs" />
+    <Compile Include="Language.cs" />
+    <Compile Include="StopWords\SwedishStopWords.cs" />
+    <Compile Include="StopWords\PortogueseStopWords.cs" />
+    <Compile Include="StopWords\NorwegianStopWords.cs" />
+    <Compile Include="StopWords\ItalianStopWords.cs" />
+    <Compile Include="StopWords\FinnishStopWords.cs" />
+    <Compile Include="StopWords\DutchStopWords.cs" />
+    <Compile Include="StopWords\DanishStopWords.cs" />
+    <Compile Include="StopWords\EnglishStopWords.cs" />
+    <Compile Include="StopWords\FrenchStopWords.cs" />
+    <Compile Include="StopWords\GermanStopWords.cs" />
+    <Compile Include="ITokenizer.cs" />
+    <Compile Include="LemmaSharp\LemmatizerPrebuilt.cs" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-m-en.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-m-fr.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-m-ge.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-m-it.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-m-sp.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-me-bg.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-me-cs.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-me-et.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-me-hu.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-me-ro.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-me-sl.lem" />
+    <EmbeddedResource Include="Resources\LemmaSharp\compressed-me-sr.lem" />
+    <Compile Include="LemmaSharp\LemmatizerPrebuiltCompact.cs" />
+    <Compile Include="LemmaSharp\LemmatizerPrebuiltCompressed.cs" />
+    <Compile Include="LemmaSharp\LemmatizerPrebuiltData.cs" />
+    <Compile Include="LemmaSharp\LemmatizerPrebuiltFull.cs" />
+    <Compile Include="LemmaSharp\ExampleList.cs" />
+    <Compile Include="LemmaSharp\ILemmatizer.cs" />
+    <Compile Include="LemmaSharp\ILemmatizerModel.cs" />
+    <Compile Include="LemmaSharp\ILemmatizerTrainable.cs" />
+    <Compile Include="LemmaSharp\LemmaExample.cs" />
+    <Compile Include="LemmaSharp\LemmaRule.cs" />
+    <Compile Include="LemmaSharp\Lemmatizer.cs" />
+    <Compile Include="LemmaSharp\LemmatizerSettings.cs" />
+    <Compile Include="LemmaSharp\LemmaTreeNode.cs" />
+    <Compile Include="LemmaSharp\RuleList.cs" />
+    <Compile Include="LemmaSharp\RuleWeighted.cs" />
+    <Compile Include="StopWords\SpanishStopWords.cs" />
+    <Compile Include="BowSpace.cs" />
+    <Compile Include="RegexTokenizer.cs" />
+    <Compile Include="Snowball\Among.cs" />
+    <Compile Include="Snowball\DanishStemmer.cs" />
+    <Compile Include="Snowball\DutchStemmer.cs" />
+    <Compile Include="Snowball\EnglishStemmer.cs" />
+    <Compile Include="Snowball\FinnishStemmer.cs" />
+    <Compile Include="Snowball\FrenchStemmer.cs" />
+    <Compile Include="Snowball\German2Stemmer.cs" />
+    <Compile Include="Snowball\GermanStemmer.cs" />
+    <Compile Include="Snowball\ItalianStemmer.cs" />
+    <Compile Include="Snowball\KpStemmer.cs" />
+    <Compile Include="Snowball\LovinsStemmer.cs" />
+    <Compile Include="Snowball\NorwegianStemmer.cs" />
+    <Compile Include="Snowball\PorterStemmer.cs" />
+    <Compile Include="Snowball\PortugueseStemmer.cs" />
+    <Compile Include="Snowball\RussianStemmer.cs" />
+    <Compile Include="Snowball\SnowballProgram.cs" />
+    <Compile Include="Snowball\SpanishStemmer.cs" />
+    <Compile Include="Snowball\SwedishStemmer.cs" />
+    <Compile Include="PorterStemmer.cs" />
+    <Compile Include="UnicodeTokenizer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LanguageDetector\Bulgarian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Czech.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Danish.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Dutch.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\English.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Estonian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Finnish.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\French.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\German.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Hungarian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Italian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Portuguese.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Romanian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Russian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Serbian.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Slovene.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Spanish.ldp" />
+    <EmbeddedResource Include="Resources\LanguageDetector\Swedish.ldp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LatinoCore.csproj">
+      <Project>{5F184E57-EA63-46F4-9B3F-DB038CCE20A3}</Project>
+      <Name>LatinoCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\LatinoModel.csproj">
+      <Project>{D1AF292A-FBD6-4C2E-9177-92B5C6E24EDC}</Project>
+      <Name>LatinoModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+</Project>

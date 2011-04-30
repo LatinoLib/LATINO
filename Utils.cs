@@ -159,21 +159,77 @@ namespace Latino
             new KeyDat<string, string>("YEKT", "+05:00") };
         #endregion
 
+        // *** Core utilities ***
+
         [Conditional("THROW_EXCEPTIONS")]
         public static void ThrowException(Exception exception)
         {
             if (exception != null) { throw exception; }
         }
 
-        public static bool IsFiniteNumber(double val)
+        public static object Clone(object obj, bool deepClone)
         {
-            return !double.IsInfinity(val) && !double.IsNaN(val);
+            if (deepClone && obj is IDeeplyCloneable)
+            {
+                return ((IDeeplyCloneable)obj).DeepClone();
+            }
+            else if (obj is ICloneable)
+            {
+                return ((ICloneable)obj).Clone();
+            }
+            else
+            {
+                return obj;
+            }
         }
 
-        public static bool IsFiniteNumber(float val)
+        public static bool ObjectEquals(object obj1, object obj2, bool deepCmp)
         {
-            return !float.IsInfinity(val) && !float.IsNaN(val);
+            if (obj1 == null && obj2 == null) { return true; }
+            else if (obj1 == null || obj2 == null) { return false; }
+            else if (!obj1.GetType().Equals(obj2.GetType())) { return false; }
+            else if (deepCmp && obj1 is IContentEquatable)
+            {
+                return ((IContentEquatable)obj1).ContentEquals(obj2);
+            }
+            else
+            {
+                return obj1.Equals(obj2);
+            }
         }
+
+        public static int GetHashCode(object obj)
+        {
+            ThrowException(obj == null ? new ArgumentNullException("obj") : null);
+            if (obj is ISerializable)
+            {
+                BinarySerializer memSer = new BinarySerializer();
+                ((ISerializable)obj).Save(memSer); // throws serialization-related exceptions   
+                byte[] buffer = ((MemoryStream)memSer.Stream).GetBuffer();
+                MD5CryptoServiceProvider hashAlgo = new MD5CryptoServiceProvider();
+                Guid md5Hash = new Guid(hashAlgo.ComputeHash(buffer));
+                return md5Hash.GetHashCode();
+            }
+            else
+            {
+                return obj.GetHashCode();
+            }
+        }
+
+        public static object ChangeType(object obj, Type newType, IFormatProvider fmtProvider)
+        {
+            ThrowException(newType == null ? new ArgumentNullException("newType") : null);
+            if (newType.IsAssignableFrom(obj.GetType()))
+            {
+                return obj;
+            }
+            else
+            {
+                return Convert.ChangeType(obj, newType, fmtProvider); // throws InvalidCastException, FormatException, OverflowException
+            }
+        }
+
+        // *** IO utilities ***
 
         public static bool VerifyFileNameCreate(string fileName)
         {
@@ -256,54 +312,35 @@ namespace Latino
                 (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff)); // UCS-4
         }
 
-        public static object Clone(object obj, bool deepClone)
+        public static string GetManifestResourceString(Type type, string resName)
         {
-            if (deepClone && obj is IDeeplyCloneable)
+            ThrowException(type == null ? new ArgumentNullException("type") : null);
+            ThrowException(resName == null ? new ArgumentNullException("resName") : null);
+            foreach (string res in type.Assembly.GetManifestResourceNames())
             {
-                return ((IDeeplyCloneable)obj).DeepClone();
+                if (res.EndsWith(resName))
+                {
+                    return new StreamReader(type.Assembly.GetManifestResourceStream(res)).ReadToEnd();
+                }
             }
-            else if (obj is ICloneable)
-            {
-                return ((ICloneable)obj).Clone();
-            }
-            else
-            {
-                return obj;
-            }
+            return null;
         }
 
-        public static bool ObjectEquals(object obj1, object obj2, bool deepCmp)
+        public static Stream GetManifestResourceStream(Type type, string resName)
         {
-            if (obj1 == null && obj2 == null) { return true; }
-            else if (obj1 == null || obj2 == null) { return false; }
-            else if (!obj1.GetType().Equals(obj2.GetType())) { return false; }
-            else if (deepCmp && obj1 is IContentEquatable)
+            ThrowException(type == null ? new ArgumentNullException("type") : null);
+            ThrowException(resName == null ? new ArgumentNullException("resName") : null);
+            foreach (string res in type.Assembly.GetManifestResourceNames())
             {
-                return ((IContentEquatable)obj1).ContentEquals(obj2);
+                if (res.EndsWith(resName))
+                {
+                    return type.Assembly.GetManifestResourceStream(res);
+                }
             }
-            else
-            {
-                return obj1.Equals(obj2);
-            }
+            return null;
         }
 
-        public static int GetHashCode(object obj)
-        {
-            ThrowException(obj == null ? new ArgumentNullException("obj") : null);
-            if (obj is ISerializable)
-            {
-                BinarySerializer memSer = new BinarySerializer();
-                ((ISerializable)obj).Save(memSer); // throws serialization-related exceptions   
-                byte[] buffer = ((MemoryStream)memSer.Stream).GetBuffer();
-                MD5CryptoServiceProvider hashAlgo = new MD5CryptoServiceProvider();
-                Guid md5Hash = new Guid(hashAlgo.ComputeHash(buffer));
-                return md5Hash.GetHashCode();
-            }
-            else
-            {
-                return obj.GetHashCode();
-            }
-        }
+        // *** Dictionary utilities ***
 
         public static void SaveDictionary<KeyT, ValT>(Dictionary<KeyT, ValT> dict, BinarySerializer writer)
         {
@@ -338,18 +375,7 @@ namespace Latino
             return dict;
         }
 
-        public static object ChangeType(object obj, Type newType, IFormatProvider fmtProvider)
-        {
-            ThrowException(newType == null ? new ArgumentNullException("newType") : null);            
-            if (newType.IsAssignableFrom(obj.GetType()))
-            {              
-                return obj;
-            }
-            else 
-            {
-                return Convert.ChangeType(obj, newType, fmtProvider); // throws InvalidCastException, FormatException, OverflowException
-            }
-        }
+        // *** SparseVector utilities ***
 
         public static double GetVecLenL2(SparseVector<double>.ReadOnly vec)
         {
@@ -388,49 +414,7 @@ namespace Latino
             return true;
         }
 
-        public static string NormalizeDateTimeStr(string dateTimeStr)
-        {
-            ThrowException(dateTimeStr == null ? new ArgumentNullException("dateTimeStr") : null);
-            dateTimeStr = dateTimeStr.Trim();
-            foreach (KeyDat<string, string> timeZone in mTimeZones)
-            {
-                if (dateTimeStr.EndsWith(" " + timeZone.Key)) { dateTimeStr = dateTimeStr.Replace(timeZone.Key, timeZone.Dat); break; }
-            }
-            DateTime dt;
-            try
-            {
-                dt = DateTime.Parse(dateTimeStr);
-            }
-            catch
-            {
-                return null;
-            }
-            return dt.ToString(DATE_TIME_SIMPLE);
-        }
-
-        public static string Trunc(string str, int len)
-        {
-            ThrowException(len < 0 ? new ArgumentOutOfRangeException("len") : null);
-            return (str != null && str.Length > len) ? str.Substring(0, len) : str;
-        }
-
-        public static string ToOneLine(string str)
-        {
-            return ToOneLine(str, /*compact=*/false);
-        }
-
-        public static string ToOneLine(string str, bool compact)
-        {
-            if (str == null) { return null; }
-            str = str.Replace("\r", "").Replace('\n', ' ').Trim();
-            if (compact)
-            { 
-                str = Regex.Replace(str, @"\s\s+", " ");
-            }
-            return str;
-        }
-
-        // *** XML ***
+        // *** XML utilities ***
 
         public static string XmlReadValue(XmlReader reader, string attrName)
         {
@@ -460,34 +444,58 @@ namespace Latino
             while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) { }
         }
 
-        // *** Resources ***
+        // *** Other utilities ***
 
-        public static string GetManifestResourceString(Type type, string resName)
+        public static bool IsFiniteNumber(double val)
         {
-            ThrowException(type == null ? new ArgumentNullException("type") : null);
-            ThrowException(resName == null ? new ArgumentNullException("resName") : null);
-            foreach (string res in type.Assembly.GetManifestResourceNames())
-            {
-                if (res.EndsWith(resName))
-                {
-                    return new StreamReader(type.Assembly.GetManifestResourceStream(res)).ReadToEnd();
-                }
-            }
-            return null;
+            return !double.IsInfinity(val) && !double.IsNaN(val);
         }
 
-        public static Stream GetManifestResourceStream(Type type, string resName)
+        public static bool IsFiniteNumber(float val)
         {
-            ThrowException(type == null ? new ArgumentNullException("type") : null);
-            ThrowException(resName == null ? new ArgumentNullException("resName") : null);
-            foreach (string res in type.Assembly.GetManifestResourceNames())
+            return !float.IsInfinity(val) && !float.IsNaN(val);
+        }
+
+        public static string NormalizeDateTimeStr(string dateTimeStr)
+        {
+            ThrowException(dateTimeStr == null ? new ArgumentNullException("dateTimeStr") : null);
+            dateTimeStr = dateTimeStr.Trim();
+            foreach (KeyDat<string, string> timeZone in mTimeZones)
             {
-                if (res.EndsWith(resName))
-                {
-                    return type.Assembly.GetManifestResourceStream(res);
-                }
+                if (dateTimeStr.EndsWith(" " + timeZone.Key)) { dateTimeStr = dateTimeStr.Replace(timeZone.Key, timeZone.Dat); break; }
             }
-            return null;
+            DateTime dt;
+            try
+            {
+                dt = DateTime.Parse(dateTimeStr);
+            }
+            catch
+            {
+                return null;
+            }
+            return dt.ToString(DATE_TIME_SIMPLE);
+        }
+
+        public static string Truncate(string str, int len)
+        {
+            ThrowException(len < 0 ? new ArgumentOutOfRangeException("len") : null);
+            return (str != null && str.Length > len) ? str.Substring(0, len) : str;
+        }
+
+        public static string ToOneLine(string str)
+        {
+            return ToOneLine(str, /*compact=*/false);
+        }
+
+        public static string ToOneLine(string str, bool compact)
+        {
+            if (str == null) { return null; }
+            str = str.Replace("\r", "").Replace('\n', ' ').Trim();
+            if (compact)
+            {
+                str = Regex.Replace(str, @"\s\s+", " ");
+            }
+            return str;
         }
 
         // *** Delegates ***

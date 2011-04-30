@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Latino")]
+[assembly: AssemblyTitle("LATINO")]
 [assembly: AssemblyDescription("Link Analysis and Text Mining Toolbox")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jozef Stefan Institute")]
-[assembly: AssemblyProduct("Latino")]
+[assembly: AssemblyProduct("LATINO")]
 [assembly: AssemblyCopyright("Copyright © Miha Grcar, Jozef Stefan Institute")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
