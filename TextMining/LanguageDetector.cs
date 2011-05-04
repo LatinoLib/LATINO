@@ -330,7 +330,7 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(!Utils.VerifyFileNameOpen(file) ? new ArgumentValueException("file") : null);
             Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
-            StreamReader reader = Utils.CheckUnicodeSignature(file) ? new StreamReader(file) : new StreamReader(file, Encoding.GetEncoding("ISO-8859-1"));
+            StreamReader reader = Utils.GetUnicodeSignature(file) != null ? new StreamReader(file) : new StreamReader(file, Encoding.GetEncoding("ISO-8859-1"));
             RegexTokenizer tokenizer = new RegexTokenizer();
             tokenizer.IgnoreUnknownTokens = true;
             tokenizer.TokenRegex = @"[^\s][^\s]+";

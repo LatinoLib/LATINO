@@ -374,7 +374,7 @@ namespace Latino
                             {
                                 if (message == null) { message = "{0}"; }
                                 if (mProgressSender != null && mProgressSender != sender) { Console.WriteLine(); }
-                                Console.Write("\r" + message, step); // throws FormatException
+                                Console.Write("\r" + message, step); 
                                 mProgressSender = sender;
                             }
                         }  
@@ -387,7 +387,7 @@ namespace Latino
                             {
                                 if (message == null) { message = "{0} / {1}"; }
                                 if (mProgressSender != null && mProgressSender != sender) { Console.WriteLine(); }
-                                Console.Write("\r" + message, step, numSteps); // throws FormatException
+                                Console.Write("\r" + message, step, numSteps); 
                                 mProgressSender = sender;
                                 if (step == numSteps) { mProgressSender = null; Console.WriteLine(); }
                             }

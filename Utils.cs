@@ -18,6 +18,7 @@ using System.Security.Cryptography;
 using System.Xml;
 using System.Web;
 using System.Text.RegularExpressions;
+using System.Text;
 
 namespace Latino
 {
@@ -299,17 +300,19 @@ namespace Latino
             }
         }
 
-        public static bool CheckUnicodeSignature(string fileName)
+        public static Encoding GetUnicodeSignature(string fileName)
         {
             ThrowException(!VerifyFileNameOpen(fileName) ? new ArgumentValueException("fileName") : null);
             FileStream file = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
             byte[] bom = new byte[4]; // get the byte-order mark, if there is one
             file.Read(bom, 0, 4);
             file.Close();
-            return ((bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) || // UTF-8
-                (bom[0] == 0xff && bom[1] == 0xfe) || // UCS-2LE, UCS-4LE, and UCS-16LE
-                (bom[0] == 0xfe && bom[1] == 0xff) || // UTF-16 and UCS-2
-                (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff)); // UCS-4
+            if (bom[0] == 0xef && bom[1] == 0xbb && bom[2] == 0xbf) { return Encoding.UTF8; }
+            else if (bom[0] == 0xff && bom[1] == 0xfe) { return Encoding.Unicode; }
+            else if (bom[0] == 0xfe && bom[1] == 0xff) { return Encoding.BigEndianUnicode; }
+            else if (bom[0] == 0xff && bom[1] == 0xfe && bom[2] == 0 && bom[3] == 0) { return Encoding.UTF32; }
+            else if (bom[0] == 0 && bom[1] == 0 && bom[2] == 0xfe && bom[3] == 0xff) { return Encoding.GetEncoding("UTF-32BE"); }
+            else { return null; }
         }
 
         public static string GetManifestResourceString(Type type, string resName)
