@@ -326,7 +326,7 @@ namespace Latino
                 else { message = "(null)"; }
             }
             writer.WriteLine("{0:yyyy-MM-dd HH:mm:ss} {1} {2}", DateTime.Now, mName == null ? "(root)" : mName, funcName);
-            if (args.Length > 0) { writer.WriteLine("{0}: {1}", levelStr, string.Format(message, args)); }
+            if (args != null && args.Length > 0) { writer.WriteLine("{0}: {1}", levelStr, string.Format(message, args)); }
             else { writer.WriteLine("{0}: {1}", levelStr, message); }
             if (e != null && e.StackTrace != null) { writer.WriteLine(e.StackTrace); }
             writer.Flush();
@@ -374,7 +374,17 @@ namespace Latino
                             {
                                 if (message == null) { message = "{0}"; }
                                 if (mProgressSender != null && mProgressSender != sender) { Console.WriteLine(); }
-                                Console.Write("\r" + message, step); 
+                                if (args != null && args.Length > 0)
+                                {
+                                    object[] allArgs = new object[1 + args.Length];
+                                    allArgs[0] = step;
+                                    Array.Copy(args, 0, allArgs, 1, args.Length);
+                                    Console.Write("\r" + message, allArgs);
+                                }
+                                else
+                                {
+                                    Console.Write("\r" + message, step);
+                                }
                                 mProgressSender = sender;
                             }
                         }  
@@ -387,7 +397,18 @@ namespace Latino
                             {
                                 if (message == null) { message = "{0} / {1}"; }
                                 if (mProgressSender != null && mProgressSender != sender) { Console.WriteLine(); }
-                                Console.Write("\r" + message, step, numSteps); 
+                                if (args != null && args.Length > 0)
+                                {
+                                    object[] allArgs = new object[2 + args.Length];
+                                    allArgs[0] = step;
+                                    allArgs[1] = numSteps;
+                                    Array.Copy(args, 0, allArgs, 2, args.Length);
+                                    Console.Write("\r" + message, allArgs);
+                                }
+                                else
+                                {
+                                    Console.Write("\r" + message, step, numSteps);
+                                }
                                 mProgressSender = sender;
                                 if (step == numSteps) { mProgressSender = null; Console.WriteLine(); }
                             }

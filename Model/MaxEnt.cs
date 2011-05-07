@@ -228,9 +228,10 @@ namespace Latino.Model
             }
             object id = new object();
             bool isAlive = true;
+            int aggrProgress = 0;
             while (isAlive)
             {
-                int aggrProgress = 0;
+                aggrProgress = 0;
                 foreach (Ref<int> progress in progressInfo)
                 {
                     aggrProgress += progress;
@@ -243,7 +244,10 @@ namespace Latino.Model
                 }
                 Thread.Sleep(100);               
             }
-            mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 1: {0} / {0}", lambdaRowCount, lambdaRowCount);
+            if (aggrProgress != lambdaRowCount) 
+            { 
+                mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 1: {0} / {0}", lambdaRowCount, lambdaRowCount); 
+            }
             for (i = 0; i < numClasses; i++)
             {
                 for (int j = 0; j < trainSetSize; j++)
@@ -272,7 +276,7 @@ namespace Latino.Model
             isAlive = true;
             while (isAlive)
             {
-                int aggrProgress = 0;
+                aggrProgress = 0;
                 foreach (Ref<int> progress in progressInfo)
                 {
                     aggrProgress += progress;
@@ -285,7 +289,10 @@ namespace Latino.Model
                 }
                 Thread.Sleep(100);
             }
-            mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 2: {0} / {0}", expeRowCount, expeRowCount);
+            if (aggrProgress != expeRowCount)
+            {
+                mLogger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 2: {0} / {0}", expeRowCount, expeRowCount);
+            }
         }
 
         private static void UpdateExpectationMatrix(int numClasses, int trainSetSize, SparseMatrix<double>.ReadOnly trainMtxTr, SparseMatrix<double>.ReadOnly lambda, SparseMatrix<double> expectations)

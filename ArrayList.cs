@@ -219,7 +219,7 @@ namespace Latino
 
         public static IEqualityComparer<ArrayList<T>> GetEqualityComparer()
         {
-            return new GenericEqualityComparer<ArrayList<T>>();
+            return GenericEqualityComparer<ArrayList<T>>.Instance;
         }
 
         /* .-----------------------------------------------------------------------
@@ -444,7 +444,7 @@ namespace Latino
 
             public static IEqualityComparer<ArrayList<T>.ReadOnly> GetEqualityComparer()
             {
-                return new GenericEqualityComparer<ArrayList<T>.ReadOnly>();
+                return GenericEqualityComparer<ArrayList<T>.ReadOnly>.Instance;
             }
         }
     }

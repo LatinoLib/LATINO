@@ -338,6 +338,13 @@ namespace Latino
             return new Set<T>.ReadOnly(set);
         }
 
+        // *** Equality comparer ***
+
+        public static IEqualityComparer<Set<T>> GetEqualityComparer()
+        {
+            return SetEqualityComparer<T>.Instance;
+        }
+
         /* .-----------------------------------------------------------------------
            |
            |  Class Set<T>.ReadOnly
@@ -477,6 +484,13 @@ namespace Latino
             public void Save(BinarySerializer writer)
             {
                 mSet.Save(writer);
+            }
+
+            // *** Equality comparer ***
+
+            public static IEqualityComparer<Set<T>.ReadOnly> GetEqualityComparer()
+            {
+                return SetEqualityComparer<T>.Instance;
             }
         }
     }

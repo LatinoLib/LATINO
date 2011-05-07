@@ -16,49 +16,56 @@ using System.Collections;
 
 namespace Latino.TextMining
 {
-    public class Fingerprint
+    public class Fingerprint<T>
     {
         internal ulong code;
-        internal ulong did;  // document id
-        public Fingerprint(ulong code, ulong did)
-        { this.code = code; this.did = did; }
+        internal List<T> docIds = new List<T>(1);
+        public Fingerprint(ulong code, T docId)
+        { this.code = code; this.docIds.Add(docId); }
+
+        public Fingerprint(ulong code, List<T> docIds)
+        { this.code = code; this.docIds = docIds; }
 
         public ulong Code { get { return code; } }
-        public ulong DocId { get { return did; } }
+        public List<T> GetDocIds() { return docIds; }
+        public void AddDocId(T did) { docIds.Add(did); }
 
-        public string ToString()
+        public override string ToString()
         {
             return ToString(code);
         }
 
         public static string ToString(ulong f)
         {
-            string fStr = "";
+            string s = "";
             ulong m = 1;
             for (int i = 0; i < 64; i++)
             {
                 if ((f & m) != 0ul)
-                    fStr = fStr + "1";
+                    s = s + "1";
                 else
-                    fStr = fStr + "0";
+                    s = s + "0";
                 m <<= 1;
             }
-            return fStr;
+            return s;
         }
-
     }
 
-    public class NearFingerprint : Fingerprint
+    public class NearFingerprint<T> : Fingerprint<T>
     {
         private int dist;    // Hamming distance from the query fingerprint
-        public NearFingerprint(ulong code, ulong did, int dist)
-            : base(code, did)
+        public NearFingerprint(ulong code, T docId, int dist)
+            : base(code, docId)
+        { this.dist = dist; }
+
+        public NearFingerprint(ulong code, List<T> docIds, int dist)
+            : base(code, docIds)
         { this.dist = dist; }
 
         public int Dist { get { return dist; } }
     }
 
-    internal class BitTree
+    internal class BitTree<T>
     {
         private int keyLength;
         private int[] perm;
@@ -81,15 +88,18 @@ namespace Latino.TextMining
 
         public class Leaf : Node
         {
-            private List<Fingerprint> fps = new List<Fingerprint>();
+            private List<Fingerprint<T>> fps = new List<Fingerprint<T>>();
 
-            public bool Add(ulong pf, ulong did)
+            public bool Add(ulong pf, T did)
             {
-                if (Find(pf) == true)
-                    return false;
+                Fingerprint<T> fp = Find(pf);
 
-                fps.Add(new Fingerprint(pf, did));
-                return true;
+                if (fp != null)
+                    fp.AddDocId(did);
+                else
+                    fps.Add(new Fingerprint<T>(pf, did));
+
+                return true; // *** always adds the item
             }
 
             public bool IsEmpty()
@@ -97,37 +107,37 @@ namespace Latino.TextMining
                 return (fps.Count == 0);
             }
 
-            public bool Find(ulong pf)
+            public Fingerprint<T> Find(ulong pf)
             {
-                return (fps.Find(delegate(Fingerprint fp) { return fp.code == pf; }) != default(Fingerprint));
+                return fps.Find(delegate(Fingerprint<T> fp) { return fp.code == pf; });
             }
 
             public bool Remove(ulong pf)
             {
-                return fps.Remove(fps.Find(delegate(Fingerprint fp) { return fp.code == pf; }));
+                return fps.Remove(fps.Find(delegate(Fingerprint<T> fp) { return fp.code == pf; }));
             }
 
-            public NearFingerprint FindNearDuplicate(ulong pf, int k)
+            public NearFingerprint<T> FindNearDuplicate(ulong pf, int k)
             {
-                foreach (Fingerprint t in fps)
+                foreach (Fingerprint<T> t in fps)
                 {
                     ulong xored = t.code ^ pf;
                     int dist = (int)CountOnes(xored);
                     if (dist <= k)
-                        return new NearFingerprint(t.code, t.did, dist);
+                        return new NearFingerprint<T>(t.code, t.docIds, dist);
                 }
                 return null;
             }
 
-            public List<NearFingerprint> FindAllNearDuplicates(ulong pf, int k)
+            public List<NearFingerprint<T>> FindAllNearDuplicates(ulong pf, int k)
             {
-                List<NearFingerprint> dups = new List<NearFingerprint>();
-                foreach (Fingerprint t in fps)
+                List<NearFingerprint<T>> dups = new List<NearFingerprint<T>>();
+                foreach (Fingerprint<T> t in fps)
                 {
                     ulong xored = t.code ^ pf;
                     int dist = (int)CountOnes(xored);
                     if (dist <= k)
-                        dups.Add(new NearFingerprint(t.code, t.did, dist));
+                        dups.Add(new NearFingerprint<T>(t.code, t.docIds, dist));
                 }
                 return dups;
             }
@@ -186,7 +196,7 @@ namespace Latino.TextMining
                 bit = (int)((pf & (((ulong)1) << i)) >> i);
                 if (it.kids[bit] == null)
                     if (it.kids[1 - bit] == null)
-                        return ((Leaf)it).Find(pf);
+                        return ((Leaf)it).Find(pf) != null;
                     else
                         return false;
                 it = it.kids[bit];
@@ -194,7 +204,7 @@ namespace Latino.TextMining
             return true;
         }
 
-        public NearFingerprint FindNearDuplicate(ulong f, int k)
+        public NearFingerprint<T> FindNearDuplicate(ulong f, int k)
         {
             ulong pf = PermuteFingerprint(f);
 
@@ -206,7 +216,7 @@ namespace Latino.TextMining
                 if (it.kids[bit] == null)
                     if (it.kids[1 - bit] == null)
                     {
-                        NearFingerprint nf = ((Leaf)it).FindNearDuplicate(pf, k);
+                        NearFingerprint<T> nf = ((Leaf)it).FindNearDuplicate(pf, k);
                         nf.code = InversePermuteFingerprint(nf.Code);
                         return nf;
                     }
@@ -217,7 +227,7 @@ namespace Latino.TextMining
             return null;
         }
 
-        public List<NearFingerprint> FindAllNearDuplicates(ulong f, int k)
+        public List<NearFingerprint<T>> FindAllNearDuplicates(ulong f, int k)
         {
             ulong pf = PermuteFingerprint(f);
             int bit;
@@ -229,8 +239,8 @@ namespace Latino.TextMining
                 {
                     if (it.kids[1 - bit] == null)
                     {
-                        List<NearFingerprint> dups = ((Leaf)it).FindAllNearDuplicates(pf, k);
-                        foreach (NearFingerprint nf in dups)
+                        List<NearFingerprint<T>> dups = ((Leaf)it).FindAllNearDuplicates(pf, k);
+                        foreach (NearFingerprint<T> nf in dups)
                             nf.code = InversePermuteFingerprint(nf.Code);
                         return dups;
                     }
@@ -242,7 +252,7 @@ namespace Latino.TextMining
             return null;
         }
 
-        public bool Insert(ulong f, ulong did)
+        public bool Insert(ulong f, T did)
         {
             ulong pf = PermuteFingerprint(f);
 
@@ -325,9 +335,9 @@ namespace Latino.TextMining
         }
     }
 
-    public class PTables
+    public class PTables<T>
     {
-        private BitTree[] trees;
+        private BitTree<T>[] trees;
 
         /* permutation tables(trees)
          *
@@ -348,17 +358,17 @@ namespace Latino.TextMining
          */
         public PTables()
         {
-            trees = new BitTree[10];
-            trees[0] = new BitTree(0, 0, 0, 0, 0);
-            trees[1] = new BitTree(0, -13, 13, 0, 0);
-            trees[2] = new BitTree(0, -13, -13, 26, 0);
-            trees[3] = new BitTree(0, -12, -12, -12, 39);
-            trees[4] = new BitTree(-26, 13, 13, 0, 0);
-            trees[5] = new BitTree(-26, 13, -13, 26, 0);
-            trees[6] = new BitTree(-25, 13, -12, -12, 39);
-            trees[7] = new BitTree(-26, -26, 26, 26, 0);
-            trees[8] = new BitTree(-25, -25, 26, -12, 39);
-            trees[9] = new BitTree(-25, -25, -25, 39, 39);
+            trees = new BitTree<T>[10];
+            trees[0] = new BitTree<T>(0, 0, 0, 0, 0);
+            trees[1] = new BitTree<T>(0, -13, 13, 0, 0);
+            trees[2] = new BitTree<T>(0, -13, -13, 26, 0);
+            trees[3] = new BitTree<T>(0, -12, -12, -12, 39);
+            trees[4] = new BitTree<T>(-26, 13, 13, 0, 0);
+            trees[5] = new BitTree<T>(-26, 13, -13, 26, 0);
+            trees[6] = new BitTree<T>(-25, 13, -12, -12, 39);
+            trees[7] = new BitTree<T>(-26, -26, 26, 26, 0);
+            trees[8] = new BitTree<T>(-25, -25, 26, -12, 39);
+            trees[9] = new BitTree<T>(-25, -25, -25, 39, 39);
         }
 
         public bool Find(ulong f)
@@ -378,10 +388,10 @@ namespace Latino.TextMining
             return false;
         }
 
-        public List<NearFingerprint> FindAllNearDuplicates(ulong f, int k) // TODO: check k
+        public List<NearFingerprint<T>> FindAllNearDuplicates(ulong f, int k) // TODO: check k
         {
-            List<NearFingerprint> allDups = new List<NearFingerprint>();
-            List<NearFingerprint> dups = null;
+            List<NearFingerprint<T>> allDups = new List<NearFingerprint<T>>();
+            List<NearFingerprint<T>> dups = null;
             for (int t = 0; t <= 9; t++)
             {
                 dups = trees[t].FindAllNearDuplicates(f, k);
@@ -391,9 +401,9 @@ namespace Latino.TextMining
             return allDups;
         }
 
-        public bool Insert(ulong f, ulong did)
+        public bool Insert(ulong f, T did)
         {
-            int duplicates = 0; ;
+            int duplicates = 0; 
             for (int t = 0; t <= 9; t++)
                 if (trees[t].Insert(f, did) == false)
                     duplicates++;

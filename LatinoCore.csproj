@@ -68,6 +68,7 @@
     <Compile Include="KeyDat.cs" />
     <Compile Include="ListEnum.cs" />
     <Compile Include="MultiSet.cs" />
+    <Compile Include="MultiSetEqualityComparer.cs" />
     <Compile Include="Pair.cs" />
     <Compile Include="Ref.cs" />
     <Compile Include="SetEqualityComparer.cs" />

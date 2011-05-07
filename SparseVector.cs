@@ -576,7 +576,7 @@ namespace Latino
 
         public static IEqualityComparer<SparseVector<T>> GetEqualityComparer()
         {
-            return new GenericEqualityComparer<SparseVector<T>>();
+            return GenericEqualityComparer<SparseVector<T>>.Instance;
         }
 
         /* .-----------------------------------------------------------------------
@@ -797,7 +797,7 @@ namespace Latino
 
             public static IEqualityComparer<SparseVector<T>.ReadOnly> GetEqualityComparer()
             {
-                return new GenericEqualityComparer<SparseVector<T>.ReadOnly>();
+                return GenericEqualityComparer<SparseVector<T>.ReadOnly>.Instance;
             }
         }
     }

@@ -652,7 +652,7 @@ namespace Latino
         // *** note that two matrices are never equal if one is trimmed and the other is not
         public static IEqualityComparer<SparseMatrix<T>> GetEqualityComparer()
         {
-            return new GenericEqualityComparer<SparseMatrix<T>>();
+            return GenericEqualityComparer<SparseMatrix<T>>.Instance;
         }
 
         /* .-----------------------------------------------------------------------
@@ -966,7 +966,7 @@ namespace Latino
             // *** note that two matrices are never equal if one is trimmed and the other is not
             public static IEqualityComparer<SparseMatrix<T>.ReadOnly> GetEqualityComparer()
             {
-                return new GenericEqualityComparer<SparseMatrix<T>.ReadOnly>();
+                return GenericEqualityComparer<SparseMatrix<T>.ReadOnly>.Instance;
             }
         }
     }

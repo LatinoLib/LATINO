@@ -151,7 +151,7 @@ namespace Latino
 
         public static IEqualityComparer<Pair<FirstT, SecondT>> GetEqualityComparer()
         {
-            return new GenericEqualityComparer<Pair<FirstT, SecondT>>();
+            return GenericEqualityComparer<Pair<FirstT, SecondT>>.Instance;
         }
     }
 }
