@@ -726,7 +726,7 @@ namespace Latino
             private int mRowIdx
                 = -1;
 
-            internal ReadOnlyMatrixEnumerator(SparseMatrix<T> matrix)
+            public ReadOnlyMatrixEnumerator(SparseMatrix<T> matrix)
             {
                 Utils.ThrowException(matrix == null ? new ArgumentNullException("matrix") : null);
                 mMatrix = matrix;
@@ -917,12 +917,7 @@ namespace Latino
                 return GetWritableCopy();
             }
 
-#if PUBLIC_INNER
-            public
-#else
-            internal
-#endif
-            SparseMatrix<T> Inner
+            public SparseMatrix<T> Inner
             {
                 get { return mMatrix; }
             }

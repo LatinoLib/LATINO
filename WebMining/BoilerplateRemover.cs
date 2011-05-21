@@ -882,7 +882,7 @@ namespace Latino.WebMining
                     string text = tokenizer.Text.Substring(startTextIdx, tokenizer.Tokens[i].StartIndex - startTextIdx);
                     if (decode) { text = HttpUtility.HtmlDecode(text); }
                     if (compact) { text = Utils.ToOneLine(text, /*compact=*/true); }
-                    textBlock.Append(text + " ");
+                    if (text != "") { textBlock.Append(text + " "); }
                     startTextIdx = tokenizer.Tokens[i].StartIndex + tokenizer.Tokens[i].Length;
                 }
             }

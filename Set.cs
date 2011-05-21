@@ -403,12 +403,7 @@ namespace Latino
                 return GetWritableCopy();
             }
 
-#if PUBLIC_INNER
-            public
-#else
-            internal
-#endif
-            Set<T> Inner
+            public Set<T> Inner
             {
                 get { return mSet; }
             }

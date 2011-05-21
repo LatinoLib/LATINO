@@ -91,12 +91,18 @@ namespace Latino.TextMining
             get { return mStem; }
         }
 
-        public ulong GetHashCode64()
+        public static ulong GetHashCode64(string word)
         {
-            byte[] hashCode128 = new MD5CryptoServiceProvider().ComputeHash(Encoding.Unicode.GetBytes(mStem));
+            Utils.ThrowException(word == null ? new ArgumentNullException("word") : null);
+            byte[] hashCode128 = new MD5CryptoServiceProvider().ComputeHash(Encoding.Unicode.GetBytes(word));
             ulong part1 = (ulong)BitConverter.ToInt64(hashCode128, 0);
             ulong part2 = (ulong)BitConverter.ToInt64(hashCode128, 8);
             return part1 ^ part2;
+        }
+
+        public ulong GetHashCode64()
+        {
+            return GetHashCode64(mStem);
         }
 
         // *** IEnumerable<KeyValuePair<string, int>> interface implementation ***

@@ -203,7 +203,7 @@ namespace Latino
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             Clear();
             // the following statements throw serialization-related exceptions
-            int count = reader.ReadInt(); 
+            int count = (Capacity = reader.ReadInt());
             for (int i = 0; i < count; i++) { Add(reader.ReadValueOrObject<T>()); } 
         }
 
@@ -345,12 +345,7 @@ namespace Latino
                 return GetWritableCopy();
             }
 
-#if PUBLIC_INNER
-            public
-#else
-            internal
-#endif
-            ArrayList<T> Inner
+            public ArrayList<T> Inner
             {
                 get { return mList; }
             }

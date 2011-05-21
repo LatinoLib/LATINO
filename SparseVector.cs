@@ -56,22 +56,12 @@ namespace Latino
             AddRange(sortedList); // throws ArgumentNullException, ArgumentValueException
         }
 
-#if PUBLIC_INNER
-        public
-#else
-        internal 
-#endif
-        ArrayList<int> InnerIdx
+        public ArrayList<int> InnerIdx
         {
             get { return mIdx; }
         }
-
-#if PUBLIC_INNER
-        public
-#else
-        internal 
-#endif
-        ArrayList<T> InnerDat
+        
+        public ArrayList<T> InnerDat
         {
             get { return mDat; }
         }
@@ -405,12 +395,7 @@ namespace Latino
             mDat = newDat;
         }
 
-#if PUBLIC_INNER
-        public
-#else
-        internal 
-#endif
-        void Sort()
+        public void Sort()
         {
             IdxDat<int>[] tmp = new IdxDat<int>[mIdx.Count];
             for (int i = 0; i < mIdx.Count; i++)
@@ -714,12 +699,7 @@ namespace Latino
                 return GetWritableCopy();
             }
 
-#if PUBLIC_INNER
-            public 
-#else
-            internal
-#endif
-            SparseVector<T> Inner
+            public SparseVector<T> Inner
             {
                 get { return mVec; }
             }

@@ -6,9 +6,11 @@
  *  Desc:    Text mining utilities
  *  Created: Mar-2010
  *
- *  Authors: Miha Grcar
+ *  Authors: Miha Grcar, Marko Brakus
  *
  ***************************************************************************/
+
+using System;
 
 namespace Latino.TextMining
 {
@@ -44,10 +46,10 @@ namespace Latino.TextMining
                     stopWords = StopWords.EnglishStopWords;
                     stemmer = new Stemmer(language);
                     break;
-                //case Language.Estonian:
-                //    stopWords = null; // *** missing stop words
-                //    stemmer = new Lemmatizer(language);
-                //    break;
+                case Language.Estonian:
+                    stopWords = null; // *** stop words are missing
+                    stemmer = new Lemmatizer(language);
+                    break;
                 case Language.Finnish:
                     stopWords = StopWords.FinnishStopWords;
                     stemmer = new Stemmer(language);
@@ -176,6 +178,54 @@ namespace Latino.TextMining
                 default:
                     throw new ArgumentNotSupportedException("language"); // should not happen
             }
+        }
+
+        public static ulong GetSimHash64(SparseVector<double>.ReadOnly vec, ArrayList<string>.ReadOnly vocabulary, double eps)
+        {
+            // TODO: check parameters
+            double[] v = new double[64];
+            Array.Clear(v, 0, 64);
+            foreach (IdxDat<double> item in vec)
+            {
+                string word = vocabulary[item.Idx];
+                double weight = item.Dat;
+                ulong hashCode = Word.GetHashCode64(word);
+                for (int i = 0; i < 64; i++)
+                {
+                    if ((hashCode & (1UL << i)) > 0) { v[i] += weight; }
+                    else { v[i] -= weight; }
+                }
+            }
+            ulong fp = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                if (v[i] >= eps) { fp |= (1UL << i); }
+            }
+            return fp;
+        }
+
+        public static ulong GetSimHash64(SparseVector<double>.ReadOnly vec, ArrayList<Word>.ReadOnly vocabulary, double eps)
+        {
+            // TODO: check parameters
+            double[] v = new double[64];
+            Array.Clear(v, 0, 64);
+            foreach (IdxDat<double> item in vec)
+            {
+                Word word = vocabulary[item.Idx];
+                double weight = item.Dat;
+                ulong hashCode = word.GetHashCode64();
+                for (int i = 0; i < 64; i++)
+                {
+                    if ((hashCode & (1UL << i)) > 0) { v[i] += weight; }
+                    else { v[i] -= weight; }
+                }
+            }
+            ulong fp = 0;
+            for (int i = 0; i < 64; i++)
+            {
+                if (v[i] >= eps) { fp |= (1UL << i); }
+            }
+            return fp;
         }
     }
 }

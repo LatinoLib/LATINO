@@ -43,12 +43,7 @@ namespace Latino
             AddRange(items); // throws ArgumentNullException
         }
 
-#if PUBLIC_INNER
-        public
-#else
-        internal
-#endif
-        List<T> Inner
+        public List<T> Inner
         {
             get { return mVec; }
         }
@@ -358,12 +353,7 @@ namespace Latino
                 return GetWritableCopy();
             }
 
-#if PUBLIC_INNER
-            public
-#else
-            internal
-#endif
-            BinaryVector<T> Inner
+            public BinaryVector<T> Inner
             {
                 get { return mVec; }
             }

@@ -548,12 +548,7 @@ namespace Latino
                 return GetWritableCopy();
             }
 
-#if PUBLIC_INNER
-            public
-#else
-            internal
-#endif
-            MultiSet<T> Inner
+            public MultiSet<T> Inner
             {
                 get { return mSet; }
             }
