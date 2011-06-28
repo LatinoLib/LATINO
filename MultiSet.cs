@@ -271,6 +271,16 @@ namespace Latino
             return false;
         }
 
+        public ArrayList<KeyDat<int, T>> ToList()
+        {
+            ArrayList<KeyDat<int, T>> list = new ArrayList<KeyDat<int, T>>();
+            foreach (KeyValuePair<T, int> item in mItems)
+            {
+                list.Add(new KeyDat<int, T>(item.Value, item.Key));
+            }
+            return list;
+        }
+
         public override string ToString()
         {
             StringBuilder str = new StringBuilder("{");
