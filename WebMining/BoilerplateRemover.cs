@@ -676,6 +676,7 @@ namespace Latino.WebMining
         private HtmlTokenizer tokenizer = new HtmlTokenizer("");
         private DecisionTree decisionTree = new DecisionTree();
         private Set<string> ignorableTags = new Set<string>(new string[] { "b", "i", "em", "strong", "sub", "sup", "u" });
+        private static Regex mCommentRegex = new Regex(@"<!--.*?-->", RegexOptions.Compiled);
 
         public BoilerplateRemover()
         {
@@ -853,8 +854,12 @@ namespace Latino.WebMining
             return blocks;
         }
 
-        // TODO: handle comments 
         private string GetTextBlock(int startListIdx, int endListIdx, bool decode, bool compact)
+        {
+            return GetTextBlock(startListIdx, endListIdx, decode, compact, /*removeComments=*/true);
+        }
+
+        private string GetTextBlock(int startListIdx, int endListIdx, bool decode, bool compact, bool removeComments)
         {
             if (startListIdx >= tokenizer.Tokens.Count) { return ""; }
             int startTextIdx = 0;
@@ -872,6 +877,7 @@ namespace Latino.WebMining
                 if (i == tokenizer.Tokens.Count)
                 {
                     string text = tokenizer.Text.Substring(startTextIdx, tokenizer.Text.Length - startTextIdx);
+                    if (removeComments) { text = mCommentRegex.Replace(text, ""); }
                     if (decode) { text = HttpUtility.HtmlDecode(text); }
                     if (compact) { text = Utils.ToOneLine(text, /*compact=*/true); }
                     textBlock.Append(text);
@@ -880,6 +886,7 @@ namespace Latino.WebMining
                 if (tokenizer.Tokens[i].IsTag)
                 {
                     string text = tokenizer.Text.Substring(startTextIdx, tokenizer.Tokens[i].StartIndex - startTextIdx);
+                    if (removeComments) { text = mCommentRegex.Replace(text, ""); }
                     if (decode) { text = HttpUtility.HtmlDecode(text); }
                     if (compact) { text = Utils.ToOneLine(text, /*compact=*/true); }
                     if (text != "") { textBlock.Append(text + " "); }
