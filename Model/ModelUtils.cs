@@ -182,14 +182,6 @@ namespace Latino.Model
         public static SparseVector<double> ComputeCentroid(IEnumerable<SparseVector<double>> vecList, CentroidType type)
         {
             Utils.ThrowException(vecList == null ? new ArgumentNullException("vecList") : null);
-            ArrayList<SparseVector<double>.ReadOnly> tmp = new ArrayList<SparseVector<double>.ReadOnly>();
-            foreach (SparseVector<double> vec in vecList) { tmp.Add(vec); }
-            return ComputeCentroid(tmp, type);
-        }
-
-        public static SparseVector<double> ComputeCentroid(IEnumerable<SparseVector<double>.ReadOnly> vecList, CentroidType type)
-        {
-            Utils.ThrowException(vecList == null ? new ArgumentNullException("vecList") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
             int vecCount = 0;
             foreach (SparseVector<double>.ReadOnly vec in vecList)
@@ -244,7 +236,7 @@ namespace Latino.Model
             return centroid;
         }
 
-        public static SparseVector<double> ComputeCentroid(IEnumerable<int> vecIdxList, IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, CentroidType type)
+        public static SparseVector<double> ComputeCentroid(IEnumerable<int> vecIdxList, IUnlabeledExampleCollection<SparseVector<double>> dataset, CentroidType type)
         {
             Utils.ThrowException(vecIdxList == null ? new ArgumentNullException("vecIdxList") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
@@ -362,13 +354,13 @@ namespace Latino.Model
 
         // *** Operations on datasets ***
 
-        public static SparseMatrix<double> GetTransposedMatrix(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public static SparseMatrix<double> GetTransposedMatrix(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             SparseMatrix<double> trMtx = new SparseMatrix<double>();
             int rowIdx = 0;
-            foreach (SparseVector<double>.ReadOnly item in dataset)
+            foreach (SparseVector<double> item in dataset)
             {
                 foreach (IdxDat<double> vecItem in item)
                 {
@@ -444,7 +436,7 @@ namespace Latino.Model
             return sparseVec;
         }
 
-        public static double[] GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, SparseVector<double>.ReadOnly vec)
+        public static double[] GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset, SparseVector<double>.ReadOnly vec)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
@@ -454,7 +446,7 @@ namespace Latino.Model
             return simVec;
         }
 
-        public static SparseVector<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, SparseVector<double>.ReadOnly vec, double thresh)
+        public static SparseVector<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset, SparseVector<double>.ReadOnly vec, double thresh)
         {
             Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
             double[] simVec = GetDotProductSimilarity(dataset, vec); // throws ArgumentNullException
@@ -470,7 +462,7 @@ namespace Latino.Model
             return sparseVec;
         }
 
-        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, double thresh, bool fullMatrix) // if fullMatrix is false, upper (right) triangular sparse matrix of dot products is computed
+        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset, double thresh, bool fullMatrix) // if fullMatrix is false, upper (right) triangular sparse matrix of dot products is computed
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
@@ -503,12 +495,12 @@ namespace Latino.Model
             return simMtx;
         }
 
-        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, double thresh)
+        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset, double thresh)
         {
             return GetDotProductSimilarity(dataset, thresh, /*fullMatrix=*/false); // throws ArgumentOutOfRangeException, ArgumentNullException
         }
 
-        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             return GetDotProductSimilarity(dataset, /*thresh=*/0, /*fullMatrix=*/false); // throws ArgumentNullException
         }

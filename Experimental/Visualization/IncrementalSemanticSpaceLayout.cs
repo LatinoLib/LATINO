@@ -27,7 +27,7 @@ namespace Latino.Experimental.Visualization
     */
     public class IncrementalSemanticSpaceLayout : ILayoutAlgorithm
     {
-        private UnlabeledDataset<SparseVector<double>.ReadOnly> mDataset;
+        private UnlabeledDataset<SparseVector<double>> mDataset;
         private Random mRandom
             = new Random(1);
         private double mKMeansEps
@@ -54,10 +54,10 @@ namespace Latino.Experimental.Visualization
         private static Logger mLogger
             = Logger.GetLogger(typeof(IncrementalSemanticSpaceLayout));
 
-        public IncrementalSemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public IncrementalSemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            mDataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(dataset);
+            mDataset = new UnlabeledDataset<SparseVector<double>>(dataset);
         }
 
         public Random Random
@@ -127,7 +127,7 @@ namespace Latino.Experimental.Visualization
             mKMeans.Trials = 3;
             ClusteringResult clustering = mKMeans.Cluster(mDataset); // throws ArgumentValueException
             // determine reference instances
-            UnlabeledDataset<SparseVector<double>.ReadOnly> dsRefInst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
+            UnlabeledDataset<SparseVector<double>> dsRefInst = new UnlabeledDataset<SparseVector<double>>();
             foreach (SparseVector<double> centroid in mKMeans.GetCentroids())
             {
                 dsRefInst.Add(centroid); // dataset of reference instances
@@ -145,7 +145,7 @@ namespace Latino.Experimental.Visualization
             mLogger.Info("ComputeLayout", "Computing similarities ...");           
             simMtx = ModelUtils.GetDotProductSimilarity(mDataset, mSimThresh, /*fullMatrix=*/true);
             mLogger.Info("ComputeLayout", "Constructing system of linear equations ...");
-            LabeledDataset<double, SparseVector<double>.ReadOnly> lsqrDs = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
+            LabeledDataset<double, SparseVector<double>> lsqrDs = new LabeledDataset<double, SparseVector<double>>();
             mPatches = new ArrayList<Patch>(mDataset.Count);
             for (int i = 0; i < mDataset.Count; i++)
             {
@@ -227,7 +227,7 @@ namespace Latino.Experimental.Visualization
         }
 
         // TODO: exceptions
-        public Vector2D[] Update(int numDequeue, IEnumerable<SparseVector<double>.ReadOnly> newInst, bool test, LayoutSettings settings, ref PtInfo[] ptInfo, int _count)
+        public Vector2D[] Update(int numDequeue, IEnumerable<SparseVector<double>> newInst, bool test, LayoutSettings settings, ref PtInfo[] ptInfo, int _count)
         {
             // clustering             
             mLogger.Info("Update", "Clustering ...");
@@ -238,8 +238,8 @@ namespace Latino.Experimental.Visualization
             /*prof*/sw.Save("cl.txt", _count, iter.ToString());
             // determine reference instances
             /*prof*/sw.Reset();
-            UnlabeledDataset<SparseVector<double>.ReadOnly> dsRefInst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
-            UnlabeledDataset<SparseVector<double>.ReadOnly> dsNewInst = new UnlabeledDataset<SparseVector<double>.ReadOnly>(newInst);
+            UnlabeledDataset<SparseVector<double>> dsRefInst = new UnlabeledDataset<SparseVector<double>>();
+            UnlabeledDataset<SparseVector<double>> dsNewInst = new UnlabeledDataset<SparseVector<double>>(newInst);
             foreach (SparseVector<double> centroid in mKMeans.GetCentroids())
             {
                 dsRefInst.Add(centroid); // dataset of reference instances
@@ -306,7 +306,7 @@ namespace Latino.Experimental.Visualization
             for (int i = 0; i < mPatches.Count; i++)
             {
                 Patch patch = mPatches[i];                
-                SparseVector<double>.ReadOnly vec = mDataset[i];
+                SparseVector<double> vec = mDataset[i];
                 if (vec != null)
                 {
                     if (patch.NeedUpdate) // full update required
@@ -459,7 +459,7 @@ namespace Latino.Experimental.Visualization
             Console.WriteLine((DateTime.Now - t).TotalMilliseconds);
             /*prof*/sw.Reset();
             mLogger.Info("Update", "Constructing system of linear equations ...");
-            LabeledDataset<double, SparseVector<double>.ReadOnly> lsqrDs = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
+            LabeledDataset<double, SparseVector<double>> lsqrDs = new LabeledDataset<double, SparseVector<double>>();
             Vector2D[] layout = new Vector2D[mDataset.Count - mKClust];
             foreach (Patch patch in mPatches)
             {
@@ -485,7 +485,7 @@ namespace Latino.Experimental.Visualization
             double[] aux = new double[mKClust];
             mSolX.CopyTo(mSolX.Count - mKClust, aux, 0, mKClust);
             mSolX.RemoveRange(mSolX.Count - mKClust, mKClust);
-            foreach (SparseVector<double>.ReadOnly newVec in newInst)
+            foreach (SparseVector<double> newVec in newInst)
             {
                 mSolX.Add(0);
             }
@@ -509,7 +509,7 @@ namespace Latino.Experimental.Visualization
             aux = new double[mKClust];
             mSolY.CopyTo(mSolY.Count - mKClust, aux, 0, mKClust);
             mSolY.RemoveRange(mSolY.Count - mKClust, mKClust);
-            foreach (SparseVector<double>.ReadOnly newVec in newInst)
+            foreach (SparseVector<double> newVec in newInst)
             {
                 mSolY.Add(0);
             }
@@ -532,7 +532,7 @@ namespace Latino.Experimental.Visualization
                 ptInfo[ii] = new PtInfo();
                 ptInfo[ii].X = pt.X;
                 ptInfo[ii].Y = pt.Y;
-                ptInfo[ii].Vec = mDataset[ii].GetWritableCopy();
+                ptInfo[ii].Vec = mDataset[ii];
                 ii++;
             }
             // -----------------------------------------------------------------
@@ -573,9 +573,9 @@ namespace Latino.Experimental.Visualization
         */
         private class DistFunc : IDistance<int>
         {
-            private SparseMatrix<double>.ReadOnly mSimMtx;
+            private SparseMatrix<double> mSimMtx;
 
-            public DistFunc(SparseMatrix<double>.ReadOnly simMtx)
+            public DistFunc(SparseMatrix<double> simMtx)
             {
                 mSimMtx = simMtx;
             }

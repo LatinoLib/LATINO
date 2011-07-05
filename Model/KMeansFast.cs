@@ -14,7 +14,7 @@ using System;
 
 namespace Latino.Model
 {
-    public class KMeansFast : IClustering<SparseVector<double>.ReadOnly> 
+    public class KMeansFast : IClustering<SparseVector<double>> 
     {
         private int mK;
         private Random mRnd
@@ -63,14 +63,14 @@ namespace Latino.Model
             }
         }
 
-        // *** IClustering<LblT, SparseVector<double>.ReadOnly> interface implementation ***
+        // *** IClustering<LblT, SparseVector<double>> interface implementation ***
 
         public Type RequiredExampleType
         {
-            get { return typeof(SparseVector<double>.ReadOnly); }
+            get { return typeof(SparseVector<double>); }
         }
 
-        public ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count < mK ? new ArgumentValueException("dataset") : null);
@@ -91,7 +91,7 @@ namespace Latino.Model
                 for (int i = 0; i < dataset.Count; i++) { tmp.Add(i); }
                 for (int k = 0; k < 3; k++)
                 {
-                    ArrayList<SparseVector<double>.ReadOnly> seeds = new ArrayList<SparseVector<double>.ReadOnly>(mK);
+                    ArrayList<SparseVector<double>> seeds = new ArrayList<SparseVector<double>>(mK);
                     tmp.Shuffle(mRnd);
                     for (int i = 0; i < mK; i++)
                     {
@@ -99,9 +99,9 @@ namespace Latino.Model
                     }
                     // assess quality of seed items
                     double simAvg = 0;
-                    foreach (SparseVector<double>.ReadOnly seed1 in seeds)
+                    foreach (SparseVector<double> seed1 in seeds)
                     {
-                        foreach (SparseVector<double>.ReadOnly seed2 in seeds)
+                        foreach (SparseVector<double> seed2 in seeds)
                         {
                             if (seed1 != seed2)
                             {
@@ -204,8 +204,8 @@ namespace Latino.Model
         ClusteringResult IClustering.Cluster(IUnlabeledExampleCollection dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            return Cluster((IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is IUnlabeledExampleCollection<SparseVector<double>>) ? new ArgumentTypeException("dataset") : null);
+            return Cluster((IUnlabeledExampleCollection<SparseVector<double>>)dataset); // throws ArgumentValueException
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Latino.Visualization
     */
     public class SemanticSpaceLayout : ILayoutAlgorithm
     {
-        private IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> mDataset;
+        private IUnlabeledExampleCollection<SparseVector<double>> mDataset;
         private Random mRandom
             = new Random(1);
         private double mKMeansEps
@@ -39,7 +39,7 @@ namespace Latino.Visualization
         private static Logger mLogger
             = Logger.GetLogger(typeof(SemanticSpaceLayout));
 
-        public SemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public SemanticSpaceLayout(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             mDataset = dataset;
@@ -104,7 +104,7 @@ namespace Latino.Visualization
 
         public Vector2D[] ComputeLayout(LayoutSettings settings)
         {
-            UnlabeledDataset<SparseVector<double>.ReadOnly> dataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(mDataset);
+            UnlabeledDataset<SparseVector<double>> dataset = new UnlabeledDataset<SparseVector<double>>(mDataset);
             // clustering 
             mLogger.Info("ComputeLayout", "Clustering ...");
             KMeansFast kMeans = new KMeansFast(mKClust);
@@ -113,7 +113,7 @@ namespace Latino.Visualization
             kMeans.Trials = 1;
             ClusteringResult clustering = kMeans.Cluster(mDataset); // throws ArgumentValueException
             // determine reference instances
-            UnlabeledDataset<SparseVector<double>.ReadOnly> dsRefInst = new UnlabeledDataset<SparseVector<double>.ReadOnly>();
+            UnlabeledDataset<SparseVector<double>> dsRefInst = new UnlabeledDataset<SparseVector<double>>();
             foreach (Cluster cluster in clustering.Roots)
             {
                 SparseVector<double> centroid
@@ -131,7 +131,7 @@ namespace Latino.Visualization
             mLogger.Info("ComputeLayout", "Computing similarities ...");
             simMtx = ModelUtils.GetDotProductSimilarity(dataset, mSimThresh, /*fullMatrix=*/true);
             mLogger.Info("ComputeLayout", "Constructing system of linear equations ...");
-            LabeledDataset<double, SparseVector<double>.ReadOnly> lsqrDs = new LabeledDataset<double, SparseVector<double>.ReadOnly>();
+            LabeledDataset<double, SparseVector<double>> lsqrDs = new LabeledDataset<double, SparseVector<double>>();
             foreach (IdxDat<SparseVector<double>> simMtxRow in simMtx)
             {
                 if (simMtxRow.Dat.Count <= 1)

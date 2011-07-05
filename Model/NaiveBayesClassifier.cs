@@ -21,7 +21,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class NaiveBayesClassifier<LblT> : IModel<LblT, BinaryVector<int>.ReadOnly>
+    public class NaiveBayesClassifier<LblT> : IModel<LblT, BinaryVector<int>>
     {
         private Dictionary<int, double>[] mFeatureProb
             = null;
@@ -39,13 +39,13 @@ namespace Latino.Model
         private static Logger mLogger
             = Logger.GetLogger(typeof(NaiveBayesClassifier<LblT>));
 
-        private static Dictionary<int, double>[] PrecomputeProbabilities(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, 
+        private static Dictionary<int, double>[] PrecomputeProbabilities(ILabeledExampleCollection<LblT, BinaryVector<int>> dataset, 
             out LblT[] idxToLbl, out Dictionary<int, double> featurePriors, out int[] exampleCount)
         {
             featurePriors = new Dictionary<int, double>();
             ArrayList<LblT> tmp = new ArrayList<LblT>();
             Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>();
-            foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
+            foreach (LabeledExample<LblT, BinaryVector<int>> labeledExample in dataset)
             {
                 if (!lblToIdx.ContainsKey(labeledExample.Label))
                 {
@@ -61,7 +61,7 @@ namespace Latino.Model
             // count features
             int i = 0;
             object id = new object();
-            foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
+            foreach (LabeledExample<LblT, BinaryVector<int>> labeledExample in dataset)
             {
                 mLogger.ProgressFast(id, "PrecomputeProbabilities", "{0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
@@ -113,13 +113,13 @@ namespace Latino.Model
 
         // *** IModel<LblT,ReadOnly> interface implementation ***
 
-        public void Train(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset)
+        public void Train(ILabeledExampleCollection<LblT, BinaryVector<int>> dataset)
         {
             mFeatureProb = PrecomputeProbabilities(dataset, out mIdxToLbl, out mFeaturePriors, out mExampleCount);
             mDatasetCount = dataset.Count;
         }
 
-        public Prediction<LblT> Predict(BinaryVector<int>.ReadOnly example)
+        public Prediction<LblT> Predict(BinaryVector<int> example)
         {
             Prediction<LblT> pred = new Prediction<LblT>();
             double sum = 0;
@@ -156,7 +156,7 @@ namespace Latino.Model
 
         public Type RequiredExampleType
         {
-            get { return typeof(BinaryVector<int>.ReadOnly); }
+            get { return typeof(BinaryVector<int>); }
         }
 
         public bool IsTrained
@@ -164,18 +164,18 @@ namespace Latino.Model
             get { return mFeatureProb != null; }
         }
 
-        public void Train(ILabeledExampleCollection<LblT> dataset)
+        void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            Train((ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly>)dataset); // throws ... ?
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, BinaryVector<int>>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, BinaryVector<int>>)dataset); // throws ... ?
         }
 
-        public Prediction<LblT> Predict(object example)
+        Prediction<LblT> IModel<LblT>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            Utils.ThrowException(!(example is BinaryVector<int>.ReadOnly) ? new ArgumentTypeException("example") : null);
-            return Predict((BinaryVector<int>.ReadOnly)example); // throws ... ?
+            Utils.ThrowException(!(example is BinaryVector<int>) ? new ArgumentTypeException("example") : null);
+            return Predict((BinaryVector<int>)example); // throws ... ?
         }
 
         // *** ISerializable interface implementation ***

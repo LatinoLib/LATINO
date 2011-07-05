@@ -77,7 +77,7 @@ namespace Latino.Model
             get { return mItems; }
         }
 
-        public SparseVector<double> ComputeCentroid(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, CentroidType type)
+        public SparseVector<double> ComputeCentroid(IUnlabeledExampleCollection<SparseVector<double>> dataset, CentroidType type)
         {
             return ModelUtils.ComputeCentroid(mItems, dataset, type); // throws ArgumentValueException
         }

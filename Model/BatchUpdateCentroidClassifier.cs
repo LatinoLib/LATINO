@@ -21,7 +21,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class BatchUpdateCentroidClassifier<LblT> : IModel<LblT, SparseVector<double>.ReadOnly>
+    public class BatchUpdateCentroidClassifier<LblT> : IModel<LblT, SparseVector<double>>
     {
         private IEqualityComparer<LblT> mLblCmp
             = null;
@@ -97,11 +97,11 @@ namespace Latino.Model
             return retCen;
         }
 
-        // *** IModel<LblT, SparseVector<double>.ReadOnly> interface implementation ***
+        // *** IModel<LblT, SparseVector<double>> interface implementation ***
 
         public Type RequiredExampleType
         {
-            get { return typeof(SparseVector<double>.ReadOnly); }
+            get { return typeof(SparseVector<double>); }
         }
 
         public bool IsTrained
@@ -109,12 +109,12 @@ namespace Latino.Model
             get { return mCentroidMtxTr != null; }
         }
 
-        public void Train(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
+        public void Train(ILabeledExampleCollection<LblT, SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             Dictionary<LblT, CentroidData> centroids = new Dictionary<LblT, CentroidData>(mLblCmp);
-            foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeledExample in dataset)
+            foreach (LabeledExample<LblT, SparseVector<double>> labeledExample in dataset)
             {
                 if (!centroids.ContainsKey(labeledExample.Label))
                 {
@@ -162,8 +162,8 @@ namespace Latino.Model
                     double maxSim = double.MinValue;
                     CentroidData assignedCentroid = null;
                     CentroidData actualCentroid = null;
-                    LabeledExample<LblT, SparseVector<double>.ReadOnly> labeledExample = dataset[instIdx];
-                    SparseVector<double>.ReadOnly vec = labeledExample.Example;
+                    LabeledExample<LblT, SparseVector<double>> labeledExample = dataset[instIdx];
+                    SparseVector<double> vec = labeledExample.Example;
                     int cenIdx = 0;
                     foreach (KeyValuePair<LblT, CentroidData> labeledCentroid in centroids)
                     {                        
@@ -204,11 +204,11 @@ namespace Latino.Model
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            Train((ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, SparseVector<double>>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, SparseVector<double>>)dataset); // throws ArgumentValueException
         }
 
-        public Prediction<LblT> Predict(SparseVector<double>.ReadOnly example)
+        public Prediction<LblT> Predict(SparseVector<double> example)
         {
             Utils.ThrowException(mCentroidMtxTr == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
@@ -225,8 +225,8 @@ namespace Latino.Model
         Prediction<LblT> IModel<LblT>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            Utils.ThrowException(!(example is SparseVector<double>.ReadOnly) ? new ArgumentTypeException("example") : null);
-            return Predict((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
+            Utils.ThrowException(!(example is SparseVector<double>) ? new ArgumentTypeException("example") : null);
+            return Predict((SparseVector<double>)example); // throws InvalidOperationException
         }
 
         // *** ISerializable interface implementation ***

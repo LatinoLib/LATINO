@@ -20,7 +20,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class LSqrModel : IModel<double, SparseVector<double>.ReadOnly>
+    public class LSqrModel : IModel<double, SparseVector<double>>
     {
         private ArrayList<double> mSol
             = null;
@@ -68,11 +68,11 @@ namespace Latino.Model
             set { mInitSol = value; }
         }
 
-        // *** IModel<double, SparseVector<double>.ReadOnly> interface implementation ***
+        // *** IModel<double, SparseVector<double>> interface implementation ***
 
         public Type RequiredExampleType
         {
-            get { return typeof(SparseVector<double>.ReadOnly); }
+            get { return typeof(SparseVector<double>); }
         }
 
         public bool IsTrained
@@ -80,7 +80,7 @@ namespace Latino.Model
             get { return mSol != null; }
         }
 
-        public void Train(ILabeledExampleCollection<double, SparseVector<double>.ReadOnly> dataset)
+        public void Train(ILabeledExampleCollection<double, SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
@@ -88,7 +88,7 @@ namespace Latino.Model
             double[] rhs = new double[dataset.Count];
             int solSize = -1;
             int i = 0;
-            foreach (LabeledExample<double, SparseVector<double>.ReadOnly> labeledExample in dataset)
+            foreach (LabeledExample<double, SparseVector<double>> labeledExample in dataset)
             {
                 if (labeledExample.Example.LastNonEmptyIndex + 1 > solSize) 
                 { 
@@ -103,7 +103,7 @@ namespace Latino.Model
             Utils.ThrowException((mInitSol != null && mInitSol.Length != solSize) ? new ArgumentValueException("InitialSolution") : null);
             LSqrSparseMatrix matT = new LSqrSparseMatrix(solSize);
             i = 0;
-            foreach (LabeledExample<double, SparseVector<double>.ReadOnly> labeledExample in dataset)
+            foreach (LabeledExample<double, SparseVector<double>> labeledExample in dataset)
             {
                 foreach (IdxDat<double> item in labeledExample.Example)
                 {
@@ -120,11 +120,11 @@ namespace Latino.Model
         void IModel<double>.Train(ILabeledExampleCollection<double> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is ILabeledExampleCollection<double, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            Train((ILabeledExampleCollection<double, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<double, SparseVector<double>>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<double, SparseVector<double>>)dataset); // throws ArgumentValueException
         }
 
-        public Prediction<double> Predict(SparseVector<double>.ReadOnly example)
+        public Prediction<double> Predict(SparseVector<double> example)
         {
             Utils.ThrowException(mSol == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
@@ -139,8 +139,8 @@ namespace Latino.Model
         Prediction<double> IModel<double>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            Utils.ThrowException(!(example is SparseVector<double>.ReadOnly) ? new ArgumentTypeException("example") : null);
-            return Predict((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
+            Utils.ThrowException(!(example is SparseVector<double>) ? new ArgumentTypeException("example") : null);
+            return Predict((SparseVector<double>)example); // throws InvalidOperationException
         }
 
         // *** ISerializable interface implementation ***

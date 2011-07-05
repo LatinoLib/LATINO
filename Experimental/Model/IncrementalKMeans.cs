@@ -16,7 +16,7 @@ using Latino.Model;
 
 namespace Latino.Experimental.Model
 {
-    public class IncrementalKMeans : IClustering<SparseVector<double>.ReadOnly> 
+    public class IncrementalKMeans : IClustering<SparseVector<double>> 
     {
         private int mK;
         private Random mRnd
@@ -29,7 +29,7 @@ namespace Latino.Experimental.Model
             = null;
         private ArrayList<KeyDat<double, int>> mMedoids
             = null;
-        private UnlabeledDataset<SparseVector<double>.ReadOnly> mDataset
+        private UnlabeledDataset<SparseVector<double>> mDataset
             = null;
 
         private static Logger mLogger
@@ -71,18 +71,18 @@ namespace Latino.Experimental.Model
             }
         }
 
-        // *** IClustering<LblT, SparseVector<double>.ReadOnly> interface implementation ***
+        // *** IClustering<LblT, SparseVector<double>> interface implementation ***
 
         public Type RequiredExampleType
         {
-            get { return typeof(SparseVector<double>.ReadOnly); }
+            get { return typeof(SparseVector<double>); }
         }
 
-        public ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count < mK ? new ArgumentValueException("dataset") : null);
-            mDataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(dataset);            
+            mDataset = new UnlabeledDataset<SparseVector<double>>(dataset);            
             ClusteringResult clustering = null;
             double globalBestClustQual = 0;
             for (int trial = 1; trial <= mTrials; trial++)
@@ -100,7 +100,7 @@ namespace Latino.Experimental.Model
                 for (int i = 0; i < mDataset.Count; i++) { tmp.Add(i); }
                 for (int k = 0; k < 3; k++)
                 {
-                    ArrayList<SparseVector<double>.ReadOnly> seeds = new ArrayList<SparseVector<double>.ReadOnly>(mK);
+                    ArrayList<SparseVector<double>> seeds = new ArrayList<SparseVector<double>>(mK);
                     tmp.Shuffle(mRnd);
                     for (int i = 0; i < mK; i++)
                     {
@@ -108,9 +108,9 @@ namespace Latino.Experimental.Model
                     }
                     // assess quality of seed items
                     double simAvg = 0;
-                    foreach (SparseVector<double>.ReadOnly seed1 in seeds)
+                    foreach (SparseVector<double> seed1 in seeds)
                     {
-                        foreach (SparseVector<double>.ReadOnly seed2 in seeds)
+                        foreach (SparseVector<double> seed2 in seeds)
                         {
                             if (seed1 != seed2)
                             {
@@ -268,7 +268,7 @@ namespace Latino.Experimental.Model
         //}
 
         // TODO: exceptions
-        public ClusteringResult Update(int dequeueN, IEnumerable<SparseVector<double>.ReadOnly> addList, ref int iter)
+        public ClusteringResult Update(int dequeueN, IEnumerable<SparseVector<double>> addList, ref int iter)
         {
             StopWatch stopWatch = new StopWatch();
             // update centroid data (1)
@@ -307,7 +307,7 @@ namespace Latino.Experimental.Model
             {
                 mLogger.Info("Update", "Initializing ...");
                 int i = 0;
-                foreach (SparseVector<double>.ReadOnly example in addList)
+                foreach (SparseVector<double> example in addList)
                 {
                     double maxSim = double.MinValue;
                     ArrayList<int> candidates = new ArrayList<int>();
@@ -363,7 +363,7 @@ namespace Latino.Experimental.Model
                 // assign items to clusters
                 for (int i = 0; i < mDataset.Count; i++)
                 {
-                    SparseVector<double>.ReadOnly example = mDataset[i];
+                    SparseVector<double> example = mDataset[i];
                     double maxSim = double.MinValue;
                     ArrayList<int> candidates = new ArrayList<int>();
                     for (int j = 0; j < mK; j++)
@@ -433,8 +433,8 @@ namespace Latino.Experimental.Model
         ClusteringResult IClustering.Cluster(IUnlabeledExampleCollection dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            return Cluster((IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is IUnlabeledExampleCollection<SparseVector<double>>) ? new ArgumentTypeException("dataset") : null);
+            return Cluster((IUnlabeledExampleCollection<SparseVector<double>>)dataset); // throws ArgumentValueException
         }
     }
 }

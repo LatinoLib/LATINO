@@ -14,9 +14,9 @@ using System;
 
 namespace Latino.Model
 {
-    public class KMeans : IClustering<SparseVector<double>.ReadOnly> 
+    public class KMeans : IClustering<SparseVector<double>> 
     {        
-        private ISimilarity<SparseVector<double>.ReadOnly> mSimilarity
+        private ISimilarity<SparseVector<double>> mSimilarity
             = CosineSimilarity.Instance;
         private Random mRnd
             = new Random();
@@ -47,7 +47,7 @@ namespace Latino.Model
             }
         }
 
-        public ISimilarity<SparseVector<double>.ReadOnly> Similarity
+        public ISimilarity<SparseVector<double>> Similarity
         {
             get { return mSimilarity; }
             set
@@ -83,14 +83,14 @@ namespace Latino.Model
             }
         }
 
-        // *** IClustering<LblT, SparseVector<double>.ReadOnly> interface implementation ***
+        // *** IClustering<LblT, SparseVector<double>> interface implementation ***
 
         public Type RequiredExampleType
         {
-            get { return typeof(SparseVector<double>.ReadOnly); }
+            get { return typeof(SparseVector<double>); }
         }
 
-        public ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count < mK ? new ArgumentValueException("dataset") : null);
@@ -100,7 +100,7 @@ namespace Latino.Model
             for (int trial = 1; trial <= mTrials; trial++)
             {
                 mLogger.Info("Cluster", "Clustering trial {0} of {1} ...", trial, mTrials);
-                ArrayList<SparseVector<double>.ReadOnly> centroids = null;
+                ArrayList<SparseVector<double>> centroids = null;
                 clustering = new ClusteringResult();
                 for (int i = 0; i < mK; i++) { clustering.AddRoot(new Cluster()); }
                 // select seed items
@@ -109,17 +109,17 @@ namespace Latino.Model
                 for (int i = 0; i < dataset.Count; i++) { tmp.Add(i); }
                 for (int k = 0; k < 3; k++)
                 {
-                    ArrayList<SparseVector<double>.ReadOnly> seeds = new ArrayList<SparseVector<double>.ReadOnly>(mK);
+                    ArrayList<SparseVector<double>> seeds = new ArrayList<SparseVector<double>>(mK);
                     tmp.Shuffle(mRnd);
                     for (int i = 0; i < mK; i++)
                     {
-                        seeds.Add(ModelUtils.ComputeCentroid(new SparseVector<double>.ReadOnly[] { dataset[tmp[i]] }, mCentroidType));
+                        seeds.Add(ModelUtils.ComputeCentroid(new SparseVector<double>[] { dataset[tmp[i]] }, mCentroidType));
                     }
                     // assess quality of seed items
                     double simAvg = 0;
-                    foreach (SparseVector<double>.ReadOnly seed1 in seeds)
+                    foreach (SparseVector<double> seed1 in seeds)
                     {
-                        foreach (SparseVector<double>.ReadOnly seed2 in seeds)
+                        foreach (SparseVector<double> seed2 in seeds)
                         {
                             if (seed1 != seed2)
                             {
@@ -148,12 +148,12 @@ namespace Latino.Model
                     foreach (Cluster cluster in clustering.Roots) { cluster.Items.Clear(); }
                     for (int i = 0; i < dataset.Count; i++)
                     {
-                        SparseVector<double>.ReadOnly example = dataset[i];
+                        SparseVector<double> example = dataset[i];
                         double maxSim = double.MinValue;
                         ArrayList<int> candidates = new ArrayList<int>();
                         for (int j = 0; j < mK; j++)
                         {
-                            SparseVector<double>.ReadOnly centroid = centroids[j];
+                            SparseVector<double> centroid = centroids[j];
                             double sim = mSimilarity.GetSimilarity(example, centroid);
                             if (sim > maxSim)
                             {
@@ -202,8 +202,8 @@ namespace Latino.Model
         ClusteringResult IClustering.Cluster(IUnlabeledExampleCollection dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            return Cluster((IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is IUnlabeledExampleCollection<SparseVector<double>>) ? new ArgumentTypeException("dataset") : null);
+            return Cluster((IUnlabeledExampleCollection<SparseVector<double>>)dataset); // throws ArgumentValueException
         }
     }
 }

@@ -21,13 +21,13 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class CentroidClassifier<LblT> : IModel<LblT, SparseVector<double>.ReadOnly>
+    public class CentroidClassifier<LblT> : IModel<LblT, SparseVector<double>>
     {
-        private ArrayList<Pair<LblT, SparseVector<double>.ReadOnly>> mCentroids
+        private ArrayList<Pair<LblT, SparseVector<double>>> mCentroids
             = null;
         private IEqualityComparer<LblT> mLblCmp
             = null;
-        private ISimilarity<SparseVector<double>.ReadOnly> mSimilarity
+        private ISimilarity<SparseVector<double>> mSimilarity
             = CosineSimilarity.Instance;
         private bool mNormalize
             = false;
@@ -53,7 +53,7 @@ namespace Latino.Model
             set { mLblCmp = value; }
         }
 
-        public ISimilarity<SparseVector<double>.ReadOnly> Similarity
+        public ISimilarity<SparseVector<double>> Similarity
         {
             get { return mSimilarity; }
             set
@@ -63,13 +63,13 @@ namespace Latino.Model
             }
         }
 
-        public ArrayList<SparseVector<double>.ReadOnly> GetCentroids(IEnumerable<LblT> labels)
+        public ArrayList<SparseVector<double>> GetCentroids(IEnumerable<LblT> labels)
         {
             Utils.ThrowException(mCentroids == null ? new InvalidOperationException() : null);
             Utils.ThrowException(labels == null ? new ArgumentNullException("labels") : null);
-            Dictionary<LblT, SparseVector<double>.ReadOnly> aux = new Dictionary<LblT, SparseVector<double>.ReadOnly>(mLblCmp); 
-            ArrayList<SparseVector<double>.ReadOnly> list = new ArrayList<SparseVector<double>.ReadOnly>();
-            foreach (Pair<LblT, SparseVector<double>.ReadOnly> centroid in mCentroids)
+            Dictionary<LblT, SparseVector<double>> aux = new Dictionary<LblT, SparseVector<double>>(mLblCmp); 
+            ArrayList<SparseVector<double>> list = new ArrayList<SparseVector<double>>();
+            foreach (Pair<LblT, SparseVector<double>> centroid in mCentroids)
             {
                 aux.Add(centroid.First, centroid.Second);
             }
@@ -80,11 +80,11 @@ namespace Latino.Model
             return list;
         }
 
-        // *** IModel<LblT, SparseVector<double>.ReadOnly> interface implementation ***
+        // *** IModel<LblT, SparseVector<double>> interface implementation ***
 
         public Type RequiredExampleType
         {
-            get { return typeof(SparseVector<double>.ReadOnly); }
+            get { return typeof(SparseVector<double>); }
         }
 
         public bool IsTrained
@@ -92,43 +92,43 @@ namespace Latino.Model
             get { return mCentroids != null; }
         }
 
-        public void Train(ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly> dataset)
+        public void Train(ILabeledExampleCollection<LblT, SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
-            mCentroids = new ArrayList<Pair<LblT, SparseVector<double>.ReadOnly>>();
-            Dictionary<LblT, ArrayList<SparseVector<double>.ReadOnly>> tmp = new Dictionary<LblT, ArrayList<SparseVector<double>.ReadOnly>>(mLblCmp);
-            foreach (LabeledExample<LblT, SparseVector<double>.ReadOnly> labeledExample in dataset)
+            mCentroids = new ArrayList<Pair<LblT, SparseVector<double>>>();
+            Dictionary<LblT, ArrayList<SparseVector<double>>> tmp = new Dictionary<LblT, ArrayList<SparseVector<double>>>(mLblCmp);
+            foreach (LabeledExample<LblT, SparseVector<double>> labeledExample in dataset)
             {
                 if (!tmp.ContainsKey(labeledExample.Label))
                 {
-                    tmp.Add(labeledExample.Label, new ArrayList<SparseVector<double>.ReadOnly>(new SparseVector<double>.ReadOnly[] { labeledExample.Example }));
+                    tmp.Add(labeledExample.Label, new ArrayList<SparseVector<double>>(new SparseVector<double>[] { labeledExample.Example }));
                 }
                 else
                 {
                     tmp[labeledExample.Label].Add(labeledExample.Example);
                 }
             }
-            foreach (KeyValuePair<LblT, ArrayList<SparseVector<double>.ReadOnly>> centroidData in tmp)
+            foreach (KeyValuePair<LblT, ArrayList<SparseVector<double>>> centroidData in tmp)
             {
                 SparseVector<double> centroid = ModelUtils.ComputeCentroid(centroidData.Value, mNormalize ? CentroidType.NrmL2 : CentroidType.Avg);
-                mCentroids.Add(new Pair<LblT, SparseVector<double>.ReadOnly>(centroidData.Key, centroid));
+                mCentroids.Add(new Pair<LblT, SparseVector<double>>(centroidData.Key, centroid));
             }
         }
 
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            Train((ILabeledExampleCollection<LblT, SparseVector<double>.ReadOnly>)dataset); // throws ArgumentValueException
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, SparseVector<double>>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, SparseVector<double>>)dataset); // throws ArgumentValueException
         }
 
-        public Prediction<LblT> Predict(SparseVector<double>.ReadOnly example)
+        public Prediction<LblT> Predict(SparseVector<double> example)
         {
             Utils.ThrowException(mCentroids == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Prediction<LblT> result = new Prediction<LblT>();
-            foreach (Pair<LblT, SparseVector<double>.ReadOnly> labeledCentroid in mCentroids)
+            foreach (Pair<LblT, SparseVector<double>> labeledCentroid in mCentroids)
             {
                 double sim = mSimilarity.GetSimilarity(labeledCentroid.Second, example);
                 result.Inner.Add(new KeyDat<double, LblT>(sim, labeledCentroid.First));
@@ -140,8 +140,8 @@ namespace Latino.Model
         Prediction<LblT> IModel<LblT>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            Utils.ThrowException(!(example is SparseVector<double>.ReadOnly) ? new ArgumentTypeException("example") : null);
-            return Predict((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
+            Utils.ThrowException(!(example is SparseVector<double>) ? new ArgumentTypeException("example") : null);
+            return Predict((SparseVector<double>)example); // throws InvalidOperationException
         }
 
         // *** ISerializable interface implementation ***
@@ -160,8 +160,8 @@ namespace Latino.Model
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            mCentroids = reader.ReadObject<ArrayList<Pair<LblT, SparseVector<double>.ReadOnly>>>();
-            mSimilarity = reader.ReadObject<ISimilarity<SparseVector<double>.ReadOnly>>();
+            mCentroids = reader.ReadObject<ArrayList<Pair<LblT, SparseVector<double>>>>();
+            mSimilarity = reader.ReadObject<ISimilarity<SparseVector<double>>>();
             mNormalize = reader.ReadBool();
             mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }

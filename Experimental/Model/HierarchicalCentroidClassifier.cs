@@ -22,13 +22,13 @@ namespace Latino.Experimental.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class HierarchicalCentroidClassifier : IHierarchicalModel<SparseVector<double>.ReadOnly>
+    public class HierarchicalCentroidClassifier : IHierarchicalModel<SparseVector<double>>
     {
         private ClassifierType mClassifierType
             = ClassifierType.Flat;
         private Dictionary<Cluster, ClusterInfo> mModel
             = null;
-        private IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> mDataset
+        private IUnlabeledExampleCollection<SparseVector<double>> mDataset
             = null;
         private bool mRemoveDuplicates
             = true;
@@ -48,11 +48,11 @@ namespace Latino.Experimental.Model
             set { mClassifierType = value; }
         }
 
-        // *** IHierarchicalModel<SparseVector<double>.ReadOnly> interface implementation ***
+        // *** IHierarchicalModel<SparseVector<double>> interface implementation ***
 
         public Type RequiredExampleType
         {
-            get { return typeof(SparseVector<double>.ReadOnly); }
+            get { return typeof(SparseVector<double>); }
         }
 
         public bool IsTrained
@@ -84,7 +84,7 @@ namespace Latino.Experimental.Model
             }
         }
 
-        public void Train(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset, ClusteringResult hierarchy)
+        public void Train(IUnlabeledExampleCollection<SparseVector<double>> dataset, ClusteringResult hierarchy)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
@@ -102,11 +102,11 @@ namespace Latino.Experimental.Model
         void IHierarchicalModel.Train(IUnlabeledExampleCollection dataset, ClusteringResult hierarchy)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>) ? new ArgumentTypeException("dataset") : null);
-            Train((IUnlabeledExampleCollection<SparseVector<double>.ReadOnly>)dataset, hierarchy); // throws ArgumentNullException, ArgumentValueException
+            Utils.ThrowException(!(dataset is IUnlabeledExampleCollection<SparseVector<double>>) ? new ArgumentTypeException("dataset") : null);
+            Train((IUnlabeledExampleCollection<SparseVector<double>>)dataset, hierarchy); // throws ArgumentNullException, ArgumentValueException
         }
 
-        public Prediction<Cluster> Predict(SparseVector<double>.ReadOnly example)
+        public Prediction<Cluster> Predict(SparseVector<double> example)
         {
             Utils.ThrowException(mModel == null ? new InvalidOperationException() : null);
             // ...
@@ -116,8 +116,8 @@ namespace Latino.Experimental.Model
         Prediction<Cluster> IHierarchicalModel.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            Utils.ThrowException(!(example is SparseVector<double>.ReadOnly) ? new ArgumentTypeException("example") : null);
-            return Predict((SparseVector<double>.ReadOnly)example); // throws InvalidOperationException
+            Utils.ThrowException(!(example is SparseVector<double>) ? new ArgumentTypeException("example") : null);
+            return Predict((SparseVector<double>)example); // throws InvalidOperationException
         }
 
         // *** ISerializable interface implementation ***
@@ -159,7 +159,7 @@ namespace Latino.Experimental.Model
         */
         private class ClusterInfo
         {
-            public SparseVector<double>.ReadOnly Centroid
+            public SparseVector<double> Centroid
                 = null;
         }
     }

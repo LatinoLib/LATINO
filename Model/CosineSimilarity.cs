@@ -20,7 +20,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class CosineSimilarity : ISimilarity<SparseVector<double>.ReadOnly>
+    public class CosineSimilarity : ISimilarity<SparseVector<double>.ReadOnly>, ISimilarity<SparseVector<double>>
     {
         public static CosineSimilarity mInstance
             = new CosineSimilarity();
@@ -36,6 +36,13 @@ namespace Latino.Model
         public static CosineSimilarity Instance
         {
             get { return mInstance; }
+        }
+
+        // *** ISimilarity<SparseVector<double>> interface implementation ***
+
+        public double GetSimilarity(SparseVector<double> a, SparseVector<double> b)
+        {
+            return GetSimilarity(new SparseVector<double>.ReadOnly(a), new SparseVector<double>.ReadOnly(b));
         }
 
         // *** ISimilarity<SparseVector<double>.ReadOnly> interface implementation ***

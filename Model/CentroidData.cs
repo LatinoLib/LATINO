@@ -43,7 +43,7 @@ namespace Latino.Model
             Load(reader);
         }
 
-        public void AddToSum(SparseVector<double>.ReadOnly vec)
+        public void AddToSum(SparseVector<double> vec)
         {
             foreach (IdxDat<double> item in vec)
             {
@@ -58,7 +58,7 @@ namespace Latino.Model
             }
         }
 
-        public void AddToDiff(double mult, SparseVector<double>.ReadOnly vec)
+        public void AddToDiff(double mult, SparseVector<double> vec)
         {
             foreach (IdxDat<double> item in vec)
             {
@@ -98,18 +98,18 @@ namespace Latino.Model
             mCentroidSum = tmp;
         }
 
-        public void Update(IUnlabeledExampleCollection<SparseVector<double>.ReadOnly> dataset)
+        public void Update(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             Set<int> addIdx = Set<int>.Difference(mItems, mCurrentItems);
             Set<int> rmvIdx = Set<int>.Difference(mCurrentItems, mItems);
             foreach (int itemIdx in addIdx)
             {
-                SparseVector<double>.ReadOnly vec = dataset[itemIdx];
+                SparseVector<double> vec = dataset[itemIdx];
                 AddToSum(vec);
             }
             foreach (int itemIdx in rmvIdx)
             {
-                SparseVector<double>.ReadOnly vec = dataset[itemIdx];
+                SparseVector<double> vec = dataset[itemIdx];
                 AddToDiff(-1, vec);
             }
             mCurrentItems = mItems;
@@ -137,7 +137,7 @@ namespace Latino.Model
             get { return mCurrentItems; }
         }
 
-        public double GetDotProduct(SparseVector<double>.ReadOnly vec)
+        public double GetDotProduct(SparseVector<double> vec)
         {
             double result = 0;
             foreach (IdxDat<double> item in vec)
