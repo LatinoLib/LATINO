@@ -77,11 +77,16 @@ namespace Latino
             }
         }
 
+        public IEqualityComparer<T> Comparer
+        {
+            get { return mItems.Comparer; }
+        }
+
         public static Set<T> Union(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            Set<T> c = (Set<T>)a.GetWritableCopy();
+            Set<T> c = a.GetWritableCopy(); // *** inherits comparer from a (b is expected to have the same comparer)
             c.AddRange(b);
             return c;
         }
@@ -90,7 +95,7 @@ namespace Latino
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            Set<T> c = new Set<T>();
+            Set<T> c = new Set<T>(a.Comparer); // *** inherits comparer from a (b is expected to have the same comparer)
             if (b.Count < a.Count) { Set<T>.ReadOnly tmp; tmp = a; a = b; b = tmp; }
             foreach (T item in a)
             {
@@ -103,7 +108,7 @@ namespace Latino
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            Set<T> c = new Set<T>();
+            Set<T> c = new Set<T>(a.Comparer); // *** inherits comparer from a (b is expected to have the same comparer)
             foreach (T item in a)
             {
                 if (!b.Contains(item)) { c.Add(item); }
@@ -262,7 +267,7 @@ namespace Latino
 
         public Set<T> Clone()
         {
-            return new Set<T>(mItems.Keys);
+            return new Set<T>(mItems.Keys, mItems.Comparer);
         }
 
         object ICloneable.Clone()
@@ -274,7 +279,7 @@ namespace Latino
 
         public Set<T> DeepClone()
         {
-            Set<T> clone = new Set<T>();
+            Set<T> clone = new Set<T>(mItems.Comparer);
             foreach (T item in mItems.Keys)
             {
                 clone.Add((T)Utils.Clone(item, /*deepClone=*/true));
@@ -364,6 +369,11 @@ namespace Latino
             public ReadOnly(BinarySerializer reader)
             {
                 mSet = new Set<T>(reader); // throws ArgumentNullException, serialization-related exceptions
+            }
+
+            public IEqualityComparer<T> Comparer
+            {
+                get { return mSet.Comparer; }
             }
 
             public T[] ToArray()

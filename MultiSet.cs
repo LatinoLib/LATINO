@@ -98,11 +98,16 @@ namespace Latino
             }
         }
 
+        public IEqualityComparer<T> Comparer
+        {
+            get { return mItems.Comparer; }
+        }
+
         public static MultiSet<T> Union(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            MultiSet<T> c = (MultiSet<T>)a.GetWritableCopy();
+            MultiSet<T> c = a.GetWritableCopy(); // *** inherits comparer from a (b is expected to have the same comparer)
             c.AddRange(b);
             return c;
         }
@@ -111,7 +116,7 @@ namespace Latino
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            MultiSet<T> c = new MultiSet<T>();
+            MultiSet<T> c = new MultiSet<T>(a.Comparer); // *** inherits comparer from a (b is expected to have the same comparer)
             if (b.Count < a.Count) { MultiSet<T>.ReadOnly tmp; tmp = a; a = b; b = tmp; }
             foreach (KeyValuePair<T, int> item in a)
             {
@@ -125,7 +130,7 @@ namespace Latino
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            MultiSet<T> c = new MultiSet<T>();
+            MultiSet<T> c = new MultiSet<T>(a.Comparer); // *** inherits comparer from a (b is expected to have the same comparer)
             foreach (KeyValuePair<T, int> item in a)
             {
                 int bCount = b.GetCount(item.Key);
@@ -408,7 +413,7 @@ namespace Latino
 
         public MultiSet<T> Clone()
         {
-            MultiSet<T> clone = new MultiSet<T>();
+            MultiSet<T> clone = new MultiSet<T>(mItems.Comparer);
             clone.AddRange(mItems);
             return clone;
         }
@@ -422,7 +427,7 @@ namespace Latino
 
         public MultiSet<T> DeepClone()
         {
-            MultiSet<T> clone = new MultiSet<T>();
+            MultiSet<T> clone = new MultiSet<T>(mItems.Comparer);
             foreach (KeyValuePair<T, int> item in mItems)
             {
                 clone.mItems.Add((T)Utils.Clone(item.Key, /*deepClone=*/true), item.Value);
@@ -509,6 +514,11 @@ namespace Latino
             public ReadOnly(BinarySerializer reader)
             {
                 mSet = new MultiSet<T>(reader); // throws ArgumentNullException, serialization-related exceptions
+            }
+
+            public IEqualityComparer<T> Comparer
+            {
+                get { return mSet.Comparer; }
             }
 
             public T[] ToArray()
