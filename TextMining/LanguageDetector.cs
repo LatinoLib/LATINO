@@ -78,7 +78,7 @@ namespace Latino.TextMining
         public void ReadCorpus(string dir, int cutOff)
         {
             Utils.ThrowException(dir == null ? new ArgumentNullException("dir") : null);
-            Utils.ThrowException(!Utils.VerifyPathName(dir, /*mustExist=*/true) ? new ArgumentValueException("dir") : null);
+            Utils.ThrowException(!Utils.VerifyFolderName(dir, /*mustExist=*/true) ? new ArgumentValueException("dir") : null);
             Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);
 
             if (languageProfiles != null)

@@ -263,12 +263,12 @@ namespace Latino
             }
         }
 
-        public static bool VerifyPathName(string pathName, bool mustExist)
+        public static bool VerifyFolderName(string folderName, bool mustExist)
         {
             try
             {
-                DirectoryInfo dirInfo = new DirectoryInfo(pathName);
-                return mustExist ? dirInfo.Exists : true;
+                DirectoryInfo dirInfo = new DirectoryInfo(folderName);
+                return mustExist ? dirInfo.Exists : !VerifyFileNameOpen(folderName);
             }
             catch
             {
