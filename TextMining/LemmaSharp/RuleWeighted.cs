@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
     [Serializable()]
     class RuleWeighted: IComparable<RuleWeighted>{
         #region Private Variables

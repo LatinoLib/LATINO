@@ -1,5 +1,5 @@
 ﻿using System;
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
     public interface ILemmatizerModel {
         string Lemmatize(string sWord);
         string ToString();

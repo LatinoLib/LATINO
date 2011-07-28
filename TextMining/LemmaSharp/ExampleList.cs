@@ -4,9 +4,9 @@ using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
 
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
     [Serializable()]
-    public class ExampleList : ISerializable {
+    public class ExampleList : System.Runtime.Serialization.ISerializable {
         #region Private Variables
 
         private LemmatizerSettings lsett;

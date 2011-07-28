@@ -11,7 +11,7 @@
  ***************************************************************************/
 
 using System;
-using LemmaSharp;
+using Latino.LemmaSharp;
 
 namespace Latino.TextMining
 {

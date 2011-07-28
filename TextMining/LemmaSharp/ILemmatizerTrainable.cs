@@ -3,7 +3,7 @@ using System.Collections.Generic;
 //using System.Linq;
 using System.Text;
 
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
     public interface ITrainableLemmatizer:ILemmatizer {
         ExampleList Examples {
             get;

@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Reflection;
 
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
     [Serializable()]
     public class LemmatizerPrebuiltCompact : LemmatizerPrebuilt {
 

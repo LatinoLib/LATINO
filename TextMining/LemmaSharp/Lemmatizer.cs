@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.IO.Compression;
 
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
     [Serializable()]
     public class Lemmatizer : ITrainableLemmatizer 
         #if LATINO

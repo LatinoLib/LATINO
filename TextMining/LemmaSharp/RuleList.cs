@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
 
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
     public class RuleList : Dictionary<string, LemmaRule> {
         #region Private Variables
 

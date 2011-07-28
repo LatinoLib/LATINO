@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Latino</RootNamespace>
-    <AssemblyName>Latino</AssemblyName>
+    <AssemblyName>LatinoCore</AssemblyName>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>

@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.Serialization;
 
 
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
     public class LemmaExample : IComparable<LemmaExample>, IComparer<LemmaExample> {
         #region Private Variables
 

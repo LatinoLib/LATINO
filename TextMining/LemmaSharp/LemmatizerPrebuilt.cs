@@ -5,7 +5,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Reflection;
 
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
 
     public enum LanguagePrebuilt {
         Bulgarian,

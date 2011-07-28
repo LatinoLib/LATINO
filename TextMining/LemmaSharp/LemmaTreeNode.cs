@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
-namespace LemmaSharp {
+namespace Latino.LemmaSharp {
     [Serializable()]
     public class LemmaTreeNode : ILemmatizerModel {
         #region Private Variables
