@@ -199,7 +199,7 @@ namespace Latino.WebMining
                     token.mStartIndex = node._outerstartindex;
                     token.mLength = node._innerstartindex - node._outerstartindex;
                     token.mTokenStr = mText.Substring(token.mStartIndex, token.mLength);
-                    token.mTagName = node.Name.ToString();
+                    token.mTagName = node.Name.ToLower();
                     tokens = new Token[] { token };
                 }
                 // case 2: open tag like <i> without </i> (other cases)

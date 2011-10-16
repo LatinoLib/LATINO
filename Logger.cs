@@ -57,18 +57,6 @@ namespace Latino
             {
                 PropagateSettings(mLogger.ActiveLevel, mLogger.ActiveOutputType, mLogger.ActiveProgressOutputType);
             }
-
-            //public void DebugOut(string prefix)
-            //{
-            //    Console.Write(prefix);
-            //    Console.Write(mLogger == null ? "null" : (mLogger.Name == null ? "root" : mLogger.Name));
-            //    if (mLogger == null) { Console.WriteLine(); }
-            //    else { Console.WriteLine(" ({0}; {1}; {2})", mLogger.ActiveLevel, mLogger.ActiveOutputType, mLogger.ActiveProgressOutputType); }
-            //    foreach (KeyValuePair<string, Node> item in mChildren)
-            //    {
-            //        item.Value.DebugOut(prefix + "\t");
-            //    }
-            //}
         }
 
         /* .-----------------------------------------------------------------------
@@ -309,12 +297,7 @@ namespace Latino
         {
             get { return mOutputWriter; }
             set { mOutputWriter = value; }
-        }
-
-        //public void DebugOut()
-        //{
-        //    mNode.DebugOut("");
-        //}        
+        }       
 
         private void Output(TextWriter writer, Level level, string funcName, Exception e, string message, params object[] args)
         {
@@ -359,10 +342,10 @@ namespace Latino
             }
         }
 
-        private void Progress(object sender, int freq, string funcName, string message, int step, int numSteps, params object[] args)
+        private void Progress(Level level, object sender, int freq, string funcName, string message, int step, int numSteps, params object[] args)
         {
             ProgressOutputType activeProgressOutType = ActiveProgressOutputType;
-            if ((activeProgressOutType & ProgressOutputType.Off) == 0)
+            if ((activeProgressOutType & ProgressOutputType.Off) == 0 && ActiveLevel <= level)
             {
                 if ((activeProgressOutType & ProgressOutputType.Console) != 0)
                 {
@@ -469,22 +452,37 @@ namespace Latino
             Output(Level.Fatal, funcName, e, /*message=*/null);
         }
 
-        public void ProgressNormal(object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        public void ProgressNormal(Level level, object sender, string funcName, string message, int step, int numSteps, params object[] args)
         {
             Utils.ThrowException(step < 0 || (numSteps > 0 && step > numSteps) ? new ArgumentOutOfRangeException("step") : null);
-            Progress(sender == null ? mDefaultProgressSender : sender, /*freq=*/1, funcName, message, step, numSteps, args); // throws FormatException
+            Progress(level, sender == null ? mDefaultProgressSender : sender, /*freq=*/1, funcName, message, step, numSteps, args); // throws FormatException
+        }
+
+        public void ProgressFast(Level level, object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        {
+            Utils.ThrowException(step < 0 || (numSteps > 0 && step > numSteps) ? new ArgumentOutOfRangeException("step") : null);
+            Progress(level, sender == null ? mDefaultProgressSender : sender, /*freq=*/100, funcName, message, step, numSteps, args); // throws FormatException 
+        }
+
+        public void ProgressVeryFast(Level level, object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        {
+            Utils.ThrowException(step < 0 || (numSteps > 0 && step > numSteps) ? new ArgumentOutOfRangeException("step") : null);
+            Progress(level, sender == null ? mDefaultProgressSender : sender, /*freq=*/1000, funcName, message, step, numSteps, args); // throws FormatException 
+        }
+
+        public void ProgressNormal(object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        {
+            ProgressNormal(Level.Info, sender, funcName, message, step, numSteps, args); // throws ArgumentOutOfRangeException, FormatException 
         }
 
         public void ProgressFast(object sender, string funcName, string message, int step, int numSteps, params object[] args)
         {
-            Utils.ThrowException(step < 0 || (numSteps > 0 && step > numSteps) ? new ArgumentOutOfRangeException("step") : null);
-            Progress(sender == null ? mDefaultProgressSender : sender, /*freq=*/100, funcName, message, step, numSteps, args); // throws FormatException 
+            ProgressFast(Level.Info, sender, funcName, message, step, numSteps, args); // throws ArgumentOutOfRangeException, FormatException 
         }
 
         public void ProgressVeryFast(object sender, string funcName, string message, int step, int numSteps, params object[] args)
         {
-            Utils.ThrowException(step < 0 || (numSteps > 0 && step > numSteps) ? new ArgumentOutOfRangeException("step") : null);
-            Progress(sender == null ? mDefaultProgressSender : sender, /*freq=*/1000, funcName, message, step, numSteps, args); // throws FormatException 
+            ProgressVeryFast(Level.Info, sender, funcName, message, step, numSteps, args); // throws ArgumentOutOfRangeException, FormatException 
         }
     }
 }

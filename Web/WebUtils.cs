@@ -103,25 +103,29 @@ namespace Latino.Web
         public static string GetWebPage(string url)
         {
             CookieContainer cookies = null;
-            return GetWebPage(url, /*refUrl=*/null, ref cookies, Encoding.UTF8, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
+            string dummy;
+            return GetWebPage(url, /*refUrl=*/null, ref cookies, Encoding.UTF8, mDefaultTimeout, out dummy); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
         }
 
         public static string GetWebPage(string url, string refUrl)
         {
             CookieContainer cookies = null;
-            return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
+            string dummy;
+            return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8, mDefaultTimeout, out dummy); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
         }
 
         public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies)
         {
-            return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
+            string dummy;
+            return GetWebPage(url, refUrl, ref cookies, Encoding.UTF8, mDefaultTimeout, out dummy); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
         }
 
-        public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies, Encoding htmlEncoding, int timeout)
+        public static string GetWebPage(string url, string refUrl, ref CookieContainer cookies, Encoding htmlEncoding, int timeout, out string responseUri)
         {            
             Utils.ThrowException(url == null ? new ArgumentNullException("url") : null);
             Utils.ThrowException(htmlEncoding == null ? new ArgumentNullException("htmlEncoding") : null);
             Utils.ThrowException(timeout <= 0 ? new ArgumentOutOfRangeException("timeout") : null);
+            responseUri = null;
             string pageHtml;
             int numRetries = 0;
             while (true)
@@ -139,8 +143,10 @@ namespace Latino.Web
                 StreamReader responseReader;
                 try
                 {
-                    pageHtml = (responseReader = new StreamReader(((HttpWebResponse)request.GetResponse()).GetResponseStream(), htmlEncoding)).ReadToEnd(); // throws WebException
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse(); // throws WebException
+                    pageHtml = (responseReader = new StreamReader(response.GetResponseStream(), htmlEncoding)).ReadToEnd(); // throws WebException
                     responseReader.Close();
+                    responseUri = response.ResponseUri.ToString();
                     break; 
                 }
                 catch (WebException e)
@@ -157,28 +163,31 @@ namespace Latino.Web
         {
             CookieContainer foo = null;
             bool bar;
-            return GetWebPageDetectEncoding(url, Encoding.GetEncoding("ISO-8859-1"), /*refUrl=*/null, ref foo, out bar, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException  
+            string dummy;
+            return GetWebPageDetectEncoding(url, Encoding.GetEncoding("ISO-8859-1"), /*refUrl=*/null, ref foo, out bar, mDefaultTimeout, out dummy); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException  
         }
 
         public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding)
         {
             CookieContainer foo = null;
             bool bar;
-            return GetWebPageDetectEncoding(url, defaultEncoding, /*refUrl=*/null, ref foo, out bar, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException  
+            string dummy;
+            return GetWebPageDetectEncoding(url, defaultEncoding, /*refUrl=*/null, ref foo, out bar, mDefaultTimeout, out dummy); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException  
         }
 
         public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding, string refUrl)
         {
             CookieContainer foo = null;
             bool bar;
-            return GetWebPageDetectEncoding(url, defaultEncoding, refUrl, ref foo, out bar, mDefaultTimeout); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException  
+            string dummy;
+            return GetWebPageDetectEncoding(url, defaultEncoding, refUrl, ref foo, out bar, mDefaultTimeout, out dummy); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException  
         }
 
-        public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding, string refUrl, ref CookieContainer cookies, out bool success, int timeout)
+        public static string GetWebPageDetectEncoding(string url, Encoding defaultEncoding, string refUrl, ref CookieContainer cookies, out bool success, int timeout, out string responseUri)
         {
             Utils.ThrowException(defaultEncoding == null ? new ArgumentNullException("defaultEncoding") : null);
             string mimeType, charSet;
-            byte[] bytes = GetWebResource(url, refUrl, ref cookies, timeout, out mimeType, out charSet, /*sizeLimit=*/0); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException, ArgumentOutOfRangeException
+            byte[] bytes = GetWebResource(url, refUrl, ref cookies, timeout, out mimeType, out charSet, /*sizeLimit=*/0, out responseUri); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException, ArgumentOutOfRangeException
             if (charSet == null) 
             { 
                 success = false; 
@@ -194,13 +203,15 @@ namespace Latino.Web
         public static byte[] GetWebResource(string url, out string mimeType, out string charSet, int sizeLimit)
         {
             CookieContainer cookies = null;
-            return GetWebResource(url, /*refUrl=*/null, ref cookies, mDefaultTimeout, out mimeType, out charSet, sizeLimit); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
+            string dummy;
+            return GetWebResource(url, /*refUrl=*/null, ref cookies, mDefaultTimeout, out mimeType, out charSet, sizeLimit, out dummy); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
         }
 
         public static byte[] GetWebResource(string url, out string mimeType, out string charSet)
         {
             CookieContainer cookies = null;
-            return GetWebResource(url, /*refUrl=*/null, ref cookies, mDefaultTimeout, out mimeType, out charSet, /*sizeLimit=*/0); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
+            string dummy;
+            return GetWebResource(url, /*refUrl=*/null, ref cookies, mDefaultTimeout, out mimeType, out charSet, /*sizeLimit=*/0, out dummy); // throws ArgumentNullException, ArgumentOutOfRangeException, UriFormatException, WebException
         }
 
         // From http://www.w3.org/TR/html4/charset.html#h-5.2.2:
@@ -209,12 +220,13 @@ namespace Latino.Web
         // 2. A META declaration with "http-equiv" set to "Content-Type" and a value set for "charset".
         // 3. The charset attribute set on an element that designates an external resource.
         // The same for XML. See http://www.apps.ietf.org/rfc/rfc3023.html.
-        public static byte[] GetWebResource(string url, string refUrl, ref CookieContainer cookies, int timeout, out string mimeType, out string charSet, int sizeLimit)
+        public static byte[] GetWebResource(string url, string refUrl, ref CookieContainer cookies, int timeout, out string mimeType, out string charSet, int sizeLimit, out string responseUri)
         {
             Utils.ThrowException(url == null ? new ArgumentNullException("url") : null);
             Utils.ThrowException(timeout <= 0 ? new ArgumentOutOfRangeException("timeout") : null);
             byte[] bytes;
             int numRetries = 0;
+            responseUri = null;
             while (true)
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url); // throws UriFormatException
@@ -231,6 +243,7 @@ namespace Latino.Web
                 try
                 {
                     HttpWebResponse response = (HttpWebResponse)request.GetResponse(); // throws WebException
+                    responseUri = response.ResponseUri.ToString();
                     mimeType = response.ContentType;
                     responseStream = response.GetResponseStream();
                     bytes = Utils.ReadAllBytes(responseStream, sizeLimit);

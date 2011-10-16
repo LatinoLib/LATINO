@@ -551,6 +551,11 @@ namespace Latino
                 return mSet.GetCount(item);
             }
 
+            public List<KeyDat<int, T>> ToList()
+            {
+                return mSet.ToList();
+            }
+
             public override string ToString()
             {
                 return mSet.ToString();

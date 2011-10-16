@@ -57,6 +57,7 @@ namespace Latino.WebMining
             KnownOpeningSpanTag = 1,
             UnknownOpeningSpanTag = 2,
             ClosingSpanTag = 3,
+            OpeningAndClosingSpanTag = 4
         }
 
         /* .-----------------------------------------------------------------------
@@ -301,7 +302,7 @@ namespace Latino.WebMining
                 StringBuilder sb = new StringBuilder(50);
 
                 if ((fe & FeaturesEnum.relPosition) != 0)
-                    sb.Append(relPosition + ",");
+                    sb.Append(Math.Round(relPosition, 4) + ",");
                 if ((fe & FeaturesEnum.numWords) != 0)
                     sb.Append(numWords + ",");
                 if ((fe & FeaturesEnum.charCount) != 0)
@@ -675,12 +676,25 @@ namespace Latino.WebMining
         private static Regex annotRegex = new Regex(@"class=""x-nc-sel(?<blockClassID>[012345])""", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private HtmlTokenizer tokenizer = new HtmlTokenizer("");
         private DecisionTree decisionTree = new DecisionTree();
-        private Set<string> ignorableTags = new Set<string>(new string[] { "b", "i", "em", "strong", "sub", "sup", "u" });
+        //private Set<string> ignorableTags = new Set<string>(new string[] { "b", "i", "em", "strong", "sub", "sup", "u" });
+        private Set<string> ignorableTags = new Set<string>(new string[] { 
+            "ins", "del", "bdo", "em", "strong", "dfn", "code", "samp", "kbd", "var", "cite", "abbr", 
+            "acronym", "q", "sub", "sup", "tt", "i", "b", "big", "small", "u", "s", "strike", 
+            "basefont", "font" });
+        private bool mIgnoreDecorativeTags
+            = true;
+
         private static Regex mCommentRegex = new Regex(@"<!--.*?-->", RegexOptions.Compiled);
 
         public BoilerplateRemover()
         {
             tokenizer.Normalize = false;
+        }
+
+        public bool IgnoreDecorativeTags
+        {
+            get { return mIgnoreDecorativeTags; }
+            set { mIgnoreDecorativeTags = value; }
         }
 
         public static BoilerplateRemover GetDefaultBoilerplateRemover()
@@ -715,6 +729,8 @@ namespace Latino.WebMining
                 return SpanTagType.NotSpanTag;
             else if (token.TokenType == HtmlTokenizer.TokenType.EndTag)
                 return SpanTagType.ClosingSpanTag;
+            else if (token.TokenType == HtmlTokenizer.TokenType.EmptyTag)
+                return SpanTagType.OpeningAndClosingSpanTag;
 
             Match m = annotRegex.Match(token.TokenStr);
             if (!m.Success)
@@ -754,14 +770,13 @@ namespace Latino.WebMining
             textClasses.Push(TextClass.Boilerplate);
             TextClass currentClass = TextClass.Boilerplate;
             TextClass textClass = TextClass.Unknown;
-            SpanTagType spanType = SpanTagType.NotSpanTag;
             while (tokensEnum.MoveNext())
             {
                 string t = tokensEnum.Current;
                 //Console.WriteLine(t + " " + tokensEnum.CurrentToken.TokenType);
                 if (tokensEnum.CurrentToken.IsTag)
                 {
-                    if (ignorableTags.Contains(tokensEnum.CurrentToken.TagName))
+                    if (mIgnoreDecorativeTags && ignorableTags.Contains(tokensEnum.CurrentToken.TagName))
                     {
                         continue;
                     }
@@ -787,7 +802,8 @@ namespace Latino.WebMining
                         }
                         if (isAnnotated)
                         {
-                            if ((spanType = GetSpanTagType(tokensEnum.CurrentToken, out textClass)) != SpanTagType.NotSpanTag)
+                            SpanTagType spanType = GetSpanTagType(tokensEnum.CurrentToken, out textClass);
+                            if (spanType != SpanTagType.NotSpanTag && spanType != SpanTagType.OpeningAndClosingSpanTag)
                             {
                                 if ((spanType == SpanTagType.ClosingSpanTag) && (textClasses.Count > 1))
                                     textClasses.Pop();
