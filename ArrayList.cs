@@ -135,7 +135,7 @@ namespace Latino
             foreach (T item in this)
             {
                 str.Append(" ");
-                str.Append(item.ToString());
+                str.Append(item);
             }
             str.Append(" )");
             return str.ToString();
