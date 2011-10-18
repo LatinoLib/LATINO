@@ -182,13 +182,13 @@ namespace Latino.Model
             {
                 newDataset = new LabeledDataset<LblT, SparseVector<double>.ReadOnly>(tmp);
             }
-            else if (newExType == typeof(BinaryVector<int>))
+            else if (newExType == typeof(BinaryVector))
             {
-                newDataset = new LabeledDataset<LblT, BinaryVector<int>>(tmp);
+                newDataset = new LabeledDataset<LblT, BinaryVector>(tmp);
             }
-            else if (newExType == typeof(BinaryVector<int>.ReadOnly))
+            else if (newExType == typeof(BinaryVector.ReadOnly))
             {
-                newDataset = new LabeledDataset<LblT, BinaryVector<int>.ReadOnly>(tmp);
+                newDataset = new LabeledDataset<LblT, BinaryVector.ReadOnly>(tmp);
             }
             else
             {

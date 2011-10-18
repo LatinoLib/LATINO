@@ -70,10 +70,10 @@ namespace Latino.Model
             {
                 tmp = ((SparseVector<double>.ReadOnly)inVec).GetWritableCopy();
             }
-            else if (inVec.GetType() == typeof(BinaryVector<int>) || inVec.GetType() == typeof(BinaryVector<int>.ReadOnly))
+            else if (inVec.GetType() == typeof(BinaryVector) || inVec.GetType() == typeof(BinaryVector.ReadOnly))
             {
-                tmp = new SparseVector<double>(((BinaryVector<int>.ReadOnly)inVec).Count);
-                foreach (int item in (BinaryVector<int>.ReadOnly)inVec)
+                tmp = new SparseVector<double>(((BinaryVector.ReadOnly)inVec).Count);
+                foreach (int item in (BinaryVector.ReadOnly)inVec)
                 {
                     tmp.InnerIdx.Add(item);
                     tmp.InnerDat.Add(1);
@@ -92,16 +92,16 @@ namespace Latino.Model
             {
                 outVec = new SparseVector<double>.ReadOnly(tmp);
             }
-            else if (outVecType == typeof(BinaryVector<int>))
+            else if (outVecType == typeof(BinaryVector))
             {
-                outVec = new BinaryVector<int>();
-                ((BinaryVector<int>)outVec).Inner.AddRange(tmp.InnerIdx);
+                outVec = new BinaryVector();
+                ((BinaryVector)outVec).Inner.AddRange(tmp.InnerIdx);
             }
-            else if (outVecType == typeof(BinaryVector<int>.ReadOnly))
+            else if (outVecType == typeof(BinaryVector.ReadOnly))
             {
-                BinaryVector<int> vec = new BinaryVector<int>();
+                BinaryVector vec = new BinaryVector();
                 vec.Inner.AddRange(tmp.InnerIdx);
-                outVec = new BinaryVector<int>.ReadOnly(vec);
+                outVec = new BinaryVector.ReadOnly(vec);
             }
             else
             {

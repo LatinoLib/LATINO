@@ -137,13 +137,13 @@ namespace Latino.Model
             {
                 newDataset = new UnlabeledDataset<SparseVector<double>.ReadOnly>(tmp);
             }
-            else if (newExType == typeof(BinaryVector<int>))
+            else if (newExType == typeof(BinaryVector))
             {
-                newDataset = new UnlabeledDataset<BinaryVector<int>>(tmp);
+                newDataset = new UnlabeledDataset<BinaryVector>(tmp);
             }
-            else if (newExType == typeof(BinaryVector<int>.ReadOnly))
+            else if (newExType == typeof(BinaryVector.ReadOnly))
             {
-                newDataset = new UnlabeledDataset<BinaryVector<int>.ReadOnly>(tmp);
+                newDataset = new UnlabeledDataset<BinaryVector.ReadOnly>(tmp);
             }
             else
             {

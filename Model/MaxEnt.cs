@@ -29,11 +29,11 @@ namespace Latino.Model
         private static Logger mLogger
             = Logger.GetLogger(typeof(MaxEnt));
 
-        private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, ref LblT[] idxToLbl)
+        private static SparseMatrix<double> CreateObservationMatrix<LblT>(ILabeledExampleCollection<LblT, BinaryVector.ReadOnly> dataset, ref LblT[] idxToLbl)
         {
             ArrayList<LblT> tmp = new ArrayList<LblT>();
             Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>();
-            foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
+            foreach (LabeledExample<LblT, BinaryVector.ReadOnly> labeledExample in dataset)
             {
                 if (!lblToIdx.ContainsKey(labeledExample.Label))
                 {
@@ -47,7 +47,7 @@ namespace Latino.Model
             // count features
             int i = 0;
             object id = new object();
-            foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> labeledExample in dataset)
+            foreach (LabeledExample<LblT, BinaryVector.ReadOnly> labeledExample in dataset)
             {
                 mLogger.ProgressFast(id, "CreateObservationMatrix", "{0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
@@ -136,10 +136,10 @@ namespace Latino.Model
             }
         }
 
-        private static double GisFindMaxF<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset)
+        private static double GisFindMaxF<LblT>(ILabeledExampleCollection<LblT, BinaryVector.ReadOnly> dataset)
         {
             double maxVal = 0;
-            foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> item in dataset)
+            foreach (LabeledExample<LblT, BinaryVector.ReadOnly> item in dataset)
             {
                 if (item.Example.Count > maxVal) { maxVal = item.Example.Count; }
             }
@@ -340,13 +340,13 @@ namespace Latino.Model
             }
         }
 
-        private static SparseMatrix<double> TransposeDataset<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, bool clearDataset)
+        private static SparseMatrix<double> TransposeDataset<LblT>(ILabeledExampleCollection<LblT, BinaryVector.ReadOnly> dataset, bool clearDataset)
         {
             SparseMatrix<double> aux = new SparseMatrix<double>();
             int i = 0;
             if (clearDataset)
             {
-                foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> item in dataset)
+                foreach (LabeledExample<LblT, BinaryVector.ReadOnly> item in dataset)
                 {
                     aux[i++] = ModelUtils.ConvertExample<SparseVector<double>>(item.Example);
                     item.Example.Inner.Clear(); // *** clear read-only vectors to save space
@@ -354,7 +354,7 @@ namespace Latino.Model
             }
             else
             {
-                foreach (LabeledExample<LblT, BinaryVector<int>.ReadOnly> item in dataset)
+                foreach (LabeledExample<LblT, BinaryVector.ReadOnly> item in dataset)
                 {
                     aux[i++] = ModelUtils.ConvertExample<SparseVector<double>>(item.Example);
                 }
@@ -362,7 +362,7 @@ namespace Latino.Model
             return aux.GetTransposedCopy();
         }
 
-        public static SparseMatrix<double> Gis<LblT>(ILabeledExampleCollection<LblT, BinaryVector<int>.ReadOnly> dataset, int cutOff, int numIter, bool clearDataset, string mtxFileName, ref LblT[] idxToLbl, int numThreads, double allowedDiff) 
+        public static SparseMatrix<double> Gis<LblT>(ILabeledExampleCollection<LblT, BinaryVector.ReadOnly> dataset, int cutOff, int numIter, bool clearDataset, string mtxFileName, ref LblT[] idxToLbl, int numThreads, double allowedDiff) 
         {
             mLogger.Info("Gis", "Creating observation matrix ...");
             SparseMatrix<double> observations = null;
@@ -443,7 +443,7 @@ namespace Latino.Model
             return lambda;
         }
 
-        public static Prediction<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly binVec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idxToLbl, bool normalize)
+        public static Prediction<LblT> Classify<LblT>(BinaryVector.ReadOnly binVec, SparseMatrix<double>.ReadOnly lambdas, LblT[] idxToLbl, bool normalize)
         {
             SparseVector<double> vec = ModelUtils.ConvertExample<SparseVector<double>>(binVec);
             Prediction<LblT> scores = new Prediction<LblT>();
@@ -481,7 +481,7 @@ namespace Latino.Model
             return retVal;
         }
 
-        public static Prediction<LblT> Classify<LblT>(BinaryVector<int>.ReadOnly binVec, Dictionary<int, double>[] lambdas, LblT[] idxToLbl, bool normalize)
+        public static Prediction<LblT> Classify<LblT>(BinaryVector.ReadOnly binVec, Dictionary<int, double>[] lambdas, LblT[] idxToLbl, bool normalize)
         { 
             Prediction<LblT> scores = new Prediction<LblT>();
             double sum = 0;
