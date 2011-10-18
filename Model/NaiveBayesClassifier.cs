@@ -21,7 +21,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class NaiveBayesClassifier<LblT> : IModel<LblT, BinaryVector<int>>
+    public class NaiveBayesClassifier<LblT> : IModel<LblT, BinaryVector>
     {
         private Dictionary<int, double>[] mFeatureProb
             = null;
@@ -39,13 +39,13 @@ namespace Latino.Model
         private static Logger mLogger
             = Logger.GetLogger(typeof(NaiveBayesClassifier<LblT>));
 
-        private static Dictionary<int, double>[] PrecomputeProbabilities(ILabeledExampleCollection<LblT, BinaryVector<int>> dataset, 
+        private static Dictionary<int, double>[] PrecomputeProbabilities(ILabeledExampleCollection<LblT, BinaryVector> dataset, 
             out LblT[] idxToLbl, out Dictionary<int, double> featurePriors, out int[] exampleCount)
         {
             featurePriors = new Dictionary<int, double>();
             ArrayList<LblT> tmp = new ArrayList<LblT>();
             Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>();
-            foreach (LabeledExample<LblT, BinaryVector<int>> labeledExample in dataset)
+            foreach (LabeledExample<LblT, BinaryVector> labeledExample in dataset)
             {
                 if (!lblToIdx.ContainsKey(labeledExample.Label))
                 {
@@ -61,7 +61,7 @@ namespace Latino.Model
             // count features
             int i = 0;
             object id = new object();
-            foreach (LabeledExample<LblT, BinaryVector<int>> labeledExample in dataset)
+            foreach (LabeledExample<LblT, BinaryVector> labeledExample in dataset)
             {
                 mLogger.ProgressFast(id, "PrecomputeProbabilities", "{0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
@@ -113,13 +113,13 @@ namespace Latino.Model
 
         // *** IModel<LblT,ReadOnly> interface implementation ***
 
-        public void Train(ILabeledExampleCollection<LblT, BinaryVector<int>> dataset)
+        public void Train(ILabeledExampleCollection<LblT, BinaryVector> dataset)
         {
             mFeatureProb = PrecomputeProbabilities(dataset, out mIdxToLbl, out mFeaturePriors, out mExampleCount);
             mDatasetCount = dataset.Count;
         }
 
-        public Prediction<LblT> Predict(BinaryVector<int> example)
+        public Prediction<LblT> Predict(BinaryVector example)
         {
             Prediction<LblT> pred = new Prediction<LblT>();
             double sum = 0;
@@ -156,7 +156,7 @@ namespace Latino.Model
 
         public Type RequiredExampleType
         {
-            get { return typeof(BinaryVector<int>); }
+            get { return typeof(BinaryVector); }
         }
 
         public bool IsTrained
@@ -167,15 +167,15 @@ namespace Latino.Model
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, BinaryVector<int>>) ? new ArgumentTypeException("dataset") : null);
-            Train((ILabeledExampleCollection<LblT, BinaryVector<int>>)dataset); // throws ... ?
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, BinaryVector>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, BinaryVector>)dataset); // throws ... ?
         }
 
         Prediction<LblT> IModel<LblT>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            Utils.ThrowException(!(example is BinaryVector<int>) ? new ArgumentTypeException("example") : null);
-            return Predict((BinaryVector<int>)example); // throws ... ?
+            Utils.ThrowException(!(example is BinaryVector) ? new ArgumentTypeException("example") : null);
+            return Predict((BinaryVector)example); // throws ... ?
         }
 
         // *** ISerializable interface implementation ***
