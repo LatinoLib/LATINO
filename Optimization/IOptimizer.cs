@@ -22,6 +22,6 @@ namespace Latino.Optimization
     */
     public interface IOptimizer
     {
-        ArrayList<double> Optimize(IEnumerable<double> paramVec, IEval eval);
+        ArrayList<double> Optimize(double[] paramVec, IEval eval);
     }
 }

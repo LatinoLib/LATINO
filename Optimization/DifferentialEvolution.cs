@@ -178,7 +178,7 @@ namespace Latino.Optimization
         
         // *** IOptimizer interface implementation ***
         
-        public ArrayList<double> Optimize(IEnumerable<double> initParamVec, IEval eval)
+        public ArrayList<double> Optimize(double[] initParamVec, IEval eval)
         {
             Utils.ThrowException(initParamVec == null ? new ArgumentNullException("initParamVec") : null);
             Utils.ThrowException(eval == null ? new ArgumentNullException("eval") : null);
