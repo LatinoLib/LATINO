@@ -319,9 +319,12 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
             Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
-            RegexTokenizer tokenizer = new RegexTokenizer();
-            tokenizer.IgnoreUnknownTokens = true;
-            tokenizer.TokenRegex = @"[^\s][^\s]+";
+            //RegexTokenizer tokenizer = new RegexTokenizer();
+            //tokenizer.IgnoreUnknownTokens = true;
+            //tokenizer.TokenRegex = @"[^\s][^\s]+";
+            SimpleTokenizer tokenizer = new SimpleTokenizer();
+            tokenizer.MinTokenLen = 2;
+            tokenizer.Type = TokenizerType.AllChars;
             tokenizer.Text = str;
             AddTokens(tokenizer);
         }
@@ -331,9 +334,12 @@ namespace Latino.TextMining
             Utils.ThrowException(!Utils.VerifyFileNameOpen(file) ? new ArgumentValueException("file") : null);
             Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
             StreamReader reader = Utils.GetUnicodeSignature(file) != null ? new StreamReader(file) : new StreamReader(file, Encoding.GetEncoding("ISO-8859-1"));
-            RegexTokenizer tokenizer = new RegexTokenizer();
-            tokenizer.IgnoreUnknownTokens = true;
-            tokenizer.TokenRegex = @"[^\s][^\s]+";
+            //RegexTokenizer tokenizer = new RegexTokenizer();
+            //tokenizer.IgnoreUnknownTokens = true;
+            //tokenizer.TokenRegex = @"[^\s][^\s]+";
+            SimpleTokenizer tokenizer = new SimpleTokenizer();
+            tokenizer.MinTokenLen = 2;
+            tokenizer.Type = TokenizerType.AllChars;
             string line;
             while ((line = reader.ReadLine()) != null)
             {
