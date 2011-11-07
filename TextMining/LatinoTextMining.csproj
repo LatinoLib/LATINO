@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FFA3AB32-D56A-4544-BCF2-CBC51B57550B}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -65,6 +65,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CustomStemmer.cs" />
+    <Compile Include="SimpleTokenizer.cs" />
     <Compile Include="StopWords\SerbianStopWordsCyrillic.cs" />
     <Compile Include="LanguageDetector.cs" />
     <Compile Include="StopWords\SerbianStopWordsLatin.cs" />

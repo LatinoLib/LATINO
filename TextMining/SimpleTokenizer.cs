@@ -75,7 +75,12 @@ namespace Latino.TextMining
             }
         }
 
-        public IEnumerator<string> GetEnumerator()
+        public Enumerator GetEnumerator()//TODO: do this "trick" in every tokenizer
+        {
+            return new Enumerator(mText, mType, mMinTokenLen);
+        }
+
+        IEnumerator<string> IEnumerable<string>.GetEnumerator()
         {
             return new Enumerator(mText, mType, mMinTokenLen);
         }
@@ -151,7 +156,17 @@ namespace Latino.TextMining
                     while (mEndIdx < mText.Length && !char.IsWhiteSpace(mText[mEndIdx])) { mEndIdx++; }                
                 }
                 mEndIdx--;
-            } 
+            }
+
+
+            public int CurrentTokenIdx
+            {
+                get
+                {
+                    Utils.ThrowException(mStartIdx == -1 ? new InvalidOperationException() : null);
+                    return mStartIdx;
+                }
+            }
 
             // *** IEnumerator<string> interface implementation ***
 

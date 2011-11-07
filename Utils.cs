@@ -217,6 +217,13 @@ namespace Latino
             }
         }
 
+        public static Guid GetStringHashCode128(string str)
+        {
+            ThrowException(str == null ? new ArgumentNullException("str") : null);
+            MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            return new Guid(md5.ComputeHash(Encoding.UTF8.GetBytes(str)));
+        }
+
         public static object ChangeType(object obj, Type newType, IFormatProvider fmtProvider)
         {
             ThrowException(newType == null ? new ArgumentNullException("newType") : null);
