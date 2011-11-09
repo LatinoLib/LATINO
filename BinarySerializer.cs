@@ -1,12 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    BinarySerializer.cs
  *  Desc:    Binary serializer/deserializer
  *  Created: Oct-2004
  *
- *  Authors: Miha Grcar, Matjaz Jursic
+ *  Author:  Miha Grcar, Matjaz Jursic
  *
  ***************************************************************************/
 

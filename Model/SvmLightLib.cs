@@ -1,12 +1,12 @@
 /*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    SvmLightLib.cs
  *  Desc:	 SVM^light and SVM^multiclass C# wrapper
  *  Created: Aug-2007
  * 
- *  Authors: Miha Grcar 
+ *  Author:  Miha Grcar 
  * 
  ***************************************************************************/
 

@@ -1,12 +1,12 @@
 /*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    SvmBinary.cs
  *  Desc:    Binary SVM classifier based on SvmLightLib (modified SvmMulticlassFast.cs)
  *  Created: Feb-2011
  *
- *  Authors: Miha Grcar
+ *  Author:  Miha Grcar
  *
  ***************************************************************************/
 

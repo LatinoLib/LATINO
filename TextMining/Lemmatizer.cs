@@ -1,12 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    Lemmatizer.cs
  *  Desc:    LemmaSharp word lemmatizer (LATINO wrapper)
  *  Created: Jan-2009
  *
- *  Authors: Miha Grcar
+ *  Author:  Miha Grcar
  *
  ***************************************************************************/
 

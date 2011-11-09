@@ -1,12 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    LSqrDotNet.cs
  *  Desc:    C# wrapper for LSQR DLL
  *  Created: Oct-2007
  *
- *  Authors: Miha Grcar 
+ *  Author:  Miha Grcar 
  *
  ***************************************************************************/
 

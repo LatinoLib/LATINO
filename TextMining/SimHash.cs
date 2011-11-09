@@ -1,12 +1,12 @@
 /*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    SimHash.cs
  *  Desc:    Sim-hash fingerprints for duplicate detection
  *  Created: Jun-2010
  *
- *  Authors: Marko Brakus
+ *  Author:  Marko Brakus
  *
  ***************************************************************************/
 

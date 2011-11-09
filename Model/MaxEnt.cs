@@ -1,6 +1,6 @@
 ﻿/*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    MaxEnt.cs
  *  Desc:    Maximum entropy classifier 

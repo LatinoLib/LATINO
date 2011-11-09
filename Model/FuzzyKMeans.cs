@@ -1,12 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    FuzzyKMeans.cs
  *  Desc:    Fuzzy k-means clustering algorithm
  *  Created: Nov-2009
  *
- *  Authors: Matjaz Jursic
+ *  Author:  Matjaz Jursic
  *
  ***************************************************************************/
 

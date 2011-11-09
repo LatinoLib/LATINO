@@ -1,12 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    CosineSimilarity.cs
  *  Desc:    Similarity implementation
  *  Created: Dec-2008
  *
- *  Authors: Miha Grcar, Matjaz Jursic
+ *  Author:  Miha Grcar, Matjaz Jursic
  *
  ***************************************************************************/
 

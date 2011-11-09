@@ -1,13 +1,13 @@
 /*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    BoilerplateRemover.cs
  *  Desc:    Extracts relevant content from HTML documents
  *           Based on "Boilerplate detection using shallow text features" (WSDM 2010)
  *  Created: Sep-2010
  *
- *  Authors: Marko Brakus
+ *  Author:  Marko Brakus
  *
  ***************************************************************************/
 

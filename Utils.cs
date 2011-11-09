@@ -1,12 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    Utils.cs
  *  Desc:    Fundamental LATINO utilities
  *  Created: Nov-2007
  *
- *  Authors: Miha Grcar
+ *  Author:  Miha Grcar
  *
  ***************************************************************************/
 
@@ -222,6 +222,15 @@ namespace Latino
             ThrowException(str == null ? new ArgumentNullException("str") : null);
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             return new Guid(md5.ComputeHash(Encoding.UTF8.GetBytes(str)));
+        }
+
+        public static ulong GetStringHashCode64(string str)
+        {
+            ThrowException(str == null ? new ArgumentNullException("str") : null);
+            byte[] hashCode128 = new MD5CryptoServiceProvider().ComputeHash(Encoding.UTF8.GetBytes(str));
+            ulong part1 = (ulong)BitConverter.ToInt64(hashCode128, 0);
+            ulong part2 = (ulong)BitConverter.ToInt64(hashCode128, 8);
+            return part1 ^ part2;
         }
 
         public static object ChangeType(object obj, Type newType, IFormatProvider fmtProvider)

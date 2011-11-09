@@ -1,12 +1,12 @@
 ﻿/*==========================================================================;
  *
- *  This file is part of LATINO. See http://latino.sf.net
+ *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    TextMiningUtils.cs
  *  Desc:    Text mining utilities
  *  Created: Mar-2010
  *
- *  Authors: Miha Grcar, Marko Brakus
+ *  Author:  Miha Grcar, Marko Brakus
  *
  ***************************************************************************/
 
