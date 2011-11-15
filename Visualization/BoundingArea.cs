@@ -170,14 +170,15 @@ namespace Latino.Visualization
             {
                 return GetWritableCopy();
             }
-#if PUBLIC_INNER
-            public
-#else
-            internal
-#endif
-            BoundingArea Inner
+
+            public BoundingArea Inner
             {
                 get { return mBoundingArea; }
+            }
+
+            object IReadOnlyAdapter.Inner
+            {
+                get { return Inner; }
             }
         }
     }

@@ -52,17 +52,4 @@ namespace Latino
         {
         }
     }
-
-    /* .-----------------------------------------------------------------------
-       |
-       |  Class XmlFormatException
-       |
-       '-----------------------------------------------------------------------
-    */
-    public class XmlFormatException : Exception
-    {
-        public XmlFormatException() : base("The XML document is not in the expected format.")
-        {
-        }
-    }
 }

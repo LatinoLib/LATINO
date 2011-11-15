@@ -370,7 +370,7 @@ namespace Latino
             mRows.Clear();
         }
 
-        public void AppendCols(SparseMatrix<T>.ReadOnly otherMatrix, int thisMatrixNumCols)
+        public void AppendCols(SparseMatrix<T> otherMatrix, int thisMatrixNumCols)
         {
             Utils.ThrowException(otherMatrix == null ? new ArgumentNullException("otherMatrix") : null);
             Utils.ThrowException(thisMatrixNumCols < 0 ? new ArgumentOutOfRangeException("thisMatrixNumCols") : null);            
@@ -381,12 +381,18 @@ namespace Latino
             }
             for (int rowIdx = 0; rowIdx < otherMatrixNumRows; rowIdx++)
             {
-                mRows[rowIdx].Append(otherMatrix.Inner.mRows[rowIdx], thisMatrixNumCols); // throws ArgumentOutOfRangeException
+                mRows[rowIdx].Append(otherMatrix.mRows[rowIdx], thisMatrixNumCols); // throws ArgumentOutOfRangeException
                 rowIdx++;
             }
         }
 
-        public void AppendRows(SparseMatrix<T>.ReadOnly otherMatrix, int thisMatrixNumRows)
+        public void AppendCols(SparseMatrix<T>.ReadOnly otherMatrix, int thisMatrixNumCols)
+        {
+            Utils.ThrowException(otherMatrix == null ? new ArgumentNullException("otherMatrix") : null);
+            AppendCols(otherMatrix.Inner, thisMatrixNumCols); // throws ArgumentOutOfRangeException
+        }
+
+        public void AppendRows(SparseMatrix<T> otherMatrix, int thisMatrixNumRows)
         {
             Utils.ThrowException(otherMatrix == null ? new ArgumentNullException("otherMatrix") : null);
             Utils.ThrowException(thisMatrixNumRows < (GetLastNonEmptyRowIdx() + 1) ? new ArgumentOutOfRangeException("thisMatrixNumRows") : null);
@@ -395,13 +401,19 @@ namespace Latino
             {
                 SetRowListSize(totalNumRows);
             }
-            foreach (IdxDat<SparseVector<T>.ReadOnly> row in otherMatrix)
+            foreach (IdxDat<SparseVector<T>> row in otherMatrix)
             {
-                mRows[thisMatrixNumRows + row.Idx] = row.Dat.GetWritableCopy();
+                mRows[thisMatrixNumRows + row.Idx] = row.Dat.Clone();
             }
         }
 
-        public void Merge(SparseMatrix<T>.ReadOnly otherMatrix, Utils.BinaryOperatorDelegate<T> binaryOperator)
+        public void AppendRows(SparseMatrix<T>.ReadOnly otherMatrix, int thisMatrixNumRows)
+        {
+            Utils.ThrowException(otherMatrix == null ? new ArgumentNullException("otherMatrix") : null);
+            AppendRows(otherMatrix.Inner, thisMatrixNumRows); // throws ArgumentOutOfRangeException
+        }
+
+        public void Merge(SparseMatrix<T> otherMatrix, Utils.BinaryOperatorDelegate<T> binaryOperator)
         {
             Utils.ThrowException(binaryOperator == null ? new ArgumentNullException("binaryOperator") : null);
             int otherMatrixNumRows = otherMatrix.GetLastNonEmptyRowIdx() + 1;
@@ -411,8 +423,13 @@ namespace Latino
             }
             for (int rowIdx = 0; rowIdx < otherMatrixNumRows; rowIdx++)
             {
-                mRows[rowIdx].Merge(otherMatrix.Inner.mRows[rowIdx], binaryOperator);       
+                mRows[rowIdx].Merge(otherMatrix.mRows[rowIdx], binaryOperator);       
             }
+        }
+
+        public void Merge(SparseMatrix<T>.ReadOnly otherMatrix, Utils.BinaryOperatorDelegate<T> binaryOperator)
+        {
+            Merge(otherMatrix.Inner, binaryOperator); // throws ArgumentNullException
         }
 
         public void PerformUnaryOperation(Utils.UnaryOperatorDelegate<T> unaryOperator)
@@ -481,7 +498,7 @@ namespace Latino
             return false;
         }
 
-        private void MergeSym(SparseMatrix<T>.ReadOnly otherMatrix, Utils.BinaryOperatorDelegate<T> binaryOperator)
+        private void MergeSym(SparseMatrix<T> otherMatrix, Utils.BinaryOperatorDelegate<T> binaryOperator)
         {
             int otherMatrixNumRows = otherMatrix.GetLastNonEmptyRowIdx() + 1;
             if (mRows.Count < otherMatrixNumRows)
@@ -490,7 +507,7 @@ namespace Latino
             }
             for (int rowIdx = 0; rowIdx < otherMatrixNumRows; rowIdx++)
             {
-                mRows[rowIdx] = MergeRowsSym(mRows[rowIdx], otherMatrix.Inner.mRows[rowIdx], binaryOperator, rowIdx);
+                mRows[rowIdx] = MergeRowsSym(mRows[rowIdx], otherMatrix.mRows[rowIdx], binaryOperator, rowIdx);
             }
         }
 
@@ -920,6 +937,11 @@ namespace Latino
             public SparseMatrix<T> Inner
             {
                 get { return mMatrix; }
+            }
+
+            object IReadOnlyAdapter.Inner
+            {
+                get { return Inner; }
             }
 
             // *** IEnumerable<IdxDat<SparseVector<T>.ReadOnly>> interface implementation ***

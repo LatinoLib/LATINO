@@ -103,21 +103,28 @@ namespace Latino
             get { return mItems.Comparer; }
         }
 
+        public static MultiSet<T> Union(MultiSet<T> a, MultiSet<T> b)
+        {
+            Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
+            Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
+            MultiSet<T> c = a.Clone(); // *** inherits comparer from a (b is expected to have the same comparer)
+            c.AddRange((IEnumerable<KeyValuePair<T, int>>)b);
+            return c;
+        }
+
         public static MultiSet<T> Union(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            MultiSet<T> c = a.GetWritableCopy(); // *** inherits comparer from a (b is expected to have the same comparer)
-            c.AddRange(b);
-            return c;
+            return Union(a.Inner, b.Inner);
         }
 
-        public static MultiSet<T> Intersection(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
+        public static MultiSet<T> Intersection(MultiSet<T> a, MultiSet<T> b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
             MultiSet<T> c = new MultiSet<T>(a.Comparer); // *** inherits comparer from a (b is expected to have the same comparer)
-            if (b.Count < a.Count) { MultiSet<T>.ReadOnly tmp; tmp = a; a = b; b = tmp; }
+            if (b.Count < a.Count) { MultiSet<T> tmp; tmp = a; a = b; b = tmp; }
             foreach (KeyValuePair<T, int> item in a)
             {
                 int bCount = b.GetCount(item.Key);
@@ -126,7 +133,14 @@ namespace Latino
             return c;
         }
 
-        public static MultiSet<T> Difference(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
+        public static MultiSet<T> Intersection(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
+        {
+            Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
+            Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
+            return Intersection(a.Inner, b.Inner);
+        }
+
+        public static MultiSet<T> Difference(MultiSet<T> a, MultiSet<T> b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
@@ -140,7 +154,14 @@ namespace Latino
             return c;
         }
 
-        public static double JaccardSimilarity(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
+        public static MultiSet<T> Difference(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
+        {
+            Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
+            Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
+            return Difference(a.Inner, b.Inner);
+        }
+
+        public static double JaccardSimilarity(MultiSet<T> a, MultiSet<T> b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
@@ -148,6 +169,13 @@ namespace Latino
             double div = (double)(a.Count + b.Count - c.Count);
             if (div == 0) { return 1; } // *** if both sets are empty, the similarity is 1
             return (double)c.Count / div;
+        }
+
+        public static double JaccardSimilarity(MultiSet<T>.ReadOnly a, MultiSet<T>.ReadOnly b)
+        {
+            Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
+            Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
+            return JaccardSimilarity(a.Inner, b.Inner);
         }
 
         private int GetCount()
@@ -576,6 +604,11 @@ namespace Latino
             public MultiSet<T> Inner
             {
                 get { return mSet; }
+            }
+
+            object IReadOnlyAdapter.Inner
+            {
+                get { return Inner; }
             }
 
             // *** Partial ICollection<T> interface implementation ***

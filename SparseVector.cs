@@ -112,7 +112,7 @@ namespace Latino
             return str.ToString();
         }
 
-        public void Append(SparseVector<T>.ReadOnly otherVec, int thisVecLen)
+        public void Append(SparseVector<T> otherVec, int thisVecLen)
         {
             Utils.ThrowException(otherVec == null ? new ArgumentNullException("otherVec") : null);
             Utils.ThrowException(thisVecLen <= LastNonEmptyIndex ? new ArgumentOutOfRangeException("thisVecLen") : null);
@@ -123,12 +123,18 @@ namespace Latino
             }
         }
 
-        public void Merge(SparseVector<T>.ReadOnly otherVec, Utils.BinaryOperatorDelegate<T> binaryOperator)
+        public void Append(SparseVector<T>.ReadOnly otherVec, int thisVecLen)
+        {
+            Utils.ThrowException(otherVec == null ? new ArgumentNullException("otherVec") : null);
+            Append(otherVec.Inner, thisVecLen); // throws ArgumentOutOfRangeException
+        }
+
+        public void Merge(SparseVector<T> otherVec, Utils.BinaryOperatorDelegate<T> binaryOperator)
         {
             Utils.ThrowException(otherVec == null ? new ArgumentNullException("otherVec") : null);
             Utils.ThrowException(binaryOperator == null ? new ArgumentNullException("binaryOperator") : null);
-            ArrayList<int> otherIdx = otherVec.Inner.InnerIdx;
-            ArrayList<T> otherDat = otherVec.Inner.InnerDat;
+            ArrayList<int> otherIdx = otherVec.InnerIdx;
+            ArrayList<T> otherDat = otherVec.InnerDat;
             ArrayList<int> newIdx = new ArrayList<int>(mIdx.Count + otherIdx.Count);
             ArrayList<T> newDat = new ArrayList<T>(mDat.Count + otherDat.Count);
             int i = 0, j = 0;
@@ -164,6 +170,12 @@ namespace Latino
             }
             mIdx = newIdx;
             mDat = newDat;
+        }
+
+        public void Merge(SparseVector<T>.ReadOnly otherVec, Utils.BinaryOperatorDelegate<T> binaryOperator)
+        {
+            Utils.ThrowException(otherVec == null ? new ArgumentNullException("otherVec") : null);
+            Merge(otherVec.Inner, binaryOperator); // throws ArgumentNullException
         }
 
         public void PerformUnaryOperation(Utils.UnaryOperatorDelegate<T> unaryOperator)
@@ -702,6 +714,11 @@ namespace Latino
             public SparseVector<T> Inner
             {
                 get { return mVec; }
+            }
+
+            object IReadOnlyAdapter.Inner
+            {
+                get { return Inner; }
             }
 
             // *** Partial IList<T> interface implementation ***

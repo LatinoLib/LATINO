@@ -396,16 +396,22 @@ namespace Latino
 
         // *** SparseVector utilities ***
 
-        public static double GetVecLenL2(SparseVector<double>.ReadOnly vec)
+        public static double GetVecLenL2(SparseVector<double> vec)
         {
             ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             double len = 0;
-            ArrayList<double> datInner = vec.Inner.InnerDat;
+            ArrayList<double> datInner = vec.InnerDat;
             foreach (double val in datInner)
             {
                 len += val * val;
             }
             return Math.Sqrt(len);
+        }
+
+        public static double GetVecLenL2(SparseVector<double>.ReadOnly vec)
+        {
+            ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            return GetVecLenL2(vec.Inner);
         }
 
         public static void NrmVecL2(SparseVector<double> vec)

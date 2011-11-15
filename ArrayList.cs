@@ -350,6 +350,11 @@ namespace Latino
                 get { return mList; }
             }
 
+            object IReadOnlyAdapter.Inner
+            {
+                get { return Inner; }
+            }
+
             // *** Partial IList<T> interface implementation ***
 
             public int IndexOf(T item)

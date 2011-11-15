@@ -82,21 +82,28 @@ namespace Latino
             get { return mItems.Comparer; }
         }
 
-        public static Set<T> Union(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        public static Set<T> Union(Set<T> a, Set<T> b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
-            Set<T> c = a.GetWritableCopy(); // *** inherits comparer from a (b is expected to have the same comparer)
+            Set<T> c = a.Clone(); // *** inherits comparer from a (b is expected to have the same comparer)
             c.AddRange(b);
             return c;
         }
 
-        public static Set<T> Intersection(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        public static Set<T> Union(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        {
+            Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
+            Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
+            return Union(a.Inner, b.Inner);
+        }
+
+        public static Set<T> Intersection(Set<T> a, Set<T> b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
             Set<T> c = new Set<T>(a.Comparer); // *** inherits comparer from a (b is expected to have the same comparer)
-            if (b.Count < a.Count) { Set<T>.ReadOnly tmp; tmp = a; a = b; b = tmp; }
+            if (b.Count < a.Count) { Set<T> tmp; tmp = a; a = b; b = tmp; }
             foreach (T item in a)
             {
                 if (b.Contains(item)) { c.Add(item); }
@@ -104,7 +111,14 @@ namespace Latino
             return c;
         }
 
-        public static Set<T> Difference(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        public static Set<T> Intersection(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        {
+            Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
+            Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
+            return Intersection(a.Inner, b.Inner);
+        }
+
+        public static Set<T> Difference(Set<T> a, Set<T> b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
@@ -116,7 +130,14 @@ namespace Latino
             return c;
         }
 
-        public static double JaccardSimilarity(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        public static Set<T> Difference(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        {
+            Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
+            Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
+            return Difference(a.Inner, b.Inner);
+        }
+
+        public static double JaccardSimilarity(Set<T> a, Set<T> b)
         {
             Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
             Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
@@ -124,6 +145,13 @@ namespace Latino
             double div = (double)(a.Count + b.Count - c.Count);
             if (div == 0) { return 1; } // *** if both sets are empty, the similarity is 1
             return (double)c.Count / div;
+        }
+
+        public static double JaccardSimilarity(Set<T>.ReadOnly a, Set<T>.ReadOnly b)
+        {
+            Utils.ThrowException(a == null ? new ArgumentNullException("a") : null);
+            Utils.ThrowException(b == null ? new ArgumentNullException("b") : null);
+            return JaccardSimilarity(a.Inner, b.Inner);
         }
 
         public T[] ToArray()
@@ -416,6 +444,11 @@ namespace Latino
             public Set<T> Inner
             {
                 get { return mSet; }
+            }
+
+            object IReadOnlyAdapter.Inner
+            {
+                get { return Inner; }
             }
 
             // *** Partial ICollection<T> interface implementation ***

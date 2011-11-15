@@ -292,6 +292,13 @@ namespace Latino
             return new BinaryVector.ReadOnly(vec);
         }
 
+        // *** Equality comparer ***
+
+        public static IEqualityComparer<BinaryVector> GetEqualityComparer()
+        {
+            return GenericEqualityComparer<BinaryVector>.Instance;
+        }
+
         /* .-----------------------------------------------------------------------
            |
            |  Class BinaryVector.ReadOnly
@@ -353,6 +360,11 @@ namespace Latino
             public BinaryVector Inner
             {
                 get { return mVec; }
+            }
+
+            object IReadOnlyAdapter.Inner
+            {
+                get { return Inner; }
             }
 
             // *** Partial ICollection<int> interface implementation ***
@@ -426,6 +438,13 @@ namespace Latino
             public void Save(BinarySerializer writer)
             {
                 mVec.Save(writer);
+            }
+
+            // *** Equality comparer ***
+
+            public static IEqualityComparer<BinaryVector.ReadOnly> GetEqualityComparer()
+            {
+                return GenericEqualityComparer<BinaryVector.ReadOnly>.Instance;
             }
         }
     }

@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("LATINO")]
 [assembly: AssemblyDescription("Link Analysis and Text Mining Toolbox")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Jozef Stefan Institute")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("LATINO")]
-[assembly: AssemblyCopyright("Copyright © Miha Grcar, Jozef Stefan Institute")]
+[assembly: AssemblyCopyright("Copyright © Miha Grcar")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
