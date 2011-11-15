@@ -184,7 +184,7 @@ namespace Latino.Model
             Utils.ThrowException(vecList == null ? new ArgumentNullException("vecList") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
             int vecCount = 0;
-            foreach (SparseVector<double>.ReadOnly vec in vecList)
+            foreach (SparseVector<double> vec in vecList)
             {
                 foreach (IdxDat<double> item in vec)
                 {
@@ -244,7 +244,7 @@ namespace Latino.Model
             foreach (int vecIdx in vecIdxList)
             {
                 Utils.ThrowException((vecIdx < 0 || vecIdx >= dataset.Count) ? new ArgumentValueException("vecIdxList") : null);
-                SparseVector<double>.ReadOnly vec = dataset[vecIdx];
+                SparseVector<double> vec = dataset[vecIdx];
                 foreach (IdxDat<double> item in vec)
                 {
                     if (tmp.ContainsKey(item.Idx))
@@ -470,7 +470,7 @@ namespace Latino.Model
             double[] simVec = new double[dataset.Count];
             SparseMatrix<double> simMtx = new SparseMatrix<double>();
             int rowIdx = 0;
-            foreach (SparseVector<double>.ReadOnly item in dataset)
+            foreach (SparseVector<double> item in dataset)
             {
                 GetDotProductSimilarity(item, simVec, trMtx, /*startIdx=*/fullMatrix ? 0 : rowIdx);
                 for (int idx = 0; idx < simVec.Length; idx++)

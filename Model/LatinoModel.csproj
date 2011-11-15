@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D1AF292A-FBD6-4C2E-9177-92B5C6E24EDC}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -67,16 +67,25 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BatchUpdateCentroidClassifier.cs" />
+    <Compile Include="CentroidClassifier.cs" />
+    <Compile Include="CentroidData.cs" />
+    <Compile Include="CosineSimilarity.cs" />
     <Compile Include="DotProductSimilarity.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ISimilarity.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="KnnClassifier.cs" />
+    <Compile Include="KnnClassifierFast.cs" />
+    <Compile Include="MajorityClassifier.cs" />
+    <Compile Include="MaximumEntropyClassifier.cs" />
     <Compile Include="MaximumEntropyClassifierFast.cs" />
     <Compile Include="ModelUtils.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NaiveBayesClassifier.cs" />
     <Compile Include="Prediction.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -95,9 +104,6 @@
       <Project>{5F184E57-EA63-46F4-9B3F-DB038CCE20A3}</Project>
       <Name>LatinoCore</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
