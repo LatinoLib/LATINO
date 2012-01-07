@@ -6,7 +6,7 @@
  *  Desc:    Binary serializer/deserializer
  *  Created: Oct-2004
  *
- *  Author:  Miha Grcar, Matjaz Jursic
+ *  Authors: Miha Grcar, Matjaz Jursic
  *
  ***************************************************************************/
 
