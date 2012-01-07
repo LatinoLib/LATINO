@@ -19,6 +19,7 @@ using System.Xml;
 using System.Web;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Configuration;
 
 namespace Latino
 {
@@ -30,6 +31,22 @@ namespace Latino
     */
     public static class Utils
     {
+        /* .-----------------------------------------------------------------------
+           |
+           |  Enum CaseType
+           |
+           '-----------------------------------------------------------------------
+        */
+        public enum CaseType
+        { 
+            abc,
+            ABC,
+            Abc,
+            AbC,
+            aBc,
+            Other
+        }
+
         public const string DATE_TIME_SIMPLE
             = "yyyy-MM-dd HH:mm:ss K"; // simple date-time format (incl. time zone, if available)
         #region mTimeZones
@@ -217,6 +234,21 @@ namespace Latino
             }
         }
 
+        public static object ChangeType(object obj, Type newType, IFormatProvider fmtProvider)
+        {
+            ThrowException(newType == null ? new ArgumentNullException("newType") : null);
+            if (newType.IsAssignableFrom(obj.GetType()))
+            {
+                return obj;
+            }
+            else
+            {
+                return Convert.ChangeType(obj, newType, fmtProvider); // throws InvalidCastException, FormatException, OverflowException
+            }
+        }
+
+        // *** String utilities ***
+
         public static Guid GetStringHashCode128(string str)
         {
             ThrowException(str == null ? new ArgumentNullException("str") : null);
@@ -233,16 +265,59 @@ namespace Latino
             return part1 ^ part2;
         }
 
-        public static object ChangeType(object obj, Type newType, IFormatProvider fmtProvider)
+        public static string Truncate(string str, int len)
         {
-            ThrowException(newType == null ? new ArgumentNullException("newType") : null);
-            if (newType.IsAssignableFrom(obj.GetType()))
+            ThrowException(len < 0 ? new ArgumentOutOfRangeException("len") : null);
+            return (str != null && str.Length > len) ? str.Substring(0, len) : str;
+        }
+
+        public static string ToOneLine(string str)
+        {
+            return ToOneLine(str, /*compact=*/false);
+        }
+
+        public static string ToOneLine(string str, bool compact)
+        {
+            if (str == null) { return null; }
+            str = str.Replace("\r", "").Replace('\n', ' ').Trim();
+            if (compact)
             {
-                return obj;
+                str = Regex.Replace(str, @"\s\s+", " ");
             }
-            else
+            return str;
+        }
+
+        public static CaseType GetCaseType(string str) 
+        {
+            ThrowException(str == null ? new ArgumentNullException("str") : null);
+            str = str.Trim();
+            int numUpper = 0;
+            int numLower = 0;
+            int numOther = 0;
+            foreach (char ch in str)
             {
-                return Convert.ChangeType(obj, newType, fmtProvider); // throws InvalidCastException, FormatException, OverflowException
+                if (char.IsUpper(ch)) { numUpper++; }
+                else if (char.IsLower(ch)) { numLower++; }
+                else { numOther++; }
+            }
+            int numLetter = numUpper + numLower;
+            if (numLetter == 0) { return CaseType.Other; }
+            if (numLetter == 1)
+            {
+                if (char.IsUpper(str[0])) { return CaseType.ABC; }
+                else if (char.IsLower(str[0])) { return CaseType.abc; }
+                else { return CaseType.Other; }
+            }
+            if (char.IsUpper(str[0])) // ABC, Abc, AbC
+            {
+                if (numUpper + numOther == str.Length) { return CaseType.ABC; }
+                else if (numUpper == 1) { return CaseType.Abc; }
+                else { return CaseType.AbC; }
+            }
+            else // abc, aBc
+            {
+                if (numLower + numOther == str.Length) { return CaseType.abc; }
+                else { return CaseType.aBc; }
             }
         }
 
@@ -359,6 +434,14 @@ namespace Latino
             return null;
         }
 
+        public static string GetConfigValue(string key, string defaultValue)
+        {
+            ThrowException(key == null ? new ArgumentNullException("key") : null);
+            string value = ConfigurationManager.AppSettings[key]; // throws ConfigurationErrorsException 
+            if (value == null) { value = defaultValue; }
+            return value;
+        }
+
         // *** Dictionary utilities ***
 
         public static void SaveDictionary<KeyT, ValT>(Dictionary<KeyT, ValT> dict, BinarySerializer writer)
@@ -448,14 +531,9 @@ namespace Latino
             if (reader.IsEmptyElement) { return ""; }
             string text = "";
             while (reader.Read() && reader.NodeType != XmlNodeType.Text && reader.NodeType != XmlNodeType.CDATA && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) { }
-            if (reader.NodeType == XmlNodeType.Text)
+            if (reader.NodeType == XmlNodeType.Text || reader.NodeType == XmlNodeType.CDATA)
             {
-                text = HttpUtility.HtmlDecode(reader.Value);
-                XmlSkip(reader, attrName);
-            }
-            else if (reader.NodeType == XmlNodeType.CDATA)
-            {
-                text = reader.Value; // no decoding for CDATA
+                text = reader.Value;
                 XmlSkip(reader, attrName);
             }
             return text;
@@ -499,28 +577,6 @@ namespace Latino
                 return null;
             }
             return dt.ToString(DATE_TIME_SIMPLE);
-        }
-
-        public static string Truncate(string str, int len)
-        {
-            ThrowException(len < 0 ? new ArgumentOutOfRangeException("len") : null);
-            return (str != null && str.Length > len) ? str.Substring(0, len) : str;
-        }
-
-        public static string ToOneLine(string str)
-        {
-            return ToOneLine(str, /*compact=*/false);
-        }
-
-        public static string ToOneLine(string str, bool compact)
-        {
-            if (str == null) { return null; }
-            str = str.Replace("\r", "").Replace('\n', ' ').Trim();
-            if (compact)
-            {
-                str = Regex.Replace(str, @"\s\s+", " ");
-            }
-            return str;
         }
 
         // *** Delegates ***

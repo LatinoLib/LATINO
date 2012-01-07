@@ -45,6 +45,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
@@ -118,7 +119,6 @@
     <Compile Include="Web\SearchEngineResultSet.cs" />
     <Compile Include="Experimental\Web\BingSearchEngine.cs" />
     <Compile Include="Web\YahooSearchEngine.cs" />
-    <Compile Include="Experimental\MultiSet.cs" />
     <Compile Include="IPair.cs" />
     <Compile Include="IEnumerableList.cs" />
     <Compile Include="ICloneable.cs" />

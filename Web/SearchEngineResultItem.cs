@@ -68,7 +68,7 @@ namespace Latino.Web
                         if (!xmlReader.IsEmptyElement)
                         {
                             xmlReader.Read(); // throws XmlException
-                            Utils.ThrowException((xmlReader.NodeType != XmlNodeType.Text && xmlReader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
+                            //Utils.ThrowException((xmlReader.NodeType != XmlNodeType.Text && xmlReader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
                             mTitle = xmlReader.Value;
                         }
                     }
@@ -77,7 +77,7 @@ namespace Latino.Web
                         if (!xmlReader.IsEmptyElement)
                         {
                             xmlReader.Read(); // throws XmlException
-                            Utils.ThrowException((xmlReader.NodeType != XmlNodeType.Text && xmlReader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
+                            //Utils.ThrowException((xmlReader.NodeType != XmlNodeType.Text && xmlReader.NodeType != XmlNodeType.CDATA) ? new XmlFormatException() : null);
                             mSnippet = xmlReader.Value;
                         }
                     }

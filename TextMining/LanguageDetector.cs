@@ -133,28 +133,45 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(languageProfiles.Count == 0 ? new InvalidOperationException() : null);
             Utils.ThrowException(p == null ? new ArgumentNullException("p") : null);
-            Utils.ThrowException((!p.IsRanked /*|| p.N != n*/) ? new ArgumentValueException("p") : null);
+            Utils.ThrowException((!p.IsRanked) ? new ArgumentValueException("p") : null);
             Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);            
-            // finds language most similar to the profile 'p'
             LanguageProfile matchingLang = null;
             double minDist = Double.MaxValue;
-            double dist;
             foreach (LanguageProfile l in languageProfiles)
             {
-                dist = p.CalcOutOfPlace(l, cutOff);
+                double dist = p.CalcOutOfPlace(l, cutOff);
                 if (dist < minDist)
                 {
                     matchingLang = l;
                     minDist = dist;
                 }
             }
-
             return matchingLang;
+        }
+
+        public ArrayList<KeyDat<double, LanguageProfile>> FindMatchingLanguageAll(NGramProfile p, int cutOff)
+        {
+            Utils.ThrowException(languageProfiles.Count == 0 ? new InvalidOperationException() : null);
+            Utils.ThrowException(p == null ? new ArgumentNullException("p") : null);
+            Utils.ThrowException((!p.IsRanked) ? new ArgumentValueException("p") : null);
+            Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);
+            ArrayList<KeyDat<double, LanguageProfile>> result = new ArrayList<KeyDat<double, LanguageProfile>>();
+            foreach (LanguageProfile l in languageProfiles)
+            {
+                double dist = p.CalcOutOfPlace(l, cutOff);
+                result.Add(new KeyDat<double, LanguageProfile>(dist, l));
+            }
+            return result;
         }
         
         public LanguageProfile FindMatchingLanguage(NGramProfile p)
         {
             return FindMatchingLanguage(p, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException 
+        }
+
+        public ArrayList<KeyDat<double, LanguageProfile>> FindMatchingLanguageAll(NGramProfile p)
+        {
+            return FindMatchingLanguageAll(p, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException 
         }
 
         public LanguageProfile FindMatchingLanguage(string str)
@@ -165,6 +182,16 @@ namespace Latino.TextMining
             p.AddTokensFromString(str);
             p.DoRanking();
             return FindMatchingLanguage(p);
+        }
+
+        public ArrayList<KeyDat<double, LanguageProfile>> FindMatchingLanguageAll(string str)
+        {
+            Utils.ThrowException(languageProfiles.Count == 0 ? new InvalidOperationException() : null);
+            Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
+            NGramProfile p = new NGramProfile(n);
+            p.AddTokensFromString(str);
+            p.DoRanking();
+            return FindMatchingLanguageAll(p);
         }
 
         public void Clear()
