@@ -8,6 +8,8 @@
  *
  *  Authors: Miha Grcar, Matjaz Jursic
  *
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt)
+ *
  ***************************************************************************/
 
 using System;

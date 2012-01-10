@@ -8,6 +8,8 @@
  *
  *  Author:  Miha Grcar
  *
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt)
+ *
  ***************************************************************************/
 
 using System;
@@ -32,7 +34,7 @@ namespace Latino.Model
 
         public LabeledExample(LblT lbl, ExT ex)
         {
-            Utils.ThrowException(lbl == null ? new ArgumentNullException("lbl") : null); // *** allow unlabeled examples?
+            Utils.ThrowException(lbl == null ? new ArgumentNullException("lbl") : null); 
             Utils.ThrowException(ex == null ? new ArgumentNullException("ex") : null);
             mLbl = lbl;
             mEx = ex;
@@ -43,7 +45,7 @@ namespace Latino.Model
             get { return mLbl; }
             set 
             {
-                Utils.ThrowException(value == null ? new ArgumentNullException("Label") : null); // *** allow unlabeled examples?
+                Utils.ThrowException(value == null ? new ArgumentNullException("Label") : null); 
                 mLbl = value; 
             }
         }

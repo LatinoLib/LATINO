@@ -6,7 +6,9 @@
  *  Desc:    Similarity implementation
  *  Created: Dec-2008
  *
- *  Author:  Miha Grcar, Matjaz Jursic
+ *  Authors: Miha Grcar, Matjaz Jursic
+ *
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt)
  *
  ***************************************************************************/
 

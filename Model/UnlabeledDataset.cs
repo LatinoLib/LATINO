@@ -3,10 +3,12 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    UnlabeledDataset.cs
- *  Desc:    Unlabeled dataset (for clustering)
+ *  Desc:    Unlabeled dataset data structure
  *  Created: Nov-2009
  *
  *  Author:  Miha Grcar
+ *
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt)
  *
  ***************************************************************************/
 

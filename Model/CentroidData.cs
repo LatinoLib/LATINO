@@ -6,7 +6,9 @@
  *  Desc:    Centroid data structure (used for speed optimizations)
  *  Created: May-2009
  *
- *  Author:  Miha Grcar 
+ *  Author:  Miha Grcar
+ *
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt) 
  *
  ***************************************************************************/
 

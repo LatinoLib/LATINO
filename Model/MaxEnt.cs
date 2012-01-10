@@ -8,6 +8,8 @@
  *
  *  Authors: Jan Rupnik, Miha Grcar
  *
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt)
+ *
  ***************************************************************************/
 
 using System;
