@@ -72,7 +72,16 @@ namespace Latino.Model
             {
                 tmp = ((SparseVector<double>.ReadOnly)inVec).GetWritableCopy();
             }
-            else if (inVec.GetType() == typeof(BinaryVector) || inVec.GetType() == typeof(BinaryVector.ReadOnly))
+            else if (inVec.GetType() == typeof(BinaryVector)) 
+            {
+                tmp = new SparseVector<double>(((BinaryVector)inVec).Count);
+                foreach (int item in (BinaryVector)inVec)
+                {
+                    tmp.InnerIdx.Add(item);
+                    tmp.InnerDat.Add(1);
+                }
+            }
+            else if (inVec.GetType() == typeof(BinaryVector.ReadOnly))
             {
                 tmp = new SparseVector<double>(((BinaryVector.ReadOnly)inVec).Count);
                 foreach (int item in (BinaryVector.ReadOnly)inVec)
