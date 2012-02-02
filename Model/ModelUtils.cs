@@ -306,13 +306,14 @@ namespace Latino.Model
             return centroid;
         }
 
-        public static SparseVector<double> ComputeCentroidWgt(IEnumerable<Pair<double, SparseVector<double>.ReadOnly>> wgtVecList, CentroidType type)
+        public static SparseVector<double> ComputeCentroidWgt(IEnumerable<Pair<double, SparseVector<double>>> wgtVecList, CentroidType type)
         {
             Utils.ThrowException(wgtVecList == null ? new ArgumentNullException("wgtVecList") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
             double wgtSum = 0;
-            foreach (Pair<double, SparseVector<double>.ReadOnly> wgtVec in wgtVecList)
+            foreach (Pair<double, SparseVector<double>> wgtVec in wgtVecList)
             {
+                Utils.ThrowException(wgtVec.First < 0 || wgtVec.Second == null ? new ArgumentValueException("wgtVecList") : null);
                 foreach (IdxDat<double> item in wgtVec.Second)
                 {
                     if (tmp.ContainsKey(item.Idx))
@@ -323,10 +324,10 @@ namespace Latino.Model
                     {
                         tmp.Add(item.Idx, wgtVec.First * item.Dat);
                     }
-                }
+                }                
                 wgtSum += wgtVec.First;
             }
-            Utils.ThrowException(wgtSum == 0 ? new ArgumentValueException("wgtVecList") : null);
+            if (wgtSum == 0) { return new SparseVector<double>(); }
             SparseVector<double> centroid = new SparseVector<double>();
             switch (type)
             {

@@ -30,7 +30,8 @@ namespace Latino.TextMining
     { 
         TermFreq,
         TfIdf,
-        LogDfTfIdf
+        LogDfTfIdf,
+        Dyakonov
     }
 
     /* .-----------------------------------------------------------------------
@@ -623,6 +624,18 @@ namespace Latino.TextMining
                         }
                     }
                 }
+                else if (mWordWeightType == WordWeightType.Dyakonov)
+                {
+                    foreach (KeyValuePair<int, int> tfItem in tfVec)
+                    {
+                        double weight = (double)tfItem.Value / Math.Sqrt(mIdxInfo[tfItem.Key].mFreq);
+                        if (weight > 0)
+                        {
+                            docVec.InnerIdx.Add(tfItem.Key);
+                            docVec.InnerDat.Add(weight);
+                        }
+                    }
+                }                
                 else if (mWordWeightType == WordWeightType.LogDfTfIdf)
                 {
                     foreach (KeyValuePair<int, int> tfItem in tfVec)
@@ -725,6 +738,18 @@ namespace Latino.TextMining
                     }
                 }
             }
+            else if (mWordWeightType == WordWeightType.Dyakonov)
+            {
+                foreach (KeyValuePair<int, int> tfItem in tfVec)
+                {
+                    double weight = (double)tfItem.Value / Math.Sqrt(mIdxInfo[tfItem.Key].mFreq);
+                    if (weight > 0)
+                    {
+                        docVec.InnerIdx.Add(tfItem.Key);
+                        docVec.InnerDat.Add(weight);
+                    }
+                }
+            }                
             else if (mWordWeightType == WordWeightType.LogDfTfIdf)
             {
                 foreach (KeyValuePair<int, int> tfItem in tfVec)
