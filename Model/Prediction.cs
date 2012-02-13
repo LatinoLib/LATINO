@@ -53,12 +53,7 @@ namespace Latino.Model
             mClassScores.Sort(DescSort<KeyDat<double, LblT>>.Instance);
         }
 
-#if PUBLIC_INNER
-        public
-#else
-        internal 
-#endif    
-        ArrayList<KeyDat<double, LblT>> Inner
+        public ArrayList<KeyDat<double, LblT>> Inner
         {
             get { return mClassScores; }
         }

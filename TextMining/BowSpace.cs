@@ -284,9 +284,11 @@ namespace Latino.TextMining
             }
         }
 
-        private void CutLowWeights(ref SparseVector<double> vec)
+        public static void CutLowWeights(ref SparseVector<double> vec, double cutLowWgtPerc)
         {
-            if (mCutLowWeightsPerc > 0)
+            Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            Utils.ThrowException(cutLowWgtPerc < 0 || cutLowWgtPerc >= 1 ? new ArgumentValueException("cutLowWgtPerc") : null);
+            if (cutLowWgtPerc > 0)
             {
                 double wgtSum = 0;
                 ArrayList<KeyDat<double, int>> tmp = new ArrayList<KeyDat<double, int>>(vec.Count);
@@ -296,7 +298,7 @@ namespace Latino.TextMining
                     tmp.Add(new KeyDat<double, int>(item.Dat, item.Idx));
                 }
                 tmp.Sort();
-                double cutSum = mCutLowWeightsPerc * wgtSum;
+                double cutSum = cutLowWgtPerc * wgtSum;
                 double cutWgt = -1;
                 foreach (KeyDat<double, int> item in tmp)
                 {
@@ -306,7 +308,7 @@ namespace Latino.TextMining
                         cutWgt = item.Key;
                         break;
                     }
-                }                
+                }
                 SparseVector<double> newVec = new SparseVector<double>();
                 if (cutWgt != -1)
                 {
@@ -321,6 +323,11 @@ namespace Latino.TextMining
                 }
                 vec = newVec;
             }
+        }
+
+        private void CutLowWeights(ref SparseVector<double> vec)
+        {
+            CutLowWeights(ref vec, mCutLowWeightsPerc);
         }
 
         private void ProcessNGramsPass1(ArrayList<WordStem> nGrams, int startIdx, Set<string> docWords)

@@ -275,7 +275,8 @@ namespace Latino
 
         public void Add(T item, int count)
         {
-            Utils.ThrowException(count <= 0 ? new ArgumentOutOfRangeException("count") : null);
+            Utils.ThrowException(count < 0 ? new ArgumentOutOfRangeException("count") : null);
+            if (count == 0) { return; }
             int oldCount;
             if (mItems.TryGetValue(item, out oldCount)) // throws ArgumentNullException
             {
@@ -289,7 +290,8 @@ namespace Latino
 
         public bool Remove(T item, int count)
         { 
-            Utils.ThrowException(count <= 0 ? new ArgumentOutOfRangeException("count") : null);
+            Utils.ThrowException(count < 0 ? new ArgumentOutOfRangeException("count") : null);
+            if (count == 0) { return false; }
             int oldCount;
             if (mItems.TryGetValue(item, out oldCount)) // throws ArgumentNullException
             {
