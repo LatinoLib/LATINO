@@ -106,7 +106,7 @@ namespace Latino.Visualization
             Vector2D rndVec;
             do
             {
-                rndVec = new Vector2D(rnd.NextDouble(), rnd.NextDouble());
+                rndVec = new Vector2D(rnd.NextDouble() - 0.5, rnd.NextDouble() - 0.5);
             }
             while (rndVec.GetLength() == 0);
             rndVec.SetLength(len);

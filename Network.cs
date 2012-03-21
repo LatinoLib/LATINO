@@ -290,7 +290,7 @@ namespace Latino
                         }
                     }
                 }
-                if (!seedsOnly && component.GetLastNonEmptyRowIdx() >= 0)
+                if (!seedsOnly /*&& component.GetLastNonEmptyRowIdx() >= 0*/)
                 {
                     components.Add(component);
                 }
