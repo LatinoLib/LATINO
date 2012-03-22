@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.50727</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5B86AAD5-3FEA-487C-A518-4F846AF09E18}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -109,6 +109,7 @@
     <Compile Include="Visualization\DrawableObjects\Label.cs" />
     <Compile Include="Visualization\DrawableObjects\Picture.cs" />
     <Compile Include="Visualization\RTree.cs" />
+    <Compile Include="WebMining\UrlNormalizer.cs" />
     <Compile Include="Web\CacheRecord.cs" />
     <Compile Include="Web\DatabaseCache.cs" />
     <Compile Include="Web\Exceptions.cs" />
