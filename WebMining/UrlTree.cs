@@ -198,6 +198,22 @@ namespace Latino.WebMining
             return Query(url, hashCodes, minDocCount, fullPath, /*insert=*/false, /*insertUnique=*/false);
         }
 
+        public int GetDomainDocCount(string url, bool fullPath, out string debugInfo)
+        {
+            int numDomainParts;
+            debugInfo = "";
+            ArrayList<string> path = GetPath(url, out numDomainParts, fullPath);
+            if (path == null) { return -1; }
+            Node node = mRoot;
+            for (int i = 0; i < numDomainParts; i++)
+            {
+                node = node.GetChildNode(path[i]);
+                debugInfo += path[i] + " ";
+                if (node == null) { return -1; }
+            }
+            return node.mCount;
+        }
+
         private NodeInfo[] Query(string url, ArrayList<ulong> hashCodes, int minDocCount, bool fullPath, bool insert, bool insertUnique)
         {
             Set<ulong> hashCodesUnique = new Set<ulong>(hashCodes);
@@ -280,6 +296,29 @@ namespace Latino.WebMining
                 result.Add(nodeInfo);
             }
             return result.ToArray();
+        }
+
+        public bool Remove(string url, ArrayList<ulong> hashCodes, bool fullPath, bool unique)
+        {
+            Set<ulong> hashCodesUnique = new Set<ulong>(hashCodes);
+            int numDomainParts;
+            ArrayList<string> path = GetPath(url, out numDomainParts, fullPath);
+            if (path == null) { return false; }
+            Node node = mRoot;
+            node.mCount--;
+            if (unique) { node.mHashCodes.RemoveRange(hashCodesUnique); }
+            else { node.mHashCodes.RemoveRange(hashCodes); }
+            for (int i = 0; i < path.Count; i++)
+            {
+                Node child = node.GetChildNode(path[i]);
+                if (child == null) { return false; }
+                child.mCount--;
+                if (unique) { child.mHashCodes.RemoveRange(hashCodesUnique); }
+                else { child.mHashCodes.RemoveRange(hashCodes); }
+                node = child;
+            }
+            // TODO: remove empty nodes
+            return true;
         }
 
         private void CreateString(Node node, StringBuilder sb, string prefix)
