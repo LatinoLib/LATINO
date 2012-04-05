@@ -68,6 +68,34 @@ namespace Latino.WebMining
         private ArrayList<Rule> mRules
             = new ArrayList<Rule>();
 
+        // effective top-level domains
+        private static Set<string> mTld
+            = new Set<string>(); 
+        private static Set<string> mNotTld
+            = new Set<string>();
+
+        static UrlNormalizer()
+        {
+            Stream stream = Utils.GetManifestResourceStream(typeof(UrlNormalizer), "EffectiveTldNames.dat");
+            StreamReader reader = new StreamReader(stream);
+            string line;
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (line != "" && !line.StartsWith("//"))
+                {
+                    if (line.StartsWith("!"))
+                    {
+                        mNotTld.Add(line.TrimStart('!'));
+                    }
+                    else
+                    {
+                        mTld.Add(line);
+                    }
+                }
+            }
+            stream.Close();
+        }
+
         public UrlNormalizer(string shitListConfigKey, string rulesConfigKey)
         { 
             // load shit list
@@ -231,6 +259,30 @@ namespace Latino.WebMining
             string url3 = ExecuteRules(url1, left, path, queryParsed, mRules);
             if (url3 == null) { url3 = url2; }            
             return url3;
+        }
+
+        public static string GetTldFromUrl(string url)
+        {
+            string left;
+            ArrayList<string> path;
+            ArrayList<KeyDat<string, string>> queryParsed;
+            ParseUrl(url, out left, out path, out queryParsed);
+            return GetTldFromDomainName(left.Split(':')[1].TrimStart('/'));        
+        }
+
+        public static string GetTldFromDomainName(string domainName)
+        {
+            string[] parts = domainName.Split('.');
+            int idx = 0;
+            for (int i = 0; i < parts.Length - 1; i++)
+            {
+                idx += parts[i].Length + 1;
+                string tail = domainName.Substring(idx);
+                if (mTld.Contains(tail)) { return tail; }
+                string group = "*" + domainName.Substring(idx + parts[i + 1].Length);
+                if (mTld.Contains(group) && !mNotTld.Contains(tail)) { return tail; }
+            }
+            return null;
         }
     }
 }
