@@ -63,7 +63,7 @@ namespace Latino.WebMining
             Heuristics
         }
 
-        private ArrayList<string> mShitList
+        private ArrayList<string> mBlacklist
             = new ArrayList<string>();
         private ArrayList<Rule> mRules
             = new ArrayList<Rule>();
@@ -96,19 +96,19 @@ namespace Latino.WebMining
             stream.Close();
         }
 
-        public UrlNormalizer(string shitListConfigKey, string rulesConfigKey)
+        public UrlNormalizer(string blacklistConfigKey, string rulesConfigKey)
         { 
-            // load shit list
-            string shitListFileName = null;
-            if (shitListConfigKey != null) { shitListFileName = Utils.GetConfigValue(shitListConfigKey, null); }
-            if (shitListFileName != null)
+            // load blacklist
+            string blacklistFileName = null;
+            if (blacklistConfigKey != null) { blacklistFileName = Utils.GetConfigValue(blacklistConfigKey, null); }
+            if (blacklistFileName != null)
             {
-                string[] lines = File.ReadAllLines(shitListFileName); 
+                string[] lines = File.ReadAllLines(blacklistFileName); 
                 foreach (string _line in lines)
                 {
                     string line = _line.Trim();
                     if (line == "" || line.StartsWith("#")) { continue; }
-                    mShitList.Add(line);
+                    mBlacklist.Add(line);
                 }
             }
             // load rules
@@ -128,7 +128,7 @@ namespace Latino.WebMining
             }
         }
 
-        public UrlNormalizer() : this("UrlShitListFileName", "UrlRulesFileName")
+        public UrlNormalizer() : this("UrlBlacklistFileName", "UrlRulesFileName")
         {
         }
 
@@ -234,22 +234,22 @@ namespace Latino.WebMining
             return url;
         }
 
-        public string NormalizeUrl(string url, string title, out bool shitList, NormalizationMode mode)
+        public string NormalizeUrl(string url, string title, out bool blacklist, NormalizationMode mode)
         {
-            shitList = false;
+            blacklist = false;
             string left;
             ArrayList<string> path;
             ArrayList<KeyDat<string, string>> queryParsed;
             ParseUrl(url, out left, out path, out queryParsed);
-            string content = Normalize(title);
+            string content = title == null ? "" : Normalize(title);
             string cid = Utils.GetStringHashCode128(content).ToString("N");
             queryParsed.InsertSorted(new KeyDat<string, string>("__cid__", cid)); // inject content-id query parameter
             string url1 = UrlAsString(left, path, queryParsed, null);
-            foreach (string prefix in mShitList)
+            foreach (string prefix in mBlacklist)
             {
                 if (url1.StartsWith(prefix)) 
                 { 
-                    shitList = true; 
+                    blacklist = true; 
                     break; 
                 }
             }
