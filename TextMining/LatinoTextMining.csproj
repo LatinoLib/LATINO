@@ -163,6 +163,7 @@
     <EmbeddedResource Include="Resources\LanguageDetector\Slovene.ldp" />
     <EmbeddedResource Include="Resources\LanguageDetector\Spanish.ldp" />
     <EmbeddedResource Include="Resources\LanguageDetector\Swedish.ldp" />
+	<EmbeddedResource Include="Resources\CharRanges.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LatinoCore.csproj">

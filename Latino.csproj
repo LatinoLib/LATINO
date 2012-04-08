@@ -294,6 +294,7 @@
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Slovene.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Spanish.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Swedish.ldp" />
+	<EmbeddedResource Include="TextMining\Resources\CharRanges.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-m-en.lem" />

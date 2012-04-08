@@ -6,22 +6,74 @@
  *  Desc:    Text mining utilities
  *  Created: Mar-2010
  *
- *  Author:  Miha Grcar, Marko Brakus
+ *  Authors: Miha Grcar, Marko Brakus
  *
  ***************************************************************************/
 
 using System;
+using System.IO;
+using System.Globalization;
+using System.Collections.Generic;
 
 namespace Latino.TextMining
 {
     /* .-----------------------------------------------------------------------
        |
        |  Class TextMiningUtils
-       |
+       |    
        '-----------------------------------------------------------------------
     */
     public static class TextMiningUtils
     {
+        /* .-----------------------------------------------------------------------
+           |
+           |  Class RangeInfo
+           |    
+           '-----------------------------------------------------------------------
+        */
+        private class RangeInfo
+        {
+            char mLastChar;
+            string mRangeId;
+
+            public RangeInfo(char lastChar, string rangeId)
+            {
+                mLastChar = lastChar;
+                mRangeId = rangeId;
+            }
+        }
+
+        private static ArrayList<Ref<string>> mCharRanges
+            = new ArrayList<Ref<string>>();
+
+        static TextMiningUtils()
+        {
+            Stream stream = Utils.GetManifestResourceStream(typeof(TextMiningUtils), "CharRanges.txt");
+            StreamReader reader = new StreamReader(stream);
+            string _line;
+            Ref<string> charRangeOther = "Other";
+            while ((_line = reader.ReadLine()) != null)
+            {
+                string line = _line.Trim();
+                if (!line.StartsWith("#") && line != "")
+                {
+                    string[] parts = line.Split('\t');
+                    int startIdx = int.Parse(parts[0], NumberStyles.HexNumber);
+                    int endIdx = int.Parse(parts[1], NumberStyles.HexNumber);
+                    if (startIdx > mCharRanges.Count)
+                    {
+                        //Console.Write(mCharRanges.Count + "\t");
+                        for (int i = mCharRanges.Count; i < startIdx; i++) { mCharRanges.Add(charRangeOther); }
+                        //Console.WriteLine("{0}\t{1}", mCharRanges.Count - 1, "Other");
+                    }
+                    Ref<string> charRangeId = parts[2];
+                    for (int i = startIdx; i <= endIdx; i++) { mCharRanges.Add(charRangeId); }
+                    //Console.WriteLine("{0}\t{1}\t{2}", startIdx, endIdx, parts[2]);                    
+                }
+            }
+            stream.Close();
+        }
+
         public static void GetLanguageTools(Language language, out Set<string>.ReadOnly stopWords, out IStemmer stemmer)
         {
             switch (language)
@@ -226,6 +278,23 @@ namespace Latino.TextMining
                 if (v[i] >= eps) { fp |= (1UL << i); }
             }
             return fp;
+        }
+
+        public static string GetCharRange(string text)
+        {
+            MultiSet<string> counter = new MultiSet<string>();
+            foreach (int ch in text)
+            {
+                if (ch >= mCharRanges.Count) { counter.Add("Other"); continue; }
+                counter.Add(mCharRanges[ch]);
+            }
+            int max = 0;
+            string charRange = "Other";
+            foreach (KeyValuePair<string, int> item in counter)
+            {
+                if (item.Value > max) { max = item.Value; charRange = item.Key; }
+            }
+            return charRange;
         }
     }
 }
