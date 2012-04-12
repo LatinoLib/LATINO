@@ -28,7 +28,9 @@ namespace Latino.WebMining
             public MultiSet<ulong> mHashCodes
                 = new MultiSet<ulong>();
             public bool mPartOfDomain
-                = true;
+                = false;
+            public bool mPartOfTld
+                = false;
 
             public Node(string key)
             {
@@ -126,25 +128,29 @@ namespace Latino.WebMining
            |
            '-----------------------------------------------------------------------
         */
+        [Flags]
         public enum NodeLocation
         {
-            Exact,
-            OffByOne,
-            WithinPath,
-            WithinDomain,
-            Root
+            Exact = 1,
+            OffByOne = 2,
+            WithinPath = 4,
+            WithinDomain = 8,
+            WithinTld = 16,
+            Root = 32
         }
 
         private Node mRoot
             = new Node("#");
 
-        private ArrayList<string> GetPath(string url, out int numDomainParts, bool fullPath)
+        private ArrayList<string> GetPath(string url, out int numDomainParts, out int numTldParts, bool fullPath)
         {          
             string leftPart;
             ArrayList<string> path;
             ArrayList<KeyDat<string, string>> queryParsed;
             UrlNormalizer.ParseUrl(url, out leftPart, out path, out queryParsed);
             string host = leftPart.Split(':')[1].Trim('/');
+            string[] tldParts = UrlNormalizer.GetTldFromDomainName(host).Split('.');
+            numTldParts = tldParts.Length;
             string[] hostParts = host.Split('.');
             numDomainParts = hostParts.Length;
             ArrayList<string> branch = new ArrayList<string>(hostParts);
@@ -198,28 +204,12 @@ namespace Latino.WebMining
             return Query(url, hashCodes, minDocCount, fullPath, /*insert=*/false, /*insertUnique=*/false);
         }
 
-        public int GetDomainDocCount(string url, bool fullPath, out string debugInfo)
-        {
-            int numDomainParts;
-            debugInfo = "";
-            ArrayList<string> path = GetPath(url, out numDomainParts, fullPath);
-            if (path == null) { return -1; }
-            Node node = mRoot;
-            for (int i = 0; i < numDomainParts; i++)
-            {
-                node = node.GetChildNode(path[i]);
-                debugInfo += path[i] + " ";
-                if (node == null) { return -1; }
-            }
-            return node.mCount;
-        }
-
         private NodeInfo[] Query(string url, ArrayList<ulong> hashCodes, int minDocCount, bool fullPath, bool insert, bool insertUnique)
         {
             Set<ulong> hashCodesUnique = new Set<ulong>(hashCodes);
             // insert hash codes      
-            int numDomainParts;
-            ArrayList<string> path = GetPath(url, out numDomainParts, fullPath);
+            int numDomainParts, numTldParts;
+            ArrayList<string> path = GetPath(url, out numDomainParts, out numTldParts, fullPath);
             ArrayList<Node> crumbs = new ArrayList<Node>(path.Count);
             if (path == null) { return null; }
             Node node = mRoot;
@@ -247,7 +237,9 @@ namespace Latino.WebMining
                             else { child.mHashCodes.AddRange(hashCodes); }
                         }
                         child.mPartOfDomain = numDomainParts > 0;
+                        child.mPartOfTld = numTldParts > 0;
                         numDomainParts--;
+                        numTldParts--;
                         crumbs.Add(child);
                         node = child;
                     }
@@ -258,9 +250,11 @@ namespace Latino.WebMining
                     child.mCount++;
                     if (insertUnique) { child.mHashCodes.AddRange(hashCodesUnique); }
                     else { child.mHashCodes.AddRange(hashCodes); }
-                    child.mPartOfDomain = numDomainParts > 0; 
+                    child.mPartOfDomain = numDomainParts > 0;
+                    child.mPartOfTld = numTldParts > 0;
                 }
                 numDomainParts--;
+                numTldParts--;
                 crumbs.Add(child); 
                 node = child;
             }
@@ -272,11 +266,13 @@ namespace Latino.WebMining
                 {
                     if (crumbs[i].mCount >= minDocCount)
                     {
-                        NodeLocation nodeLocation = NodeLocation.Root;
-                        if (i == crumbs.Count - 1) { nodeLocation = NodeLocation.Exact; }
-                        else if (crumbs.Count - 1 - i == 1 && !crumbs[i].mPartOfDomain && i > 0) { nodeLocation = NodeLocation.OffByOne; }
-                        else if (!crumbs[i].mPartOfDomain) { nodeLocation = NodeLocation.WithinPath; }
-                        else if (i != 0) { nodeLocation = NodeLocation.WithinDomain; }
+                        NodeLocation nodeLocation;
+                        if (crumbs[i] == mRoot) { nodeLocation = NodeLocation.Root; }
+                        else if (crumbs[i].mPartOfTld) { nodeLocation = NodeLocation.WithinTld; }
+                        else if (crumbs[i].mPartOfDomain) { nodeLocation = NodeLocation.WithinDomain; }
+                        else { nodeLocation = NodeLocation.WithinPath; }
+                        if (i == crumbs.Count - 1) { nodeLocation |= NodeLocation.Exact; }
+                        else if (i == crumbs.Count - 2) { nodeLocation |= NodeLocation.OffByOne; }
                         NodeInfo nodeInfo = new NodeInfo(nodeLocation, crumbs[i].mCount, crumbs[i].ToString());
                         for (int j = 0; j < hashCodes.Count; j++)
                         {
@@ -301,13 +297,18 @@ namespace Latino.WebMining
         public bool Remove(string url, ArrayList<ulong> hashCodes, bool fullPath, bool unique)
         {
             Set<ulong> hashCodesUnique = new Set<ulong>(hashCodes);
-            int numDomainParts;
-            ArrayList<string> path = GetPath(url, out numDomainParts, fullPath);
+            int numDomainParts, numTldParts;
+            ArrayList<string> path = GetPath(url, out numDomainParts, out numTldParts, fullPath);
             if (path == null) { return false; }
             Node node = mRoot;
             node.mCount--;
             if (unique) { node.mHashCodes.RemoveRange(hashCodesUnique); }
             else { node.mHashCodes.RemoveRange(hashCodes); }
+            if (node.mCount == 0) // cut the branch?
+            { 
+                node.mChildren.Clear(); 
+                return true; 
+            }
             for (int i = 0; i < path.Count; i++)
             {
                 Node child = node.GetChildNode(path[i]);
@@ -315,9 +316,13 @@ namespace Latino.WebMining
                 child.mCount--;
                 if (unique) { child.mHashCodes.RemoveRange(hashCodesUnique); }
                 else { child.mHashCodes.RemoveRange(hashCodes); }
+                if (child.mCount == 0) // cut the branch?
+                {
+                    child.mChildren.Clear();
+                    return true;
+                }
                 node = child;
             }
-            // TODO: remove empty nodes
             return true;
         }
 

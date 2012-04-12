@@ -227,7 +227,7 @@ namespace Latino
                 ((ISerializable)obj).Save(memSer); // throws serialization-related exceptions   
                 byte[] buffer = ((MemoryStream)memSer.Stream).GetBuffer();
                 MD5CryptoServiceProvider hashAlgo = new MD5CryptoServiceProvider();
-                Guid md5Hash = new Guid(hashAlgo.ComputeHash(buffer));
+                Guid md5Hash = new Guid(hashAlgo.ComputeHash(buffer, 0, (int)memSer.Stream.Position));
                 return md5Hash.GetHashCode();
             }
             else
