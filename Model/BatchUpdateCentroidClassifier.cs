@@ -144,23 +144,23 @@ namespace Latino.Model
             }
             for (int iter = 1; iter <= mIterations; iter++)
             {
-                mLogger.Info("Train", "Iteration {0} / {1} ...", iter, mIterations);
+                mLogger.Trace("Train", "Iteration {0} / {1} ...", iter, mIterations);
                 // compute dot products
-                mLogger.Info("Train", "Computing dot products ...");
+                mLogger.Trace("Train", "Computing dot products ...");
                 int j = 0;
                 foreach (KeyValuePair<LblT, CentroidData> labeledCentroid in centroids)
                 {
-                    mLogger.ProgressNormal(this, "Train", "Centroid {0} / {1} ...", j + 1, centroids.Count);
+                    mLogger.ProgressNormal(Logger.Level.Trace, this, "Train", "Centroid {0} / {1} ...", j + 1, centroids.Count);
                     SparseVector<double> cenVec = labeledCentroid.Value.GetSparseVector();
                     dotProd[j] = ModelUtils.GetDotProductSimilarity(dsMtx, dataset.Count, cenVec); 
                     j++;
                 }
                 // classify training examples
-                mLogger.Info("Train", "Classifying training examples ...");
+                mLogger.Trace("Train", "Classifying training examples ...");
                 int errCount = 0;
                 for (int instIdx = 0; instIdx < dataset.Count; instIdx++)
                 {
-                    mLogger.ProgressFast(this, "Train", "Example {0} / {1} ...", instIdx + 1, dataset.Count); 
+                    mLogger.ProgressFast(Logger.Level.Trace, this, "Train", "Example {0} / {1} ...", instIdx + 1, dataset.Count); 
                     double maxSim = double.MinValue;
                     CentroidData assignedCentroid = null;
                     CentroidData actualCentroid = null;
@@ -181,12 +181,12 @@ namespace Latino.Model
                         errCount++;
                     }                        
                 }
-                mLogger.Info("Train", "Training set error rate: {0:0.00}%", (double)errCount / (double)dataset.Count * 100.0);
+                mLogger.Trace("Train", "Training set error rate: {0:0.00}%", (double)errCount / (double)dataset.Count * 100.0);
                 // update centroids
                 int k = 0;
                 foreach (CentroidData centroidData in centroids.Values)
                 {
-                    mLogger.ProgressNormal(this, "Train", "Centroid {0} / {1} ...", ++k, centroids.Count);
+                    mLogger.ProgressNormal(Logger.Level.Trace, this, "Train", "Centroid {0} / {1} ...", ++k, centroids.Count);
                     centroidData.Update(mPositiveValuesOnly);
                     centroidData.UpdateCentroidLen();
                 }

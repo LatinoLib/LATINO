@@ -14,6 +14,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Latino.Model
 {
@@ -62,7 +65,7 @@ namespace Latino.Model
             {
                 return inVec;
             }
-            // general conversion routine (through SparseVector)
+            // general conversion routine (through SparseVector<double>)
             SparseVector<double> tmp;
             if (inVec.GetType() == typeof(SparseVector<double>))
             {
@@ -364,7 +367,7 @@ namespace Latino.Model
             return centroid;
         }
 
-        // *** Operations on datasets ***
+        // *** Dataset utilities ***
 
         public static SparseMatrix<double> GetTransposedMatrix(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
@@ -399,6 +402,43 @@ namespace Latino.Model
                 unlabeledDataset.Add(labeledExample.Example);
             }
             return unlabeledDataset;
+        }
+
+        public static LabeledDataset<int, SparseVector<double>> LoadDataset(string fileName)
+        {
+            Utils.ThrowException(fileName == null ? new ArgumentNullException("fileName") : null);
+            Utils.ThrowException(!Utils.VerifyFileNameOpen(fileName) ? new ArgumentValueException("fileName") : null);
+            StreamReader reader = new StreamReader(fileName);
+            LabeledDataset<int, SparseVector<double>> dataset = LoadDataset(reader);
+            reader.Close();
+            return dataset;
+        }
+
+        public static LabeledDataset<int, SparseVector<double>> LoadDataset(StreamReader reader)
+        {
+            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            string line;
+            LabeledDataset<int, SparseVector<double>> dataset = new LabeledDataset<int, SparseVector<double>>();
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (!line.StartsWith("#"))
+                {
+                    Match labelMatch = new Regex(@"^(?<label>[+-]?\d+(\.\d+)?)(\s|$)").Match(line);
+                    Utils.ThrowException(!labelMatch.Success ? new IOException() : null);
+                    int label = Convert.ToInt32(labelMatch.Result("${label}"));
+                    Match match = new Regex(@"(?<feature>\d+):(?<weight>[-]?[\d\.]+)").Match(line);
+                    SparseVector<double> vec = new SparseVector<double>();
+                    while (match.Success)
+                    {
+                        int feature = Convert.ToInt32(match.Result("${feature}"));
+                        double weight = Convert.ToDouble(match.Result("${weight}"), CultureInfo.InvariantCulture);
+                        match = match.NextMatch();
+                        vec[feature] = weight;
+                    }
+                    dataset.Add(new LabeledExample<int, SparseVector<double>>(label, vec));
+                }
+            }
+            return dataset;
         }
 
         // *** Fast sparse dot product computation ***
@@ -474,7 +514,7 @@ namespace Latino.Model
             return sparseVec;
         }
 
-        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset, double thresh, bool fullMatrix) // if fullMatrix is false, upper (right) triangular sparse matrix of dot products is computed
+        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset, double thresh, bool fullMatrix) 
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
@@ -484,7 +524,7 @@ namespace Latino.Model
             int rowIdx = 0;
             foreach (SparseVector<double> item in dataset)
             {
-                GetDotProductSimilarity(item, simVec, trMtx, /*startIdx=*/fullMatrix ? 0 : rowIdx);
+                GetDotProductSimilarity(item, simVec, trMtx, /*startIdx=*/fullMatrix ? 0 : rowIdx); // if fullMatrix is false, upper (right) triangular sparse matrix of dot products is computed
                 for (int idx = 0; idx < simVec.Length; idx++)
                 {
                     double sim = simVec[idx];

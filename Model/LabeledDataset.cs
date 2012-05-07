@@ -24,7 +24,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class LabeledDataset<LblT, ExT> : ILabeledDataset<LblT, ExT>, IUnlabeledExampleCollection<ExT>/*, IUnlabeledDataset<ExT>*/
+    public class LabeledDataset<LblT, ExT> : ILabeledDataset<LblT, ExT>, IUnlabeledExampleCollection<ExT>
     {
         private ArrayList<LabeledExample<LblT, ExT>> mItems
             = new ArrayList<LabeledExample<LblT, ExT>>();

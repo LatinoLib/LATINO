@@ -526,6 +526,25 @@ namespace Latino
 
         // *** XML utilities ***
 
+        public static string ReplaceSurrogates(string text)
+        {
+            return ReplaceSurrogates(text, '\uFFFD'); 
+        }
+
+        public static string ReplaceSurrogates(string text, char replacement)
+        {          
+            if (text == null) { return null; }
+            char[] buffer = new char[text.Length];
+            int i = 0;
+            foreach (char ch in text)
+            {
+                if (char.IsSurrogate(ch)) { buffer[i] = replacement; }
+                else { buffer[i] = ch; }
+                i++;
+            }
+            return new string(buffer);
+        }
+
         public static string XmlReadValue(XmlReader reader, string attrName)
         {
             ThrowException(reader == null ? new ArgumentNullException("reader") : null);
