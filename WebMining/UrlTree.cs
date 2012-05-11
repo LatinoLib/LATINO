@@ -194,17 +194,17 @@ namespace Latino.WebMining
             return hashCodes;
         }
 
-        public NodeInfo[] Insert(string url, ArrayList<ulong> hashCodes, int minDocCount, bool fullPath, bool insertUnique)
+        public NodeInfo[] Insert(string url, ArrayList<ulong> hashCodes, int minDocCount, bool fullPath, bool insertUnique, bool incDocCount)
         {
-            return Query(url, hashCodes, minDocCount, fullPath, /*insert=*/true, insertUnique);
+            return Query(url, hashCodes, minDocCount, fullPath, /*insert=*/true, insertUnique, incDocCount);
         }
 
         public NodeInfo[] Query(string url, ArrayList<ulong> hashCodes, int minDocCount, bool fullPath)
         {
-            return Query(url, hashCodes, minDocCount, fullPath, /*insert=*/false, /*insertUnique=*/false);
+            return Query(url, hashCodes, minDocCount, fullPath, /*insert=*/false, /*insertUnique=*/false, /*incDocCount=*/false);
         }
 
-        private NodeInfo[] Query(string url, ArrayList<ulong> hashCodes, int minDocCount, bool fullPath, bool insert, bool insertUnique)
+        private NodeInfo[] Query(string url, ArrayList<ulong> hashCodes, int minDocCount, bool fullPath, bool insert, bool insertUnique, bool incDocCount)
         {
             Set<ulong> hashCodesUnique = new Set<ulong>(hashCodes);
             // insert hash codes      
@@ -215,7 +215,7 @@ namespace Latino.WebMining
             Node node = mRoot;
             if (insert)
             {
-                node.mCount++;
+                if (incDocCount) { node.mCount++; }
                 if (insertUnique) { node.mHashCodes.AddRange(hashCodesUnique); }
                 else { node.mHashCodes.AddRange(hashCodes); }
             }
@@ -231,8 +231,8 @@ namespace Latino.WebMining
                         child = new Node(path[j]);
                         if (insert)
                         {
-                            node.mChildren.Add(child); 
-                            child.mCount++; 
+                            node.mChildren.Add(child);
+                            if (incDocCount) { child.mCount++; }
                             if (insertUnique) { child.mHashCodes.AddRange(hashCodesUnique); }
                             else { child.mHashCodes.AddRange(hashCodes); }
                         }
@@ -247,7 +247,7 @@ namespace Latino.WebMining
                 }
                 if (insert)
                 {
-                    child.mCount++;
+                    if (incDocCount) { child.mCount++; }
                     if (insertUnique) { child.mHashCodes.AddRange(hashCodesUnique); }
                     else { child.mHashCodes.AddRange(hashCodes); }
                     child.mPartOfDomain = numDomainParts > 0;
@@ -294,14 +294,14 @@ namespace Latino.WebMining
             return result.ToArray();
         }
 
-        public bool Remove(string url, ArrayList<ulong> hashCodes, bool fullPath, bool unique)
+        public bool Remove(string url, ArrayList<ulong> hashCodes, bool fullPath, bool unique, bool decDocCount)
         {
             Set<ulong> hashCodesUnique = new Set<ulong>(hashCodes);
             int numDomainParts, numTldParts;
             ArrayList<string> path = GetPath(url, out numDomainParts, out numTldParts, fullPath);
             if (path == null) { return false; }
             Node node = mRoot;
-            node.mCount--;
+            if (decDocCount) { node.mCount--; }
             if (unique) { node.mHashCodes.RemoveRange(hashCodesUnique); }
             else { node.mHashCodes.RemoveRange(hashCodes); }
             if (node.mCount == 0) // cut the branch?
@@ -313,7 +313,7 @@ namespace Latino.WebMining
             {
                 Node child = node.GetChildNode(path[i]);
                 if (child == null) { return false; }
-                child.mCount--;
+                if (decDocCount) { child.mCount--; }
                 if (unique) { child.mHashCodes.RemoveRange(hashCodesUnique); }
                 else { child.mHashCodes.RemoveRange(hashCodes); }
                 if (child.mCount == 0) // cut the branch?
