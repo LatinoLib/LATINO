@@ -180,6 +180,7 @@ namespace Latino.TextMining
             Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
             NGramProfile p = new NGramProfile(n);
             p.AddTokensFromString(str);
+            if (p.IsEmpty) { return null; }
             p.DoRanking();
             return FindMatchingLanguage(p);
         }
@@ -190,6 +191,7 @@ namespace Latino.TextMining
             Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
             NGramProfile p = new NGramProfile(n);
             p.AddTokensFromString(str);
+            if (p.IsEmpty) { return null; }
             p.DoRanking();
             return FindMatchingLanguageAll(p);
         }
@@ -331,6 +333,11 @@ namespace Latino.TextMining
         public NGramProfile(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
+        }
+
+        public bool IsEmpty
+        {
+            get { return hist.Count == 0; }
         }
 
         public void AddTokens(ITokenizer tokenizer)
