@@ -282,7 +282,7 @@ namespace Latino.WebMining
                 string group = "*" + domainName.Substring(idx + parts[i + 1].Length);
                 if (mTld.Contains(group) && !mNotTld.Contains(tail)) { return tail; }
             }
-            return null;
+            return new ArrayList<string>(parts).Last;
         }
     }
 }
