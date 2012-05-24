@@ -169,52 +169,78 @@ namespace Latino
             return mRoot.mLogger;
         }
 
+        private static Node GetNode(string name)
+        {
+            if (name == null) { return mRoot; }
+            string[] nodes = name.Split('.');
+            Node node = mRoot;
+            Level level = node.mLogger.mLocalLevel;
+            OutputType outType = node.mLogger.mLocalOutputType;
+            ProgressOutputType progressOutType = node.mLogger.mLocalProgressOutputType;
+            for (int i = 0; i < nodes.Length; i++)
+            {
+                string nodeName = nodes[i];
+                if (node.mChildren.ContainsKey(nodeName))
+                {
+                    node = node.mChildren[nodeName];
+                    if (node.mLogger != null)
+                    {
+                        level = node.mLogger.ActiveLevel;
+                        outType = node.mLogger.ActiveOutputType;
+                        progressOutType = node.mLogger.ActiveProgressOutputType;
+                    }
+                    else if (i == nodes.Length - 1)
+                    {
+                        node.mLogger = new Logger(name, level, outType, progressOutType, node);
+                    }
+                }
+                else if (i == nodes.Length - 1)
+                {
+                    Node newNode = new Node();
+                    newNode.mLogger = new Logger(name, level, outType, progressOutType, newNode);
+                    node.mChildren.Add(nodeName, node = newNode);
+                }
+                else
+                {
+                    node.mChildren.Add(nodeName, node = new Node());
+                }
+            }
+            return node;
+        }
+
+        public static Logger GetLogger(string name)
+        {
+            lock (mRoot)
+            {
+                return GetNode(name).mLogger;
+            }
+        }
+
         public static Logger GetLogger(Type type)
         {
             if (type == null) { return mRoot.mLogger; }
             return GetLogger(type.ToString());
         }
 
-        public static Logger GetLogger(string name)
+        public static Logger GetInstanceLogger(string className)
         {
-            if (name == null) { return mRoot.mLogger; }
             lock (mRoot)
-            {                
-                string[] nodes = name.Split('.');
-                Node node = mRoot;
-                Level level = node.mLogger.mLocalLevel;
-                OutputType outType = node.mLogger.mLocalOutputType;
-                ProgressOutputType progressOutType = node.mLogger.mLocalProgressOutputType;
-                for (int i = 0; i < nodes.Length; i++)
+            {
+                Node node = GetNode(className);
+                ulong maxVal = 0;
+                foreach (string key in node.mChildren.Keys)
                 {
-                    string nodeName = nodes[i];
-                    if (node.mChildren.ContainsKey(nodeName))
-                    {
-                        node = node.mChildren[nodeName];
-                        if (node.mLogger != null)
-                        {
-                            level = node.mLogger.ActiveLevel;
-                            outType = node.mLogger.ActiveOutputType;
-                            progressOutType = node.mLogger.ActiveProgressOutputType;
-                        }
-                        else if (i == nodes.Length - 1)
-                        {
-                            node.mLogger = new Logger(name, level, outType, progressOutType, node);
-                        }
-                    }
-                    else if (i == nodes.Length - 1)
-                    {
-                        Node newNode = new Node();
-                        newNode.mLogger = new Logger(name, level, outType, progressOutType, newNode);
-                        node.mChildren.Add(nodeName, node = newNode);
-                    }
-                    else
-                    {
-                        node.mChildren.Add(nodeName, node = new Node());
-                    }
+                    ulong val;
+                    if (ulong.TryParse(key, out val)) { if (val > maxVal) { maxVal = val; } }
                 }
-                return node.mLogger;
+                return GetNode(className + "." + (maxVal + 1)).mLogger;
             }
+        }
+
+        public static Logger GetInstanceLogger(Type type)
+        {
+            if (type == null) { return mRoot.mLogger; }
+            return GetInstanceLogger(type.ToString());        
         }
 
         public string Name

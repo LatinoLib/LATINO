@@ -29,26 +29,24 @@ namespace Latino.Model
             = null;
         ArrayList<LblT> mLabels
             = null;
-        private IEqualityComparer<LblT> mLblCmp
-            = null;
+        private IEqualityComparer<LblT> mLblCmp;
         private int mK
             = 10;
         private bool mSoftVoting
             = true;
 
-        public KnnClassifierFast()
+        public KnnClassifierFast(IEqualityComparer<LblT> lblCmp)
         { 
+            mLblCmp = lblCmp;
+        }
+
+        public KnnClassifierFast() : this((IEqualityComparer<LblT>)null)
+        {        
         }
 
         public KnnClassifierFast(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
-        }
-
-        public IEqualityComparer<LblT> LabelEqualityComparer
-        {
-            get { return mLblCmp; }
-            set { mLblCmp = value; }
         }
 
         public int K
@@ -164,12 +162,8 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteBool(mDatasetMtx != null);
-            if (mDatasetMtx != null)
-            {
-                mDatasetMtx.Save(writer);
-                mLabels.Save(writer);
-            }
+            writer.WriteObject(mDatasetMtx);
+            writer.WriteObject(mLabels);
             writer.WriteInt(mK);
             writer.WriteBool(mSoftVoting);
             writer.WriteObject(mLblCmp);
@@ -179,13 +173,8 @@ namespace Latino.Model
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            mDatasetMtx = null;
-            mLabels = null;
-            if (reader.ReadBool())
-            {
-                mDatasetMtx = new SparseMatrix<double>(reader);
-                mLabels = new ArrayList<LblT>(reader);
-            }
+            mDatasetMtx = reader.ReadObject<SparseMatrix<double>>();
+            mLabels = reader.ReadObject<ArrayList<LblT>>();         
             mK = reader.ReadInt();
             mSoftVoting = reader.ReadBool();
             mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();

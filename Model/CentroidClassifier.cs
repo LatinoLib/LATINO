@@ -27,14 +27,18 @@ namespace Latino.Model
     {
         private ArrayList<Pair<LblT, SparseVector<double>>> mCentroids
             = null;
-        private IEqualityComparer<LblT> mLblCmp
-            = null;
+        private IEqualityComparer<LblT> mLblCmp;
         private ISimilarity<SparseVector<double>> mSimilarity
             = CosineSimilarity.Instance;
         private bool mNormalize
             = false;
 
-        public CentroidClassifier()
+        public CentroidClassifier(IEqualityComparer<LblT> lblCmp)
+        {
+            mLblCmp = lblCmp;
+        }
+
+        public CentroidClassifier() : this((IEqualityComparer<LblT>)null)
         {
         }
 
@@ -49,12 +53,6 @@ namespace Latino.Model
             set { mNormalize = value; }
         }
 
-        public IEqualityComparer<LblT> LabelEqualityComparer
-        {
-            get { return mLblCmp; }
-            set { mLblCmp = value; }
-        }
-
         public ISimilarity<SparseVector<double>> Similarity
         {
             get { return mSimilarity; }
@@ -65,21 +63,10 @@ namespace Latino.Model
             }
         }
 
-        public ArrayList<SparseVector<double>> GetCentroids(IEnumerable<LblT> labels)
+        public ArrayList<Pair<LblT, SparseVector<double>>> GetCentroids()
         {
             Utils.ThrowException(mCentroids == null ? new InvalidOperationException() : null);
-            Utils.ThrowException(labels == null ? new ArgumentNullException("labels") : null);
-            Dictionary<LblT, SparseVector<double>> aux = new Dictionary<LblT, SparseVector<double>>(mLblCmp); 
-            ArrayList<SparseVector<double>> list = new ArrayList<SparseVector<double>>();
-            foreach (Pair<LblT, SparseVector<double>> centroid in mCentroids)
-            {
-                aux.Add(centroid.First, centroid.Second);
-            }
-            foreach (LblT label in labels)
-            {
-                list.Add(aux[label]); // throws ArgumentNullException, KeyNotFoundException
-            }
-            return list;
+            return mCentroids.DeepClone();
         }
 
         // *** IModel<LblT, SparseVector<double>> interface implementation ***

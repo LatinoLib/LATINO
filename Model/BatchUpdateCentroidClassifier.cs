@@ -25,8 +25,7 @@ namespace Latino.Model
     */
     public class BatchUpdateCentroidClassifier<LblT> : IModel<LblT, SparseVector<double>>
     {
-        private IEqualityComparer<LblT> mLblCmp
-            = null;
+        private IEqualityComparer<LblT> mLblCmp;
         private int mIterations
             = 20;
         private double mDamping
@@ -38,11 +37,16 @@ namespace Latino.Model
         private ArrayList<LblT> mLabels
             = null;
 
-        private static Logger mLogger
+        private Logger mLogger
             = Logger.GetLogger(typeof(BatchUpdateCentroidClassifier<LblT>));
 
-        public BatchUpdateCentroidClassifier()
+        public BatchUpdateCentroidClassifier(IEqualityComparer<LblT> lblCmp)
         {
+            mLblCmp = lblCmp;
+        }
+
+        public BatchUpdateCentroidClassifier() : this((IEqualityComparer<LblT>)null)
+        {        
         }
 
         public BatchUpdateCentroidClassifier(BinarySerializer reader)
@@ -50,10 +54,14 @@ namespace Latino.Model
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        public IEqualityComparer<LblT> LabelEqualityComparer
+        public Logger Logger
         {
-            get { return mLblCmp; }
-            set { mLblCmp = value; }
+            get { return mLogger; }
+            set
+            {
+                Utils.ThrowException(value == null ? new ArgumentNullException("Logger") : null);
+                mLogger = value;
+            }
         }
 
         public int Iterations
@@ -82,21 +90,16 @@ namespace Latino.Model
             set { mPositiveValuesOnly = value; }
         }
 
-        public ArrayList<SparseVector<double>> GetCentroids(IEnumerable<LblT> labels)
+        public ArrayList<Pair<LblT, SparseVector<double>>> GetCentroids()
         {
             Utils.ThrowException(mCentroidMtxTr == null ? new InvalidOperationException() : null);
-            Utils.ThrowException(labels == null ? new ArgumentNullException("labels") : null);
-            Set<LblT> tmp = new Set<LblT>(labels, mLblCmp); // throws ArgumentNullException
             SparseMatrix<double> cenMtx = mCentroidMtxTr.GetTransposedCopy();
-            ArrayList<SparseVector<double>> retCen = new ArrayList<SparseVector<double>>(tmp.Count);
+            ArrayList<Pair<LblT, SparseVector<double>>> centroids = new ArrayList<Pair<LblT, SparseVector<double>>>();
             for (int i = 0; i < mLabels.Count; i++)
             {
-                if (tmp.Contains(mLabels[i])) 
-                {
-                    retCen.Add(cenMtx[i]);
-                }
+                centroids.Add(new Pair<LblT, SparseVector<double>>(mLabels[i], cenMtx[i].Clone()));
             }
-            return retCen;
+            return centroids;
         }
 
         // *** IModel<LblT, SparseVector<double>> interface implementation ***
@@ -237,12 +240,8 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteBool(mCentroidMtxTr != null);
-            if (mCentroidMtxTr != null) 
-            { 
-                mCentroidMtxTr.Save(writer);
-                mLabels.Save(writer);
-            }
+            writer.WriteObject(mCentroidMtxTr);
+            writer.WriteObject(mLabels);
             writer.WriteInt(mIterations);
             writer.WriteDouble(mDamping);
             writer.WriteBool(mPositiveValuesOnly);
@@ -253,13 +252,8 @@ namespace Latino.Model
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions            
-            mCentroidMtxTr = null;
-            mLabels = null;
-            if (reader.ReadBool())
-            {
-                mCentroidMtxTr = new SparseMatrix<double>(reader);
-                mLabels = new ArrayList<LblT>(reader);
-            }
+            mCentroidMtxTr = reader.ReadObject<SparseMatrix<double>>();
+            mLabels = reader.ReadObject<ArrayList<LblT>>();
             mIterations = reader.ReadInt();
             mDamping = reader.ReadDouble();
             mPositiveValuesOnly = reader.ReadBool();

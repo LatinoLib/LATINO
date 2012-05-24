@@ -27,29 +27,26 @@ namespace Latino.Model
     {
         private ArrayList<LabeledExample<LblT, ExT>> mExamples
             = null;
-        private IEqualityComparer<LblT> mLblCmp
-            = null;
-        private ISimilarity<ExT> mSimilarity
-            = null;
+        private IEqualityComparer<LblT> mLblCmp;
+        private ISimilarity<ExT> mSimilarity;
         private int mK
             = 10;
         private bool mSoftVoting
             = true;
 
-        public KnnClassifier(ISimilarity<ExT> similarity)
+        public KnnClassifier(ISimilarity<ExT> similarity, IEqualityComparer<LblT> lblCmp)
         {
             Similarity = similarity; // throws ArgumentNullException
+            mLblCmp = lblCmp;
+        }
+
+        public KnnClassifier(ISimilarity<ExT> similarity) : this(similarity, /*lblCmp=*/null) // throws ArgumentNullException
+        {             
         }
 
         public KnnClassifier(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
-        }
-
-        public IEqualityComparer<LblT> LabelEqualityComparer
-        {
-            get { return mLblCmp; }
-            set { mLblCmp = value; }
         }
 
         public ISimilarity<ExT> Similarity
@@ -106,7 +103,7 @@ namespace Latino.Model
 
         public Prediction<LblT> Predict(ExT example)
         {
-            Utils.ThrowException((mExamples == null || mSimilarity == null) ? new InvalidOperationException() : null);
+            Utils.ThrowException(mExamples == null ? new InvalidOperationException() : null);
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             ArrayList<KeyDat<double, LabeledExample<LblT, ExT>>> tmp = new ArrayList<KeyDat<double, LabeledExample<LblT, ExT>>>(mExamples.Count);
             foreach (LabeledExample<LblT, ExT> labeledExample in mExamples)

@@ -39,14 +39,33 @@ namespace Latino.Model
             = null;
         private bool mNormalize
             = false;
+        private IEqualityComparer<LblT> mLblCmp;
 
-        public MaximumEntropyClassifier()
+        private Logger mLogger
+            = Logger.GetLogger(typeof(MaximumEntropyClassifier<LblT>));
+
+        public MaximumEntropyClassifier(IEqualityComparer<LblT> lblCmp)
+        {
+            mLblCmp = lblCmp;
+        }
+
+        public MaximumEntropyClassifier() : this((IEqualityComparer<LblT>)null)
         {
         }
 
         public MaximumEntropyClassifier(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
+        }
+
+        public Logger Logger
+        {
+            get { return mLogger; }
+            set
+            {
+                Utils.ThrowException(value == null ? new ArgumentNullException("Logger") : null);
+                mLogger = value;
+            }
         }
 
         public bool MoveData
@@ -108,7 +127,7 @@ namespace Latino.Model
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             mLambda = null; // allow GC to collect this
-            mLambda = MaxEnt.Gis(dataset, mCutOff, mNumIter, mMoveData, /*mtxFileName=*/null, ref mIdxToLbl, mNumThreads, /*allowedDiff=*/0); // *** allowedDiff
+            mLambda = MaxEnt.Gis(dataset, mCutOff, mNumIter, mMoveData, /*mtxFileName=*/null, ref mIdxToLbl, mNumThreads, /*allowedDiff=*/0, mLblCmp, mLogger); // *** allowedDiff
         }
 
         void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
@@ -143,8 +162,10 @@ namespace Latino.Model
             writer.WriteInt(mCutOff);
             writer.WriteInt(mNumThreads);
             writer.WriteObject(mLambda);
-            new ArrayList<LblT>(mIdxToLbl).Save(writer);
+            writer.WriteBool(mIdxToLbl != null);
+            if (mIdxToLbl != null) { new ArrayList<LblT>(mIdxToLbl).Save(writer); }
             writer.WriteBool(mNormalize);
+            writer.WriteObject(mLblCmp);
         }
 
         public void Load(BinarySerializer reader)
@@ -156,8 +177,9 @@ namespace Latino.Model
             mCutOff = reader.ReadInt();
             mNumThreads = reader.ReadInt();
             mLambda = reader.ReadObject<SparseMatrix<double>>();
-            mIdxToLbl = new ArrayList<LblT>(reader).ToArray();
+            mIdxToLbl = reader.ReadBool() ? new ArrayList<LblT>(reader).ToArray() : null;
             mNormalize = reader.ReadBool();
+            mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }
     }
 }

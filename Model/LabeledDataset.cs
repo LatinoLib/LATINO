@@ -53,9 +53,7 @@ namespace Latino.Model
 
         public void Add(LblT label, ExT example)
         {
-            Utils.ThrowException(label == null ? new ArgumentNullException("label") : null); 
-            Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            mItems.Add(new LabeledExample<LblT, ExT>(label, example));
+            mItems.Add(new LabeledExample<LblT, ExT>(label, example)); // throws ArgumentNullException
         }
 
         public void Add(LabeledExample<LblT, ExT> labeledExample)
@@ -197,6 +195,11 @@ namespace Latino.Model
                 throw new ArgumentNotSupportedException("newExType");
             }
             return newDataset;
+        }
+
+        public UnlabeledDataset<ExT> ToUnlabeledDataset()
+        {
+            return ModelUtils.ConvertToUnlabeledDataset<LblT, ExT>(this);
         }
 
         // *** IUnlabeledExampleCollection<ExT> interface implementation ***

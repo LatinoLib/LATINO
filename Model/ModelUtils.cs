@@ -143,6 +143,8 @@ namespace Latino.Model
 
         public static Prediction<LblT> ClassifyGroup<LblT, ExT>(IEnumerable<ExT> examples, IModel<LblT, ExT> model, GroupClassifyMethod method, IEqualityComparer<LblT> lblCmp)
         {
+            Utils.ThrowException(examples == null ? new ArgumentNullException("examples") : null);
+            Utils.ThrowException(model == null ? new ArgumentNullException("model") : null);
             Dictionary<LblT, double> tmp = new Dictionary<LblT, double>(lblCmp);
             foreach (ExT example in examples)
             {
@@ -253,6 +255,7 @@ namespace Latino.Model
         public static SparseVector<double> ComputeCentroid(IEnumerable<int> vecIdxList, IUnlabeledExampleCollection<SparseVector<double>> dataset, CentroidType type)
         {
             Utils.ThrowException(vecIdxList == null ? new ArgumentNullException("vecIdxList") : null);
+            Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
             int vecCount = 0;
             foreach (int vecIdx in vecIdxList)
@@ -372,7 +375,7 @@ namespace Latino.Model
         public static SparseMatrix<double> GetTransposedMatrix(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
+            //if (dataset.Count == 0) { return new SparseMatrix<double>(); }
             SparseMatrix<double> trMtx = new SparseMatrix<double>();
             int rowIdx = 0;
             foreach (SparseVector<double> item in dataset)
@@ -394,8 +397,9 @@ namespace Latino.Model
             return trMtx;
         }
 
-        public static IUnlabeledExampleCollection<ExT> ConvertToUnlabeledDataset<LblT, ExT>(ILabeledExampleCollection<LblT, ExT> dataset)
+        public static UnlabeledDataset<ExT> ConvertToUnlabeledDataset<LblT, ExT>(ILabeledExampleCollection<LblT, ExT> dataset)
         {
+            Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             UnlabeledDataset<ExT> unlabeledDataset = new UnlabeledDataset<ExT>();
             foreach (LabeledExample<LblT, ExT> labeledExample in dataset)
             {
@@ -462,10 +466,10 @@ namespace Latino.Model
         }
 
         public static double[] GetDotProductSimilarity(SparseMatrix<double>.ReadOnly trMtx, int datasetCount, SparseVector<double>.ReadOnly vec)
-        {
-            // TODO: exceptions on dataset count (?)
+        {            
             Utils.ThrowException(trMtx == null ? new ArgumentNullException("trMtx") : null);
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
+            Utils.ThrowException(datasetCount < 0 ? new ArgumentOutOfRangeException("datasetCount") : null);
             double[] simVec = new double[datasetCount];
             GetDotProductSimilarity(vec, simVec, trMtx, /*startIdx=*/0);
             return simVec;
@@ -473,9 +477,8 @@ namespace Latino.Model
 
         public static SparseVector<double> GetDotProductSimilarity(SparseMatrix<double>.ReadOnly trMtx, int datasetCount, SparseVector<double>.ReadOnly vec, double thresh)
         {
-            // TODO: exceptions on dataset count (?)
             Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
-            double[] simVec = GetDotProductSimilarity(trMtx, datasetCount, vec); // throws ArgumentNullException
+            double[] simVec = GetDotProductSimilarity(trMtx, datasetCount, vec); // throws ArgumentNullException, ArgumentOutOfRangeException
             SparseVector<double> sparseVec = new SparseVector<double>();
             for (int i = 0; i < simVec.Length; i++)
             {

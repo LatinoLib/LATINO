@@ -28,13 +28,23 @@ namespace Latino.Model
             = 1;
         private int mK;
         
-        private static Logger mLogger
+        private Logger mLogger
             = Logger.GetLogger(typeof(KMeans));
 
         public KMeans(int k)
         {
             Utils.ThrowException(k < 2 ? new ArgumentOutOfRangeException("k") : null);
             mK = k;
+        }
+
+        public Logger Logger
+        {
+            get { return mLogger; }
+            set
+            {
+                Utils.ThrowException(value == null ? new ArgumentNullException("Logger") : null);
+                mLogger = value;
+            }
         }
 
         public Random Random

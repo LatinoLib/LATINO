@@ -25,24 +25,22 @@ namespace Latino.Model
     */
     public class MajorityClassifier<LblT, ExT> : IModel<LblT, ExT>
     {
-        private IEqualityComparer<LblT> mLblCmp
-            = null;
+        private IEqualityComparer<LblT> mLblCmp;
         private Prediction<LblT> mPrediction
             = null;
 
-        public MajorityClassifier()
+        public MajorityClassifier(IEqualityComparer<LblT> lblCmp)
+        {
+            mLblCmp = lblCmp;
+        }
+
+        public MajorityClassifier() : this((IEqualityComparer<LblT>)null)
         {
         }
 
         public MajorityClassifier(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
-        }
-
-        public IEqualityComparer<LblT> LabelEqualityComparer
-        {
-            get { return mLblCmp; }
-            set { mLblCmp = value; }
         }
 
         // *** IModel<LblT, ExT> interface implementation ***
@@ -61,18 +59,10 @@ namespace Latino.Model
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);            
-            Dictionary<LblT, int> counter = new Dictionary<LblT, int>(mLblCmp);
+            MultiSet<LblT> counter = new MultiSet<LblT>(mLblCmp);
             foreach (LabeledExample<LblT, ExT> lblEx in dataset)
             {
-                int count;
-                if (counter.TryGetValue(lblEx.Label, out count))
-                {
-                    counter[lblEx.Label] = count + 1;
-                }
-                else
-                {
-                    counter.Add(lblEx.Label, 1);
-                }
+                counter.Add(lblEx.Label);
             }
             mPrediction = new Prediction<LblT>();
             foreach (KeyValuePair<LblT, int> keyVal in counter)

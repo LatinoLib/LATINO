@@ -39,14 +39,33 @@ namespace Latino.Model
             = null;
         private bool mNormalize
             = false;
+        private IEqualityComparer<LblT> mLblCmp;
 
-        public MaximumEntropyClassifierFast()
+        private Logger mLogger
+            = Logger.GetLogger(typeof(MaximumEntropyClassifierFast<LblT>));
+
+        public MaximumEntropyClassifierFast(IEqualityComparer<LblT> lblCmp)
         {
+            mLblCmp = lblCmp;
+        }
+
+        public MaximumEntropyClassifierFast() : this((IEqualityComparer<LblT>)null)
+        { 
         }
 
         public MaximumEntropyClassifierFast(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
+        }
+
+        public Logger Logger
+        {
+            get { return mLogger; }
+            set
+            {
+                Utils.ThrowException(value == null ? new ArgumentNullException("Logger") : null);
+                mLogger = value;
+            }
         }
 
         public bool MoveData
@@ -108,7 +127,8 @@ namespace Latino.Model
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
             mLambda = null; // allow GC to collect this
-            SparseMatrix<double> lambda = MaxEnt.Gis(dataset, mCutOff, mNumIter, mMoveData, /*mtxFileName=*/null, ref mIdxToLbl, mNumThreads, /*allowedDiff=*/0); // *** allowedDiff
+            SparseMatrix<double> lambda 
+                = MaxEnt.Gis(dataset, mCutOff, mNumIter, mMoveData, /*mtxFileName=*/null, ref mIdxToLbl, mNumThreads, /*allowedDiff=*/0, mLblCmp, mLogger); // *** allowedDiff
             mLambda = MaxEnt.PrepareForFastPrediction(lambda);
         }
 
@@ -149,14 +169,13 @@ namespace Latino.Model
                 foreach (Dictionary<int, double> dict in mLambda)
                 {
                     writer.WriteBool(dict != null);
-                    if (dict != null)
-                    {
-                        Utils.SaveDictionary<int, double>(dict, writer);
-                    }
+                    if (dict != null) { Utils.SaveDictionary<int, double>(dict, writer); }
                 }
             }
-            new ArrayList<LblT>(mIdxToLbl).Save(writer);
+            writer.WriteBool(mIdxToLbl != null);
+            if (mIdxToLbl != null) { new ArrayList<LblT>(mIdxToLbl).Save(writer); }
             writer.WriteBool(mNormalize);
+            writer.WriteObject(mLblCmp);
         }
 
         public void Load(BinarySerializer reader)
@@ -167,24 +186,19 @@ namespace Latino.Model
             mNumIter = reader.ReadInt();
             mCutOff = reader.ReadInt();
             mNumThreads = reader.ReadInt();
+            mLambda = null;
             int len = reader.ReadInt();
             if (len != -1)
             {
                 mLambda = new Dictionary<int, double>[len];
                 for (int i = 0; i < len; i++)
                 {
-                    if (reader.ReadBool())
-                    {
-                        mLambda[i] = Utils.LoadDictionary<int, double>(reader);
-                    }
+                    if (reader.ReadBool()) { mLambda[i] = Utils.LoadDictionary<int, double>(reader); }
                 }
             }
-            else
-            {  
-                mLambda = null;
-            }
-            mIdxToLbl = new ArrayList<LblT>(reader).ToArray();
+            mIdxToLbl = reader.ReadBool() ? new ArrayList<LblT>(reader).ToArray() : null;
             mNormalize = reader.ReadBool();
+            mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }
     }
 }

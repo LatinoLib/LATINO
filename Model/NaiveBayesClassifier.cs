@@ -37,16 +37,42 @@ namespace Latino.Model
             = -1;
         private bool mNormalize
             = false;
+        private bool mLogSumExpTrick
+            = true;
+        private IEqualityComparer<LblT> mLblCmp;
 
-        private static Logger mLogger
+        private Logger mLogger
             = Logger.GetLogger(typeof(NaiveBayesClassifier<LblT>));
 
-        private static Dictionary<int, double>[] PrecomputeProbabilities(ILabeledExampleCollection<LblT, BinaryVector> dataset, 
-            out LblT[] idxToLbl, out Dictionary<int, double> featurePriors, out int[] exampleCount)
+        public NaiveBayesClassifier(IEqualityComparer<LblT> lblCmp)
         {
-            featurePriors = new Dictionary<int, double>();
+            mLblCmp = lblCmp;
+        }
+
+        public NaiveBayesClassifier() : this((IEqualityComparer<LblT>)null)
+        { 
+        }
+
+        public NaiveBayesClassifier(BinarySerializer reader)
+        {
+            Load(reader); // throws ArgumentNullException, serialization-related exceptions
+        }
+
+        public Logger Logger
+        {
+            get { return mLogger; }
+            set
+            {
+                Utils.ThrowException(value == null ? new ArgumentNullException("Logger") : null);
+                mLogger = value;
+            }
+        }
+
+        private void PrecomputeProbabilities(ILabeledExampleCollection<LblT, BinaryVector> dataset)
+        {
+            mFeaturePriors = new Dictionary<int, double>();
             ArrayList<LblT> tmp = new ArrayList<LblT>();
-            Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>();
+            Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>(mLblCmp);
             foreach (LabeledExample<LblT, BinaryVector> labeledExample in dataset)
             {
                 if (!lblToIdx.ContainsKey(labeledExample.Label))
@@ -56,55 +82,46 @@ namespace Latino.Model
                 }
             }
             // prepare counters
-            exampleCount = new int[tmp.Count];
-            Dictionary<int, double>[] perClassFeatureProb = new Dictionary<int, double>[tmp.Count];
-            for (int j = 0; j < perClassFeatureProb.Length; j++) { perClassFeatureProb[j] = new Dictionary<int, double>(); }
-            Dictionary<int, int> featureCounter = new Dictionary<int, int>();
+            mExampleCount = new int[tmp.Count];
+            mFeatureProb = new Dictionary<int, double>[tmp.Count];
+            for (int j = 0; j < mFeatureProb.Length; j++) { mFeatureProb[j] = new Dictionary<int, double>(); }
+            MultiSet<int> featureCounter = new MultiSet<int>();
             // count features
             int i = 0;
             object id = new object();
             foreach (LabeledExample<LblT, BinaryVector> labeledExample in dataset)
             {
-                mLogger.ProgressFast(id, "PrecomputeProbabilities", "{0} / {1}", ++i, dataset.Count);
+                mLogger.ProgressFast(Logger.Level.Debug, id, "PrecomputeProbabilities", "Processing example {0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
-                exampleCount[lblIdx]++;
+                mExampleCount[lblIdx]++;
                 double val;
-                int valInt;
                 foreach (int idx in labeledExample.Example)
                 {
-                    if (featureCounter.TryGetValue(idx, out valInt))
+                    featureCounter.Add(idx);
+                    if (mFeatureProb[lblIdx].TryGetValue(idx, out val))
                     {
-                        featureCounter[idx] = valInt + 1;
+                        mFeatureProb[lblIdx][idx] = val + 1;
                     }
                     else
                     {
-                        featureCounter.Add(idx, 1);
-                    }
-                    if (perClassFeatureProb[lblIdx].TryGetValue(idx, out val))
-                    {
-                        perClassFeatureProb[lblIdx][idx] = val + 1;
-                    }
-                    else
-                    {
-                        perClassFeatureProb[lblIdx].Add(idx, 1);
+                        mFeatureProb[lblIdx].Add(idx, 1);
                     }
                 }
             }
             // estimate probabilities
             i = 0;
-            foreach (Dictionary<int, double> probVec in perClassFeatureProb)
+            foreach (Dictionary<int, double> probVec in mFeatureProb)
             {
                 foreach (int featIdx in new ArrayList<int>(probVec.Keys))
                 {
-                    double p0 = ((double)featureCounter[featIdx] + 1.0) / ((double)dataset.Count + 2.0); // rule of succession (feature prior)
-                    double p = (probVec[featIdx] + 2.0 * p0) / ((double)exampleCount[i] + 2.0); // m-estimate (m = 2)
+                    double p0 = ((double)featureCounter.GetCount(featIdx) + 1.0) / ((double)dataset.Count + 2.0); // rule of succession (feature prior)
+                    double p = (probVec[featIdx] + 2.0 * p0) / ((double)mExampleCount[i] + 2.0); // m-estimate (m = 2)
                     probVec[featIdx] = p;
-                    if (!featurePriors.ContainsKey(featIdx)) { featurePriors.Add(featIdx, p0); }
+                    if (!mFeaturePriors.ContainsKey(featIdx)) { mFeaturePriors.Add(featIdx, p0); }
                 }
                 i++;
             }
-            idxToLbl = tmp.ToArray();
-            return perClassFeatureProb;
+            mIdxToLbl = tmp.ToArray();
         }
 
         public bool Normalize
@@ -113,33 +130,79 @@ namespace Latino.Model
             set { mNormalize = value; }
         }
 
-        // *** IModel<LblT,ReadOnly> interface implementation ***
+        public bool LogSumExpTrick
+        {
+            get { return mLogSumExpTrick; }
+            set { mLogSumExpTrick = value; }
+        }
+
+        // *** IModel<LblT, ReadOnly> interface implementation ***
+
+        public Type RequiredExampleType
+        {
+            get { return typeof(BinaryVector); }
+        }
+
+        public bool IsTrained
+        {
+            get { return mFeatureProb != null; }
+        }
 
         public void Train(ILabeledExampleCollection<LblT, BinaryVector> dataset)
         {
-            mFeatureProb = PrecomputeProbabilities(dataset, out mIdxToLbl, out mFeaturePriors, out mExampleCount);
+            Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
+            Utils.ThrowException(dataset.Count == 0 ? new ArgumentValueException("dataset") : null);
+            PrecomputeProbabilities(dataset);
             mDatasetCount = dataset.Count;
+        }
+
+        void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
+        {
+            Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
+            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, BinaryVector>) ? new ArgumentTypeException("dataset") : null);
+            Train((ILabeledExampleCollection<LblT, BinaryVector>)dataset); // throws ArgumentValueException
         }
 
         public Prediction<LblT> Predict(BinaryVector example)
         {
+            Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Prediction<LblT> pred = new Prediction<LblT>();
             double sum = 0;
             for (int i = 0; i < mIdxToLbl.Length; i++)
             {
-                //Console.WriteLine("Predicting for {0}", mIdxToLbl[i]);
-                double pc = ((double)mExampleCount[i] + 2.0 / (double)mIdxToLbl.Length) / ((double)mDatasetCount + 2.0); // class prior probability estimate
-                foreach (int featIdx in example)
+                double pc;
+                if (!mLogSumExpTrick)
                 {
-                    double pFeat;
-                    if (mFeatureProb[i].TryGetValue(featIdx, out pFeat))
+                    pc = ((double)mExampleCount[i] + 2.0 / (double)mIdxToLbl.Length) / ((double)mDatasetCount + 2.0); // class prior probability estimate
+                    foreach (int featIdx in example)
                     {
-                        pc *= pFeat;
+                        double pFeat;
+                        if (mFeatureProb[i].TryGetValue(featIdx, out pFeat))
+                        {
+                            pc *= pFeat;
+                        }
+                        else if (mFeaturePriors.TryGetValue(featIdx, out pFeat))
+                        {
+                            pc *= 2.0 * pFeat / ((double)mExampleCount[i] + 2.0); // m-estimate (m = 2, feature count = 0)
+                        }
                     }
-                    else if (mFeaturePriors.TryGetValue(featIdx, out pFeat))
+                }
+                else // log-sum-exp trick (slower but prevents underflowing)
+                {
+                    pc = Math.Log(((double)mExampleCount[i] + 2.0 / (double)mIdxToLbl.Length) / ((double)mDatasetCount + 2.0));
+                    foreach (int featIdx in example)
                     {
-                        pc *= 2.0 * pFeat / ((double)mExampleCount[i] + 2.0);
+                        double pFeat;
+                        if (mFeatureProb[i].TryGetValue(featIdx, out pFeat))
+                        {
+                            pc += Math.Log(pFeat);
+                        }
+                        else if (mFeaturePriors.TryGetValue(featIdx, out pFeat))
+                        {
+                            pc += Math.Log(2.0 * pFeat / ((double)mExampleCount[i] + 2.0));
+                        }
                     }
+                    pc = Math.Exp(pc);                    
                 }
                 pred.Inner.Add(new KeyDat<double, LblT>(pc, mIdxToLbl[i]));
                 sum += pc;
@@ -156,35 +219,62 @@ namespace Latino.Model
             return pred;
         }
 
-        public Type RequiredExampleType
-        {
-            get { return typeof(BinaryVector); }
-        }
-
-        public bool IsTrained
-        {
-            get { return mFeatureProb != null; }
-        }
-
-        void IModel<LblT>.Train(ILabeledExampleCollection<LblT> dataset)
-        {
-            Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, BinaryVector>) ? new ArgumentTypeException("dataset") : null);
-            Train((ILabeledExampleCollection<LblT, BinaryVector>)dataset); // throws ... ?
-        }
-
         Prediction<LblT> IModel<LblT>.Predict(object example)
         {
             Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
             Utils.ThrowException(!(example is BinaryVector) ? new ArgumentTypeException("example") : null);
-            return Predict((BinaryVector)example); // throws ... ?
+            return Predict((BinaryVector)example); 
         }
 
         // *** ISerializable interface implementation ***
 
         public void Save(BinarySerializer writer)
         {
-            // ...
+            Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
+            // the following statements throw serialization-related exceptions
+            writer.WriteBool(IsTrained);
+            if (IsTrained)
+            {
+                writer.WriteInt(mFeatureProb.Length);
+                foreach (Dictionary<int, double> dict in mFeatureProb) { Utils.SaveDictionary<int, double>(dict, writer); }
+                writer.WriteInt(mIdxToLbl.Length);
+                foreach (LblT lbl in mIdxToLbl) { writer.WriteObject(lbl); }
+                Utils.SaveDictionary<int, double>(mFeaturePriors, writer);
+                new ArrayList<int>(mExampleCount).Save(writer);
+            }
+            writer.WriteInt(mDatasetCount);
+            writer.WriteBool(mNormalize);
+            writer.WriteBool(mLogSumExpTrick);
+            writer.WriteObject(mLblCmp);
+        }
+
+        public void Load(BinarySerializer reader)
+        {
+            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            // the following statements throw serialization-related exceptions
+            bool isTrained = reader.ReadBool();
+            if (isTrained)
+            {
+                int len = reader.ReadInt();
+                mFeatureProb = new Dictionary<int, double>[len];
+                for (int i = 0; i < len; i++) { mFeatureProb[i] = Utils.LoadDictionary<int, double>(reader); }
+                len = reader.ReadInt();
+                mIdxToLbl = new LblT[len];
+                for (int i = 0; i < len; i++) { mIdxToLbl[i] = reader.ReadObject<LblT>(); }
+                mFeaturePriors = Utils.LoadDictionary<int, double>(reader);
+                mExampleCount = new ArrayList<int>(reader).ToArray();
+            }
+            else
+            {
+                mFeatureProb = null;
+                mIdxToLbl = null;
+                mFeaturePriors = null;
+                mExampleCount = null;
+            }
+            mDatasetCount = reader.ReadInt();
+            mNormalize = reader.ReadBool();
+            mLogSumExpTrick = reader.ReadBool();
+            mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }
     }
 }
