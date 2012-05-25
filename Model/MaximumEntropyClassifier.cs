@@ -162,8 +162,7 @@ namespace Latino.Model
             writer.WriteInt(mCutOff);
             writer.WriteInt(mNumThreads);
             writer.WriteObject(mLambda);
-            writer.WriteBool(mIdxToLbl != null);
-            if (mIdxToLbl != null) { new ArrayList<LblT>(mIdxToLbl).Save(writer); }
+            if (mLambda != null) { new ArrayList<LblT>(mIdxToLbl).Save(writer); }
             writer.WriteBool(mNormalize);
             writer.WriteObject(mLblCmp);
         }
@@ -177,7 +176,7 @@ namespace Latino.Model
             mCutOff = reader.ReadInt();
             mNumThreads = reader.ReadInt();
             mLambda = reader.ReadObject<SparseMatrix<double>>();
-            mIdxToLbl = reader.ReadBool() ? new ArrayList<LblT>(reader).ToArray() : null;
+            mIdxToLbl = (mLambda != null) ? new ArrayList<LblT>(reader).ToArray() : null;
             mNormalize = reader.ReadBool();
             mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }

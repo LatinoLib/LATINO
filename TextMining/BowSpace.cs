@@ -419,7 +419,7 @@ namespace Latino.TextMining
                 foreach (string document in documents)
                 {
                     docCount++;
-                    mLogger.ProgressFast(this, "Initialize", "Document {0} ...", docCount, /*numSteps=n*/-1);
+                    mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=n*/-1);
                     Set<string> docWords = new Set<string>();
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                     mTokenizer.Text = document;
@@ -454,7 +454,7 @@ namespace Latino.TextMining
                         ProcessNGramsPass1(nGrams, i, docWords);
                     }
                 }
-                mLogger.ProgressFast(this, "Initialize", "Document {0} ...", docCount, docCount);
+                mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, docCount);
             }
             else // large-scale mode (needs less memory, slower)
             {
@@ -465,7 +465,7 @@ namespace Latino.TextMining
                     foreach (string document in documents)
                     {
                         docCount++;
-                        mLogger.ProgressFast(this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
+                        mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                         ArrayList<WordStem> nGrams = new ArrayList<WordStem>(n);
                         Set<string> docWords = new Set<string>();
                         mTokenizer.Text = document;
@@ -540,7 +540,7 @@ namespace Latino.TextMining
                             }
                         }
                     }
-                    mLogger.ProgressFast(this, "Initialize", "Document {0} ...", docCount, docCount);
+                    mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, docCount);
                 }
             }            
             // remove unfrequent words and n-grams, precompute IDF      
@@ -576,7 +576,7 @@ namespace Latino.TextMining
             int docNum = 1;
             foreach (string document in documents)
             {
-                mLogger.ProgressFast(this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
+                mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 mTokenizer.Text = document;

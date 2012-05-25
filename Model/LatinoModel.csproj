@@ -70,13 +70,18 @@
     <Compile Include="BatchUpdateCentroidClassifier.cs" />
     <Compile Include="CentroidClassifier.cs" />
     <Compile Include="CentroidData.cs" />
+    <Compile Include="Cluster.cs" />
+    <Compile Include="ClusteringResult.cs" />
     <Compile Include="CosineSimilarity.cs" />
     <Compile Include="DotProductSimilarity.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="IClustering.cs" />
     <Compile Include="ISimilarity.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="KMeans.cs" />
+    <Compile Include="KMeansFast.cs" />
     <Compile Include="KnnClassifier.cs" />
     <Compile Include="KnnClassifierFast.cs" />
     <Compile Include="MajorityClassifier.cs" />

@@ -172,8 +172,7 @@ namespace Latino.Model
                     if (dict != null) { Utils.SaveDictionary<int, double>(dict, writer); }
                 }
             }
-            writer.WriteBool(mIdxToLbl != null);
-            if (mIdxToLbl != null) { new ArrayList<LblT>(mIdxToLbl).Save(writer); }
+            if (mLambda != null) { new ArrayList<LblT>(mIdxToLbl).Save(writer); }
             writer.WriteBool(mNormalize);
             writer.WriteObject(mLblCmp);
         }
@@ -196,7 +195,7 @@ namespace Latino.Model
                     if (reader.ReadBool()) { mLambda[i] = Utils.LoadDictionary<int, double>(reader); }
                 }
             }
-            mIdxToLbl = reader.ReadBool() ? new ArrayList<LblT>(reader).ToArray() : null;
+            mIdxToLbl = (mLambda != null) ? new ArrayList<LblT>(reader).ToArray() : null;
             mNormalize = reader.ReadBool();
             mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
         }

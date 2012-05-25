@@ -7,6 +7,8 @@
  *  Created: Aug-2009
  *
  *  Author:  Miha Grcar 
+ * 
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt) 
  *
  ***************************************************************************/
 
@@ -79,7 +81,7 @@ namespace Latino.Model
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             LabeledDataset<Cluster, ExT> classificationDataset = new LabeledDataset<Cluster, ExT>();
-            FillClassificationDataset(mRoots, dataset, classificationDataset);
+            FillClassificationDataset(mRoots, dataset, classificationDataset); // throws ArgumentValueException
             return classificationDataset;
         }
 

@@ -7,6 +7,8 @@
  *  Created: Aug-2009
  *
  *  Author:  Miha Grcar 
+ * 
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt) 
  *
  ***************************************************************************/
 
@@ -14,6 +16,12 @@ using System;
 
 namespace Latino.Model
 {
+    /* .-----------------------------------------------------------------------
+       |
+       |  Class KMeans
+       |
+       '-----------------------------------------------------------------------
+    */
     public class KMeans : IClustering<SparseVector<double>> 
     {        
         private ISimilarity<SparseVector<double>> mSimilarity
@@ -138,7 +146,6 @@ namespace Latino.Model
                         }
                     }
                     simAvg /= (double)(mK * mK - mK);
-                    //Console.WriteLine(simAvg);
                     if (simAvg < minSim)
                     {
                         minSim = simAvg;

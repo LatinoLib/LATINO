@@ -7,6 +7,8 @@
  *  Created: Aug-2009
  *
  *  Author:  Miha Grcar 
+ * 
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt)
  *
  ***************************************************************************/
 
@@ -14,15 +16,21 @@ using System;
 
 namespace Latino.Model
 {
+    /* .-----------------------------------------------------------------------
+       |
+       |  Class KMeansFast
+       |
+       '-----------------------------------------------------------------------
+    */
     public class KMeansFast : IClustering<SparseVector<double>> 
-    {
-        private int mK;
+    {        
         private Random mRnd
             = new Random();
         private double mEps
             = 0.0005;
         private int mTrials
             = 1;
+        private int mK;
 
         private Logger mLogger
             = Logger.GetLogger(typeof(KMeansFast));
@@ -120,7 +128,6 @@ namespace Latino.Model
                         }
                     }
                     simAvg /= (double)(mK * mK - mK);
-                    //Console.WriteLine(simAvg);
                     if (simAvg < minSim)
                     {
                         minSim = simAvg;

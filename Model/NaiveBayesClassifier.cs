@@ -88,10 +88,9 @@ namespace Latino.Model
             MultiSet<int> featureCounter = new MultiSet<int>();
             // count features
             int i = 0;
-            object id = new object();
             foreach (LabeledExample<LblT, BinaryVector> labeledExample in dataset)
             {
-                mLogger.ProgressFast(Logger.Level.Debug, id, "PrecomputeProbabilities", "Processing example {0} / {1}", ++i, dataset.Count);
+                mLogger.ProgressFast(Logger.Level.Debug, /*sender=*/this, "PrecomputeProbabilities", "Processing example {0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
                 mExampleCount[lblIdx]++;
                 double val;

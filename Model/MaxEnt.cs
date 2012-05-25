@@ -44,10 +44,9 @@ namespace Latino.Model
             for (int j = 0; j < counter.Length; j++) { counter[j] = new MultiSet<int>(); }
             // count features
             int i = 0;
-            object id = new object();
             foreach (LabeledExample<LblT, BinaryVector> labeledExample in dataset)
             {
-                logger.ProgressFast(id, "CreateObservationMatrix", "{0} / {1}", ++i, dataset.Count);
+                logger.ProgressFast(Logger.Level.Info, "CreateObservationMatrix", "{0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
                 foreach (int idx in labeledExample.Example)
                 {
@@ -216,12 +215,11 @@ namespace Latino.Model
                 threads[i] = new Thread(new ParameterizedThreadStart(UpdateExpectationMatrixPass1));
                 threads[i].Start(new object[] { trainMtxTr, aux, mtx, progressInfo[i], idx });
             }
-            object id = new object();
             while (true)
             {
                 int aggrProgress = 0;
                 foreach (Ref<int> progress in progressInfo) { aggrProgress += progress; }
-                logger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 1: {0} / {1}", aggrProgress, lambdaRowCount);
+                logger.ProgressNormal(Logger.Level.Info, "UpdateExpectationMatrix", "Pass 1: {0} / {1}", aggrProgress, lambdaRowCount);
                 if (aggrProgress == lambdaRowCount) { break; }
                 Thread.Sleep(1);               
             }
@@ -251,7 +249,7 @@ namespace Latino.Model
             {
                 int aggrProgress = 0;
                 foreach (Ref<int> progress in progressInfo) { aggrProgress += progress; }
-                logger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 2: {0} / {1}", aggrProgress, expeRowCount);
+                logger.ProgressNormal(Logger.Level.Info, "UpdateExpectationMatrix", "Pass 2: {0} / {1}", aggrProgress, expeRowCount);
                 if (aggrProgress == expeRowCount) { break; }
                 Thread.Sleep(1);
             }
@@ -262,10 +260,9 @@ namespace Latino.Model
             double[][] mtx = new double[numClasses][];
             for (int j = 0; j < numClasses; j++) { mtx[j] = new double[trainSetSize]; }
             double[] z = new double[trainSetSize];
-            object id = new object();
             foreach (IdxDat<SparseVector<double>.ReadOnly> row in lambda)
             {
-                logger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 1: {0} / {1}", row.Idx + 1, lambda.GetLastNonEmptyRowIdx() + 1);
+                logger.ProgressNormal(Logger.Level.Info, "UpdateExpectationMatrix", "Pass 1: {0} / {1}", row.Idx + 1, lambda.GetLastNonEmptyRowIdx() + 1);
                 foreach (IdxDat<double> item in row.Dat)
                 {
                     if (trainMtxTr.ContainsRowAt(item.Idx))
@@ -288,7 +285,7 @@ namespace Latino.Model
             }
             foreach (IdxDat<SparseVector<double>> row in expectations)
             {
-                logger.ProgressNormal(id, "UpdateExpectationMatrix", "Pass 2: {0} / {1}", row.Idx + 1, expectations.GetLastNonEmptyRowIdx() + 1);
+                logger.ProgressNormal(Logger.Level.Info, "UpdateExpectationMatrix", "Pass 2: {0} / {1}", row.Idx + 1, expectations.GetLastNonEmptyRowIdx() + 1);
                 int itemIdx = 0;
                 foreach (IdxDat<double> item in row.Dat)
                 {

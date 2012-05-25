@@ -498,19 +498,19 @@ namespace Latino
             Progress(level, sender == null ? mDefaultProgressSender : sender, /*freq=*/1000, funcName, message, step, numSteps, args); // throws FormatException 
         }
 
-        public void ProgressNormal(object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        public void ProgressNormal(Level level, string funcName, string message, int step, int numSteps, params object[] args)
         {
-            ProgressNormal(Level.Info, sender, funcName, message, step, numSteps, args); // throws ArgumentOutOfRangeException, FormatException 
+            ProgressNormal(level, /*sender=*/this, funcName, message, step, numSteps, args); // throws ArgumentOutOfRangeException, FormatException 
         }
 
-        public void ProgressFast(object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        public void ProgressFast(Level level, string funcName, string message, int step, int numSteps, params object[] args)
         {
-            ProgressFast(Level.Info, sender, funcName, message, step, numSteps, args); // throws ArgumentOutOfRangeException, FormatException 
+            ProgressFast(level, /*sender=*/this, funcName, message, step, numSteps, args); // throws ArgumentOutOfRangeException, FormatException 
         }
 
-        public void ProgressVeryFast(object sender, string funcName, string message, int step, int numSteps, params object[] args)
+        public void ProgressVeryFast(Level level, string funcName, string message, int step, int numSteps, params object[] args)
         {
-            ProgressVeryFast(Level.Info, sender, funcName, message, step, numSteps, args); // throws ArgumentOutOfRangeException, FormatException 
+            ProgressVeryFast(level, /*sender=*/this, funcName, message, step, numSteps, args); // throws ArgumentOutOfRangeException, FormatException 
         }
     }
 }

@@ -3,10 +3,12 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    Cluster.cs
- *  Desc:    Holds information about a cluster
+ *  Desc:    Cluster data structure (contains indices of items)
  *  Created: Aug-2009
  *
  *  Author:  Miha Grcar 
+ * 
+ *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt) 
  *
  ***************************************************************************/
 
