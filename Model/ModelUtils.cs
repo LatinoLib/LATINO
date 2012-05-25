@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    ModelUtils.cs
- *  Desc:    Fundamental ML-related utilities
+ *  Desc:    Fundamental LATINO Model utilities
  *  Created: Aug-2008
  *
  *  Author:  Miha Grcar

@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    ILabeledExampleCollection.cs
- *  Desc:    Interface definition
+ *  Desc:    Labeled example collection interface
  *  Created: Aug-2007
  *
  *  Author:  Miha Grcar

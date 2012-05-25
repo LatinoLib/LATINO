@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    Prediction.cs
- *  Desc:    Prediction (output of ML models)
+ *  Desc:    Prediction data structure (output of predictive models)
  *  Created: Aug-2007
  *
  *  Author:  Miha Grcar

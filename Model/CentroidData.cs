@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    CentroidData.cs
- *  Desc:    Centroid data structure (used for speed optimizations)
+ *  Desc:    Centroid data structure (internal; used for speed optimizations)
  *  Created: May-2009
  *
  *  Author:  Miha Grcar

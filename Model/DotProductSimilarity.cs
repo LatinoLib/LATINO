@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    DotProductSimilarity.cs
- *  Desc:    Similarity implementation
+ *  Desc:    Dot product similarity measure
  *  Created: Dec-2008
  *
  *  Authors: Miha Grcar, Matjaz Jursic

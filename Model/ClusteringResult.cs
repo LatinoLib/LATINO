@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://www.latinolib.org
  *
- *  File:    Cluster.cs
+ *  File:    ClusteringResult.cs
  *  Desc:    Custering result (output of clustering algorithms)
  *  Created: Aug-2009
  *

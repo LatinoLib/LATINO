@@ -90,7 +90,7 @@ namespace Latino.Model
             int i = 0;
             foreach (LabeledExample<LblT, BinaryVector> labeledExample in dataset)
             {
-                mLogger.ProgressFast(Logger.Level.Debug, /*sender=*/this, "PrecomputeProbabilities", "Processing example {0} / {1}", ++i, dataset.Count);
+                mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "PrecomputeProbabilities", "Processing example {0} / {1}", ++i, dataset.Count);
                 int lblIdx = lblToIdx[labeledExample.Label];
                 mExampleCount[lblIdx]++;
                 double val;
