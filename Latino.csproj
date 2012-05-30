@@ -57,6 +57,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Misc\StopWatch.cs" />
     <Compile Include="Model\CentroidData.cs" />
+    <Compile Include="Model\HierarchicalBisectingClusteringFast.cs" />
     <Compile Include="Model\SvmBinary.cs" />
     <Compile Include="Model\MajorityClassifier.cs" />
     <Compile Include="Model\MaximumEntropyClassifierFast.cs" />
@@ -126,11 +127,11 @@
     <Compile Include="ICloneable.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Model\IHierarchicalModel.cs" />
-    <Compile Include="Experimental\Model\HierarchicalCentroidClassifier.cs" />
+    <None Include="Experimental\Model\HierarchicalCentroidClassifier.cs" />
     <Compile Include="Model\UnlabeledDataset.cs" />
     <Compile Include="Model\IUnlabeledDataset.cs" />
     <Compile Include="Model\IUnlabeledExampleCollection.cs" />
-    <Compile Include="Experimental\Model\IncrementalKMeans.cs" />
+    <None Include="Experimental\Model\IncrementalKMeans.cs" />
     <Compile Include="Model\FuzzyKMeans.cs" />
     <Compile Include="Model\IDistance.cs" />
     <Compile Include="Model\IClustering.cs" />
@@ -158,8 +159,8 @@
     <Compile Include="Model\ClusteringResult.cs" />
     <Compile Include="Model\CosineSimilarity.cs" />
     <Compile Include="Model\LabeledDataset.cs" />
-    <Compile Include="Model\KMeans.cs" />
-    <Compile Include="Model\KMeansFast.cs" />
+    <Compile Include="Model\KMeansClustering.cs" />
+    <Compile Include="Model\KMeansClusteringFast.cs" />
     <Compile Include="Model\KnnClassifier.cs" />
     <Compile Include="Model\LabeledExample.cs" />
     <Compile Include="Model\LSqrDotNet.cs" />
@@ -210,7 +211,7 @@
     <Compile Include="TextMining\LemmaSharp\RuleList.cs" />
     <Compile Include="TextMining\LemmaSharp\RuleWeighted.cs" />
     <Compile Include="TextMining\StopWords\SpanishStopWords.cs" />
-    <Compile Include="Experimental\Visualization\IncrementalSemanticSpaceLayout.cs" />
+    <None Include="Experimental\Visualization\IncrementalSemanticSpaceLayout.cs" />
     <Compile Include="Visualization\LayoutSettings.cs" />
     <Compile Include="Visualization\LayoutIndex.cs" />
     <Compile Include="Visualization\BoundingArea.cs" />
@@ -294,7 +295,7 @@
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Slovene.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Spanish.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Swedish.ldp" />
-	<EmbeddedResource Include="TextMining\Resources\CharRanges.txt" />
+    <EmbeddedResource Include="TextMining\Resources\CharRanges.txt" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-m-en.lem" />

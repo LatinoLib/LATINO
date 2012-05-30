@@ -26,7 +26,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;THROW_EXCEPTIONS</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
@@ -35,27 +35,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Lib Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Lib Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Lib Release|AnyCPU' ">
-    <OutputPath>bin\Lib Release\</OutputPath>
-    <DefineConstants>TRACE;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
+    <DefineConstants>TRACE;THROW_EXCEPTIONS</DefineConstants>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -73,27 +53,19 @@
     <Compile Include="Cluster.cs" />
     <Compile Include="ClusteringResult.cs" />
     <Compile Include="CosineSimilarity.cs" />
-    <Compile Include="DotProductSimilarity.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="DotProductSimilarity.cs" />
     <Compile Include="IClustering.cs" />
-    <Compile Include="ISimilarity.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="KMeans.cs" />
-    <Compile Include="KMeansFast.cs" />
+    <Compile Include="ISimilarity.cs" />
+    <Compile Include="KMeansClustering.cs" />
+    <Compile Include="KMeansClusteringFast.cs" />
     <Compile Include="KnnClassifier.cs" />
     <Compile Include="KnnClassifierFast.cs" />
     <Compile Include="MajorityClassifier.cs" />
     <Compile Include="MaximumEntropyClassifier.cs" />
     <Compile Include="MaximumEntropyClassifierFast.cs" />
-    <Compile Include="ModelUtils.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="ModelUtils.cs" />
     <Compile Include="NaiveBayesClassifier.cs" />
-    <Compile Include="Prediction.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Prediction.cs" />
     <Compile Include="UnlabeledDataset.cs" />
     <Compile Include="IUnlabeledDataset.cs" />
     <Compile Include="IUnlabeledExampleCollection.cs" />

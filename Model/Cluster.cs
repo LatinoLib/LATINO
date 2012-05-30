@@ -30,8 +30,10 @@ namespace Latino.Model
             = null;
         private ArrayList<Cluster> mChildren
             = new ArrayList<Cluster>();
-        private Set<int> mItems
-            = new Set<int>();
+        private Set<IdxDat<double>> mItems
+            = new Set<IdxDat<double>>();
+        private object mClusterInfo
+            = null;
 
         public Cluster()
         { 
@@ -74,14 +76,23 @@ namespace Latino.Model
             mChildren.Clear();
         }
 
-        public Set<int> Items
+        public Set<IdxDat<double>> Items
         {
             get { return mItems; }
         }
 
+        public object ClusterInfo
+        {
+            get { return mClusterInfo; }
+            set { mClusterInfo = value; }
+        }
+
         public SparseVector<double> ComputeCentroid(IUnlabeledExampleCollection<SparseVector<double>> dataset, CentroidType type)
         {
-            return ModelUtils.ComputeCentroid(mItems, dataset, type); // throws ArgumentValueException
+            int[] tmp = new int[mItems.Count];
+            int i = 0;
+            foreach (IdxDat<double> item in mItems) { tmp[i++] = item.Idx; }
+            return ModelUtils.ComputeCentroid(tmp, dataset, type); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException
         }
 
         public override string ToString()
@@ -136,6 +147,7 @@ namespace Latino.Model
             writer.WriteObject(mParent);            
             mChildren.Save(writer); // *** this will not work properly if two or more parents share a child cluster
             mItems.Save(writer);
+            writer.WriteObject(mClusterInfo);
         }
 
         public void Load(BinarySerializer reader)
@@ -144,7 +156,8 @@ namespace Latino.Model
             // the following statements throw serialization-related exceptions
             mParent = reader.ReadObject<Cluster>();
             mChildren = new ArrayList<Cluster>(reader);
-            mItems = new Set<int>(reader);
+            mItems = new Set<IdxDat<double>>(reader);
+            mClusterInfo = reader.ReadObject<object>();
         }        
     }
 }

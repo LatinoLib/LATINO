@@ -107,7 +107,7 @@ namespace Latino.Visualization
             UnlabeledDataset<SparseVector<double>> dataset = new UnlabeledDataset<SparseVector<double>>(mDataset);
             // clustering 
             mLogger.Info("ComputeLayout", "Clustering ...");
-            KMeansFast kMeans = new KMeansFast(mKClust);
+            KMeansClusteringFast kMeans = new KMeansClusteringFast(mKClust);
             kMeans.Eps = mKMeansEps;
             kMeans.Random = mRandom;
             kMeans.Trials = 1;
