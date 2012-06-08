@@ -691,6 +691,12 @@ namespace Latino.TextMining
 
         public SparseVector<double> ProcessDocument(string document)
         {
+            return ProcessDocument(document, mStemmer); // throws ArgumentNullException
+        }
+
+        public SparseVector<double> ProcessDocument(string document, IStemmer stemmer)
+        {
+            Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Dictionary<int, int> tfVec = new Dictionary<int, int>();
             ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
             mTokenizer.Text = document;
@@ -699,7 +705,7 @@ namespace Latino.TextMining
                 string word = token.Trim().ToLower();
                 if (mStopWords == null || !mStopWords.Contains(word))
                 {
-                    string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
+                    string stem = stemmer == null ? word : stemmer.GetStem(word).Trim().ToLower();
                     if (nGrams.Count < mMaxNGramLen)
                     {
                         WordStem wordStem = new WordStem();

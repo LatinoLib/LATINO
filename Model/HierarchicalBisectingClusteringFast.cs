@@ -119,9 +119,9 @@ namespace Latino.Model
                 // compute cluster quality
                 UnlabeledDataset<SparseVector<double>> localDataset = GetDatasetSubset(cluster.Items, dataset);
                 SparseVector<double> centroid;
-                double q = GetClusterQuality(localDataset, out centroid);
-                //cluster.ClusterInfo = (q, centroid);
-                if (q < mMinQuality)
+                double quality = GetClusterQuality(localDataset, out centroid);
+                cluster.ClusterInfo = new Pair<SparseVector<double>, double>(centroid, quality);
+                if (quality < mMinQuality)
                 {
                     // split cluster, add children to queue
                     ClusteringResult localResult = mKMeansClustering.Cluster(localDataset);
