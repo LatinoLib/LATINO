@@ -215,7 +215,8 @@ namespace Latino.Model
                 }
                 vecCount++;
             }
-            Utils.ThrowException(vecCount == 0 ? new ArgumentValueException("vecList") : null);
+            //Utils.ThrowException(vecCount == 0 ? new ArgumentValueException("vecList") : null);
+            if (vecCount == 0) { return new SparseVector<double>(); }
             SparseVector<double> centroid = new SparseVector<double>();
             switch (type)
             {
@@ -239,12 +240,15 @@ namespace Latino.Model
                     {
                         vecLen += item.Value * item.Value;
                     }
-                    Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
+                    //Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
                     vecLen = Math.Sqrt(vecLen);
-                    foreach (KeyValuePair<int, double> item in tmp)
+                    if (vecLen > 0)
                     {
-                        centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / vecLen);
+                        foreach (KeyValuePair<int, double> item in tmp)
+                        {
+                            centroid.InnerIdx.Add(item.Key);
+                            centroid.InnerDat.Add(item.Value / vecLen);
+                        }
                     }
                     break;
             }
@@ -275,7 +279,8 @@ namespace Latino.Model
                 }
                 vecCount++;
             }
-            Utils.ThrowException(vecCount == 0 ? new ArgumentValueException("vecIdxList") : null);
+            //Utils.ThrowException(vecCount == 0 ? new ArgumentValueException("vecIdxList") : null);
+            if (vecCount == 0) { return new SparseVector<double>(); }
             SparseVector<double> centroid = new SparseVector<double>();
             switch (type)
             {
@@ -299,12 +304,15 @@ namespace Latino.Model
                     {
                         vecLen += item.Value * item.Value;
                     }
-                    Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
+                    //Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
                     vecLen = Math.Sqrt(vecLen);
-                    foreach (KeyValuePair<int, double> item in tmp)
+                    if (vecLen > 0)
                     {
-                        centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / vecLen);
+                        foreach (KeyValuePair<int, double> item in tmp)
+                        {
+                            centroid.InnerIdx.Add(item.Key);
+                            centroid.InnerDat.Add(item.Value / vecLen);
+                        }
                     }
                     break;
             }
@@ -357,12 +365,15 @@ namespace Latino.Model
                     {
                         vecLen += item.Value * item.Value;
                     }
-                    Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
+                    //Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
                     vecLen = Math.Sqrt(vecLen);
-                    foreach (KeyValuePair<int, double> item in tmp)
+                    if (vecLen > 0)
                     {
-                        centroid.InnerIdx.Add(item.Key);
-                        centroid.InnerDat.Add(item.Value / vecLen);
+                        foreach (KeyValuePair<int, double> item in tmp)
+                        {
+                            centroid.InnerIdx.Add(item.Key);
+                            centroid.InnerDat.Add(item.Value / vecLen);
+                        }
                     }
                     break;
             }

@@ -76,10 +76,10 @@ namespace Latino.Model
             get { return typeof(SparseVector<double>); }
         }
 
-        private UnlabeledDataset<SparseVector<double>> GetDatasetSubset(IEnumerable<IdxDat<double>> items, IUnlabeledExampleCollection<SparseVector<double>> dataset)
+        private UnlabeledDataset<SparseVector<double>> GetDatasetSubset(IEnumerable<int> items, IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             UnlabeledDataset<SparseVector<double>> datasetSubset = new UnlabeledDataset<SparseVector<double>>();
-            foreach (IdxDat<double> item in items) { datasetSubset.Add(dataset[item.Idx]); }
+            foreach (int item in items) { datasetSubset.Add(dataset[item]); }
             return datasetSubset;
         }
 
@@ -107,7 +107,7 @@ namespace Latino.Model
             for (int i = 0; i < dataset.Count; i++)
             {
                 Utils.ThrowException(dataset[i].Count == 0 ? new ArgumentValueException("dataset") : null);
-                root.Items.Add(new IdxDat<double>(i));
+                root.Items.Add(i);
             }
             clusteringResult.AddRoot(root);
             // add root to queue

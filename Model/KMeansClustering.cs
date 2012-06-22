@@ -187,7 +187,7 @@ namespace Latino.Model
                         {
                             candidates.Shuffle(mRnd); 
                         }
-                        clustering.Roots[candidates[0]].Items.Add(new IdxDat<double>(i));
+                        clustering.Roots[candidates[0]].Items.Add(i);
                         clustQual += maxSim;
                     }
                     clustQual /= (double)dataset.Count;

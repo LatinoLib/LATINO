@@ -68,10 +68,10 @@ namespace Latino.Model
         {
             foreach (Cluster cluster in clusters)
             {
-                foreach (IdxDat<double> item in cluster.Items)
+                foreach (int item in cluster.Items)
                 {
-                    Utils.ThrowException(item.Idx < 0 || item.Idx >= dataset.Count ? new ArgumentValueException("clusters") : null);
-                    classificationDataset.Add(cluster, dataset[item.Idx]);
+                    Utils.ThrowException(item < 0 || item >= dataset.Count ? new ArgumentValueException("clusters") : null);
+                    classificationDataset.Add(cluster, dataset[item]);
                 }
                 FillClassificationDataset(cluster.Children, dataset, classificationDataset);
             }

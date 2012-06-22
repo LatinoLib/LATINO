@@ -30,8 +30,8 @@ namespace Latino.Model
             = null;
         private ArrayList<Cluster> mChildren
             = new ArrayList<Cluster>();
-        private Set<IdxDat<double>> mItems
-            = new Set<IdxDat<double>>();
+        private Set<int> mItems
+            = new Set<int>();
         private object mClusterInfo
             = null;
 
@@ -76,7 +76,7 @@ namespace Latino.Model
             mChildren.Clear();
         }
 
-        public Set<IdxDat<double>> Items
+        public Set<int> Items
         {
             get { return mItems; }
         }
@@ -89,10 +89,7 @@ namespace Latino.Model
 
         public SparseVector<double> ComputeCentroid(IUnlabeledExampleCollection<SparseVector<double>> dataset, CentroidType type)
         {
-            int[] tmp = new int[mItems.Count];
-            int i = 0;
-            foreach (IdxDat<double> item in mItems) { tmp[i++] = item.Idx; }
-            return ModelUtils.ComputeCentroid(tmp, dataset, type); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException
+            return ModelUtils.ComputeCentroid(mItems, dataset, type); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException
         }
 
         public override string ToString()
@@ -156,7 +153,7 @@ namespace Latino.Model
             // the following statements throw serialization-related exceptions
             mParent = reader.ReadObject<Cluster>();
             mChildren = new ArrayList<Cluster>(reader);
-            mItems = new Set<IdxDat<double>>(reader);
+            mItems = new Set<int>(reader);
             mClusterInfo = reader.ReadObject<object>();
         }        
     }

@@ -208,7 +208,7 @@ namespace Latino.Model
                     for (int i = 0; i < mK; i++)
                     {
                         clustering.AddRoot(new Cluster());
-                        foreach (int idx in centroids[i].Items) { clustering.Roots.Last.Items.Add(new IdxDat<double>(idx)); }
+                        foreach (int idx in centroids[i].Items) { clustering.Roots.Last.Items.Add(idx); }
                     }
                 }
             }
