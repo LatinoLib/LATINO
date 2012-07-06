@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    SvmLightLib.cs
- *  Desc:	 SVM^light and SVM^multiclass C# wrapper
+ *  Desc:	 SVM Light C# wrapper
  *  Created: Aug-2007
  * 
  *  Author:  Miha Grcar 
@@ -14,6 +14,34 @@ using System.Runtime.InteropServices;
 
 namespace Latino.Model
 {
+    /* .-----------------------------------------------------------------------
+       |		 
+       |  Enum SvmLightKernelType 
+       |
+       '-----------------------------------------------------------------------
+    */
+    public enum SvmLightKernelType 
+    { 
+        Linear = 0,
+        Polynomial = 1,
+        RadialBasisFunction = 2,
+        Sigmoid = 3
+    }
+
+    /* .-----------------------------------------------------------------------
+       |		 
+       |  Enum SvmLightVerbosityLevel 
+       |
+       '-----------------------------------------------------------------------
+    */
+    public enum SvmLightVerbosityLevel 
+    {
+        Off = 0,
+        Info = 1,
+        Debug = 2,
+        Trace = 3
+    }
+    
     /* .-----------------------------------------------------------------------
        |		 
        |  Class SvmLightLib 
@@ -27,11 +55,12 @@ namespace Latino.Model
 #else
         const string SVMLIGHTLIB_DLL = "SvmLightLib.dll";
 #endif
+        
         public delegate void WriteByteCallback(byte b);
         public delegate byte ReadByteCallback();
 
         // label is 1 or -1 for inductive binary SVM; 1, -1, or 0 (unlabeled) for transductive binary SVM; 
-        // a positive integer for multiclass SVM; a real value for SVM regression
+        // positive integer for multiclass SVM; real value for SVM regression
         [DllImport(SVMLIGHTLIB_DLL)]
         public static extern int NewFeatureVector(int featureCount, int[] features, float[] weights, double label);
         [DllImport(SVMLIGHTLIB_DLL)]
@@ -73,6 +102,26 @@ namespace Latino.Model
         public static extern void Classify(int modelId, int featureVectorCount, int[] featureVectors);
         [DllImport(SVMLIGHTLIB_DLL)]
         public static extern void DeleteModel(int id);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern double GetHyperplaneBias(int modelId);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern int GetSupportVectorCount(int modelId);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern int GetSupportVectorFeatureCount(int modelId, int supVecIdx);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern int GetSupportVectorFeature(int model_id, int sup_vec_idx, int feature_idx);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern float GetSupportVectorWeight(int model_id, int sup_vec_idx, int feature_idx);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern double GetSupportVectorAlpha(int model_id, int sup_vec_idx);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern int GetSupportVectorIndex(int model_id, int sup_vec_idx);
+        //[DllImport(SVMLIGHTLIB_DLL)]
+        //public static extern int GetKernelType(int model_id);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern int GetFeatureCount(int model_id);
+        [DllImport(SVMLIGHTLIB_DLL)]
+        public static extern double GetLinearWeight(int model_id, int feature_idx);
 
         [DllImport(SVMLIGHTLIB_DLL)]
         public static extern void _TrainMulticlassModel(string args);
