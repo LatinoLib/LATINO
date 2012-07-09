@@ -50,6 +50,11 @@ namespace Latino.Model
         private double mKernelParamC
             = 0; // -r 0
 
+        private double mEps
+            = 0.001; // -e 0.001
+        private int mMaxIter
+            = 100000; // -# 100000
+
         private string mCustomParams
             = null;
 
@@ -78,6 +83,7 @@ namespace Latino.Model
             get { return mC; }
             set 
             {
+                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("C") : null);
                 mC = value; 
             }
@@ -86,13 +92,21 @@ namespace Latino.Model
         public bool BiasedHyperplane
         {
             get { return mBiasedHyperplane; }
-            set { mBiasedHyperplane = value; }
+            set 
+            {
+                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
+                mBiasedHyperplane = value; 
+            }
         }
 
         public SvmLightKernelType KernelType
         {
             get { return mKernelType; }
-            set { mKernelType = value; }
+            set 
+            {
+                Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
+                mKernelType = value; 
+            }
         }
 
         public double KernelParamGamma
@@ -100,33 +114,72 @@ namespace Latino.Model
             get { return mKernelParamGamma; }
             set 
             {
+                Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("KernelParamGamma") : null);
                 mKernelParamGamma = value; 
             }
         }
 
-        public double KernelParamD
+        public double KernelParamD // range? 
         {
             get { return mKernelParamD; }
-            set { mKernelParamD = value; } // range? 
-        }
-        
-        public double KernelParamS
-        {
-            get { return mKernelParamD; }
-            set { mKernelParamD = value; } // range? 
+            set 
+            {
+                Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);    
+                mKernelParamD = value; 
+            } 
         }
 
-        public double KernelParamC
+        public double KernelParamS // range? 
         {
             get { return mKernelParamD; }
-            set { mKernelParamD = value; } // range? 
+            set 
+            {
+                Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);    
+                mKernelParamD = value; 
+            } 
+        }
+
+        public double KernelParamC // range? 
+        {
+            get { return mKernelParamD; }
+            set 
+            {
+                Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);    
+                mKernelParamD = value; 
+            } 
+        }
+
+        public double Eps
+        {
+            get { return mEps; }
+            set
+            {
+                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
+                Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("Eps") : null);
+                mEps = value;
+            }
+        }
+
+        public int MaxIter
+        {
+            get { return mMaxIter; }
+            set
+            {
+                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
+                Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("MaxIter") : null);
+                mMaxIter = value;
+            }
         }
 
         public string CustomParams
         {
             get { return mCustomParams; }
-            set { mCustomParams = value; } // null is OK here
+            set 
+            {
+                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);    
+                mCustomParams = value; // null is OK here
+            } 
         }
 
         public double GetHyperplaneBias()
@@ -179,7 +232,7 @@ namespace Latino.Model
         //public double ClassifyLinear(SparseVector<double> x) // D(x) = w dot x - b
         //{
         //    double b = GetHyperplaneBias();
-        //    double[] w = GetLinearWeights(); 
+        //    double[] w = GetLinearWeights();
         //    double result = 0;
         //    foreach (IdxDat<double> xi in x) { result += xi.Dat * w[xi.Idx]; }
         //    return result - b;
@@ -236,26 +289,7 @@ namespace Latino.Model
             return m;
         }
 
-        //public void TestMatrixMult()
-        //{
-        //    double[][] a = new double[][] { 
-        //        new double[] { 1, 3, 2, 4 }, 
-        //        new double[] { -1, -4, -3, -2 } };
-        //    double[][] b = new double[][] { 
-        //        new double[] { 0, 1, 6, 5 }, 
-        //        new double[] { 2, 3, 4, 7 }, 
-        //        new double[] { 8, -1, 9, -3 }, 
-        //        new double[] { -2, 10, 11, 12 } };
-        //    double[][] m = MatrixMultiply(a, b);
-        //    // ( 14 48 80 68 )
-        //    // ( -28 -30 -71 -48 )
-        //    foreach (double[] row in m)
-        //    {
-        //        Console.WriteLine(new ArrayList<double>(row));
-        //    }
-        //}
-
-        private double ComputeAlphaTHAlpha(int rmvFeatIdx) // computes alphaT * H * alpha, where H = [yi * yj * K(xi, xj)]
+        private double ComputeCost(int rmvFeatIdx) // computes alphaT * H * alpha, where H = [yi * yj * K(xi, xj)]
         {             
             ArrayList<IdxDat<double>> alphas = GetAlphas();
             double[][] alphaT = new double[1][];
@@ -279,10 +313,10 @@ namespace Latino.Model
             {
                 // any kernel
                 int numFeat = SvmLightLib.GetFeatureCount(mModelId);
-                double allFeat = 0.5 * ComputeAlphaTHAlpha(-1);
+                double allFeat = 0.5 * ComputeCost(-1);
                 for (int i = 0; i < numFeat; i++)
                 {
-                    double featScore = Math.Abs(allFeat - 0.5 * ComputeAlphaTHAlpha(/*rmvFeatIdx=*/i));
+                    double featScore = Math.Abs(allFeat - 0.5 * ComputeCost(/*rmvFeatIdx=*/i));
                     result.Add(new KeyDat<double, int>(featScore, i));
                     //Console.WriteLine(result.Last);
                 }
@@ -356,6 +390,18 @@ namespace Latino.Model
             return kernel;
         }
 
+        public int GetInternalClassLabel(LblT label)
+        {
+            Utils.ThrowException(mModelId == -1 ? new InvalidOperationException() : null);
+            Utils.ThrowException(label == null ? new ArgumentNullException("label") : null);
+            for (int i = 0; i < mIdxToLbl.Count; i++)
+            {
+                if ((mLblCmp != null && mLblCmp.Equals(mIdxToLbl[i], label)) || 
+                    (mLblCmp == null && mIdxToLbl[i].Equals(label))) { return i == 0 ? 1 : -1; }
+            }
+            throw new ArgumentValueException("label");
+        }
+
         // *** IModel<LblT, SparseVector<double>> interface implementation ***
 
         public Type RequiredExampleType
@@ -375,7 +421,7 @@ namespace Latino.Model
             Dispose();
             int[] trainSet = new int[dataset.Count];
             int[] labels = new int[dataset.Count];
-            Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>();
+            Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>(mLblCmp);
             int j = 0;
             foreach (LabeledExample<LblT, SparseVector<double>> lblEx in dataset)
             { 
@@ -396,9 +442,9 @@ namespace Latino.Model
                 Utils.ThrowException(lbl == 2 ? new ArgumentValueException("dataset") : null);
                 trainSet[j++] = SvmLightLib.NewFeatureVector(idx.Length, idx, val, lbl == 0 ? 1 : -1);
             }
-            mModelId = SvmLightLib.TrainModel(string.Format("-v {0} -c {1} -t {2} -g {3} -d {4} -s {5} -r {6} -b {7} {8}", 
+            mModelId = SvmLightLib.TrainModel(string.Format("-v {0} -c {1} -t {2} -g {3} -d {4} -s {5} -r {6} -b {7} -e {8} -# {9} {10}", 
                 (int)mVerbosityLevel, mC, (int)mKernelType, mKernelParamGamma, mKernelParamD, mKernelParamS, mKernelParamC, mBiasedHyperplane ? 1 : 0,
-                mCustomParams), trainSet.Length, trainSet);
+                mEps, mMaxIter, mCustomParams), trainSet.Length, trainSet);
             // delete training vectors 
             foreach (int vecIdx in trainSet) { SvmLightLib.DeleteFeatureVector(vecIdx); }
         }
@@ -467,7 +513,8 @@ namespace Latino.Model
             writer.WriteDouble(mKernelParamS);
             writer.WriteDouble(mKernelParamC);
             writer.WriteString(mCustomParams);
-            //writer.WriteDouble(mEps);
+            writer.WriteDouble(mEps);
+            writer.WriteInt(mMaxIter);
             mIdxToLbl.Save(writer);
             writer.WriteObject(mLblCmp);
             writer.WriteBool(mModelId != -1);
@@ -493,7 +540,8 @@ namespace Latino.Model
             mKernelParamS = reader.ReadDouble();
             mKernelParamC = reader.ReadDouble();
             mCustomParams = reader.ReadString();
-            //mEps = reader.ReadDouble();
+            mEps = reader.ReadDouble();
+            mMaxIter = reader.ReadInt();
             mIdxToLbl.Load(reader);
             mLblCmp = reader.ReadObject<IEqualityComparer<LblT>>();
             if (reader.ReadBool())
