@@ -188,20 +188,22 @@ namespace Latino.Model
             return SvmLightLib.GetHyperplaneBias(mModelId);
         }
 
-        //public void Test(LabeledDataset<LblT, SparseVector<double>> dataset)
-        //{
-        //    for (int i = 0; i < SvmLightLib.GetSupportVectorCount(mModelId); i++)
-        //    {
-        //        Console.WriteLine("alpha={0}", SvmLightLib.GetSupportVectorAlpha(mModelId, i));
-        //        Console.WriteLine(dataset[SvmLightLib.GetSupportVectorIndex(mModelId, i)]);
-        //        for (int j = 0; j < SvmLightLib.GetSupportVectorFeatureCount(mModelId, i); j++)
-        //        {
-        //            Console.Write("{0}:{1} ", SvmLightLib.GetSupportVectorFeature(mModelId, i, j), SvmLightLib.GetSupportVectorWeight(mModelId, i, j));
-        //        }
-        //        Console.WriteLine();
-        //        Console.WriteLine();
-        //    }
-        //}
+        public void LoadModel(string fileName)
+        {
+            Utils.ThrowException(typeof(LblT) != typeof(int) ? new InvalidOperationException() : null);
+            Utils.ThrowException(!Utils.VerifyFileNameOpen(fileName) ? new ArgumentValueException("fileName") : null);
+            Dispose();
+            mIdxToLbl.Add((LblT)(object)1);
+            mIdxToLbl.Add((LblT)(object)-1);
+            mModelId = SvmLightLib.LoadModel(fileName);
+        }
+
+        public void SaveModel(string fileName)
+        {
+            Utils.ThrowException(!Utils.VerifyFileNameCreate(fileName) ? new ArgumentValueException("fileName") : null);
+            Utils.ThrowException(mModelId == -1 ? new InvalidOperationException() : null);
+            SvmLightLib.SaveModel(mModelId, fileName);
+        }
 
         public ArrayList<IdxDat<double>> GetAlphas() // returns pairs (support vector index, alpha * y)
         {
@@ -454,6 +456,20 @@ namespace Latino.Model
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(!(dataset is ILabeledExampleCollection<LblT, SparseVector<double>>) ? new ArgumentTypeException("dataset") : null);
             Train((ILabeledExampleCollection<LblT, SparseVector<double>>)dataset); // throws ArgumentValueException
+        }
+
+        public ArrayList<KeyDat<double, int>> Explain(SparseVector<double> example)
+        {
+            Utils.ThrowException(mModelId == -1 ? new InvalidOperationException() : null);
+            Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
+            Utils.ThrowException(mKernelType != SvmLightKernelType.Linear ? new InvalidOperationException() : null);
+            double b = GetHyperplaneBias();
+            double[] w = GetLinearWeights();
+            ArrayList<KeyDat<double, int>> result = new ArrayList<KeyDat<double, int>>();
+            foreach (IdxDat<double> xi in example) { result.Add(new KeyDat<double, int>(xi.Dat * w[xi.Idx], xi.Idx)); }
+            result.Add(new KeyDat<double, int>(-b, -1)); // bias
+            result.Sort(DescSort<KeyDat<double, int>>.Instance);
+            return result;
         }
 
         public Prediction<LblT> Predict(SparseVector<double> example)

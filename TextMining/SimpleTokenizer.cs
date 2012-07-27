@@ -14,7 +14,7 @@ namespace Latino.TextMining
     {
         AllChars,    // equivalent to [^\s]+
         AlphaOnly,   // equivalent to \p{L}+
-        AlphanumOnly // equivalent to [\p{L}0-9]+
+        AlphanumOnly // equivalent to [\p{L}\d]+
     }
 
     /* .-----------------------------------------------------------------------
