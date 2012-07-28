@@ -58,6 +58,9 @@ namespace Latino.Model
         private string mCustomParams
             = null;
 
+        private double[] mWeights
+            = null;
+
         public SvmBinaryClassifier(IEqualityComparer<LblT> lblCmp)
         {
             mLblCmp = lblCmp;
@@ -222,12 +225,14 @@ namespace Latino.Model
         {
             Utils.ThrowException(mModelId == -1 ? new InvalidOperationException() : null);
             Utils.ThrowException(mKernelType != SvmLightKernelType.Linear ? new InvalidOperationException() : null);
+            if (mWeights != null) { return mWeights; }
             int featureCount = SvmLightLib.GetFeatureCount(mModelId);
             double[] weights = new double[featureCount];
             for (int i = 0; i < featureCount; i++)
             {
                 weights[i] = SvmLightLib.GetLinearWeight(mModelId, i);
             }
+            mWeights = weights;
             return weights;
         }
 
@@ -511,6 +516,7 @@ namespace Latino.Model
                 SvmLightLib.DeleteModel(mModelId);
                 mIdxToLbl.Clear();
                 mModelId = -1;
+                mWeights = null;
             }
         }
 
