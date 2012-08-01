@@ -86,7 +86,6 @@ namespace Latino.Model
             get { return mC; }
             set 
             {
-                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
                 Utils.ThrowException(value < 0 ? new ArgumentOutOfRangeException("C") : null);
                 mC = value; 
             }
@@ -95,11 +94,7 @@ namespace Latino.Model
         public bool BiasedHyperplane
         {
             get { return mBiasedHyperplane; }
-            set 
-            {
-                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
-                mBiasedHyperplane = value; 
-            }
+            set { mBiasedHyperplane = value; }
         }
 
         public SvmLightKernelType KernelType
@@ -158,7 +153,6 @@ namespace Latino.Model
             get { return mEps; }
             set
             {
-                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("Eps") : null);
                 mEps = value;
             }
@@ -169,7 +163,6 @@ namespace Latino.Model
             get { return mMaxIter; }
             set
             {
-                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("MaxIter") : null);
                 mMaxIter = value;
             }
@@ -178,11 +171,7 @@ namespace Latino.Model
         public string CustomParams
         {
             get { return mCustomParams; }
-            set 
-            {
-                //Utils.ThrowException(mModelId != -1 ? new InvalidOperationException() : null);    
-                mCustomParams = value; // null is OK here
-            } 
+            set { mCustomParams = value; } // null is OK here
         }
 
         public double GetHyperplaneBias()
@@ -236,15 +225,6 @@ namespace Latino.Model
             return weights;
         }
 
-        //public double ClassifyLinear(SparseVector<double> x) // D(x) = w dot x - b
-        //{
-        //    double b = GetHyperplaneBias();
-        //    double[] w = GetLinearWeights();
-        //    double result = 0;
-        //    foreach (IdxDat<double> xi in x) { result += xi.Dat * w[xi.Idx]; }
-        //    return result - b;
-        //}
-
         private SparseVector<double> GetSupportVector(int idx)
         {
             int featCount = SvmLightLib.GetSupportVectorFeatureCount(mModelId, idx);
@@ -256,19 +236,6 @@ namespace Latino.Model
             }
             return vec;
         }
-
-        //public double Classify(SparseVector<double> x) // D(x) = SUM_i(kernel(sv_i, x) * (alpha_i * y_i)) - b
-        //{
-        //    double b = GetHyperplaneBias();
-        //    ArrayList<IdxDat<double>> alphas = GetAlphas();
-        //    double result = 0;
-        //    int i = 0;
-        //    foreach (IdxDat<double> svInfo in alphas)
-        //    {
-        //        result += DotProductSimilarity.Instance.GetSimilarity(GetSupportVector(i++), x) * svInfo.Dat; // *** works only for linear kernels
-        //    }
-        //    return result - b;
-        //}
 
         private double Mult(double[][] m1, double[][] m2, int row1, int col2)
         {
@@ -325,7 +292,6 @@ namespace Latino.Model
                 {
                     double featScore = Math.Abs(allFeat - 0.5 * ComputeCost(/*rmvFeatIdx=*/i));
                     result.Add(new KeyDat<double, int>(featScore, i));
-                    //Console.WriteLine(result.Last);
                 }
             }
             else
@@ -335,7 +301,6 @@ namespace Latino.Model
                 for (int i = 0; i < w.Length; i++)
                 {
                     result.Add(new KeyDat<double, int>(0.5 * w[i] * w[i], i));
-                    //Console.WriteLine(result.Last);
                 }
             }
             result.Sort(DescSort<KeyDat<double, int>>.Instance);

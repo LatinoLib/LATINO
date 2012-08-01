@@ -158,7 +158,7 @@ namespace Latino
                         }
                         if (colIdx != colCount - 1) { str.Append("\t"); }
                     }
-                    if (rowIdx != rowCount - 1) { str.Append("\n"); }
+                    if (rowIdx != rowCount - 1) { str.AppendLine(); }
                 }
                 return str.ToString();
             }
@@ -384,7 +384,6 @@ namespace Latino
             for (int rowIdx = 0; rowIdx < otherMatrixNumRows; rowIdx++)
             {
                 mRows[rowIdx].Append(otherMatrix.mRows[rowIdx], thisMatrixNumCols); // throws ArgumentOutOfRangeException
-                rowIdx++;
             }
         }
 

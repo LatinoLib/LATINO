@@ -47,7 +47,7 @@ namespace Latino.Model
         public Cluster Parent
         {
             get { return mParent; }
-            set { mParent = null; }
+            set { mParent = value; }
         }
 
         public ArrayList<Cluster>.ReadOnly Children

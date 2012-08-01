@@ -81,6 +81,11 @@ namespace Latino.Model
             }
         }
 
+        public int K
+        {
+            get { return mK; }
+        }
+
         // *** IClustering<LblT, SparseVector<double>> interface implementation ***
 
         public Type RequiredExampleType
