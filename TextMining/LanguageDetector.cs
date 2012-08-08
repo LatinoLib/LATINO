@@ -27,8 +27,8 @@ namespace Latino.TextMining
     */
     public class LanguageDetector : ISerializable
     {
-        private int n;
-        private ArrayList<LanguageProfile> languageProfiles;
+        private int mN;
+        private ArrayList<LanguageProfile> mLanguageProfiles;
 
         private static Logger mLogger
             = Logger.GetLogger(typeof(LanguageDetector));
@@ -36,8 +36,8 @@ namespace Latino.TextMining
         public LanguageDetector(int n)
         {
             Utils.ThrowException(n <= 0 ? new ArgumentOutOfRangeException("n") : null);
-            this.n = n;
-            languageProfiles = new ArrayList<LanguageProfile>();
+            mN = n;
+            mLanguageProfiles = new ArrayList<LanguageProfile>();
         }
 
         public LanguageDetector() : this(/*n=*/2)
@@ -71,23 +71,18 @@ namespace Latino.TextMining
         public void AddLanguageProfile(LanguageProfile l)
         {
             Utils.ThrowException(l == null ? new ArgumentNullException("l") : null);
-            Utils.ThrowException((!l.IsRanked || l.N != n) ? new ArgumentValueException("l") : null);
-            languageProfiles.Add(l);
+            Utils.ThrowException((!l.IsRanked || l.N != mN) ? new ArgumentValueException("l") : null);
+            mLanguageProfiles.Add(l);
         }
 
-        public void ReadCorpus(string dir, int cutOff)
+        public void BuildProfilesFromCorpus(string dir, int cutOff)
         {
             Utils.ThrowException(dir == null ? new ArgumentNullException("dir") : null);
             Utils.ThrowException(!Utils.VerifyFolderName(dir, /*mustExist=*/true) ? new ArgumentValueException("dir") : null);
             Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);
-
-            if (languageProfiles != null)
-                languageProfiles.Clear();
-
+            mLanguageProfiles.Clear(); 
             string[] files = Directory.GetFiles(dir, "*.txt", SearchOption.AllDirectories);
             Array.Sort(files);
-
-            DateTime dtStart = DateTime.Now;
             LanguageProfile langProfile = null;
             Language lastLang = Language.Unspecified;
             foreach (string f in files)
@@ -95,49 +90,51 @@ namespace Latino.TextMining
                 Language lang;
                 string fileLangCode = Path.GetFileName(f).Substring(0, 2).ToLower();
                 lang = TextMiningUtils.GetLanguage(fileLangCode);
-                // Skips file names starting with unknown language code
-                if (lang == Language.Unspecified)
-                    continue;
-                if (lang.Equals(lastLang) == false)
+                // skip file names starting with unknown language code
+                if (lang == Language.Unspecified) 
                 {
-                    // Adds new language
-                    mLogger.Debug("ReadCorpus", lang + ":\t" + Path.GetFileName(f));
-                    langProfile = new LanguageProfile(n, lang);
+                    mLogger.Warn("BuildProfilesFromCorpus", "Unknown: " + Path.GetFileName(f));
+                    continue; 
+                }
+                if (lang != lastLang)
+                {
+                    // add new language
+                    mLogger.Debug("BuildProfilesFromCorpus", lang + ": " + Path.GetFileName(f));
+                    langProfile = new LanguageProfile(mN, lang);
                     langProfile.AddTokensFromFile(f);
-                    languageProfiles.Add(langProfile);
+                    mLanguageProfiles.Add(langProfile);
                     lastLang = lang;
                 }
                 else
                 {
-                    // Adds corpus file to the last language added
-                    mLogger.Debug("ReadCorpus", lang + ":\t" + Path.GetFileName(f));
+                    // add corpus file to the last language added
+                    mLogger.Debug("BuildProfilesFromCorpus", lang + ": " + Path.GetFileName(f));
                     langProfile.AddTokensFromFile(f);
                 }
             }
-
-            // Does ranking of language profiles
-            // No n-grams should be added to languages after this!
-            foreach (LanguageProfile l in languageProfiles)
+            // ranks n-grams
+            // *** n-grams should not be added to languages after this
+            foreach (LanguageProfile l in mLanguageProfiles)
             {
                 l.Trim(cutOff);
                 l.DoRanking(); // throws InvalidOperationException
             }
         }
 
-        public void ReadCorpus(string dir)
+        public void BuildProfilesFromCorpus(string dir)
         {
-            ReadCorpus(dir, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException
-        }
+            BuildProfilesFromCorpus(dir, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException
+        }  
 
-        public LanguageProfile FindMatchingLanguage(NGramProfile p, int cutOff)
+        public LanguageProfile DetectLanguage(NGramProfile p, int cutOff)
         {
-            Utils.ThrowException(languageProfiles.Count == 0 ? new InvalidOperationException() : null);
+            Utils.ThrowException(mLanguageProfiles.Count == 0 ? new InvalidOperationException() : null);
             Utils.ThrowException(p == null ? new ArgumentNullException("p") : null);
             Utils.ThrowException((!p.IsRanked) ? new ArgumentValueException("p") : null);
             Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);            
             LanguageProfile matchingLang = null;
             double minDist = Double.MaxValue;
-            foreach (LanguageProfile l in languageProfiles)
+            foreach (LanguageProfile l in mLanguageProfiles)
             {
                 double dist = p.CalcOutOfPlace(l, cutOff);
                 if (dist < minDist)
@@ -149,14 +146,14 @@ namespace Latino.TextMining
             return matchingLang;
         }
 
-        public ArrayList<KeyDat<double, LanguageProfile>> FindMatchingLanguageAll(NGramProfile p, int cutOff)
+        public ArrayList<KeyDat<double, LanguageProfile>> DetectLanguageAll(NGramProfile p, int cutOff)
         {
-            Utils.ThrowException(languageProfiles.Count == 0 ? new InvalidOperationException() : null);
+            Utils.ThrowException(mLanguageProfiles.Count == 0 ? new InvalidOperationException() : null);
             Utils.ThrowException(p == null ? new ArgumentNullException("p") : null);
             Utils.ThrowException((!p.IsRanked) ? new ArgumentValueException("p") : null);
             Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);
             ArrayList<KeyDat<double, LanguageProfile>> result = new ArrayList<KeyDat<double, LanguageProfile>>();
-            foreach (LanguageProfile l in languageProfiles)
+            foreach (LanguageProfile l in mLanguageProfiles)
             {
                 double dist = p.CalcOutOfPlace(l, cutOff);
                 result.Add(new KeyDat<double, LanguageProfile>(dist, l));
@@ -164,60 +161,61 @@ namespace Latino.TextMining
             return result;
         }
         
-        public LanguageProfile FindMatchingLanguage(NGramProfile p)
+        public LanguageProfile DetectLanguage(NGramProfile p)
         {
-            return FindMatchingLanguage(p, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException 
+            return DetectLanguage(p, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException 
         }
 
-        public ArrayList<KeyDat<double, LanguageProfile>> FindMatchingLanguageAll(NGramProfile p)
+        public ArrayList<KeyDat<double, LanguageProfile>> DetectLanguageAll(NGramProfile p)
         {
-            return FindMatchingLanguageAll(p, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException 
+            return DetectLanguageAll(p, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException 
         }
 
-        public LanguageProfile FindMatchingLanguage(string str)
+        public LanguageProfile DetectLanguage(string str)
         {
-            Utils.ThrowException(languageProfiles.Count == 0 ? new InvalidOperationException() : null);
+            Utils.ThrowException(mLanguageProfiles.Count == 0 ? new InvalidOperationException() : null);
             Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
-            NGramProfile p = new NGramProfile(n);
+            NGramProfile p = new NGramProfile(mN);
             p.AddTokensFromString(str);
             if (p.IsEmpty) { return null; }
             p.DoRanking();
-            return FindMatchingLanguage(p);
+            return DetectLanguage(p);
         }
 
-        public ArrayList<KeyDat<double, LanguageProfile>> FindMatchingLanguageAll(string str)
+        public ArrayList<KeyDat<double, LanguageProfile>> DetectLanguageAll(string str)
         {
-            Utils.ThrowException(languageProfiles.Count == 0 ? new InvalidOperationException() : null);
+            Utils.ThrowException(mLanguageProfiles.Count == 0 ? new InvalidOperationException() : null);
             Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
-            NGramProfile p = new NGramProfile(n);
+            NGramProfile p = new NGramProfile(mN);
             p.AddTokensFromString(str);
             if (p.IsEmpty) { return null; }
             p.DoRanking();
-            return FindMatchingLanguageAll(p);
+            return DetectLanguageAll(p);
         }
 
         public void Clear()
         {
-            languageProfiles.Clear();
+            mLanguageProfiles.Clear();
         }
 
         public ArrayList<LanguageProfile>.ReadOnly LanguageProfiles
         {
-            get { return languageProfiles; }
+            get { return mLanguageProfiles; }
         }
 
         public int N
         {
-            get { return n; }
+            get { return mN; }
         }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Languages:");
-            foreach (LanguageProfile l in languageProfiles)
-                sb.AppendLine(l.Language.ToString());
-            return sb.ToString();
+            foreach (LanguageProfile l in mLanguageProfiles) 
+            { 
+                sb.AppendLine(l.Language.ToString()); 
+            }
+            return sb.ToString().TrimEnd();
         }
 
         // *** ISerializable interface implementation ***
@@ -226,10 +224,12 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteInt(n);
-            writer.WriteInt(languageProfiles.Count);
-            foreach (LanguageProfile l in languageProfiles)
-                l.Save(writer);
+            writer.WriteInt(mN);
+            writer.WriteInt(mLanguageProfiles.Count);
+            foreach (LanguageProfile l in mLanguageProfiles) 
+            { 
+                l.Save(writer); 
+            }
         }
 
         public void Load(BinarySerializer reader)
@@ -237,10 +237,12 @@ namespace Latino.TextMining
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             Clear();
             // the following statements throw serialization-related exceptions
-            n = reader.ReadInt();
+            mN = reader.ReadInt();
             int langCount = reader.ReadInt();
-            for (int i = 0; i < langCount; i++)
-                languageProfiles.Add(new LanguageProfile(reader));
+            for (int i = 0; i < langCount; i++) 
+            { 
+                mLanguageProfiles.Add(new LanguageProfile(reader)); 
+            }
         }
     }
 
@@ -252,14 +254,14 @@ namespace Latino.TextMining
     */
     public class LanguageProfile : NGramProfile
     {
-        private Language lang;
-        private string codePage;
+        private Language mLang;
+        private string mCodePage;
 
         public LanguageProfile(int n, Language lang, string codePage) : base(n) // throws ArgumentOutOfRangeException
         {
             Utils.ThrowException(lang == Language.Unspecified ? new ArgumentValueException("lang") : null);
-            this.lang = lang;
-            this.codePage = codePage;
+            mLang = lang;
+            mCodePage = codePage;
         }
 
         public LanguageProfile(int n, Language lang) : this(n, lang, /*codePage=*/null) // throws ArgumentOutOfRangeException, ArgumentValueException
@@ -277,12 +279,12 @@ namespace Latino.TextMining
 
         public Language Language
         {
-            get { return lang; }
+            get { return mLang; }
         }
 
         public string CodePage
         {
-            get { return codePage; }
+            get { return mCodePage; }
         }
 
         // *** ISerializable interface implementation ***
@@ -291,16 +293,16 @@ namespace Latino.TextMining
         {
             // the following statements throw serialization-related exceptions
             base.Save(writer); // throws ArgumentNullException
-            writer.WriteInt((int)lang);
-            writer.WriteString(codePage);
+            writer.WriteInt((int)mLang);
+            writer.WriteString(mCodePage);
         }
 
         public override void Load(BinarySerializer reader)
         {
             // the following statements throw serialization-related exceptions
             base.Load(reader); // throws ArgumentNullException
-            lang = (Language)reader.ReadInt();
-            codePage = reader.ReadString();
+            mLang = (Language)reader.ReadInt();
+            mCodePage = reader.ReadString();
         }
     }
 
@@ -312,18 +314,16 @@ namespace Latino.TextMining
     */
     public class NGramProfile : ISerializable
     {
-        private int n; 
-        private Dictionary<string, uint> hist;
-        private bool isRanked
+        private int mN; 
+        private Dictionary<string, uint> mHist;
+        private bool mIsRanked
             = false;
-        private static Regex digitRegex
-            = new Regex("[0-9]", RegexOptions.Compiled);
 
         public NGramProfile(int n)
         {
             Utils.ThrowException(n <= 0 ? new ArgumentOutOfRangeException("n") : null);
-            this.n = n;
-            hist = new Dictionary<string, uint>();
+            mN = n;
+            mHist = new Dictionary<string, uint>();
         }
 
         public NGramProfile() : this(/*n=*/2) 
@@ -337,50 +337,54 @@ namespace Latino.TextMining
 
         public bool IsEmpty
         {
-            get { return hist.Count == 0; }
+            get { return mHist.Count == 0; }
         }
 
         public void AddTokens(ITokenizer tokenizer)
         {
             Utils.ThrowException(tokenizer == null ? new ArgumentNullException("tokenizer") : null);
-            Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
-            foreach (string token in tokenizer)
-                if (!digitRegex.Match(token).Success)
-                    AddToken(token.ToUpper());
+            Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
+            foreach (string token in tokenizer) 
+            { 
+                AddToken(token.ToUpper()); 
+            }
         }
 
         public void AddTokensFromString(string str)
         {
+            AddTokensFromString(str, TokenizerType.AlphaOnly);
+        }
+
+        public void AddTokensFromString(string str, TokenizerType tokType)
+        {
             Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
-            Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
-            //RegexTokenizer tokenizer = new RegexTokenizer();
-            //tokenizer.IgnoreUnknownTokens = true;
-            //tokenizer.TokenRegex = @"[^\s][^\s]+";
+            Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
             SimpleTokenizer tokenizer = new SimpleTokenizer();
-            tokenizer.MinTokenLen = 2;
-            tokenizer.Type = TokenizerType.AllChars;
+            tokenizer.Type = tokType;
             tokenizer.Text = str;
             AddTokens(tokenizer);
         }
 
         public void AddTokensFromFile(string file)
         {
+            AddTokensFromFile(file, TokenizerType.AlphaOnly);
+        }
+
+        public void AddTokensFromFile(string file, TokenizerType tokType)
+        {
             Utils.ThrowException(!Utils.VerifyFileNameOpen(file) ? new ArgumentValueException("file") : null);
-            Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
-            StreamReader reader = Utils.GetUnicodeSignature(file) != null ? new StreamReader(file) : new StreamReader(file, Encoding.GetEncoding("ISO-8859-1"));
-            //RegexTokenizer tokenizer = new RegexTokenizer();
-            //tokenizer.IgnoreUnknownTokens = true;
-            //tokenizer.TokenRegex = @"[^\s][^\s]+";
+            Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
+            StreamReader reader = Utils.GetUnicodeSignature(file) != null ? new StreamReader(file) : new StreamReader(file, Encoding.UTF8);
             SimpleTokenizer tokenizer = new SimpleTokenizer();
-            tokenizer.MinTokenLen = 2;
-            tokenizer.Type = TokenizerType.AllChars;
+            tokenizer.Type = tokType;
             string line;
             while ((line = reader.ReadLine()) != null)
             {
                 tokenizer.Text = line;
-                foreach (string token in tokenizer)
-                    if (!digitRegex.Match(token).Success)
-                        AddToken(token.ToUpper());
+                foreach (string token in tokenizer) 
+                { 
+                    AddToken(token.ToUpper()); 
+                }
             }
             reader.Close();
         }
@@ -388,10 +392,10 @@ namespace Latino.TextMining
         public void AddToken(string token)
         {
             Utils.ThrowException(token == null ? new ArgumentNullException("token") : null);
-            Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
+            Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
             token = token.Trim();
             string paddedToken = token;
-            for (int i = 1; i <= n; i++)
+            for (int i = 1; i <= mN; i++)
             {
                 paddedToken = paddedToken.PadRight(paddedToken.Length + (i - 1), '_');
                 int pos = 0;
@@ -400,10 +404,8 @@ namespace Latino.TextMining
                 while (pos < end)
                 {
                     string ngram = paddedToken.Substring(pos++, i);
-                    if (hist.TryGetValue(ngram, out v))
-                        hist[ngram] = v + 1;
-                    else
-                        hist[ngram] = 1;
+                    if (mHist.TryGetValue(ngram, out v)) { mHist[ngram] = v + 1; }
+                    else { mHist[ngram] = 1; }
                 }
                 paddedToken = token.PadLeft(token.Length + 1, '_');
             }
@@ -411,21 +413,16 @@ namespace Latino.TextMining
 
         public void DoRanking()
         {
-            Utils.ThrowException(hist.Count == 0 ? new InvalidOperationException() : null);
-            Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
-            // copies (key,value) pairs into a list and sorts them descendingly by the value
-            List<KeyValuePair<string, uint>> l = new List<KeyValuePair<string, uint>>(hist);
-            l.Sort(delegate(KeyValuePair<string, uint> pair1,
-                    KeyValuePair<string, uint> pair2)
-                {
-                    if (pair1.Value > pair2.Value)
-                        return -1;
-                    if (pair1.Value < pair2.Value)
-                        return 1;
-                    return 0;
-                });
-
-            // assigns rank to each n-gram
+            Utils.ThrowException(mHist.Count == 0 ? new InvalidOperationException() : null);
+            Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
+            // copy (key, value) pairs into list and sort them descendingly by value
+            List<KeyValuePair<string, uint>> l = new List<KeyValuePair<string, uint>>(mHist);
+            l.Sort(delegate(KeyValuePair<string, uint> pair1, KeyValuePair<string, uint> pair2) {
+                if (pair1.Value > pair2.Value) { return -1; }
+                if (pair1.Value < pair2.Value) { return 1; }
+                return 0;
+            });
+            // assign rank to each n-gram
             uint count = 1;
             uint lastRank = 0;
             uint lastValue = 0;
@@ -433,33 +430,32 @@ namespace Latino.TextMining
             {
                 if (kvp.Value != lastValue)
                 {
-                    hist[kvp.Key] = count;
+                    mHist[kvp.Key] = count;
                     lastRank = count;
                 }
-                else
-                    hist[kvp.Key] = lastRank;
+                else { mHist[kvp.Key] = lastRank; }
                 lastValue = kvp.Value;
                 count++;
             }
-            isRanked = true; // indicates that ranks have been assigned
+            mIsRanked = true; // indicates that ranks have been assigned
         }
 
         public void Trim(int cutOff)
         {
             Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);
-            Utils.ThrowException(isRanked ? new InvalidOperationException() : null);
-            if (hist.Count <= cutOff) { return; }
-            ArrayList<KeyDat<uint, string>> aux = new ArrayList<KeyDat<uint, string>>(hist.Count);
-            foreach (KeyValuePair<string, uint> item in hist)
+            Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
+            if (mHist.Count <= cutOff) { return; }
+            ArrayList<KeyDat<uint, string>> aux = new ArrayList<KeyDat<uint, string>>(mHist.Count);
+            foreach (KeyValuePair<string, uint> item in mHist)
             {
                 aux.Add(new KeyDat<uint, string>(item.Value, item.Key));
             }
             aux.Sort(DescSort<KeyDat<uint, string>>.Instance);
-            aux.RemoveRange(cutOff, hist.Count - cutOff);
-            hist.Clear();
+            aux.RemoveRange(cutOff, mHist.Count - cutOff);
+            mHist.Clear();
             foreach (KeyDat<uint, string> item in aux)
             {
-                hist.Add(item.Dat, item.Key);
+                mHist.Add(item.Dat, item.Key);
             }
         }
 
@@ -467,24 +463,21 @@ namespace Latino.TextMining
         {            
             Utils.ThrowException(p == null ? new ArgumentNullException("p") : null);
             Utils.ThrowException(cutOff < 1 ? new ArgumentOutOfRangeException("cutOff") : null);
-            Utils.ThrowException(!isRanked ? new InvalidOperationException() : null);
+            Utils.ThrowException(!mIsRanked ? new InvalidOperationException() : null);
             int dist = 0;
             uint v = 0;
             uint sum = 0;
-            int penalty = Math.Min(cutOff, p.hist.Count);
-            // sums up distances of each N-gram in this profile to 
-            // the same N-gram in profile 'p'
-            foreach (KeyValuePair<string, uint> kvp in hist)
+            int penalty = Math.Min(cutOff, p.mHist.Count);
+            // sum up distances from each n-gram in this profile to the same n-gram in profile p
+            foreach (KeyValuePair<string, uint> kvp in mHist)
             {
-                if (kvp.Value > cutOff)
-                    continue;
-                if (p.hist.TryGetValue(kvp.Key, out v))
-                    if (v > cutOff)
-                        dist = penalty;
-                    else
-                        dist = (int)Math.Abs(v - kvp.Value);
-                else
-                    dist = penalty;
+                if (kvp.Value > cutOff) { continue; }
+                if (p.mHist.TryGetValue(kvp.Key, out v))
+                {
+                    if (v > cutOff) { dist = penalty; }
+                    else { dist = (int)Math.Abs(v - kvp.Value); }
+                }
+                else { dist = penalty; }
                 sum += (uint)dist;
             }
             return sum;
@@ -497,21 +490,22 @@ namespace Latino.TextMining
 
         public int N
         { 
-            get { return n; } 
+            get { return mN; } 
         }
 
         public bool IsRanked
         {
-            get { return isRanked; }
+            get { return mIsRanked; }
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder(hist.Count * 5);
-            sb.AppendLine("N-gram, value:");
-            foreach (KeyValuePair<string, uint> kvp in hist)
-                sb.AppendLine(kvp.Key + "\t" + kvp.Value);
-            return sb.ToString();
+            StringBuilder sb = new StringBuilder(mHist.Count * 5);
+            foreach (KeyValuePair<string, uint> kvp in mHist) 
+            { 
+                sb.AppendLine(kvp.Key + "\t" + kvp.Value); 
+            }
+            return sb.ToString().TrimEnd();
         }
 
         // *** ISerializable interface implementation ***
@@ -520,10 +514,10 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteInt(n);
-            writer.WriteBool(isRanked);
-            writer.WriteInt(hist.Count);
-            foreach (KeyValuePair<string, uint> kvp in hist)
+            writer.WriteInt(mN);
+            writer.WriteBool(mIsRanked);
+            writer.WriteInt(mHist.Count);
+            foreach (KeyValuePair<string, uint> kvp in mHist)
             {
                 writer.WriteString(kvp.Key);
                 writer.WriteUInt(kvp.Value);
@@ -534,12 +528,14 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            n = reader.ReadInt();
-            isRanked = reader.ReadBool();
+            mN = reader.ReadInt();
+            mIsRanked = reader.ReadBool();
             int count = reader.ReadInt();
-            hist = new Dictionary<string, uint>(count);
-            for (int i = 0; i < count; i++)
-                hist.Add(reader.ReadString(), reader.ReadUInt());
+            mHist = new Dictionary<string, uint>(count);
+            for (int i = 0; i < count; i++) 
+            { 
+                mHist.Add(reader.ReadString(), reader.ReadUInt()); 
+            }
         }
     }
 }

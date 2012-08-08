@@ -39,6 +39,13 @@ namespace Latino.TextMining
         Estonian, // *** missing stop words
         Bulgarian,
         Czech,
-        Russian
+        Russian,
+        // *** language detection only
+        Greek,
+        Lithuanian,
+        Latvian,
+        Maltese,
+        Polish,
+        Slovak
     }
 }
