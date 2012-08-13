@@ -186,6 +186,9 @@ namespace Latino.TextMining
             else if (code == "mt") { return Language.Maltese; }
             else if (code == "pl") { return Language.Polish; }
             else if (code == "sk") { return Language.Slovak; }
+            else if (code == "tr") { return Language.Turkish; }
+            else if (code == "vi") { return Language.Vietnamese; }
+            else if (code == "is") { return Language.Icelandic; }
             else { return Language.Unspecified; }
         }
 
@@ -245,6 +248,12 @@ namespace Latino.TextMining
                     return "pl";
                 case Language.Slovak:
                     return "sk";
+                case Language.Turkish:
+                    return "tr";
+                case Language.Vietnamese:
+                    return "vi";
+                case Language.Icelandic:
+                    return "is";
                 default:
                     throw new ArgumentNotSupportedException("language"); // should not happen
             }

@@ -46,6 +46,9 @@ namespace Latino.TextMining
         Latvian,
         Maltese,
         Polish,
-        Slovak
+        Slovak,
+        Turkish,
+        Vietnamese,
+        Icelandic
     }
 }
