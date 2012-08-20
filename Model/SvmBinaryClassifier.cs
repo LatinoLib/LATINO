@@ -436,7 +436,13 @@ namespace Latino.Model
             double b = GetHyperplaneBias();
             double[] w = GetLinearWeights();
             ArrayList<KeyDat<double, int>> result = new ArrayList<KeyDat<double, int>>();
-            foreach (IdxDat<double> xi in example) { result.Add(new KeyDat<double, int>(xi.Dat * w[xi.Idx], xi.Idx)); }
+            foreach (IdxDat<double> xi in example) 
+            {
+                if (xi.Idx < w.Length)
+                {
+                    result.Add(new KeyDat<double, int>(xi.Dat * w[xi.Idx], xi.Idx));
+                }
+            }
             result.Add(new KeyDat<double, int>(-b, -1)); // bias
             result.Sort(DescSort<KeyDat<double, int>>.Instance);
             return result;

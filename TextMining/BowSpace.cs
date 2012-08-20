@@ -287,50 +287,9 @@ namespace Latino.TextMining
             }
         }
 
-        public static void CutLowWeights(ref SparseVector<double> vec, double cutLowWgtPerc)
-        {
-            Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
-            Utils.ThrowException(cutLowWgtPerc < 0 || cutLowWgtPerc >= 1 ? new ArgumentValueException("cutLowWgtPerc") : null);
-            if (cutLowWgtPerc > 0)
-            {
-                double wgtSum = 0;
-                ArrayList<KeyDat<double, int>> tmp = new ArrayList<KeyDat<double, int>>(vec.Count);
-                foreach (IdxDat<double> item in vec)
-                {
-                    wgtSum += item.Dat;
-                    tmp.Add(new KeyDat<double, int>(item.Dat, item.Idx));
-                }
-                tmp.Sort();
-                double cutSum = cutLowWgtPerc * wgtSum;
-                double cutWgt = -1;
-                foreach (KeyDat<double, int> item in tmp)
-                {
-                    cutSum -= item.Key;
-                    if (cutSum <= 0)
-                    {
-                        cutWgt = item.Key;
-                        break;
-                    }
-                }
-                SparseVector<double> newVec = new SparseVector<double>();
-                if (cutWgt != -1)
-                {
-                    foreach (IdxDat<double> item in vec)
-                    {
-                        if (item.Dat >= cutWgt)
-                        {
-                            newVec.InnerIdx.Add(item.Idx);
-                            newVec.InnerDat.Add(item.Dat);
-                        }
-                    }
-                }
-                vec = newVec;
-            }
-        }
-
         private void CutLowWeights(ref SparseVector<double> vec)
         {
-            CutLowWeights(ref vec, mCutLowWeightsPerc);
+            ModelUtils.CutLowWeights(ref vec, mCutLowWeightsPerc);
         }
 
         private void ProcessNGramsPass1(ArrayList<WordStem> nGrams, int startIdx, Set<string> docWords)
@@ -659,7 +618,7 @@ namespace Latino.TextMining
                 }
                 docVec.Sort();
                 CutLowWeights(ref docVec);
-                if (mNormalizeVectors) { Utils.TryNrmVecL2(docVec); }
+                if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(docVec); }
                 bows.Add(docVec); 
             }
             return bows; 
@@ -778,13 +737,13 @@ namespace Latino.TextMining
             }
             docVec.Sort();
             CutLowWeights(ref docVec);
-            if (mNormalizeVectors) { Utils.TryNrmVecL2(docVec); }
+            if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(docVec); }
             return docVec;
         }
 
         public ArrayList<KeyDat<double, Word>> GetKeywords(SparseVector<double>.ReadOnly bowVec)
         {
-            Utils.ThrowException(bowVec == null ? new ArgumentNullException("bowVec") : null);            
+            Utils.ThrowException(bowVec == null ? new ArgumentNullException("bowVec") : null);
             ArrayList<KeyDat<double, Word>> keywords = new ArrayList<KeyDat<double, Word>>(bowVec.Count);
             foreach (IdxDat<double> item in bowVec)
             {
@@ -818,6 +777,8 @@ namespace Latino.TextMining
             }
             return keywordsStr;
         }
+
+        // *** ISerializable interface implementation ***
 
         public void SaveVocabulary(BinarySerializer writer)
         {

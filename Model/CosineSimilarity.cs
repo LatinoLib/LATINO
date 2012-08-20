@@ -85,9 +85,9 @@ namespace Latino.Model
                     bIdx_j = bIdx[j];
                 }
             }
-            double aLen = Utils.GetVecLenL2(a);
+            double aLen = ModelUtils.GetVecLenL2(a);
             Utils.ThrowException(aLen == 0 ? new ArgumentValueException("a") : null);
-            double bLen = Utils.GetVecLenL2(b);
+            double bLen = ModelUtils.GetVecLenL2(b);
             Utils.ThrowException(bLen == 0 ? new ArgumentValueException("b") : null);
             double lenMult = aLen * bLen;
             return dotProd / lenMult;

@@ -88,9 +88,13 @@ namespace Latino.TextMining
         public string GetStem(string word)
         {
             Utils.ThrowException(word == null ? new ArgumentNullException("word") : null);
-            mStemmer.SetCurrent(word);
-            mStemmer.Stem();
-            return mStemmer.GetCurrent();
+            try
+            {
+                mStemmer.SetCurrent(word);
+                mStemmer.Stem();
+                return mStemmer.GetCurrent();
+            }
+            catch { return word; }
         }
 
         // *** ISerializable interface implementation ***

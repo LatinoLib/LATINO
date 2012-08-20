@@ -58,10 +58,12 @@ namespace Latino.Experimental.TextMining
             = true;
         private ArrayList<int> mFreeIdx
             = new ArrayList<int>();
-        private int mWordFormUpdateInit // TODO: expose to the user
+        private int mWordFormUpdateInit
             = 500;
         private int mWordFormUpdate
             = 500;
+
+        private ArrayList<Word>.ReadOnly mIdxInfoReadOnly;
 
         private static Logger mLogger
             = Logger.GetLogger(typeof(IncrementalBowSpace));
@@ -72,6 +74,12 @@ namespace Latino.Experimental.TextMining
             UnicodeTokenizer tokenizer = (UnicodeTokenizer)mTokenizer;
             tokenizer.Filter = TokenizerFilter.AlphanumLoose;
             tokenizer.MinTokenLen = 2;
+            mIdxInfoReadOnly = mIdxInfo;
+        }
+
+        public IncrementalBowSpace(BinarySerializer reader) : this()
+        {
+            Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
         public ITokenizer Tokenizer
@@ -140,7 +148,7 @@ namespace Latino.Experimental.TextMining
 
         public ArrayList<Word>.ReadOnly Words
         {
-            get { return mIdxInfo; }
+            get { return mIdxInfoReadOnly; }
         }
 
         private double Idf(Word word, int docCount)
@@ -159,41 +167,7 @@ namespace Latino.Experimental.TextMining
 
         private void CutLowWeights(ref SparseVector<double> vec)
         {
-            if (mCutLowWeightsPerc > 0)
-            {
-                double wgtSum = 0;
-                ArrayList<KeyDat<double, int>> tmp = new ArrayList<KeyDat<double, int>>(vec.Count);
-                foreach (IdxDat<double> item in vec)
-                {
-                    wgtSum += item.Dat;
-                    tmp.Add(new KeyDat<double, int>(item.Dat, item.Idx));
-                }
-                tmp.Sort();
-                double cutSum = mCutLowWeightsPerc * wgtSum;
-                double cutWgt = -1;
-                foreach (KeyDat<double, int> item in tmp)
-                {
-                    cutSum -= item.Key;
-                    if (cutSum <= 0)
-                    {
-                        cutWgt = item.Key;
-                        break;
-                    }
-                }                
-                SparseVector<double> newVec = new SparseVector<double>();
-                if (cutWgt != -1)
-                {
-                    foreach (IdxDat<double> item in vec)
-                    {
-                        if (item.Dat >= cutWgt)
-                        {
-                            newVec.InnerIdx.Add(item.Idx);
-                            newVec.InnerDat.Add(item.Dat);
-                        }
-                    }
-                }
-                vec = newVec;
-            }
+            ModelUtils.CutLowWeights(ref vec, mCutLowWeightsPerc);
         }
 
         private void ProcessNGramsPass1(ArrayList<WordStem> nGrams, int startIdx, Set<string> docWords)
@@ -404,7 +378,7 @@ namespace Latino.Experimental.TextMining
                         }
                     }
                     CutLowWeights(ref tmp);
-                    if (mNormalizeVectors) { Utils.TryNrmVecL2(tmp); }
+                    if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
                     bowVectors.Add(tmp);
                 }
             }
@@ -422,7 +396,7 @@ namespace Latino.Experimental.TextMining
                         }
                     }
                     CutLowWeights(ref tmp);
-                    if (mNormalizeVectors) { Utils.TryNrmVecL2(tmp); }
+                    if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
                     bowVectors.Add(tmp);
                 }
             }
@@ -441,7 +415,7 @@ namespace Latino.Experimental.TextMining
                         }
                     }
                     CutLowWeights(ref tmp);
-                    if (mNormalizeVectors) { Utils.TryNrmVecL2(tmp); }
+                    if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
                     bowVectors.Add(tmp);
                 }
             }
@@ -454,8 +428,9 @@ namespace Latino.Experimental.TextMining
         }
 
         // TODO: exceptions
-        public void Dequeue(int n)
+        public void Dequeue(int n, out Set<int> removedWords)
         {
+            removedWords = new Set<int>();
             for (int i = 0; i < n; i++)
             {
                 SparseVector<double> tfVec = mTfVectors[i];
@@ -470,6 +445,7 @@ namespace Latino.Experimental.TextMining
                         mIdxInfo[word.mIdx] = null;
                         mWordInfo.Remove(word.mStem);
                         mFreeIdx.Add(word.mIdx);
+                        removedWords.Add(word.mIdx);
                     }
                 }
             }
@@ -541,7 +517,7 @@ namespace Latino.Experimental.TextMining
                     }
                 }
                 CutLowWeights(ref vec);
-                if (mNormalizeVectors) { Utils.TryNrmVecL2(vec); }
+                if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(vec); }
                 retVal.Add(vec);
             }
             return retVal;
@@ -619,8 +595,14 @@ namespace Latino.Experimental.TextMining
             }
         }
 
-        private SparseVector<double> ProcessDocument(string document)
+        public SparseVector<double> ProcessDocument(string document)
         {
+            return ProcessDocument(document, mStemmer); // throws ArgumentNullException
+        }
+
+        public SparseVector<double> ProcessDocument(string document, IStemmer stemmer)
+        {
+            Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Set<string> docWords = new Set<string>();
             Dictionary<int, int> tfVec = new Dictionary<int, int>();
             ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
@@ -630,7 +612,7 @@ namespace Latino.Experimental.TextMining
                 string word = token.Trim().ToLower();
                 if (mStopWords == null || !mStopWords.Contains(word))
                 {
-                    string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
+                    string stem = stemmer == null ? word : stemmer.GetStem(word).Trim().ToLower();
                     if (nGrams.Count < mMaxNGramLen)
                     {
                         WordStem wordStem = new WordStem();
@@ -665,29 +647,41 @@ namespace Latino.Experimental.TextMining
             return docVec;
         }
 
-        public ArrayList<KeyDat<double, string>> GetKeywords(SparseVector<double>.ReadOnly bowVec)
+        public ArrayList<KeyDat<double, Word>> GetKeywords(SparseVector<double>.ReadOnly bowVec)
         {
-            Utils.ThrowException(bowVec == null ? new ArgumentNullException("bowVec") : null);            
-            ArrayList<KeyDat<double, string>> keywords = new ArrayList<KeyDat<double, string>>(bowVec.Count);
+            Utils.ThrowException(bowVec == null ? new ArgumentNullException("bowVec") : null);
+            ArrayList<KeyDat<double, Word>> keywords = new ArrayList<KeyDat<double, Word>>(bowVec.Count);
             foreach (IdxDat<double> item in bowVec)
             {
-                keywords.Add(new KeyDat<double, string>(item.Dat, mIdxInfo[item.Idx].mMostFrequentForm)); // throws ArgumentOutOfRangeException
+                keywords.Add(new KeyDat<double, Word>(item.Dat, mIdxInfo[item.Idx])); // throws ArgumentOutOfRangeException
             }
-            keywords.Sort(DescSort<KeyDat<double, string>>.Instance);
+            keywords.Sort(DescSort<KeyDat<double, Word>>.Instance);
             return keywords;
         }
 
-        public ArrayList<string> GetKeywords(SparseVector<double>.ReadOnly bowVec, int n)
+        public ArrayList<Word> GetKeywords(SparseVector<double>.ReadOnly bowVec, int n)
         {
             Utils.ThrowException(n <= 0 ? new ArgumentOutOfRangeException("n") : null);
-            ArrayList<KeyDat<double, string>> keywords = GetKeywords(bowVec); // throws ArgumentNullException, ArgumentOutOfRangeException            
+            ArrayList<KeyDat<double, Word>> keywords = GetKeywords(bowVec); // throws ArgumentNullException, ArgumentOutOfRangeException            
             int keywordCount = Math.Min(n, keywords.Count);
-            ArrayList<string> keywordList = new ArrayList<string>(keywordCount);
+            ArrayList<Word> keywordList = new ArrayList<Word>(keywordCount);
             for (int i = 0; i < keywordCount; i++)
             {
                 keywordList.Add(keywords[i].Dat);
             }
             return keywordList;
+        }
+
+        public string GetKeywordsStr(SparseVector<double>.ReadOnly bowVec, int n)
+        {
+            ArrayList<Word> keywords = GetKeywords(bowVec, n); // throws ArgumentOutOfRangeException, ArgumentNullException
+            if (keywords.Count == 0) { return ""; }
+            string keywordsStr = keywords[0].MostFrequentForm;
+            for (int i = 1; i < keywords.Count; i++)
+            {
+                keywordsStr += ", " + keywords[i].MostFrequentForm;
+            }
+            return keywordsStr;
         }
 
         // *** ISerializable interface implementation ***
@@ -711,7 +705,7 @@ namespace Latino.Experimental.TextMining
             // the following statements throw serialization-related exceptions
             mWordInfo.Clear();
             mIdxInfo.Clear();
-            mTfVectors.Clear(); // *** bags-of-words are removed 
+            mTfVectors.Clear(); // *** bags-of-words are removed
             int count = reader.ReadInt();
             for (int i = 0; i < count; i++)
             {
@@ -731,11 +725,11 @@ namespace Latino.Experimental.TextMining
         {
             // the following statements throw serialization-related exceptions
             SaveVocabulary(writer); // throws ArgumentNullException
-            writer.WriteObject<ITokenizer>(mTokenizer);
-            writer.WriteObject<Set<string>.ReadOnly>(mStopWords);
-            writer.WriteObject<IStemmer>(mStemmer);
-            mTfVectors.Save(writer);
+            writer.WriteObject(mTokenizer);
+            writer.WriteObject(mStopWords);
+            writer.WriteObject(mStemmer);
             writer.WriteInt(mMaxNGramLen);
+            writer.WriteInt(mMinWordFreq);
             writer.WriteInt((int)mWordWeightType);
             writer.WriteDouble(mCutLowWeightsPerc);
             writer.WriteBool(mNormalizeVectors);
@@ -748,8 +742,8 @@ namespace Latino.Experimental.TextMining
             mTokenizer = reader.ReadObject<ITokenizer>();
             mStopWords = reader.ReadObject<Set<string>.ReadOnly>();
             mStemmer = reader.ReadObject<IStemmer>();
-            mTfVectors.Load(reader);
             mMaxNGramLen = reader.ReadInt();
+            mMinWordFreq = reader.ReadInt();
             mWordWeightType = (WordWeightType)reader.ReadInt();
             mCutLowWeightsPerc = reader.ReadDouble();
             mNormalizeVectors = reader.ReadBool();
