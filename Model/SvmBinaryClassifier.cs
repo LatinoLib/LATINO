@@ -49,6 +49,8 @@ namespace Latino.Model
             = 1; // -s 1
         private double mKernelParamC
             = 0; // -r 0
+        private bool mBiasedCostFunction
+            = false; // -j
 
         private double mEps
             = 0.001; // -e 0.001
@@ -156,6 +158,12 @@ namespace Latino.Model
                 Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("Eps") : null);
                 mEps = value;
             }
+        }
+
+        public bool BiasedCostFunction
+        {
+            get { return mBiasedCostFunction; }
+            set { mBiasedCostFunction = value; }
         }
 
         public int MaxIter
@@ -290,6 +298,7 @@ namespace Latino.Model
                 double allFeat = 0.5 * ComputeCost(-1);
                 for (int i = 0; i < numFeat; i++)
                 {
+                    //Console.WriteLine("{0} / {1}", i + 1, numFeat);
                     double featScore = Math.Abs(allFeat - 0.5 * ComputeCost(/*rmvFeatIdx=*/i));
                     result.Add(new KeyDat<double, int>(featScore, i));
                 }
@@ -394,6 +403,7 @@ namespace Latino.Model
             int[] trainSet = new int[dataset.Count];
             int[] labels = new int[dataset.Count];
             Dictionary<LblT, int> lblToIdx = new Dictionary<LblT, int>(mLblCmp);
+            MultiSet<int> lblCount = new MultiSet<int>();
             int j = 0;
             foreach (LabeledExample<LblT, SparseVector<double>> lblEx in dataset)
             { 
@@ -413,10 +423,16 @@ namespace Latino.Model
                 }
                 Utils.ThrowException(lbl == 2 ? new ArgumentValueException("dataset") : null);
                 trainSet[j++] = SvmLightLib.NewFeatureVector(idx.Length, idx, val, lbl == 0 ? 1 : -1);
+                lblCount.Add(lbl == 0 ? 1 : -1);
             }
-            mModelId = SvmLightLib.TrainModel(string.Format("-v {0} -c {1} -t {2} -g {3} -d {4} -s {5} -r {6} -b {7} -e {8} -# {9} {10}", 
+            string costFactor = "";
+            if (mBiasedCostFunction)
+            {
+                costFactor = "-j " + ((double)lblCount.GetCount(-1) / (double)lblCount.GetCount(1));
+            }
+            mModelId = SvmLightLib.TrainModel(string.Format("-v {0} -c {1} -t {2} -g {3} -d {4} -s {5} -r {6} -b {7} -e {8} -# {9} {10} {11}", 
                 (int)mVerbosityLevel, mC, (int)mKernelType, mKernelParamGamma, mKernelParamD, mKernelParamS, mKernelParamC, mBiasedHyperplane ? 1 : 0,
-                mEps, mMaxIter, mCustomParams), trainSet.Length, trainSet);
+                mEps, mMaxIter, mCustomParams, costFactor), trainSet.Length, trainSet);
             // delete training vectors 
             foreach (int vecIdx in trainSet) { SvmLightLib.DeleteFeatureVector(vecIdx); }
         }
@@ -505,6 +521,7 @@ namespace Latino.Model
             writer.WriteDouble(mKernelParamD);
             writer.WriteDouble(mKernelParamS);
             writer.WriteDouble(mKernelParamC);
+            writer.WriteBool(mBiasedCostFunction);
             writer.WriteString(mCustomParams);
             writer.WriteDouble(mEps);
             writer.WriteInt(mMaxIter);
@@ -532,6 +549,7 @@ namespace Latino.Model
             mKernelParamD = reader.ReadDouble();
             mKernelParamS = reader.ReadDouble();
             mKernelParamC = reader.ReadDouble();
+            mBiasedCostFunction = reader.ReadBool();
             mCustomParams = reader.ReadString();
             mEps = reader.ReadDouble();
             mMaxIter = reader.ReadInt();
