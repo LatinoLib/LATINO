@@ -141,7 +141,7 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteObject(mParent);            
+            //writer.WriteObject(mParent);   // *** this will become endless loop when child will try to save parent and them parent the child again... (TODO but now the hierarchy must be saved from the root node which is not ok!)
             mChildren.Save(writer); // *** this will not work properly if two or more parents share a child cluster
             mItems.Save(writer);
             writer.WriteObject(mClusterInfo);
@@ -151,8 +151,9 @@ namespace Latino.Model
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            mParent = reader.ReadObject<Cluster>();
+            //mParent = reader.ReadObject<Cluster>();
             mChildren = new ArrayList<Cluster>(reader);
+            foreach (Cluster child in mChildren) child.Parent = this; //instead mParent = reader.ReadObject<Cluster>(); since it becomes endless lop when saving (TODO but now the hierarchy must be saved from the root node which is not ok!)
             mItems = new Set<int>(reader);
             mClusterInfo = reader.ReadObject<object>();
         }        
