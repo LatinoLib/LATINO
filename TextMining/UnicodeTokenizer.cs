@@ -90,7 +90,12 @@ namespace Latino.TextMining
             }
         }
 
-        public IEnumerator<string> GetEnumerator()
+        public ITokenizerEnumerator GetEnumerator() 
+		{
+            return new Enumerator(mText, mFilter, mMinTokenLen);
+        }
+
+        IEnumerator<string> IEnumerable<string>.GetEnumerator()
         {
             return new Enumerator(mText, mFilter, mMinTokenLen);
         }
@@ -124,7 +129,7 @@ namespace Latino.TextMining
            |
            '-----------------------------------------------------------------------
         */
-        public class Enumerator : IEnumerator<string>
+        public class Enumerator : ITokenizerEnumerator
         {
             [Flags]
             private enum FilterFlags
@@ -270,6 +275,14 @@ namespace Latino.TextMining
                 {
                     Utils.ThrowException(mStartIdx == mEndIdx ? new InvalidOperationException() : null);
                     return mText.Substring(mStartIdx, mEndIdx - mStartIdx);
+                }
+            }
+
+            public Pair<int,int> CurrentPos
+            {
+                get
+                {
+                    return new Pair<int,int>(mStartIdx,mEndIdx);
                 }
             }
 

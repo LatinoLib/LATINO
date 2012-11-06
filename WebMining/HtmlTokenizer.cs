@@ -362,7 +362,11 @@ namespace Latino.WebMining
             }
         }
 
-        public IEnumerator<string> GetEnumerator()
+        public ITokenizerEnumerator GetEnumerator() {
+            return new Enumerator(mTokenList, mStemmer, mNormalize);
+        }
+
+        IEnumerator<string> IEnumerable<string>.GetEnumerator()
         {
             return new Enumerator(mTokenList, mStemmer, mNormalize);
         }
@@ -402,7 +406,7 @@ namespace Latino.WebMining
            |
            '-----------------------------------------------------------------------
         */
-        public class Enumerator : IEnumerator<string>
+        public class Enumerator : ITokenizerEnumerator
         {
             private ArrayList<Token> mTokenList;
             private IStemmer mStemmer;
@@ -473,6 +477,10 @@ namespace Latino.WebMining
                 get { return Current; } // throws InvalidOperationException
             }
 
+            public Pair<int, int> CurrentPos {
+                get { throw new NotImplementedException(); }
+            }
+
             public bool MoveNext()
             {
                 if (mEnum.MoveNext())
@@ -498,6 +506,7 @@ namespace Latino.WebMining
             public void Dispose()
             {
             }
+
         }
     }
 }

@@ -85,8 +85,13 @@ namespace Latino.TextMining
             }
         }
 
-        public IEnumerator<string> GetEnumerator()
+        public ITokenizerEnumerator GetEnumerator()
         {
+            return new Enumerator(mText, mTokenRegex, mDelimRegex, mIgnoreUnknownTokens);
+        }
+
+        IEnumerator<string> IEnumerable<string>.GetEnumerator() 
+		{
             return new Enumerator(mText, mTokenRegex, mDelimRegex, mIgnoreUnknownTokens);
         }
 
@@ -123,7 +128,7 @@ namespace Latino.TextMining
            |
            '-----------------------------------------------------------------------
         */
-        public class Enumerator : IEnumerator<string>
+        public class Enumerator : ITokenizerEnumerator
         {
             private string mText;
             private Regex mTokenRegex;
@@ -218,6 +223,14 @@ namespace Latino.TextMining
                 {
                     Utils.ThrowException(mTokens.Count == 0 ? new InvalidOperationException() : null);
                     return mTokens.Peek().Second;
+                }
+            }
+
+            public Pair<int, int> CurrentPos 
+			{
+                get 
+				{
+                    return new Pair<int, int>(mTokens.Peek().First, mTokens.Peek().First + mTokens.Peek().Second.Length);
                 }
             }
 
