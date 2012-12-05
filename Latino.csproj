@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{5B86AAD5-3FEA-487C-A518-4F846AF09E18}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -140,7 +140,6 @@
     <Compile Include="ICloneable.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Model\IHierarchicalModel.cs" />
-    <None Include="app.config" />
     <None Include="Experimental\Model\HierarchicalCentroidClassifier.cs" />
     <Compile Include="Model\UnlabeledDataset.cs" />
     <Compile Include="Model\IUnlabeledDataset.cs" />
