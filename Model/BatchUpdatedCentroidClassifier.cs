@@ -2,8 +2,8 @@
  *
  *  This file is part of LATINO. See http://www.latinolib.org
  *
- *  File:    BatchUpdateCentroidClassifier.cs
- *  Desc:    Batch-update centroid classifier 
+ *  File:    BatchUpdatedCentroidClassifier.cs
+ *  Desc:    Batch-updated centroid classifier 
  *  Created: May-2009
  *
  *  Author:  Miha Grcar
@@ -19,7 +19,7 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class BatchUpdateCentroidClassifier<LblT>
+       |  Class BatchUpdatedCentroidClassifier<LblT>
        |
        '-----------------------------------------------------------------------
     */

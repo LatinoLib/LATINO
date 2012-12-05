@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    KnnClassifier.cs
- *  Desc:    K-nearest neighbors classifier 
+ *  Desc:    K-nearest neighbor classifier 
  *  Created: Aug-2007
  *
  *  Author:  Miha Grcar

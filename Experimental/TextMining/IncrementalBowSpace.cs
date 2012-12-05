@@ -48,14 +48,14 @@ namespace Latino.Experimental.TextMining
             = new ArrayList<SparseVector<double>>();
         private int mMaxNGramLen
             = 2;
-        private int mMinWordFreq
-            = 5;
-        private WordWeightType mWordWeightType
-            = WordWeightType.TermFreq;
-        private double mCutLowWeightsPerc
-            = 0.2;
-        private bool mNormalizeVectors
-            = true;
+        //private int mMinWordFreq
+        //    = 5;
+        //private WordWeightType mWordWeightType
+        //    = WordWeightType.TermFreq;
+        //private double mCutLowWeightsPerc
+        //    = 0.2;
+        //private bool mNormalizeVectors
+        //    = true;
         private ArrayList<int> mFreeIdx
             = new ArrayList<int>();
         private int mWordFormUpdateInit
@@ -114,37 +114,37 @@ namespace Latino.Experimental.TextMining
             }
         }
 
-        public int MinWordFreq
-        {
-            get { return mMinWordFreq; }
-            set
-            {
-                Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("MinWordFreq") : null);
-                mMinWordFreq = value;
-            }
-        }
+        //public int MinWordFreq
+        //{
+        //    get { return mMinWordFreq; }
+        //    set
+        //    {
+        //        Utils.ThrowException(value < 1 ? new ArgumentOutOfRangeException("MinWordFreq") : null);
+        //        mMinWordFreq = value;
+        //    }
+        //}
 
-        public WordWeightType WordWeightType
-        {
-            get { return mWordWeightType; }
-            set { mWordWeightType = value; }
-        }
+        //public WordWeightType WordWeightType
+        //{
+        //    get { return mWordWeightType; }
+        //    set { mWordWeightType = value; }
+        //}
 
-        public double CutLowWeightsPerc
-        {
-            get { return mCutLowWeightsPerc; }
-            set
-            {
-                Utils.ThrowException(value < 0 || value >= 1 ? new ArgumentOutOfRangeException("CutLowWeightsPerc") : null);
-                mCutLowWeightsPerc = value;
-            }
-        }
+        //public double CutLowWeightsPerc
+        //{
+        //    get { return mCutLowWeightsPerc; }
+        //    set
+        //    {
+        //        Utils.ThrowException(value < 0 || value >= 1 ? new ArgumentOutOfRangeException("CutLowWeightsPerc") : null);
+        //        mCutLowWeightsPerc = value;
+        //    }
+        //}
 
-        public bool NormalizeVectors
-        {
-            get { return mNormalizeVectors; }
-            set { mNormalizeVectors = value; }
-        }
+        //public bool NormalizeVectors
+        //{
+        //    get { return mNormalizeVectors; }
+        //    set { mNormalizeVectors = value; }
+        //}
 
         public ArrayList<Word>.ReadOnly Words
         {
@@ -163,11 +163,6 @@ namespace Latino.Experimental.TextMining
             {
                 writer.WriteLine("{0}\t{1}\t{2}\t{3}", wordInfo.Value.mMostFrequentForm, wordInfo.Key, wordInfo.Value.mFreq, wordInfo.Value.mDocFreq);
             }
-        }
-
-        private void CutLowWeights(ref SparseVector<double> vec)
-        {
-            ModelUtils.CutLowWeights(ref vec, mCutLowWeightsPerc);
         }
 
         private void ProcessNGramsPass1(ArrayList<WordStem> nGrams, int startIdx, Set<string> docWords)
@@ -207,219 +202,288 @@ namespace Latino.Experimental.TextMining
             }
         }
 
-        private void ProcessNGramsPass2(ArrayList<WordStem> nGrams, int startIdx, Dictionary<int, int> tfVec)
-        {
-            string nGramStem = "";
-            for (int i = startIdx; i < nGrams.Count; i++)
-            {
-                nGramStem += nGrams[i].Stem;
-                if (mWordInfo.ContainsKey(nGramStem))
-                {
-                    Word wordInfo = mWordInfo[nGramStem];
-                    if (wordInfo.mIdx == -1)
-                    {
-                        if (mFreeIdx.Count > 0)
-                        {
-                            wordInfo.mIdx = mFreeIdx.Last;
-                            mIdxInfo[wordInfo.mIdx] = wordInfo;
-                            mFreeIdx.RemoveAt(mFreeIdx.Count - 1);
-                        }
-                        else
-                        {
-                            wordInfo.mIdx = mIdxInfo.Count;
-                            mIdxInfo.Add(wordInfo);                        
-                        }
-                        tfVec.Add(wordInfo.mIdx, 1);
-                        
-                    }
-                    else if (!tfVec.ContainsKey(wordInfo.mIdx))
-                    {
-                        tfVec.Add(wordInfo.mIdx, 1);
-                    }
-                    else
-                    {
-                        tfVec[wordInfo.mIdx]++;
-                    }
-                }
-                else
-                {
-                    break;
-                }
-                nGramStem += " ";
-            }
-        }
+        //private void ProcessNGramsPass2(ArrayList<WordStem> nGrams, int startIdx, Dictionary<int, int> tfVec)
+        //{
+        //    string nGramStem = "";
+        //    for (int i = startIdx; i < nGrams.Count; i++)
+        //    {
+        //        nGramStem += nGrams[i].Stem;
+        //        if (mWordInfo.ContainsKey(nGramStem))
+        //        {
+        //            Word wordInfo = mWordInfo[nGramStem];
+        //            if (wordInfo.mIdx == -1)
+        //            {
+        //                if (mFreeIdx.Count > 0)
+        //                {
+        //                    wordInfo.mIdx = mFreeIdx.Last;
+        //                    mIdxInfo[wordInfo.mIdx] = wordInfo;
+        //                    mFreeIdx.RemoveAt(mFreeIdx.Count - 1);
+        //                }
+        //                else
+        //                {
+        //                    wordInfo.mIdx = mIdxInfo.Count;
+        //                    mIdxInfo.Add(wordInfo);                        
+        //                }
+        //                tfVec.Add(wordInfo.mIdx, 1);                        
+        //            }
+        //            else if (!tfVec.ContainsKey(wordInfo.mIdx))
+        //            {
+        //                tfVec.Add(wordInfo.mIdx, 1);
+        //            }
+        //            else
+        //            {
+        //                tfVec[wordInfo.mIdx]++;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            break;
+        //        }
+        //        nGramStem += " ";
+        //    }
+        //}
 
-        public void Initialize(IEnumerable<string> documents)
-        {
-            Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);            
-            mWordInfo.Clear();
-            mIdxInfo.Clear();
-            mTfVectors.Clear();
-            // build vocabulary
-            mLogger.Info("Initialize", "Building vocabulary ...");
-            int docCount = 0;
-            foreach (string document in documents)
-            {
-                docCount++;
-                mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
-                Set<string> docWords = new Set<string>();
-                ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                mTokenizer.Text = document;
-                foreach (string token in mTokenizer)
-                {
-                    string word = token.Trim().ToLower();
-                    if (mStopWords == null || !mStopWords.Contains(word))
-                    {
-                        string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
-                        if (nGrams.Count < mMaxNGramLen)
-                        {
-                            WordStem wordStem = new WordStem();
-                            wordStem.Word = word;
-                            wordStem.Stem = stem;
-                            nGrams.Add(wordStem);
-                            if (nGrams.Count < mMaxNGramLen) { continue; }
-                        }
-                        else
-                        {
-                            WordStem wordStem = nGrams[0];
-                            wordStem.Word = word;
-                            wordStem.Stem = stem;
-                            for (int i = 0; i < mMaxNGramLen - 1; i++) { nGrams[i] = nGrams[i + 1]; }
-                            nGrams[mMaxNGramLen - 1] = wordStem;
-                        }
-                        ProcessNGramsPass1(nGrams, 0, docWords);
-                    }
-                }
-                int startIdx = nGrams.Count == mMaxNGramLen ? 1 : 0;
-                for (int i = startIdx; i < nGrams.Count; i++)
-                {
-                    ProcessNGramsPass1(nGrams, i, docWords);
-                }
-            }
-            mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, docCount);
-            // determine most frequent word and n-gram forms
-            foreach (Word wordInfo in mWordInfo.Values)
-            { 
-                int max = 0;
-                foreach (KeyValuePair<string, int> wordForm in wordInfo.mForms)
-                { 
-                    if (wordForm.Value > max) 
-                    { 
-                        max = wordForm.Value;
-                        wordInfo.mMostFrequentForm = wordForm.Key;
-                    }
-                }
-            }
-            // compute bag-of-words vectors
-            mLogger.Info("Initialize", "Computing bag-of-words vectors ...");           
-            int docNum = 1;
-            foreach (string document in documents)
-            {
-                mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
-                Dictionary<int, int> tfVec = new Dictionary<int, int>();
-                ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                mTokenizer.Text = document;
-                foreach (string token in mTokenizer)
-                {
-                    string word = token.Trim().ToLower();                    
-                    if (mStopWords == null || !mStopWords.Contains(word))
-                    {
-                        string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
-                        if (nGrams.Count < mMaxNGramLen)
-                        {
-                            WordStem wordStem = new WordStem();
-                            wordStem.Word = word;
-                            wordStem.Stem = stem;
-                            nGrams.Add(wordStem);
-                            if (nGrams.Count < mMaxNGramLen) { continue; }
-                        }
-                        else
-                        {
-                            WordStem wordStem = nGrams[0];
-                            wordStem.Word = word;
-                            wordStem.Stem = stem;
-                            for (int i = 0; i < mMaxNGramLen - 1; i++) { nGrams[i] = nGrams[i + 1]; }
-                            nGrams[mMaxNGramLen - 1] = wordStem;
-                        }
-                        ProcessNGramsPass2(nGrams, 0, tfVec);
-                    }
-                }
-                int startIdx = nGrams.Count == mMaxNGramLen ? 1 : 0;
-                for (int i = startIdx; i < nGrams.Count; i++)
-                {
-                    ProcessNGramsPass2(nGrams, i, tfVec);
-                }
-                SparseVector<double> docVec = new SparseVector<double>();
-                foreach (KeyValuePair<int, int> tfItem in tfVec)
-                {
-                    docVec.InnerIdx.Add(tfItem.Key);
-                    docVec.InnerDat.Add(tfItem.Value);
-                }
-                docVec.Sort();
-                mTfVectors.Add(docVec);
-            }
-        }
+        //public void Initialize(IEnumerable<string> documents)
+        //{
+        //    Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);            
+        //    mWordInfo.Clear();
+        //    mIdxInfo.Clear();
+        //    mTfVectors.Clear();
+        //    // build vocabulary
+        //    mLogger.Info("Initialize", "Building vocabulary ...");
+        //    int docCount = 0;
+        //    foreach (string document in documents)
+        //    {
+        //        docCount++;
+        //        mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
+        //        Set<string> docWords = new Set<string>();
+        //        ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
+        //        mTokenizer.Text = document;
+        //        foreach (string token in mTokenizer)
+        //        {
+        //            string word = token.Trim().ToLower();
+        //            if (mStopWords == null || !mStopWords.Contains(word))
+        //            {
+        //                string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
+        //                if (nGrams.Count < mMaxNGramLen)
+        //                {
+        //                    WordStem wordStem = new WordStem();
+        //                    wordStem.Word = word;
+        //                    wordStem.Stem = stem;
+        //                    nGrams.Add(wordStem);
+        //                    if (nGrams.Count < mMaxNGramLen) { continue; }
+        //                }
+        //                else
+        //                {
+        //                    WordStem wordStem = nGrams[0];
+        //                    wordStem.Word = word;
+        //                    wordStem.Stem = stem;
+        //                    for (int i = 0; i < mMaxNGramLen - 1; i++) { nGrams[i] = nGrams[i + 1]; }
+        //                    nGrams[mMaxNGramLen - 1] = wordStem;
+        //                }
+        //                ProcessNGramsPass1(nGrams, 0, docWords);
+        //            }
+        //        }
+        //        int startIdx = nGrams.Count == mMaxNGramLen ? 1 : 0;
+        //        for (int i = startIdx; i < nGrams.Count; i++)
+        //        {
+        //            ProcessNGramsPass1(nGrams, i, docWords);
+        //        }
+        //    }
+        //    mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, docCount);
+        //    // determine most frequent word and n-gram forms
+        //    foreach (Word wordInfo in mWordInfo.Values)
+        //    { 
+        //        int max = 0;
+        //        foreach (KeyValuePair<string, int> wordForm in wordInfo.mForms)
+        //        { 
+        //            if (wordForm.Value > max) 
+        //            { 
+        //                max = wordForm.Value;
+        //                wordInfo.mMostFrequentForm = wordForm.Key;
+        //            }
+        //        }
+        //    }
+        //    // compute bag-of-words vectors
+        //    mLogger.Info("Initialize", "Computing bag-of-words vectors ...");           
+        //    int docNum = 1;
+        //    foreach (string document in documents)
+        //    {
+        //        mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
+        //        Dictionary<int, int> tfVec = new Dictionary<int, int>();
+        //        ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
+        //        mTokenizer.Text = document;
+        //        foreach (string token in mTokenizer)
+        //        {
+        //            string word = token.Trim().ToLower();                    
+        //            if (mStopWords == null || !mStopWords.Contains(word))
+        //            {
+        //                string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
+        //                if (nGrams.Count < mMaxNGramLen)
+        //                {
+        //                    WordStem wordStem = new WordStem();
+        //                    wordStem.Word = word;
+        //                    wordStem.Stem = stem;
+        //                    nGrams.Add(wordStem);
+        //                    if (nGrams.Count < mMaxNGramLen) { continue; }
+        //                }
+        //                else
+        //                {
+        //                    WordStem wordStem = nGrams[0];
+        //                    wordStem.Word = word;
+        //                    wordStem.Stem = stem;
+        //                    for (int i = 0; i < mMaxNGramLen - 1; i++) { nGrams[i] = nGrams[i + 1]; }
+        //                    nGrams[mMaxNGramLen - 1] = wordStem;
+        //                }
+        //                ProcessNGramsPass2(nGrams, 0, tfVec);
+        //            }
+        //        }
+        //        int startIdx = nGrams.Count == mMaxNGramLen ? 1 : 0;
+        //        for (int i = startIdx; i < nGrams.Count; i++)
+        //        {
+        //            ProcessNGramsPass2(nGrams, i, tfVec);
+        //        }
+        //        SparseVector<double> docVec = new SparseVector<double>(tfVec.Count);
+        //        foreach (KeyValuePair<int, int> tfItem in tfVec)
+        //        {
+        //            docVec.InnerIdx.Add(tfItem.Key);
+        //            docVec.InnerDat.Add(tfItem.Value);
+        //        }
+        //        docVec.Sort();
+        //        mTfVectors.Add(docVec);
+        //    }
+        //}
 
-        // TODO: exceptions
-        public ArrayList<SparseVector<double>> GetBowVectors()
+        public ArrayList<SparseVector<double>> GetMostOutdatedBows(int num, WordWeightType wordWeightType, bool normalizeVectors, double cutLowWeightsPerc,
+            int minWordFreq)
         {
-            ArrayList<SparseVector<double>> bowVectors = new ArrayList<SparseVector<double>>(mTfVectors.Count);            
-            if (mWordWeightType == WordWeightType.TermFreq)
+            num = Math.Min(num, mTfVectors.Count);
+            ArrayList<SparseVector<double>> bowVectors = new ArrayList<SparseVector<double>>(num);
+            if (wordWeightType == WordWeightType.TermFreq)
             {
-                foreach (SparseVector<double> tfVec in mTfVectors)
+                for (int i = 0; i < num; i++)
                 {
-                    SparseVector<double> tmp = new SparseVector<double>();
+                    SparseVector<double> tfVec = mTfVectors[i];
+                    SparseVector<double> tmp = new SparseVector<double>(tfVec.Count);
                     foreach (IdxDat<double> tfInfo in tfVec)
                     {
-                        if (mIdxInfo[tfInfo.Idx].Freq >= mMinWordFreq)
+                        if (mIdxInfo[tfInfo.Idx].Freq >= minWordFreq)
                         {
                             tmp.InnerIdx.Add(tfInfo.Idx);
                             tmp.InnerDat.Add(tfInfo.Dat);
                         }
                     }
-                    CutLowWeights(ref tmp);
-                    if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    ModelUtils.CutLowWeights(ref tmp, cutLowWeightsPerc);
+                    if (normalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
                     bowVectors.Add(tmp);
                 }
             }
-            else if (mWordWeightType == WordWeightType.TfIdf)
+            else if (wordWeightType == WordWeightType.TfIdf)
             {
-                foreach (SparseVector<double> tfVec in mTfVectors)
+                for (int i = 0; i < num; i++)
                 {
-                    SparseVector<double> tmp = new SparseVector<double>();
+                    SparseVector<double> tfVec = mTfVectors[i];
+                    SparseVector<double> tmp = new SparseVector<double>(tfVec.Count);
                     foreach (IdxDat<double> tfInfo in tfVec)
                     {
-                        if (mIdxInfo[tfInfo.Idx].Freq >= mMinWordFreq)
-                        {                           
+                        if (mIdxInfo[tfInfo.Idx].Freq >= minWordFreq)
+                        {
                             tmp.InnerIdx.Add(tfInfo.Idx);
                             tmp.InnerDat.Add(tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count));
                         }
                     }
-                    CutLowWeights(ref tmp);
-                    if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    ModelUtils.CutLowWeights(ref tmp, cutLowWeightsPerc);
+                    if (normalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
                     bowVectors.Add(tmp);
                 }
             }
-            else if (mWordWeightType == WordWeightType.LogDfTfIdf)
+            else if (wordWeightType == WordWeightType.LogDfTfIdf)
             {
-                foreach (SparseVector<double> tfVec in mTfVectors)
+                for (int i = 0; i < num; i++)
                 {
-                    SparseVector<double> tmp = new SparseVector<double>();
+                    SparseVector<double> tfVec = mTfVectors[i];
+                    SparseVector<double> tmp = new SparseVector<double>(tfVec.Count);
                     foreach (IdxDat<double> tfInfo in tfVec)
                     {
-                        if (mIdxInfo[tfInfo.Idx].Freq >= mMinWordFreq)
+                        if (mIdxInfo[tfInfo.Idx].Freq >= minWordFreq)
                         {
                             tmp.InnerIdx.Add(tfInfo.Idx);
                             double tfIdf = tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count);
                             tmp.InnerDat.Add(Math.Log(1 + mIdxInfo[tfInfo.Idx].mDocFreq) * tfIdf);
                         }
                     }
-                    CutLowWeights(ref tmp);
-                    if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    ModelUtils.CutLowWeights(ref tmp, cutLowWeightsPerc);
+                    if (normalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
                     bowVectors.Add(tmp);
                 }
             }
             return bowVectors;
+        }
+
+        public ArrayList<SparseVector<double>> GetMostRecentBows(int num, WordWeightType wordWeightType, bool normalizeVectors, double cutLowWeightsPerc,
+            int minWordFreq)
+        {
+            num = Math.Min(num, mTfVectors.Count);
+            ArrayList<SparseVector<double>> bowVectors = new ArrayList<SparseVector<double>>(num);
+            if (wordWeightType == WordWeightType.TermFreq)
+            {
+                for (int i = mTfVectors.Count - num; i < mTfVectors.Count; i++)
+                {
+                    SparseVector<double> tfVec = mTfVectors[i];
+                    SparseVector<double> tmp = new SparseVector<double>(tfVec.Count);
+                    foreach (IdxDat<double> tfInfo in tfVec)
+                    {
+                        if (mIdxInfo[tfInfo.Idx].Freq >= minWordFreq)
+                        {
+                            tmp.InnerIdx.Add(tfInfo.Idx);
+                            tmp.InnerDat.Add(tfInfo.Dat);
+                        }
+                    }
+                    ModelUtils.CutLowWeights(ref tmp, cutLowWeightsPerc);
+                    if (normalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    bowVectors.Add(tmp);
+                }
+            }
+            else if (wordWeightType == WordWeightType.TfIdf)
+            {
+                for (int i = mTfVectors.Count - num; i < mTfVectors.Count; i++)
+                {
+                    SparseVector<double> tfVec = mTfVectors[i];
+                    SparseVector<double> tmp = new SparseVector<double>(tfVec.Count);
+                    foreach (IdxDat<double> tfInfo in tfVec)
+                    {
+                        if (mIdxInfo[tfInfo.Idx].Freq >= minWordFreq)
+                        {
+                            tmp.InnerIdx.Add(tfInfo.Idx);
+                            tmp.InnerDat.Add(tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count));
+                        }
+                    }
+                    ModelUtils.CutLowWeights(ref tmp, cutLowWeightsPerc);
+                    if (normalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    bowVectors.Add(tmp);
+                }
+            }
+            else if (wordWeightType == WordWeightType.LogDfTfIdf)
+            {
+                for (int i = mTfVectors.Count - num; i < mTfVectors.Count; i++)
+                {
+                    SparseVector<double> tfVec = mTfVectors[i];
+                    SparseVector<double> tmp = new SparseVector<double>(tfVec.Count);
+                    foreach (IdxDat<double> tfInfo in tfVec)
+                    {
+                        if (mIdxInfo[tfInfo.Idx].Freq >= minWordFreq)
+                        {
+                            tmp.InnerIdx.Add(tfInfo.Idx);
+                            double tfIdf = tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count);
+                            tmp.InnerDat.Add(Math.Log(1 + mIdxInfo[tfInfo.Idx].mDocFreq) * tfIdf);
+                        }
+                    }
+                    ModelUtils.CutLowWeights(ref tmp, cutLowWeightsPerc);
+                    if (normalizeVectors) { ModelUtils.TryNrmVecL2(tmp); }
+                    bowVectors.Add(tmp);
+                }
+            }
+            return bowVectors;        
         }
 
         public int Count
@@ -427,10 +491,8 @@ namespace Latino.Experimental.TextMining
             get { return mTfVectors.Count; }
         }
 
-        // TODO: exceptions
-        public void Dequeue(int n, out Set<int> removedWords)
+        public void Dequeue(int n, Set<int> removedWords)
         {
-            removedWords = new Set<int>();
             for (int i = 0; i < n; i++)
             {
                 SparseVector<double> tfVec = mTfVectors[i];
@@ -452,14 +514,11 @@ namespace Latino.Experimental.TextMining
             mTfVectors.RemoveRange(0, n);
         }
 
-        // TODO: exceptions
-        public ArrayList<SparseVector<double>> Enqueue(IEnumerable<string> docs)
+        public void Enqueue(IEnumerable<string> docs, Set<int> addedWords)
         {
-            ArrayList<SparseVector<double>> retVal = new ArrayList<SparseVector<double>>();
             foreach (string doc in docs)
             {
-                SparseVector<double> tfVec = ProcessDocument(doc);
-                SparseVector<double> vec = null;
+                SparseVector<double> tfVec = ProcessDocument(doc, addedWords);
                 mTfVectors.Add(tfVec);
                 mWordFormUpdate--;
                 if (mWordFormUpdate == 0)
@@ -479,51 +538,10 @@ namespace Latino.Experimental.TextMining
                         }
                     }
                 }
-                if (mWordWeightType == WordWeightType.TermFreq)
-                {
-                    vec = new SparseVector<double>();
-                    foreach (IdxDat<double> item in tfVec)
-                    {
-                        if (mIdxInfo[item.Idx].Freq >= mMinWordFreq)
-                        {
-                            vec.InnerIdx.Add(item.Idx);
-                            vec.InnerDat.Add(item.Dat);
-                        }
-                    }
-                }
-                else if (mWordWeightType == WordWeightType.TfIdf)
-                {
-                    vec = new SparseVector<double>();
-                    foreach (IdxDat<double> item in tfVec)
-                    {
-                        if (mIdxInfo[item.Idx].Freq >= mMinWordFreq)
-                        {
-                            vec.InnerIdx.Add(item.Idx);
-                            vec.InnerDat.Add(item.Dat * Idf(mIdxInfo[item.Idx], mTfVectors.Count));
-                        }
-                    }
-                }
-                else if (mWordWeightType == WordWeightType.LogDfTfIdf)
-                {
-                    vec = new SparseVector<double>();
-                    foreach (IdxDat<double> item in tfVec)
-                    {
-                        if (mIdxInfo[item.Idx].Freq >= mMinWordFreq)
-                        {
-                            vec.InnerIdx.Add(item.Idx);
-                            double tfIdf = item.Dat * Idf(mIdxInfo[item.Idx], mTfVectors.Count);
-                            vec.InnerDat.Add(Math.Log(1 + mIdxInfo[item.Idx].mDocFreq) * tfIdf);
-                        }
-                    }
-                }
-                CutLowWeights(ref vec);
-                if (mNormalizeVectors) { ModelUtils.TryNrmVecL2(vec); }
-                retVal.Add(vec);
             }
-            return retVal;
         }
 
-        private void ProcessDocumentNGrams(ArrayList<WordStem> nGrams, int startIdx, Dictionary<int, int> tfVec, Set<string> docWords)
+        private void ProcessDocumentNGrams(ArrayList<WordStem> nGrams, int startIdx, Dictionary<int, int> tfVec, Set<string> docWords, Set<int> addedWords)
         {            
             string nGramStem = "";
             string nGram = "";
@@ -568,6 +586,7 @@ namespace Latino.Experimental.TextMining
                                 word.mIdx = mIdxInfo.Count;
                                 mIdxInfo.Add(word);
                             }
+                            addedWords.Add(word.mIdx);
                         }
                         tfVec.Add(word.mIdx, 1);
                     }
@@ -588,6 +607,7 @@ namespace Latino.Experimental.TextMining
                         word.mIdx = mIdxInfo.Count;
                         mIdxInfo.Add(word);
                     }
+                    addedWords.Add(word.mIdx);
                     tfVec.Add(word.mIdx, 1);
                 }
                 nGram += " ";
@@ -595,12 +615,12 @@ namespace Latino.Experimental.TextMining
             }
         }
 
-        public SparseVector<double> ProcessDocument(string document)
+        public SparseVector<double> ProcessDocument(string document, Set<int> addedWords)
         {
-            return ProcessDocument(document, mStemmer); // throws ArgumentNullException
+            return ProcessDocument(document, mStemmer, addedWords); // throws ArgumentNullException
         }
 
-        public SparseVector<double> ProcessDocument(string document, IStemmer stemmer)
+        public SparseVector<double> ProcessDocument(string document, IStemmer stemmer, Set<int> addedWords)
         {
             Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Set<string> docWords = new Set<string>();
@@ -629,15 +649,15 @@ namespace Latino.Experimental.TextMining
                         for (int i = 0; i < mMaxNGramLen - 1; i++) { nGrams[i] = nGrams[i + 1]; }
                         nGrams[mMaxNGramLen - 1] = wordStem;
                     }
-                    ProcessDocumentNGrams(nGrams, 0, tfVec, docWords);
+                    ProcessDocumentNGrams(nGrams, 0, tfVec, docWords, addedWords);
                 }
             }
             int startIdx = nGrams.Count == mMaxNGramLen ? 1 : 0;
             for (int i = startIdx; i < nGrams.Count; i++)
             {
-                ProcessDocumentNGrams(nGrams, i, tfVec, docWords);
+                ProcessDocumentNGrams(nGrams, i, tfVec, docWords, addedWords);
             }
-            SparseVector<double> docVec = new SparseVector<double>();
+            SparseVector<double> docVec = new SparseVector<double>(tfVec.Count);
             foreach (KeyValuePair<int, int> tfItem in tfVec)
             {
                 docVec.InnerIdx.Add(tfItem.Key);
@@ -729,10 +749,10 @@ namespace Latino.Experimental.TextMining
             writer.WriteObject(mStopWords);
             writer.WriteObject(mStemmer);
             writer.WriteInt(mMaxNGramLen);
-            writer.WriteInt(mMinWordFreq);
-            writer.WriteInt((int)mWordWeightType);
-            writer.WriteDouble(mCutLowWeightsPerc);
-            writer.WriteBool(mNormalizeVectors);
+            //writer.WriteInt(mMinWordFreq);
+            //writer.WriteInt((int)mWordWeightType);
+            //writer.WriteDouble(mCutLowWeightsPerc);
+            //writer.WriteBool(mNormalizeVectors);
         }
 
         public void Load(BinarySerializer reader)
@@ -743,10 +763,10 @@ namespace Latino.Experimental.TextMining
             mStopWords = reader.ReadObject<Set<string>.ReadOnly>();
             mStemmer = reader.ReadObject<IStemmer>();
             mMaxNGramLen = reader.ReadInt();
-            mMinWordFreq = reader.ReadInt();
-            mWordWeightType = (WordWeightType)reader.ReadInt();
-            mCutLowWeightsPerc = reader.ReadDouble();
-            mNormalizeVectors = reader.ReadBool();
+            //mMinWordFreq = reader.ReadInt();
+            //mWordWeightType = (WordWeightType)reader.ReadInt();
+            //mCutLowWeightsPerc = reader.ReadDouble();
+            //mNormalizeVectors = reader.ReadBool();
         }
     }
 }

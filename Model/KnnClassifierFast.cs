@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    KnnClassifierFast.cs
- *  Desc:    K-nearest neighbors classifier (optimized for speed)
+ *  Desc:    K-nearest neighbor classifier (optimized for speed)
  *  Created: Mar-2010
  *
  *  Author:  Miha Grcar

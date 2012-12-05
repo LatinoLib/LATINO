@@ -2,8 +2,8 @@
  *
  *  This file is part of LATINO. See http://www.latinolib.org
  *
- *  File:    CentroidClassifier.cs
- *  Desc:    Centroid classifier
+ *  File:    NearestCentroidClassifier.cs
+ *  Desc:    Nearest centroid classifier
  *  Created: Aug-2007
  *
  *  Author:  Miha Grcar
@@ -19,11 +19,11 @@ namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class CentroidClassifier<LblT>
+       |  Class NearestCentroidClassifier<LblT>
        |
        '-----------------------------------------------------------------------
     */
-    public class CentroidClassifier<LblT> : IModel<LblT, SparseVector<double>>
+    public class NearestCentroidClassifier<LblT> : IModel<LblT, SparseVector<double>>
     {
         private ArrayList<Pair<LblT, SparseVector<double>>> mCentroids
             = null;
@@ -33,16 +33,16 @@ namespace Latino.Model
         private bool mNormalize
             = false;
 
-        public CentroidClassifier(IEqualityComparer<LblT> lblCmp)
+        public NearestCentroidClassifier(IEqualityComparer<LblT> lblCmp)
         {
             mLblCmp = lblCmp;
         }
 
-        public CentroidClassifier() : this((IEqualityComparer<LblT>)null)
+        public NearestCentroidClassifier() : this((IEqualityComparer<LblT>)null)
         {
         }
 
-        public CentroidClassifier(BinarySerializer reader)
+        public NearestCentroidClassifier(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }

@@ -201,7 +201,7 @@ namespace Latino.Persistance
             foreach (object arg in args)
             {
                 OleDbParameter param = command.CreateParameter();
-                param.Value = arg == null ? System.DBNull.Value : arg;
+                param.Value = arg == null ? DBNull.Value : arg;
                 command.Parameters.Add(param);
             }
         }

@@ -4,7 +4,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D1AF292A-FBD6-4C2E-9177-92B5C6E24EDC}</ProjectGuid>
+    <ProjectGuid>{5F184E57-EA63-46F4-9B3F-DB038CCE20A3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Latino.Model</RootNamespace>
@@ -47,8 +47,8 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BatchUpdateCentroidClassifier.cs" />
-    <Compile Include="CentroidClassifier.cs" />
+    <Compile Include="BatchUpdatedCentroidClassifier.cs" />
+    <Compile Include="NearestCentroidClassifier.cs" />
     <Compile Include="CentroidData.cs" />
     <Compile Include="Cluster.cs" />
     <Compile Include="ClusteringResult.cs" />
