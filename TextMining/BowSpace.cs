@@ -187,8 +187,8 @@ namespace Latino.TextMining
         private bool mKeepWordForms
             = false;
 
-        private static Logger mLogger
-            = Logger.GetLogger(typeof(BowSpace));
+        private Logger mLogger
+            = Logger.GetInstanceLogger(typeof(BowSpace));
 
         public BowSpace()
         {
@@ -198,7 +198,7 @@ namespace Latino.TextMining
             tokenizer.MinTokenLen = 2;
         }
 
-        public BowSpace(BinarySerializer reader) : this()
+        public BowSpace(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
