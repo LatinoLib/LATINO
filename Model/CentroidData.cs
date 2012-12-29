@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    CentroidData.cs
- *  Desc:    Centroid data structure (internal; used for speed optimizations)
+ *  Desc:    Centroid data structure (used for speed optimizations)
  *  Created: May-2009
  *
  *  Author:  Miha Grcar
@@ -23,7 +23,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    internal class CentroidData : ISerializable
+    internal class CentroidData : ISerializable, ICloneable<CentroidData>
     {
         private Dictionary<int, double> mCentroidSum
             = new Dictionary<int, double>();
@@ -35,6 +35,8 @@ namespace Latino.Model
             = new Set<int>();
         private double mCentroidLen
             = -1;
+        private object mTag
+            = null;
 
         public CentroidData()
         {
@@ -43,6 +45,12 @@ namespace Latino.Model
         public CentroidData(BinarySerializer reader)
         {
             Load(reader);
+        }
+
+        public object Tag
+        {
+            get { return mTag; }
+            set { mTag = value; }
         }
 
         public void AddToSum(SparseVector<double> vec)
@@ -165,18 +173,51 @@ namespace Latino.Model
             return vec;
         }
 
+        // *** ICloneable<CentroidData> interface implementation ***
+
+        public CentroidData Clone()
+        {
+            CentroidData clone = new CentroidData();
+            foreach (KeyValuePair<int, double> item in mCentroidSum)
+            {
+                clone.mCentroidSum.Add(item.Key, item.Value);
+            }
+            foreach (KeyValuePair<int, double> item in mCentroidDiff)
+            {
+                clone.mCentroidDiff.Add(item.Key, item.Value);
+            }
+            clone.mItems.AddRange(mItems);
+            clone.mCurrentItems.AddRange(mCurrentItems);
+            clone.mCentroidLen = mCentroidLen;
+            clone.mTag = mTag; // *** tag is cloned shallowly
+            return clone;
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+
         // *** ISerializable interface implementation ***
 
         public void Save(BinarySerializer writer)
         {
             Utils.SaveDictionary(mCentroidSum, writer);
+            Utils.SaveDictionary(mCentroidDiff, writer);
+            mItems.Save(writer);
+            mCurrentItems.Save(writer);
             writer.WriteDouble(mCentroidLen);
+            writer.WriteObject(mTag);
         }
 
         public void Load(BinarySerializer reader)
         {
             mCentroidSum = Utils.LoadDictionary<int, double>(reader);
+            mCentroidDiff = Utils.LoadDictionary<int, double>(reader);
+            mItems.Load(reader);
+            mCurrentItems.Load(reader);
             mCentroidLen = reader.ReadDouble();
+            mTag = reader.ReadObject<object>();
         }
     }
 }

@@ -158,9 +158,9 @@ namespace Latino.TextMining
     {
         private class WordStem
         {
-            public string Word
+            public string mWord
                 = null;
-            public string Stem
+            public string mStem
                 = null;
         }
 
@@ -298,8 +298,8 @@ namespace Latino.TextMining
             string nGram = "";
             for (int i = startIdx; i < nGrams.Count; i++)
             {
-                nGram += nGrams[i].Word;
-                nGramStem += nGrams[i].Stem;
+                nGram += nGrams[i].mWord;
+                nGramStem += nGrams[i].mStem;
                 if (!mWordInfo.ContainsKey(nGramStem))
                 {
                     Word nGramInfo = new Word(nGram, nGramStem);
@@ -334,7 +334,7 @@ namespace Latino.TextMining
             string nGramStem = "";
             for (int i = startIdx; i < nGrams.Count; i++)
             {
-                nGramStem += nGrams[i].Stem;
+                nGramStem += nGrams[i].mStem;
                 if (mWordInfo.ContainsKey(nGramStem))
                 {
                     Word wordInfo = mWordInfo[nGramStem];
@@ -393,16 +393,16 @@ namespace Latino.TextMining
                             if (nGrams.Count < mMaxNGramLen)
                             {
                                 WordStem wordStem = new WordStem();
-                                wordStem.Word = word;
-                                wordStem.Stem = stem;
+                                wordStem.mWord = word;
+                                wordStem.mStem = stem;
                                 nGrams.Add(wordStem);
                                 if (nGrams.Count < mMaxNGramLen) { continue; }
                             }
                             else
                             {
                                 WordStem wordStem = nGrams[0];
-                                wordStem.Word = word;
-                                wordStem.Stem = stem;
+                                wordStem.mWord = word;
+                                wordStem.mStem = stem;
                                 for (int i = 0; i < mMaxNGramLen - 1; i++) { nGrams[i] = nGrams[i + 1]; }
                                 nGrams[mMaxNGramLen - 1] = wordStem;
                             }
@@ -439,40 +439,40 @@ namespace Latino.TextMining
                                 if (nGrams.Count < n)
                                 {
                                     WordStem wordStem = new WordStem();
-                                    wordStem.Word = word;
-                                    wordStem.Stem = stem;
+                                    wordStem.mWord = word;
+                                    wordStem.mStem = stem;
                                     nGrams.Add(wordStem);
                                     if (nGrams.Count < n) { continue; }
                                 }
                                 else
                                 {
                                     WordStem wordStem = nGrams[0];
-                                    wordStem.Word = word;
-                                    wordStem.Stem = stem;
+                                    wordStem.mWord = word;
+                                    wordStem.mStem = stem;
                                     for (int i = 0; i < n - 1; i++) { nGrams[i] = nGrams[i + 1]; }
                                     nGrams[n - 1] = wordStem;
                                 }
-                                string nGram = nGrams[0].Word;
-                                string nGramStem = nGrams[0].Stem;
+                                string nGram = nGrams[0].mWord;
+                                string nGramStem = nGrams[0].mStem;
                                 if (n > 1)
                                 {
                                     for (int i = 1; i < n - 1; i++)
                                     {
-                                        nGram += " " + nGrams[i].Word;
-                                        nGramStem += " " + nGrams[i].Stem;
+                                        nGram += " " + nGrams[i].mWord;
+                                        nGramStem += " " + nGrams[i].mStem;
                                     }
                                     if (!mWordInfo.ContainsKey(nGramStem)) { continue; }
                                     if (mWordInfo[nGramStem].mFreq < mMinWordFreq) { continue; }
                                     string nGramStem2 = "";
                                     for (int i = 1; i < n - 1; i++)
                                     {
-                                        nGramStem2 += nGrams[i].Stem + " ";
+                                        nGramStem2 += nGrams[i].mStem + " ";
                                     }
-                                    nGramStem2 += nGrams[n - 1].Stem;
+                                    nGramStem2 += nGrams[n - 1].mStem;
                                     if (!mWordInfo.ContainsKey(nGramStem2)) { continue; }
                                     if (mWordInfo[nGramStem2].mFreq < mMinWordFreq) { continue; }
-                                    nGram += " " + nGrams[n - 1].Word;
-                                    nGramStem += " " + nGrams[n - 1].Stem;
+                                    nGram += " " + nGrams[n - 1].mWord;
+                                    nGramStem += " " + nGrams[n - 1].mStem;
                                 }
                                 if (!mWordInfo.ContainsKey(nGramStem))
                                 {
@@ -550,16 +550,16 @@ namespace Latino.TextMining
                         if (nGrams.Count < mMaxNGramLen)
                         {
                             WordStem wordStem = new WordStem();
-                            wordStem.Word = word;
-                            wordStem.Stem = stem;
+                            wordStem.mWord = word;
+                            wordStem.mStem = stem;
                             nGrams.Add(wordStem);
                             if (nGrams.Count < mMaxNGramLen) { continue; }
                         }
                         else
                         {
                             WordStem wordStem = nGrams[0];
-                            wordStem.Word = word;
-                            wordStem.Stem = stem;
+                            wordStem.mWord = word;
+                            wordStem.mStem = stem;
                             for (int i = 0; i < mMaxNGramLen - 1; i++) { nGrams[i] = nGrams[i + 1]; }
                             nGrams[mMaxNGramLen - 1] = wordStem;
                         }
@@ -630,8 +630,8 @@ namespace Latino.TextMining
             string nGram = "";
             for (int i = startIdx; i < nGrams.Count; i++)
             {
-                nGram += nGrams[i].Word;
-                nGramStem += nGrams[i].Stem;
+                nGram += nGrams[i].mWord;
+                nGramStem += nGrams[i].mStem;
                 if (mWordInfo.ContainsKey(nGramStem))
                 {
                     int stemIdx = mWordInfo[nGramStem].mIdx;
@@ -669,16 +669,16 @@ namespace Latino.TextMining
                     if (nGrams.Count < mMaxNGramLen)
                     {
                         WordStem wordStem = new WordStem();
-                        wordStem.Word = word;
-                        wordStem.Stem = stem;
+                        wordStem.mWord = word;
+                        wordStem.mStem = stem;
                         nGrams.Add(wordStem);
                         if (nGrams.Count < mMaxNGramLen) { continue; }
                     }
                     else
                     {
                         WordStem wordStem = nGrams[0];
-                        wordStem.Word = word;
-                        wordStem.Stem = stem;
+                        wordStem.mWord = word;
+                        wordStem.mStem = stem;
                         for (int i = 0; i < mMaxNGramLen - 1; i++) { nGrams[i] = nGrams[i + 1]; }
                         nGrams[mMaxNGramLen - 1] = wordStem;
                     }

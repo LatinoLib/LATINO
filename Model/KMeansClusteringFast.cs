@@ -40,7 +40,7 @@ namespace Latino.Model
 
         public KMeansClusteringFast(int k)
         {
-            Utils.ThrowException(k < 2 ? new ArgumentOutOfRangeException("k") : null);
+            Utils.ThrowException(k < 1 ? new ArgumentOutOfRangeException("k") : null);
             mK = k;
         }
 
@@ -107,9 +107,24 @@ namespace Latino.Model
             get { return typeof(SparseVector<double>); }
         }
 
-        protected ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>> dataset, int k)
+        private ClusteringResult CreateSingleCluster(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
-            ClusteringResult clustering = null;
+            ClusteringResult clustering = new ClusteringResult();
+            Cluster root = new Cluster();
+            for (int i = 0; i < dataset.Count; i++) { root.Items.Add(i); }
+            clustering.AddRoot(root);
+            CentroidData centroid = new CentroidData();
+            centroid.Items.AddRange(root.Items);
+            centroid.Update(dataset);
+            centroid.UpdateCentroidLen();
+            mCentroids = new ArrayList<CentroidData>();
+            mCentroids.Add(centroid);
+            return clustering;
+        }
+
+        protected ClusteringResult kMeans(IUnlabeledExampleCollection<SparseVector<double>> dataset, int k)
+        {
+            if (k == 1) { return CreateSingleCluster(dataset); } // border case
             double globalBestClustQual = 0;
             for (int trial = 1; trial <= mTrials; trial++)
             {
@@ -158,85 +173,103 @@ namespace Latino.Model
                     centroids[i].Update(dataset);
                     centroids[i].UpdateCentroidLen();
                 }
-                double[][] dotProd = new double[k][];
-                SparseMatrix<double> dsMtx = ModelUtils.GetTransposedMatrix(dataset);
-                // main loop
-                int iter = 0;
-                double bestClustQual = 0;
-                double clustQual;
-                while (true)
-                {
-                    iter++;
-                    mLogger.Info("Cluster", "Iteration {0} ...", iter);
-                    clustQual = 0;
-                    // assign items to clusters
-                    int i = 0;
-                    foreach (CentroidData cen in centroids)
-                    {
-                        SparseVector<double> cenVec = cen.GetSparseVector();
-                        dotProd[i++] = ModelUtils.GetDotProductSimilarity(dsMtx, dataset.Count, cenVec);
-                    }
-                    for (int instIdx = 0; instIdx < dataset.Count; instIdx++)
-                    {
-                        double maxSim = double.MinValue;
-                        ArrayList<int> candidates = new ArrayList<int>();
-                        for (int cenIdx = 0; cenIdx < k; cenIdx++)
-                        {
-                            double sim = dotProd[cenIdx][instIdx];
-                            if (sim > maxSim)
-                            {
-                                maxSim = sim;
-                                candidates.Clear();
-                                candidates.Add(cenIdx);
-                            }
-                            else if (sim == maxSim)
-                            {
-                                candidates.Add(cenIdx);
-                            }
-                        }
-                        if (candidates.Count > 1)
-                        {
-                            candidates.Shuffle(mRnd);
-                        }
-                        centroids[candidates[0]].Items.Add(instIdx);
-                        clustQual += maxSim;
-                    }
-                    clustQual /= (double)dataset.Count;
-                    mLogger.Info("Cluster", "Quality: {0:0.0000}", clustQual);
-                    // compute new centroids
-                    foreach (CentroidData centroid in centroids)
-                    {
-                        centroid.Update(dataset);
-                        centroid.UpdateCentroidLen();
-                    }
-                    // check if done
-                    if (iter > 1 && clustQual - bestClustQual <= mEps)
-                    {
-                        break;
-                    }
-                    bestClustQual = clustQual;
-                }
+                // execute main loop
+                double clustQual;                
+                kMeansMainLoop(dataset, centroids, out clustQual);
                 if (trial == 1 || clustQual > globalBestClustQual)
                 {
                     globalBestClustQual = clustQual;
                     mCentroids = centroids;
-                    // save the result
-                    clustering = new ClusteringResult();
-                    foreach (CentroidData centroid in centroids)
-                    {
-                        clustering.AddRoot(new Cluster());
-                        clustering.Roots.Last.Items.AddRange(centroid.CurrentItems);
-                    }
                 }
             }
-            return clustering;        
+            return GetClusteringResult();
+        }
+
+        protected ClusteringResult GetClusteringResult()
+        {
+            ClusteringResult clustering = new ClusteringResult();
+            foreach (CentroidData centroid in mCentroids)
+            {
+                clustering.AddRoot(new Cluster());
+                clustering.Roots.Last.Items.AddRange(centroid.CurrentItems);
+            }
+            return clustering;    
+        }
+
+        internal void Assign(ArrayList<CentroidData> centroids, SparseMatrix<double> dataMtx, int instCount, int offs, out double clustQual)
+        {
+            int k = centroids.Count;
+            double[][] dotProd = new double[k][];
+            clustQual = 0;
+            int i = 0;
+            foreach (CentroidData cen in centroids)
+            {
+                SparseVector<double> cenVec = cen.GetSparseVector();
+                dotProd[i++] = ModelUtils.GetDotProductSimilarity(dataMtx, instCount, cenVec);
+            }
+            for (int instIdx = 0; instIdx < instCount; instIdx++)
+            {
+                double maxSim = double.MinValue;
+                ArrayList<int> candidates = new ArrayList<int>();
+                for (int cenIdx = 0; cenIdx < k; cenIdx++)
+                {
+                    double sim = dotProd[cenIdx][instIdx];
+                    if (sim > maxSim)
+                    {
+                        maxSim = sim;
+                        candidates.Clear();
+                        candidates.Add(cenIdx);
+                    }
+                    else if (sim == maxSim)
+                    {
+                        candidates.Add(cenIdx);
+                    }
+                }
+                if (candidates.Count > 1)
+                {
+                    candidates.Shuffle(mRnd);
+                }
+                centroids[candidates[0]].Items.Add(instIdx + offs);
+                clustQual += maxSim;
+            }
+            clustQual /= (double)instCount;
+        }
+
+        internal void Update(IUnlabeledExampleCollection<SparseVector<double>> dataset, ArrayList<CentroidData> centroids)
+        {
+            foreach (CentroidData centroid in centroids)
+            {
+                centroid.Update(dataset);
+                centroid.UpdateCentroidLen();
+            }
+        }
+
+        internal void kMeansMainLoop(IUnlabeledExampleCollection<SparseVector<double>> dataset, ArrayList<CentroidData> centroids, out double clustQual)
+        {
+            double[][] dotProd = new double[centroids.Count][];
+            SparseMatrix<double> dataMtx = ModelUtils.GetTransposedMatrix(dataset);
+            int iter = 0;
+            double bestClustQual = 0;
+            while (true)
+            {
+                iter++;
+                mLogger.Info("Cluster", "Iteration {0} ...", iter);
+                // assign items to clusters
+                Assign(centroids, dataMtx, dataset.Count, /*offs=*/0, out clustQual);                
+                mLogger.Info("Cluster", "Quality: {0:0.0000}", clustQual);
+                // update centroids
+                Update(dataset, centroids);
+                // check if done
+                if (iter > 1 && clustQual - bestClustQual <= mEps) { break; }
+                bestClustQual = clustQual;
+            }
         }
 
         public virtual ClusteringResult Cluster(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
-            Utils.ThrowException(dataset.Count < mK ? new ArgumentValueException("dataset") : null);
-            return Cluster(dataset, mK);
+            Utils.ThrowException(dataset.Count < mK ? new ArgumentValueException("dataset") : null);            
+            return kMeans(dataset, mK);
         }
 
         ClusteringResult IClustering.Cluster(IUnlabeledExampleCollection dataset)
