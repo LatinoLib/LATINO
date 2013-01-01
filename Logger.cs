@@ -39,25 +39,25 @@ namespace Latino
             public Dictionary<string, Node> mChildren
                 = new Dictionary<string, Node>();
 
-            private void PropagateSettings(Level level, OutputType outType, ProgressOutputType progressOutType)
+            private void PropagateSettings(Level level, OutputType outType, ProgressOutputType progressOutType, TextWriter outputWriter)
             {
                 foreach (KeyValuePair<string, Node> item in mChildren)
                 {
                     if (item.Value.mLogger != null)
                     {
-                        item.Value.mLogger.Inherit(level, outType, progressOutType);
+                        item.Value.mLogger.Inherit(level, outType, progressOutType, outputWriter);
                         item.Value.PropagateSettings();
                     }
                     else
                     {
-                        item.Value.PropagateSettings(level, outType, progressOutType);
+                        item.Value.PropagateSettings(level, outType, progressOutType, outputWriter);
                     }
                 }
             }
 
             public void PropagateSettings()
             {
-                PropagateSettings(mLogger.ActiveLevel, mLogger.ActiveOutputType, mLogger.ActiveProgressOutputType);
+                PropagateSettings(mLogger.ActiveLevel, mLogger.ActiveOutputType, mLogger.ActiveProgressOutputType, mLogger.ActiveOutputWriter);
             }
         }
 
@@ -123,8 +123,6 @@ namespace Latino
         private static object mDefaultProgressSender
             = new object();
 
-        private static TextWriter mOutputWriter
-            = null;
         private static CustomOutputDelegate mCustomOutput
             = null;
         private static CustomProgressOutputDelegate mCustomProgressOutput
@@ -138,29 +136,33 @@ namespace Latino
             = OutputType.Inherit;
         private ProgressOutputType mLocalProgressOutputType
             = ProgressOutputType.Inherit;
+        private TextWriter mLocalOutputWriter
+            = null; // inherit
 
         // inherited settings (set by the constructor)
         private Level mInheritedLevel;
         private OutputType mInheritedOutputType;
         private ProgressOutputType mInheritedProgressOutputType;
+        private TextWriter mInheritedOutputWriter;
 
         private Node mNode;
 
         static Logger()
         {
-            Logger logger = new Logger(/*name=*/null, Level.Info, OutputType.Console, ProgressOutputType.Console, mRoot = new Node());
+            Logger logger = new Logger(/*name=*/null, Level.Info, OutputType.Console, ProgressOutputType.Console, /*outputWriter=*/null, mRoot = new Node());
             mRoot.mLogger = logger;
             mRoot.mLogger.mLocalLevel = Level.Info;
             mRoot.mLogger.mLocalOutputType = OutputType.Console;
             mRoot.mLogger.mLocalProgressOutputType = ProgressOutputType.Console;
         }
 
-        private Logger(string name, Level level, OutputType outType, ProgressOutputType progressOutType, Node node)
+        private Logger(string name, Level level, OutputType outType, ProgressOutputType progressOutType, TextWriter outputWriter, Node node)
         {
             mName = name;
             mInheritedLevel = level;
             mInheritedOutputType = outType;
             mInheritedProgressOutputType = progressOutType;
+            mInheritedOutputWriter = outputWriter;
             mNode = node;
         }
 
@@ -177,6 +179,7 @@ namespace Latino
             Level level = node.mLogger.mLocalLevel;
             OutputType outType = node.mLogger.mLocalOutputType;
             ProgressOutputType progressOutType = node.mLogger.mLocalProgressOutputType;
+            TextWriter outputWriter = node.mLogger.mLocalOutputWriter;
             for (int i = 0; i < nodes.Length; i++)
             {
                 string nodeName = nodes[i];
@@ -188,16 +191,17 @@ namespace Latino
                         level = node.mLogger.ActiveLevel;
                         outType = node.mLogger.ActiveOutputType;
                         progressOutType = node.mLogger.ActiveProgressOutputType;
+                        outputWriter = node.mLogger.ActiveOutputWriter;
                     }
                     else if (i == nodes.Length - 1)
                     {
-                        node.mLogger = new Logger(name, level, outType, progressOutType, node);
+                        node.mLogger = new Logger(name, level, outType, progressOutType, outputWriter, node);
                     }
                 }
                 else if (i == nodes.Length - 1)
                 {
                     Node newNode = new Node();
-                    newNode.mLogger = new Logger(name, level, outType, progressOutType, newNode);
+                    newNode.mLogger = new Logger(name, level, outType, progressOutType, outputWriter, newNode);
                     node.mChildren.Add(nodeName, node = newNode);
                 }
                 else
@@ -248,11 +252,12 @@ namespace Latino
             get { return mName; }
         }
 
-        internal void Inherit(Level level, OutputType outType, ProgressOutputType progressOutType)
+        internal void Inherit(Level level, OutputType outType, ProgressOutputType progressOutType, TextWriter outputWriter)
         {
             mInheritedLevel = level;
             mInheritedOutputType = outType;
             mInheritedProgressOutputType = progressOutType;
+            mInheritedOutputWriter = outputWriter;
         }
 
         public Level LocalLevel
@@ -294,6 +299,19 @@ namespace Latino
             }
         }
 
+        public TextWriter LocalOutputWriter
+        {
+            get { return mLocalOutputWriter; }
+            set
+            {
+                lock (mRoot)
+                {
+                    mLocalOutputWriter = value;
+                    mNode.PropagateSettings();
+                }
+            }
+        }
+
         public Level ActiveLevel
         {
             get { return mLocalLevel == Level.Inherit ? mInheritedLevel : mLocalLevel; }
@@ -309,23 +327,22 @@ namespace Latino
             get { return mLocalProgressOutputType == ProgressOutputType.Inherit ? mInheritedProgressOutputType : mLocalProgressOutputType; }
         }
 
-        public CustomOutputDelegate CustomOutput
+        public TextWriter ActiveOutputWriter
+        {
+            get { return mLocalOutputWriter == null ? mInheritedOutputWriter : mLocalOutputWriter; }
+        }
+
+        public static CustomOutputDelegate CustomOutput
         {
             get { return mCustomOutput; }
             set { mCustomOutput = value; }
         }
 
-        public CustomProgressOutputDelegate CustomProgressOutput
+        public static CustomProgressOutputDelegate CustomProgressOutput
         {
             get { return mCustomProgressOutput; }
             set { mCustomProgressOutput = value; }
         }
-
-        public TextWriter OutputWriter
-        {
-            get { return mOutputWriter; }
-            set { mOutputWriter = value; }
-        }       
 
         private void Output(TextWriter writer, Level level, string funcName, Exception e, string message, params object[] args)
         {
@@ -348,6 +365,7 @@ namespace Latino
             if (ActiveLevel <= level)
             {
                 OutputType activeOutType = ActiveOutputType;
+                TextWriter activeOutWriter = ActiveOutputWriter;
                 if ((activeOutType & OutputType.Console) != 0)
                 {
                     lock (mConsoleLock)
@@ -356,12 +374,12 @@ namespace Latino
                         Output(Console.Out, level, funcName, e, message, args);
                     }
                 }
-                if ((activeOutType & OutputType.Writer) != 0 && mOutputWriter != null)
+                if ((activeOutType & OutputType.Writer) != 0 && activeOutWriter != null)
                 {
-                    lock (mOutputWriter)
+                    lock (activeOutWriter)
                     {
-                        Output(mOutputWriter, level, funcName, e, message, args);
-                    }
+                        Output(activeOutWriter, level, funcName, e, message, args);
+                    }                
                 }
                 if ((activeOutType & OutputType.Custom) != 0 && mCustomOutput != null)
                 {
