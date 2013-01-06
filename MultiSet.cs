@@ -318,6 +318,16 @@ namespace Latino
             return list;
         }
 
+        public Set<T> ToUnique()
+        {
+            Set<T> set = new Set<T>();
+            foreach (KeyValuePair<T, int> item in mItems)
+            {
+                set.Add(item.Key);
+            }
+            return set;
+        }
+
         public override string ToString()
         {
             StringBuilder str = new StringBuilder("{");
@@ -586,6 +596,11 @@ namespace Latino
             public List<KeyDat<int, T>> ToList()
             {
                 return mSet.ToList();
+            }
+
+            public Set<T> ToUnique()
+            {
+                return mSet.ToUnique();
             }
 
             public override string ToString()

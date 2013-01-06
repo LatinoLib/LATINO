@@ -284,7 +284,8 @@ namespace Latino
             str = str.Replace("\r", "").Replace('\n', ' ').Trim();
             if (compact)
             {
-                str = Regex.Replace(str, @"\s\s+", " ");
+                //str = Regex.Replace(str, @"\s\s+", " ");
+                str = Regex.Replace(str, @"\s+", " ");
             }
             return str;
         }
