@@ -107,6 +107,14 @@ namespace Latino.TextMining
             get { return mIdxInfo; }
         }
 
+        public Word GetWordFromStem(string stem)
+        {
+            Utils.ThrowException(stem == null ? new ArgumentNullException("stem") : null);
+            Word word;
+            mWordInfo.TryGetValue(stem.ToLower(), out word);
+            return word;
+        }
+
         private double Idf(Word word, int docCount)
         {
             return Math.Log((double)docCount / (double)word.mDocFreq);

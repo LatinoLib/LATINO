@@ -33,7 +33,7 @@ namespace Latino.Model
         private long mTopicId
             = 0;
 
-        private BowSpace mBowSpc // *** for debugging
+        private IncrementalBowSpace mBowSpc // *** for debugging
             = null;
         
         public IncrementalKMeansClustering(int initK) : base(initK) // throws ArgumentOutOfRangeException
@@ -45,7 +45,7 @@ namespace Latino.Model
         {
         }
 
-        public BowSpace BowSpace
+        public IncrementalBowSpace BowSpace
         {
             get { return mBowSpc; }
             set { mBowSpc = value; }
@@ -140,7 +140,7 @@ namespace Latino.Model
                 kMeans(batch, Math.Min(mK, batch.Count));
                 mDataset = new UnlabeledDataset<SparseVector<double>>(batch);
                 foreach (CentroidData centroid in mCentroids) { centroid.Tag = mTopicId++; }
-                OutputState();
+                //OutputState();
             }
             else
             {
@@ -183,7 +183,7 @@ namespace Latino.Model
                 mCentroids = centroidsNew;
                 // execute main loop
                 kMeansMainLoop(mDataset, mCentroids);
-                OutputState();
+                //OutputState();
             }
             // adjust k
             double minQual; // *** not used at the moment
@@ -205,7 +205,7 @@ namespace Latino.Model
                         mCentroids[minQualIdx].Tag = tmp;
                     }
                     qual = GetClustQual(out minQual, out minQualIdx);
-                    OutputState();
+                    //OutputState();
                 }
             }
             else if (numOutdated > 0)
@@ -248,9 +248,10 @@ namespace Latino.Model
                     { 
                         mCentroids = centroidsCopy; 
                     }
-                    OutputState();
+                    //OutputState();
                 }
-            }            
+            }
+            OutputState();
             return GetClusteringResult();
         }
 

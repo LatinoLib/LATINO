@@ -437,6 +437,11 @@ namespace Latino
             return null;
         }
 
+        public static string GetConfigValue(string key)
+        {
+            return GetConfigValue(key, /*defaultValue=*/null); // throws ArgumentNullException, ConfigurationErrorsException
+        }
+
         public static string GetConfigValue(string key, string defaultValue)
         {
             ThrowException(key == null ? new ArgumentNullException("key") : null);
