@@ -192,6 +192,7 @@ namespace Latino.Model
             {
                 clustering.AddRoot(new Cluster());
                 clustering.Roots.Last.Items.AddRange(centroid.CurrentItems);
+                clustering.Roots.Last.ClusterInfo = centroid.Tag;
             }
             return clustering;    
         }
