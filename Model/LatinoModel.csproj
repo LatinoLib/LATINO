@@ -64,6 +64,9 @@
     <Compile Include="ModelUtils.cs" />
     <Compile Include="NaiveBayesClassifier.cs" />
     <Compile Include="Prediction.cs" />
+    <Compile Include="SvmBinaryClassifier.cs" />
+    <Compile Include="SvmLightLib.cs" />
+    <Compile Include="SvmMulticlassFast.cs" />
     <Compile Include="UnlabeledDataset.cs" />
     <Compile Include="IUnlabeledDataset.cs" />
     <Compile Include="IUnlabeledExampleCollection.cs" />
