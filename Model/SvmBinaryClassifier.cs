@@ -12,6 +12,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Latino.Model
 {
@@ -430,7 +431,7 @@ namespace Latino.Model
             {
                 costFactor = "-j " + ((double)lblCount.GetCount(-1) / (double)lblCount.GetCount(1));                
             }
-            mModelId = SvmLightLib.TrainModel(string.Format("-v {0} -c {1} -t {2} -g {3} -d {4} -s {5} -r {6} -b {7} -e {8} -# {9} {10} {11}", 
+            mModelId = SvmLightLib.TrainModel(string.Format(CultureInfo.InvariantCulture, "-v {0} -c {1} -t {2} -g {3} -d {4} -s {5} -r {6} -b {7} -e {8} -# {9} {10} {11}", 
                 (int)mVerbosityLevel, mC, (int)mKernelType, mKernelParamGamma, mKernelParamD, mKernelParamS, mKernelParamC, mBiasedHyperplane ? 1 : 0,
                 mEps, mMaxIter, mCustomParams, costFactor), trainSet.Length, trainSet);
             // delete training vectors 
