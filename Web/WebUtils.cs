@@ -131,6 +131,7 @@ namespace Latino.Web
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url); // throws UriFormatException
                 request.Timeout = timeout;
                 request.Proxy = mWebProxy;
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6";
                 request.Accept = "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,*/*;q=0.5";
                 request.Headers.Add("Accept-Language", "en-us,en;q=0.5");
@@ -234,6 +235,7 @@ namespace Latino.Web
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url); // throws UriFormatException
                 request.Timeout = timeout;
                 request.Proxy = mWebProxy;
+                request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6";
                 request.Accept = "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,*/*;q=0.5";
                 request.Headers.Add("Accept-Language", "en-us,en;q=0.5");
