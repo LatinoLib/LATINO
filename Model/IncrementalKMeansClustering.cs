@@ -24,7 +24,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class IncrementalKMeansClustering : KMeansClusteringFast
+    public class IncrementalKMeansClustering : KMeansClusteringFast, ISerializable
     {
         private UnlabeledDataset<SparseVector<double>> mDataset
             = null;
@@ -43,6 +43,11 @@ namespace Latino.Model
 
         public IncrementalKMeansClustering() : this(/*initK=*/1)
         {
+        }
+
+        public IncrementalKMeansClustering(BinarySerializer reader) : this(/*initK=*/1)
+        {
+            Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
         public IncrementalBowSpace BowSpace
@@ -290,6 +295,34 @@ namespace Latino.Model
             }
             clustQual /= (double)mDataset.Count;
             return clustQual;
+        }
+
+        // *** ISerializable interface implementation ***
+
+        public void Save(BinarySerializer writer)
+        {
+            Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
+            // the following statements throw serialization-related exceptions 
+            writer.WriteDouble(mEps);
+            writer.WriteInt(mTrials);
+            writer.WriteInt(mK);
+            writer.WriteObject(mCentroids);
+            writer.WriteObject(mDataset);
+            writer.WriteDouble(mQualThresh);
+            writer.WriteLong(mTopicId);
+        }
+
+        public void Load(BinarySerializer reader)
+        {
+            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            // the following statements throw serialization-related exceptions 
+            mEps = reader.ReadDouble();
+            mTrials = reader.ReadInt();
+            mK = reader.ReadInt();
+            mCentroids = reader.ReadObject<ArrayList<CentroidData>>();
+            mDataset = reader.ReadObject<UnlabeledDataset<SparseVector<double>>>();
+            mQualThresh = reader.ReadDouble();
+            mTopicId = reader.ReadLong();
         }
     }
 }
