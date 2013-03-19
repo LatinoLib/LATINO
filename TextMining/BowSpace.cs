@@ -54,9 +54,9 @@ namespace Latino.TextMining
         internal double mIdf
             = -1;
 
-        internal Word(BinarySerializer reader)
+        public Word(BinarySerializer reader)
         {
-            Load(reader);
+            Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
         internal Word(string word, string stem)

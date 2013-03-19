@@ -525,13 +525,8 @@ namespace Latino.TextMining
         public void SaveVocabulary(BinarySerializer writer)
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
-            // the following statements throw serialization-related exceptions
-            writer.WriteInt(mWordInfo.Count);
-            foreach (KeyValuePair<string, Word> item in mWordInfo)
-            {
-                writer.WriteString(item.Key);
-                item.Value.Save(writer);
-            }
+            // the following statements throw serialization-related exceptions         
+            mIdxInfo.Save(writer);
         }
 
         public void LoadVocabulary(BinarySerializer reader)
@@ -539,20 +534,14 @@ namespace Latino.TextMining
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             ArrayList<IdxDat<Word>> tmp = new ArrayList<IdxDat<Word>>();
             // the following statements throw serialization-related exceptions
-            mWordInfo.Clear();
-            mIdxInfo.Clear();
-            int count = reader.ReadInt();
-            for (int i = 0; i < count; i++)
+            mWordInfo.Clear();         
+            mIdxInfo.Load(reader);
+            foreach (Word word in mIdxInfo)
             {
-                string key = reader.ReadString();
-                Word dat = new Word(reader);
-                mWordInfo.Add(key, dat);
-                tmp.Add(new IdxDat<Word>(dat.mIdx, dat));
-            }
-            tmp.Sort();
-            foreach (IdxDat<Word> item in tmp)
-            {
-                mIdxInfo.Add(item.Dat);
+                if (word != null) 
+                { 
+                    mWordInfo.Add(word.Stem, word); 
+                }
             }
         }
 
@@ -564,6 +553,9 @@ namespace Latino.TextMining
             writer.WriteObject(mStopWords);
             writer.WriteObject(mStemmer);
             writer.WriteInt(mMaxNGramLen);
+            mFreeIdx.Save(writer);
+            writer.WriteInt(mWordFormUpdateInit);
+            writer.WriteInt(mWordFormUpdate);            
             mTfVectors.Save(writer);
         }
 
@@ -575,6 +567,9 @@ namespace Latino.TextMining
             mStopWords = reader.ReadObject<Set<string>.ReadOnly>();
             mStemmer = reader.ReadObject<IStemmer>();
             mMaxNGramLen = reader.ReadInt();
+            mFreeIdx.Load(reader);
+            mWordFormUpdateInit = reader.ReadInt();
+            mWordFormUpdate = reader.ReadInt();            
             mTfVectors.Load(reader);
         }
     }
