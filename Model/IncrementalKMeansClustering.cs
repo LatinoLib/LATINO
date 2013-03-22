@@ -303,6 +303,7 @@ namespace Latino.Model
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions 
+            writer.WriteDotNetObject(mRnd);
             writer.WriteDouble(mEps);
             writer.WriteInt(mTrials);
             writer.WriteInt(mK);
@@ -316,6 +317,7 @@ namespace Latino.Model
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions 
+            mRnd = (Random)reader.ReadDotNetObject();
             mEps = reader.ReadDouble();
             mTrials = reader.ReadInt();
             mK = reader.ReadInt();

@@ -134,6 +134,7 @@ namespace Latino.TextMining
             writer.WriteInt(mDocFreq);
             writer.WriteInt(mFreq);
             writer.WriteDouble(mIdf);
+            Utils.SaveDictionary(mForms, writer);
         }
 
         internal void Load(BinarySerializer reader)
@@ -144,6 +145,7 @@ namespace Latino.TextMining
             mDocFreq = reader.ReadInt();
             mFreq = reader.ReadInt();
             mIdf = reader.ReadDouble();
+            mForms = Utils.LoadDictionary<string, int>(reader);
         }
     }
 
@@ -1120,6 +1122,7 @@ namespace Latino.TextMining
             writer.WriteInt((int)mWordWeightType);
             writer.WriteDouble(mCutLowWeightsPerc);
             writer.WriteBool(mNormalizeVectors);
+            writer.WriteBool(mKeepWordForms);
         }
 
         public void Load(BinarySerializer reader)
@@ -1134,21 +1137,7 @@ namespace Latino.TextMining
             mWordWeightType = (WordWeightType)reader.ReadInt();
             mCutLowWeightsPerc = reader.ReadDouble();
             mNormalizeVectors = reader.ReadBool();
-        }
-
-        public void LoadOld(BinarySerializer reader)
-        {
-            // the following statements throw serialization-related exceptions
-            LoadVocabulary(reader); // throws ArgumentNullException
-            mTokenizer = reader.ReadObject<ITokenizer>();
-            mStopWords = reader.ReadObject<Set<string>.ReadOnly>();
-            mStemmer = reader.ReadObject<IStemmer>();
-            new ArrayList<SparseVector<double>.ReadOnly>(reader);
-            mMaxNGramLen = reader.ReadInt();
-            mMinWordFreq = reader.ReadInt();
-            mWordWeightType = (WordWeightType)reader.ReadInt();
-            mCutLowWeightsPerc = reader.ReadDouble();
-            mNormalizeVectors = reader.ReadBool();
+            mKeepWordForms = reader.ReadBool();
         }
     }
 }

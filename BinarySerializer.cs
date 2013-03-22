@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Latino
 {
@@ -107,7 +108,7 @@ namespace Latino
             return (byte)val;
         }
 
-        public byte[] ReadBytes(int sz) 
+        public byte[] ReadBytes(int sz)
         {
             Utils.ThrowException(sz < 0 ? new ArgumentOutOfRangeException("sz") : null);
             if (sz == 0) { return new byte[0]; }
@@ -334,6 +335,12 @@ namespace Latino
             }
         }
 
+        public object ReadDotNetObject()
+        {
+            if (ReadByte() == 0) { return null; }
+            return new BinaryFormatter().Deserialize(new MemoryStream(ReadBytes(ReadInt()))); // throws SerializationException
+        }
+
         public T ReadObject<T>()
         {
             return (T)ReadObject(typeof(T)); // throws exceptions (see ReadObject(Type type))
@@ -524,7 +531,7 @@ namespace Latino
                 Marshal.StructureToPtr(val, buff, /*fDeleteOld=*/true);
                 Marshal.Copy(buff, bytes, /*startIndex=*/0, objSize);
                 Marshal.FreeHGlobal(buff);
-                Write(bytes);
+                Write(bytes); 
             }
             else
             {
@@ -569,6 +576,18 @@ namespace Latino
                     throw new ArgumentTypeException("obj");
                 }
             }
+        }
+
+        public void WriteDotNetObject(object obj)
+        {
+            Utils.ThrowException(obj != null && Attribute.GetCustomAttribute(obj.GetType(), typeof(SerializableAttribute)) == null ? new ArgumentTypeException("obj") : null);
+            if (obj == null) { WriteByte(0); return; }
+            WriteByte(1);            
+            MemoryStream ms = new MemoryStream();
+            new BinaryFormatter().Serialize(ms, obj); // throws SerializationException
+            byte[] buffer = ms.ToArray();
+            WriteInt(buffer.Length);
+            Write(buffer);
         }
 
         public void WriteObject<T>(T obj)
