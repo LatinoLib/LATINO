@@ -215,6 +215,7 @@ namespace Latino.Persistance
             try
             {
                 OleDbCommand command = new OleDbCommand(sqlStatement, mConnection);
+                command.CommandTimeout = 0;
                 if (mTransaction != null) { command.Transaction = mTransaction; }
                 AssignParamsToCommand(command, args);
                 int rowsAffected = command.ExecuteNonQuery(); // throws OleDbException
@@ -237,6 +238,7 @@ namespace Latino.Persistance
             try
             {
                 OleDbCommand command = new OleDbCommand(sqlSelectStatement, mConnection);
+                command.CommandTimeout = 0;
                 if (mTransaction != null) { command.Transaction = mTransaction; }
                 AssignParamsToCommand(command, args);
                 DataTable dataTable;
@@ -260,6 +262,7 @@ namespace Latino.Persistance
             try
             {
                 OleDbCommand command = new OleDbCommand(sqlSelectStatement, mConnection);
+                command.CommandTimeout = 0;
                 if (mTransaction != null) { command.Transaction = mTransaction; }
                 AssignParamsToCommand(command, args);
                 OleDbDataReader dataReader = command.ExecuteReader(); // throws OleDbException
