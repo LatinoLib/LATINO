@@ -42,6 +42,8 @@ namespace Latino.Web
             = 1;
         private static int mWaitBetweenRetries
             = 5000;
+        private static int mReadWriteTimeout
+            = 300000;
 
         // *** Getting Web content ***
 
@@ -75,8 +77,18 @@ namespace Latino.Web
             get { return mDefaultTimeout; }
             set
             {
-                Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("Timeout") : null);
+                Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("DefaultTimeout") : null);
                 mDefaultTimeout = value;
+            }
+        }
+
+        public static int ReadWriteTimeout
+        {
+            get { return mReadWriteTimeout; }
+            set
+            {
+                Utils.ThrowException(value <= 0 ? new ArgumentOutOfRangeException("ReadWriteTimeout") : null);
+                mReadWriteTimeout = value;
             }
         }
 
@@ -130,6 +142,7 @@ namespace Latino.Web
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url); // throws UriFormatException
                 request.Timeout = timeout;
+                request.ReadWriteTimeout = mReadWriteTimeout;
                 request.Proxy = mWebProxy;
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6";
@@ -234,6 +247,7 @@ namespace Latino.Web
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url); // throws UriFormatException
                 request.Timeout = timeout;
+                request.ReadWriteTimeout = mReadWriteTimeout;
                 request.Proxy = mWebProxy;
                 request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
                 request.UserAgent = "Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.8.0.6) Gecko/20060728 Firefox/1.5.0.6";
