@@ -28,7 +28,7 @@ namespace Latino
        |
        '-----------------------------------------------------------------------
     */
-    public class BinarySerializer
+    public class BinarySerializer : IDisposable
     {
         private static Dictionary<string, string> mFullToShortTypeName
             = new Dictionary<string, string>();
@@ -635,6 +635,13 @@ namespace Latino
         public Stream Stream
         {
             get { return mStream; }
+        }
+
+        // *** IDisposable interface implementation ***
+
+        public void Dispose()
+        {
+            mStream.Close();
         }
     }
 }
