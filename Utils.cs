@@ -22,6 +22,8 @@ using System.Web;
 using System.Text.RegularExpressions;
 using System.Text;
 using System.Configuration;
+using System.Globalization;
+using System.Reflection;
 
 namespace Latino
 {
@@ -559,6 +561,40 @@ namespace Latino
                 return null;
             }
             return dt.ToString(DATE_TIME_SIMPLE);
+        }
+
+        public static void SetDefaultCulture(CultureInfo culture)
+        {
+            ThrowException(culture == null ? new ArgumentNullException("culture") : null);
+            Type type = typeof(CultureInfo);
+            try
+            {
+                type.InvokeMember("s_userDefaultCulture",
+                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                    null,
+                    culture,
+                    new object[] { culture });
+                type.InvokeMember("s_userDefaultUICulture",
+                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                    null,
+                    culture,
+                    new object[] { culture });
+            }
+            catch { }
+            try
+            {
+                type.InvokeMember("m_userDefaultCulture",
+                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                    null,
+                    culture,
+                    new object[] { culture });
+                type.InvokeMember("m_userDefaultUICulture",
+                    BindingFlags.SetField | BindingFlags.NonPublic | BindingFlags.Static,
+                    null,
+                    culture,
+                    new object[] { culture });
+            }
+            catch { }
         }
 
         // *** Delegates ***
