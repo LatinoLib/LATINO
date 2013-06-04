@@ -12,6 +12,8 @@
  *
  ***************************************************************************/
 
+// TODO: "this"
+
 using System;
 using System.IO;
 using System.Diagnostics;
@@ -19,11 +21,14 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Xml;
 using System.Web;
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Configuration;
 using System.Globalization;
 using System.Reflection;
+using System.Data;
+using System.Data.SqlClient;
+using System.Threading;
 
 namespace Latino
 {
@@ -454,7 +459,7 @@ namespace Latino
 
         // *** Dictionary utilities ***
 
-        public static void SaveDictionary<KeyT, ValT>(Dictionary<KeyT, ValT> dict, BinarySerializer writer)
+        public static void SaveDictionary<KeyT, ValT>(this Dictionary<KeyT, ValT> dict, BinarySerializer writer)
         {
             ThrowException(dict == null ? new ArgumentNullException("dict") : null);
             ThrowException(writer == null ? new ArgumentNullException("writer") : null);
@@ -467,12 +472,12 @@ namespace Latino
             }
         }
 
-        public static Dictionary<KeyT, ValT> LoadDictionary<KeyT, ValT>(BinarySerializer reader)
+        public static Dictionary<KeyT, ValT> LoadDictionary<KeyT, ValT>(this BinarySerializer reader)
         {
             return LoadDictionary<KeyT, ValT>(reader, /*comparer=*/null); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        public static Dictionary<KeyT, ValT> LoadDictionary<KeyT, ValT>(BinarySerializer reader, IEqualityComparer<KeyT> comparer)
+        public static Dictionary<KeyT, ValT> LoadDictionary<KeyT, ValT>(this BinarySerializer reader, IEqualityComparer<KeyT> comparer)
         {
             ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             Dictionary<KeyT, ValT> dict = new Dictionary<KeyT, ValT>(comparer);
@@ -489,12 +494,12 @@ namespace Latino
 
         // *** XML utilities ***
 
-        public static string ReplaceSurrogates(string text)
+        public static string ReplaceSurrogates(this string text)
         {
             return ReplaceSurrogates(text, '\uFFFD'); 
         }
 
-        public static string ReplaceSurrogates(string text, char replacement)
+        public static string ReplaceSurrogates(this string text, char replacement)
         {          
             if (text == null) { return null; }
             char[] buffer = new char[text.Length];
@@ -508,7 +513,7 @@ namespace Latino
             return new string(buffer);
         }
 
-        public static string XmlReadValue(XmlReader reader, string attrName)
+        public static string XmlReadValue(this XmlReader reader, string attrName)
         {
             ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
@@ -523,7 +528,7 @@ namespace Latino
             return text;
         }
 
-        public static void XmlSkip(XmlReader reader, string attrName)
+        public static void XmlSkip(this XmlReader reader, string attrName)
         {
             ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             ThrowException(attrName == null ? new ArgumentNullException("attrName") : null);
@@ -531,19 +536,122 @@ namespace Latino
             while (reader.Read() && !(reader.NodeType == XmlNodeType.EndElement && reader.Name == attrName)) { }
         }
 
+        // *** DB utilities ***
+
+        public static object RetryOnDeadlock(Func<object> action, int numRetries, int sleep, Logger logger)
+        {
+            Utils.ThrowException(action == null ? new ArgumentNullException("action") : null);
+            Utils.ThrowException(sleep < 0 ? new ArgumentOutOfRangeException("sleep") : null);
+            Utils.ThrowException(numRetries < 0 ? new ArgumentOutOfRangeException("numRetries") : null);
+            for (int i = 0; (numRetries == 0) ? true : (i <= numRetries); i += (numRetries > 0) ? 1 : 0)
+            {
+                try
+                {
+                    return action();
+                }
+                catch (SqlException e)
+                {
+                    if (!e.Message.Contains("deadlock") || (i == numRetries && i != 0)) { throw e; }                    
+                    if (logger != null) { logger.Warn("RetryOnDeadlock", e); }
+                }
+                Thread.Sleep(sleep);
+            }
+            return null; // unreachable code
+        }
+
+        public static object RetryOnDeadlock(Func<object> action, Logger logger)
+        {
+            return RetryOnDeadlock(action, /*numRetries=*/0, /*sleep=*/0, logger); // throws ArgumentNullException, ArgumentOutOfRangeException
+        }
+
+        public static object RetryOnDeadlock(Func<object> action)
+        {
+            return RetryOnDeadlock(action, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException
+        }
+
+        public static int ExecuteNonQueryRetryOnDeadlock(this SqlCommand sqlCmd, int numRetries, int sleep, Logger logger)
+        { 
+            Utils.ThrowException(sqlCmd == null ? new ArgumentNullException("sqlCmd") : null);
+            return (int)RetryOnDeadlock(delegate() { return sqlCmd.ExecuteNonQuery(); }, numRetries, sleep, logger); // throws ArgumentOutOfRangeException, SqlException
+        }
+
+        public static int ExecuteNonQueryRetryOnDeadlock(this SqlCommand sqlCmd, Logger logger)
+        {
+            return ExecuteNonQueryRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, logger); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+        }
+
+        public static int ExecuteNonQueryRetryOnDeadlock(this SqlCommand sqlCmd)
+        {
+            return ExecuteNonQueryRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+        }
+
+        public static object ExecuteScalarRetryOnDeadlock(this SqlCommand sqlCmd, int numRetries, int sleep, Logger logger)
+        {
+            Utils.ThrowException(sqlCmd == null ? new ArgumentNullException("sqlCmd") : null);
+            return RetryOnDeadlock(delegate() { return sqlCmd.ExecuteScalar(); }, numRetries, sleep, logger); // throws ArgumentOutOfRangeException, SqlException
+        }
+
+        public static object ExecuteScalarRetryOnDeadlock(this SqlCommand sqlCmd, Logger logger)
+        {
+            return ExecuteScalarRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, logger); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+        }
+
+        public static object ExecuteScalarRetryOnDeadlock(this SqlCommand sqlCmd)
+        {
+            return ExecuteScalarRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+        }
+
+        public static void WriteToServerRetryOnDeadlock(this SqlBulkCopy bulkCopy, DataTable table, int numRetries, int sleep, Logger logger)
+        {
+            Utils.ThrowException(bulkCopy == null ? new ArgumentNullException("bulkCopy") : null);
+            Utils.ThrowException(table == null ? new ArgumentNullException("table") : null);
+            RetryOnDeadlock(delegate() { bulkCopy.WriteToServer(table); return null; }, numRetries, sleep, logger); // throws ArgumentOutOfRangeException, SqlException
+        }
+
+        public static void WriteToServerRetryOnDeadlock(this SqlBulkCopy bulkCopy, DataTable table, Logger logger)
+        {
+            WriteToServerRetryOnDeadlock(bulkCopy, table, /*numRetries=*/0, /*sleep=*/0, logger); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+        }
+
+        public static void WriteToServerRetryOnDeadlock(this SqlBulkCopy bulkCopy, DataTable table)
+        {
+            WriteToServerRetryOnDeadlock(bulkCopy, table, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+        }
+
+        public static T GetValue<T>(this SqlDataReader reader, string colName)
+        {
+            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            object obj = reader.GetValue(reader.GetOrdinal(colName)); // throws IndexOutOfRangeException
+            if (obj is DBNull) { return default(T); }
+            return (T)obj; // throws InvalidCastException
+        }
+
+        public static void AssignParams(this SqlCommand command, params object[] args)
+        {
+            Utils.ThrowException(command == null ? new ArgumentNullException("command") : null);
+            Utils.ThrowException(args == null ? new ArgumentNullException("command") : null);
+            for (int i = 0; i < args.Length; i += 2)
+            {
+                Utils.ThrowException(!(args[i] is string) ? new ArgumentValueException("args") : null);
+                object val = args[i + 1];
+                SqlParameter param = new SqlParameter((string)args[i], val == null ? DBNull.Value : val);
+                command.Parameters.Add(param);
+            }
+        }
+
         // *** Other utilities ***
 
-        public static bool IsFiniteNumber(double val)
+        public static bool IsFiniteNumber(this double val)
         {
             return !double.IsInfinity(val) && !double.IsNaN(val);
         }
 
-        public static bool IsFiniteNumber(float val)
+        public static bool IsFiniteNumber(this float val)
         {
             return !float.IsInfinity(val) && !float.IsNaN(val);
         }
 
-        public static string NormalizeDateTimeStr(string dateTimeStr)
+        public static string NormalizeDateTimeStr(string dateTimeStr) // *** rmv
         {
             ThrowException(dateTimeStr == null ? new ArgumentNullException("dateTimeStr") : null);
             dateTimeStr = dateTimeStr.Trim();
