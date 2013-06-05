@@ -242,7 +242,7 @@ namespace Latino.WebMining
             ArrayList<KeyDat<string, string>> queryParsed;
             ParseUrl(url, out left, out path, out queryParsed);
             string content = title == null ? "" : Normalize(title);
-            string cid = Utils.GetStringHashCode128(content).ToString("N");
+            string cid = Utils.GetHashCode128(content).ToString("N");
             queryParsed.InsertSorted(new KeyDat<string, string>("__cid__", cid)); // inject content-id query parameter
             string url1 = UrlAsString(left, path, queryParsed, null);
             foreach (string prefix in mBlacklist)

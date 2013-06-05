@@ -181,7 +181,7 @@ namespace Latino.WebMining
         public static ulong ComputeHashCode(string textBlock, bool alphaOnly)
         {
             string txtNormalized = Normalize(textBlock, alphaOnly, /*toLower=*/true);
-            return Utils.GetStringHashCode64(txtNormalized);
+            return Utils.GetHashCode64(txtNormalized);
         }
 
         public static ArrayList<ulong> ComputeHashCodes(IEnumerable<string> textBlocks, bool alphaOnly)

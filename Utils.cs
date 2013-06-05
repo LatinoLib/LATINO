@@ -12,15 +12,12 @@
  *
  ***************************************************************************/
 
-// TODO: "this"
-
 using System;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Xml;
-using System.Web;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Configuration;
@@ -258,14 +255,14 @@ namespace Latino
 
         // *** String utilities ***
 
-        public static Guid GetStringHashCode128(string str)
+        public static Guid GetHashCode128(this string str)
         {
             ThrowException(str == null ? new ArgumentNullException("str") : null);
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             return new Guid(md5.ComputeHash(Encoding.UTF8.GetBytes(str)));
         }
 
-        public static ulong GetStringHashCode64(string str)
+        public static ulong GetHashCode64(this string str)
         {
             ThrowException(str == null ? new ArgumentNullException("str") : null);
             byte[] hashCode128 = new MD5CryptoServiceProvider().ComputeHash(Encoding.UTF8.GetBytes(str));
@@ -274,18 +271,18 @@ namespace Latino
             return part1 ^ part2;
         }
 
-        public static string Truncate(string str, int len)
+        public static string Truncate(this string str, int len)
         {
             ThrowException(len < 0 ? new ArgumentOutOfRangeException("len") : null);
             return (str != null && str.Length > len) ? str.Substring(0, len) : str;
         }
 
-        public static string ToOneLine(string str)
+        public static string ToOneLine(this string str)
         {
             return ToOneLine(str, /*compact=*/false);
         }
 
-        public static string ToOneLine(string str, bool compact)
+        public static string ToOneLine(this string str, bool compact)
         {
             if (str == null) { return null; }
             str = str.Replace("\r", "").Replace('\n', ' ').Trim();
@@ -297,7 +294,7 @@ namespace Latino
             return str;
         }
 
-        public static CaseType GetCaseType(string str) 
+        public static CaseType GetCaseType(this string str) 
         {
             ThrowException(str == null ? new ArgumentNullException("str") : null);
             str = str.Trim();
@@ -377,7 +374,7 @@ namespace Latino
             }
         }
 
-        public static byte[] ReadAllBytes(Stream stream, int sizeLimit)
+        public static byte[] ReadAllBytes(this Stream stream, int sizeLimit)
         {
             ThrowException(stream == null ? new ArgumentNullException("stream") : null);
             byte[] buffer = new byte[32768];
@@ -455,6 +452,21 @@ namespace Latino
             string value = ConfigurationManager.AppSettings[key]; // throws ConfigurationErrorsException 
             if (value == null) { value = defaultValue; }
             return value;
+        }
+
+        public static T GetConfigValue<T>(string key, string defaultValue)
+        {
+            string val = GetConfigValue(key, defaultValue); // throws ArgumentNullException, ConfigurationErrorsException
+            // the following statements throw ArgumentNullException, FormatException, OverflowException, InvalidCastException
+            if (typeof(T) == typeof(TimeSpan)) { return (T)(object)TimeSpan.Parse(val); }
+            else if (typeof(T) == typeof(int)) { return (T)(object)Convert.ToInt32(val); }
+            else if (typeof(T) == typeof(double)) { return (T)(object)Convert.ToDouble(val); }
+            else return (T)(object)val;
+        }
+
+        public static T GetConfigValue<T>(string key)
+        {
+            return GetConfigValue<T>(key, /*defaultValue=*/null); // throws ArgumentNullException, ConfigurationErrorsException, type conversion exceptions
         }
 
         // *** Dictionary utilities ***
