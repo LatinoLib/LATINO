@@ -461,6 +461,7 @@ namespace Latino
             if (typeof(T) == typeof(TimeSpan)) { return (T)(object)TimeSpan.Parse(val); }
             else if (typeof(T) == typeof(int)) { return (T)(object)Convert.ToInt32(val); }
             else if (typeof(T) == typeof(double)) { return (T)(object)Convert.ToDouble(val); }
+            else if (typeof(T) == typeof(bool)) { return (T)(object)(val != null && new ArrayList<string>(new string[] { "yes", "on", "true", "y", "1" }).Contains(val.ToLower())); }
             else return (T)(object)val;
         }
 
