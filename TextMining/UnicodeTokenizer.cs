@@ -3,7 +3,7 @@
  *  This file is part of LATINO. See http://www.latinolib.org
  *
  *  File:    UnicodeTokenizer.cs
- *  Desc:    Text tokenizer based on rules
+ *  Desc:    Text tokenizer based on Unicode line-splitting rules
  *  Created: Dec-2008
  *
  *  Author:  Miha Grcar
