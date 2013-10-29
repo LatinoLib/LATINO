@@ -10,6 +10,8 @@
  *
  ***************************************************************************/
 
+#define LARGE_SCALE
+
 using System;
 using System.Collections.Generic;
 using Latino.Model;
@@ -127,11 +129,14 @@ namespace Latino.Visualization
             StressMajorizationLayout sm = new StressMajorizationLayout(dsRefInst.Count, new DistFunc(simMtx));
             sm.Random = mRandom;
             Vector2D[] centrPos = sm.ComputeLayout();
-            // k-NN
+            // k-NN            
+#if !LARGE_SCALE
             mLogger.Info("ComputeLayout", "Computing similarities ...");
             simMtx = ModelUtils.GetDotProductSimilarity(dataset, mSimThresh, /*fullMatrix=*/true);
+#endif
             mLogger.Info("ComputeLayout", "Constructing system of linear equations ...");
             LabeledDataset<double, SparseVector<double>> lsqrDs = new LabeledDataset<double, SparseVector<double>>();
+#if !LARGE_SCALE
             foreach (IdxDat<SparseVector<double>> simMtxRow in simMtx)
             {
                 if (simMtxRow.Dat.Count <= 1)
@@ -159,6 +164,39 @@ namespace Latino.Visualization
                 eq[simMtxRow.Idx] = 1;
                 lsqrDs.Add(0, eq);
             }
+#else
+            int k = 0;
+            SparseMatrix<double> trMtx = ModelUtils.GetTransposedMatrix(dataset);
+            foreach (SparseVector<double> example in dataset)
+            {
+                IdxDat<SparseVector<double>> simMtxRow = new IdxDat<SparseVector<double>>(k++, ModelUtils.GetDotProductSimilarity(trMtx, dataset.Count, example, /*thresh=*/0));
+                mLogger.ProgressFast(Logger.Level.Info, "ComputeLayout", "Progress {0} / {1}", k, dataset.Count);
+                if (simMtxRow.Dat.Count <= 1)
+                {
+                    mLogger.Warn("ComputeLayout", "Instance #{0} has no neighborhood.", simMtxRow.Idx);
+                }
+                ArrayList<KeyDat<double, int>> knn = new ArrayList<KeyDat<double, int>>(simMtxRow.Dat.Count);
+                foreach (IdxDat<double> item in simMtxRow.Dat)
+                {
+                    if (item.Idx != simMtxRow.Idx)
+                    {
+                        knn.Add(new KeyDat<double, int>(item.Dat, item.Idx));
+                    }
+                }
+                knn.Sort(DescSort<KeyDat<double, int>>.Instance);
+                int count = Math.Min(knn.Count, mKNN);
+                SparseVector<double> eq = new SparseVector<double>();
+                double wgt = 1.0 / (double)count;
+                for (int i = 0; i < count; i++)
+                {
+                    eq.InnerIdx.Add(knn[i].Dat);
+                    eq.InnerDat.Add(-wgt);
+                }
+                eq.InnerIdx.Sort(); // *** sort only indices
+                eq[simMtxRow.Idx] = 1;
+                lsqrDs.Add(0, eq);
+            }
+#endif
             Vector2D[] layout = new Vector2D[dataset.Count - mKClust];
             for (int i = dataset.Count - mKClust, j = 0; i < dataset.Count; i++, j++)
             {

@@ -163,9 +163,9 @@ namespace Latino.Visualization
                     if (pt.Y < min.Y) { min.Y = pt.Y; }
                 }
                 double innerWidth = mWidth - 2.0 * mMarginHoriz;
-                Utils.ThrowException(innerWidth <= 0 ? new ArgumentOutOfRangeException("Width and/or MarginHoriz") : null);
+                Utils.ThrowException(innerWidth <= 0 ? new ArgumentOutOfRangeException("MarginHoriz") : null);
                 double innerHeight = mHeight - 2.0 * mMarginVert;
-                Utils.ThrowException(innerHeight <= 0 ? new ArgumentOutOfRangeException("Height and/or MarginVert") : null);
+                Utils.ThrowException(innerHeight <= 0 ? new ArgumentOutOfRangeException("MarginVert") : null);
                 double actualWidth = max.X - min.X;
                 double actualHeight = max.Y - min.Y;
                 int i = 0;
@@ -195,9 +195,9 @@ namespace Latino.Visualization
                 stdev.X = Math.Sqrt(stdev.X / (double)ptCount);
                 stdev.Y = Math.Sqrt(stdev.Y / (double)ptCount);
                 double innerWidth = mWidth - 2.0 * mMarginHoriz;
-                Utils.ThrowException(innerWidth <= 0 ? new ArgumentOutOfRangeException("Width and/or MarginHoriz") : null);
+                Utils.ThrowException(innerWidth <= 0 ? new ArgumentOutOfRangeException("MarginHoriz") : null);
                 double innerHeight = mHeight - 2.0 * mMarginVert;
-                Utils.ThrowException(innerHeight <= 0 ? new ArgumentOutOfRangeException("Height and/or MarginVert") : null);
+                Utils.ThrowException(innerHeight <= 0 ? new ArgumentOutOfRangeException("MarginVert") : null);
                 double actualWidth = mStdevMult * stdev.X * 2.0;
                 double actualHeight = mStdevMult * stdev.Y * 2.0;
                 Vector2D min = new Vector2D(avg.X - mStdevMult * stdev.X, avg.Y - mStdevMult * stdev.Y);
