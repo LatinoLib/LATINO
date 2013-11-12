@@ -639,6 +639,13 @@ namespace Latino
             return (T)obj; // throws InvalidCastException
         }
 
+        public static bool HasValue(this SqlDataReader reader, string colName)
+        {
+            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            object obj = reader.GetValue(reader.GetOrdinal(colName)); // throws IndexOutOfRangeException
+            return !(obj is DBNull);
+        }
+
         public static void AssignParams(this SqlCommand command, params object[] args)
         {
             Utils.ThrowException(command == null ? new ArgumentNullException("command") : null);

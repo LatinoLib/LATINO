@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5B86AAD5-3FEA-487C-A518-4F846AF09E18}</ProjectGuid>
+    <ProjectGuid>{F6F3655B-A731-4A05-A460-6026BE69BAB7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Latino</RootNamespace>
@@ -24,7 +24,8 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -70,6 +71,7 @@
     <Compile Include="Model\AgglomerativeKMeansClusteringFast.cs" />
     <Compile Include="Model\BatchUpdatedCentroidClassifier.cs" />
     <Compile Include="Model\CentroidData.cs" />
+    <Compile Include="Model\ConfusionMatrix.cs" />
     <Compile Include="Model\HierarchicalBisectingClusteringFast.cs" />
     <Compile Include="Model\NearestCentroidClassifier.cs" />
     <Compile Include="Model\SvmBinaryClassifier.cs" />
