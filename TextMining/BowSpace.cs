@@ -30,6 +30,7 @@ namespace Latino.TextMining
     { 
         TermFreq,
         TfIdf,
+        TfIdfSafe,
         LogDfTfIdf
     }
 

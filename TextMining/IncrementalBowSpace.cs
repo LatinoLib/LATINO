@@ -193,7 +193,7 @@ namespace Latino.TextMining
                     bowVectors.Add(tmp);
                 }
             }
-            else if (wordWeightType == WordWeightType.TfIdf)
+            else if (wordWeightType == WordWeightType.TfIdf || wordWeightType == WordWeightType.TfIdfSafe)
             {
                 for (int i = 0; i < num; i++)
                 {
@@ -204,7 +204,7 @@ namespace Latino.TextMining
                         if (mIdxInfo[tfInfo.Idx].Freq >= minWordFreq)
                         {
                             tmp.InnerIdx.Add(tfInfo.Idx);
-                            tmp.InnerDat.Add(tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count));
+                            tmp.InnerDat.Add(tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count + (wordWeightType == WordWeightType.TfIdf ? 0 : 1)));
                         }
                     }
                     ModelUtils.CutLowWeights(ref tmp, cutLowWeightsPerc);
@@ -262,7 +262,7 @@ namespace Latino.TextMining
                     bowVectors.Add(tmp);
                 }
             }
-            else if (wordWeightType == WordWeightType.TfIdf)
+            else if (wordWeightType == WordWeightType.TfIdf || wordWeightType == WordWeightType.TfIdfSafe)
             {
                 for (int i = mTfVectors.Count - num; i < mTfVectors.Count; i++)
                 {
@@ -273,7 +273,7 @@ namespace Latino.TextMining
                         if (mIdxInfo[tfInfo.Idx].Freq >= minWordFreq)
                         {
                             tmp.InnerIdx.Add(tfInfo.Idx);
-                            tmp.InnerDat.Add(tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count));
+                            tmp.InnerDat.Add(tfInfo.Dat * Idf(mIdxInfo[tfInfo.Idx], mTfVectors.Count + (wordWeightType == WordWeightType.TfIdf ? 0 : 1)));
                         }
                     }
                     ModelUtils.CutLowWeights(ref tmp, cutLowWeightsPerc);
