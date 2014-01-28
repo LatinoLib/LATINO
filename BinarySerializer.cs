@@ -178,6 +178,11 @@ namespace Latino
             return BitConverter.ToUInt16(Read<ushort>(), 0);
         }
 
+        public DateTime ReadDateTime()
+        {
+            return DateTime.FromBinary(ReadLong());
+        }
+
         public string ReadString8()
         {
             int len = ReadInt();
@@ -268,6 +273,10 @@ namespace Latino
             else if (type == typeof(ushort))
             {
                 return ReadUShort();
+            }
+            else if (type == typeof(DateTime))
+            {
+                return ReadDateTime();
             }
             else if (typeof(ISerializable).IsAssignableFrom(type))
             {
@@ -441,6 +450,11 @@ namespace Latino
             Write(BitConverter.GetBytes(val));
         }
 
+        public void WriteDateTime(DateTime val)
+        {
+            Write(BitConverter.GetBytes(val.ToBinary()));
+        }
+
         public void WriteString8(string val)
         {
             if (val == null) { WriteInt(-1); return; }
@@ -518,6 +532,10 @@ namespace Latino
             {
                 WriteUShort((ushort)val);
             }
+            else if (val is DateTime)
+            {
+                WriteDateTime((DateTime)val);
+            }
             else if (val is ISerializable)
             {
                 ((ISerializable)val).Save(this); // throws serialization-related exceptions
@@ -531,7 +549,7 @@ namespace Latino
                 Marshal.StructureToPtr(val, buff, /*fDeleteOld=*/true);
                 Marshal.Copy(buff, bytes, /*startIndex=*/0, objSize);
                 Marshal.FreeHGlobal(buff);
-                Write(bytes); 
+                Write(bytes);
             }
             else
             {
