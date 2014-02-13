@@ -75,7 +75,7 @@ namespace Latino.TextMining
             mLanguageProfiles.Add(l);
         }
 
-        public void BuildProfilesFromCorpus(string dir, int cutOff)
+        public void BuildProfilesFromCorpus(string dir, int cutOff, Encoding codePage, Encoding loadAs)
         {
             Utils.ThrowException(dir == null ? new ArgumentNullException("dir") : null);
             Utils.ThrowException(!Utils.VerifyFolderName(dir, /*mustExist=*/true) ? new ArgumentValueException("dir") : null);
@@ -100,8 +100,8 @@ namespace Latino.TextMining
                 {
                     // add new language
                     mLogger.Debug("BuildProfilesFromCorpus", lang + ": " + Path.GetFileName(f));
-                    langProfile = new LanguageProfile(mN, lang);
-                    langProfile.AddTokensFromFile(f);
+                    langProfile = new LanguageProfile(mN, lang, codePage);
+                    langProfile.AddTokensFromFile(f, loadAs);
                     mLanguageProfiles.Add(langProfile);
                     lastLang = lang;
                 }
@@ -109,7 +109,7 @@ namespace Latino.TextMining
                 {
                     // add corpus file to the last language added
                     mLogger.Debug("BuildProfilesFromCorpus", lang + ": " + Path.GetFileName(f));
-                    langProfile.AddTokensFromFile(f);
+                    langProfile.AddTokensFromFile(f, loadAs);
                 }
             }
             // ranks n-grams
@@ -123,7 +123,7 @@ namespace Latino.TextMining
 
         public void BuildProfilesFromCorpus(string dir)
         {
-            BuildProfilesFromCorpus(dir, /*cutOff=*/500); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException
+            BuildProfilesFromCorpus(dir, /*cutOff=*/500, /*codePage=*/Encoding.UTF8, /*loadAs=*/Encoding.UTF8); // throws ArgumentNullException, ArgumentValueException, InvalidOperationException
         }  
 
         public LanguageProfile DetectLanguage(NGramProfile p, int cutOff)
@@ -255,9 +255,9 @@ namespace Latino.TextMining
     public class LanguageProfile : NGramProfile
     {
         private Language mLang;
-        private string mCodePage;
+        private Encoding mCodePage;
 
-        public LanguageProfile(int n, Language lang, string codePage) : base(n) // throws ArgumentOutOfRangeException
+        public LanguageProfile(int n, Language lang, Encoding codePage) : base(n) // throws ArgumentOutOfRangeException
         {
             Utils.ThrowException(lang == Language.Unspecified ? new ArgumentValueException("lang") : null);
             mLang = lang;
@@ -282,7 +282,7 @@ namespace Latino.TextMining
             get { return mLang; }
         }
 
-        public string CodePage
+        public Encoding CodePage
         {
             get { return mCodePage; }
         }
@@ -294,7 +294,7 @@ namespace Latino.TextMining
             // the following statements throw serialization-related exceptions
             base.Save(writer); // throws ArgumentNullException
             writer.WriteInt((int)mLang);
-            writer.WriteString(mCodePage);
+            writer.WriteString(mCodePage == null ? null : mCodePage.WebName);
         }
 
         public override void Load(BinarySerializer reader)
@@ -302,7 +302,8 @@ namespace Latino.TextMining
             // the following statements throw serialization-related exceptions
             base.Load(reader); // throws ArgumentNullException
             mLang = (Language)reader.ReadInt();
-            mCodePage = reader.ReadString();
+            string codePageName = reader.ReadString();
+            mCodePage = codePageName == null ? null : Encoding.GetEncoding(codePageName);
         }
     }
 
@@ -365,16 +366,16 @@ namespace Latino.TextMining
             AddTokens(tokenizer);
         }
 
-        public void AddTokensFromFile(string file)
+        public void AddTokensFromFile(string file, Encoding loadAs)
         {
-            AddTokensFromFile(file, TokenizerType.AlphaOnly);
+            AddTokensFromFile(file, TokenizerType.AlphaOnly, loadAs);
         }
 
-        public void AddTokensFromFile(string file, TokenizerType tokType)
+        public void AddTokensFromFile(string file, TokenizerType tokType, Encoding loadAs)
         {
             Utils.ThrowException(!Utils.VerifyFileNameOpen(file) ? new ArgumentValueException("file") : null);
             Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
-            StreamReader reader = Utils.GetUnicodeSignature(file) != null ? new StreamReader(file) : new StreamReader(file, Encoding.UTF8);
+            StreamReader reader = new StreamReader(file, loadAs);
             SimpleTokenizer tokenizer = new SimpleTokenizer();
             tokenizer.Type = tokType;
             string line;
