@@ -32,7 +32,7 @@ namespace Latino.Web
         private static Regex mContentCharsetRegex
             = new Regex(@"(\<\?xml[^>]+encoding\s*=\s*(([""'](?<enc>[^""']+)[""'])|((?<enc>[^\s>""';]+))))|(\<meta[^>]+charset\s*=\s*(([""'](?<enc>[^""']+)[""'])|((?<enc>[^\s>""';]+))))|(\<meta[^>]+charset[^>]+content\s*=\s*(([""'](?<enc>[^""']+)[""'])|((?<enc>[^\s>""';]+))))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static Regex mHtmlOrXmlMimeTypeRegex
-            = new Regex(@"(text/html)|(application/xhtml\+xml)|(application/xml)|(application/[^+]+\+xml)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            = new Regex(@"(text/xml)|(text/html)|(application/xhtml\+xml)|(application/xml)|(application/[^+]+\+xml)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private static IWebProxy mWebProxy
             = WebRequest.DefaultWebProxy;
