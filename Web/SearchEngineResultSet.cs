@@ -25,7 +25,7 @@ namespace Latino.Web
        |
        '-----------------------------------------------------------------------
     */
-    public class SearchEngineResultSet : IEnumerableList<SearchEngineResultItem>, ICloneable, IXmlSerializable, ISerializable
+    public class SearchEngineResultSet : IEnumerableList<SearchEngineResultItem>, ICloneable, /*IXmlSerializable,*/ ISerializable
     {
         private ArrayList<SearchEngineResultItem> mItems
             = new ArrayList<SearchEngineResultItem>();

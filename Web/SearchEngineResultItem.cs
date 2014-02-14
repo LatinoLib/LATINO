@@ -21,7 +21,7 @@ namespace Latino.Web
        |
        '-----------------------------------------------------------------------
     */
-    public class SearchEngineResultItem : ISerializable, IXmlSerializable
+    public class SearchEngineResultItem : ISerializable//, IXmlSerializable
     {
         private string mTitle;
         private string mSnippet;
