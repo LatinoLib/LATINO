@@ -11,6 +11,7 @@
  ***************************************************************************/
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -139,7 +140,7 @@ namespace Latino.WebMining
         private bool mTokenizeTextBlocks;
         private bool mApplySkipRules;
 
-        private static Set<string> mSkipTagList
+        private Set<string> mSkipTags
             = new Set<string>(new string[] { "script", "noscript", "style", "noxhtml" });
 
         public HtmlTokenizer(string text, IStemmer stemmer, bool decodeTextBlocks, bool tokenizeTextBlocks, bool applySkipRules)
@@ -179,6 +180,20 @@ namespace Latino.WebMining
             htmlDoc.OptionCheckSyntax = false;
             htmlDoc.OptionReadEncoding = false;
             // *** set htmlDoc.OptionUseIdAttribute?
+        }
+
+        public void AddSkipTags(IEnumerable<string> skipTags)
+        {
+            Utils.ThrowException(skipTags == null ? new ArgumentNullException("skipTags") : null);
+            Utils.ThrowException(skipTags.Any(x => x == null) ? new ArgumentValueException("skipTags") : null);
+            mSkipTags.AddRange(skipTags.Select(x => x.ToLower()));
+        }
+
+        public void RemoveSkipTags(IEnumerable<string> skipTags)
+        {
+            Utils.ThrowException(skipTags == null ? new ArgumentNullException("skipTags") : null);
+            Utils.ThrowException(skipTags.Any(x => x == null) ? new ArgumentValueException("skipTags") : null);
+            mSkipTags.RemoveRange(skipTags.Select(x => x.ToLower()));
         }
 
         private IEnumerable<Token> CreateToken(HtmlNode node, out Token endTag, RegexTokenizer textBlockTokenizer)
@@ -304,7 +319,7 @@ namespace Latino.WebMining
                 Token endTag;
                 IEnumerable<Token> tokens = CreateToken(node, out endTag, textBlockTokenizer);
                 if (tokens != null) { mTokenList.AddRange(tokens); }
-                if (!mApplySkipRules || !mSkipTagList.Contains(node.Name.ToLower()))
+                if (!mApplySkipRules || !mSkipTags.Contains(node.Name.ToLower()))
                 {
                     CreateTokens(node.ChildNodes, textBlockTokenizer);
                 }
