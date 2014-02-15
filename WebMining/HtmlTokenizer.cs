@@ -182,20 +182,6 @@ namespace Latino.WebMining
             // *** set htmlDoc.OptionUseIdAttribute?
         }
 
-        public void AddSkipTags(IEnumerable<string> skipTags)
-        {
-            Utils.ThrowException(skipTags == null ? new ArgumentNullException("skipTags") : null);
-            Utils.ThrowException(skipTags.Any(x => x == null) ? new ArgumentValueException("skipTags") : null);
-            mSkipTags.AddRange(skipTags.Select(x => x.ToLower()));
-        }
-
-        public void RemoveSkipTags(IEnumerable<string> skipTags)
-        {
-            Utils.ThrowException(skipTags == null ? new ArgumentNullException("skipTags") : null);
-            Utils.ThrowException(skipTags.Any(x => x == null) ? new ArgumentValueException("skipTags") : null);
-            mSkipTags.RemoveRange(skipTags.Select(x => x.ToLower()));
-        }
-
         private IEnumerable<Token> CreateToken(HtmlNode node, out Token endTag, RegexTokenizer textBlockTokenizer)
         {
             IEnumerable<Token> tokens = null;
