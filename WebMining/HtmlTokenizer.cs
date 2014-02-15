@@ -141,7 +141,7 @@ namespace Latino.WebMining
         private bool mApplySkipRules;
 
         private Set<string> mSkipTags
-            = new Set<string>(new string[] { "script", "noscript", "style", "noxhtml" });
+            = new Set<string>(new string[] { "script", "noscript", "style" });
 
         public HtmlTokenizer(string text, IStemmer stemmer, bool decodeTextBlocks, bool tokenizeTextBlocks, bool applySkipRules)
         {
