@@ -239,6 +239,12 @@
     <Compile Include="TextMining\LemmaSharp\RuleWeighted.cs" />
     <Compile Include="TextMining\StopWords\SpanishStopWords.cs" />
     <None Include="Experimental\Visualization\IncrementalSemanticSpaceLayout.cs" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-ibm852.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-ibm870.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-iso-8859-2.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-utf-8.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-windows-1250.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-x-mac-ce.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\tr-ibm857.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\tr-iso-8859-9.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\tr-utf-8.ldp" />
