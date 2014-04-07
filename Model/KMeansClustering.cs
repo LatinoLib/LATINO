@@ -117,7 +117,7 @@ namespace Latino.Model
             double globalBestClustQual = 0;
             for (int trial = 1; trial <= mTrials; trial++)
             {
-                mLogger.Info("Cluster", "Clustering trial {0} of {1} ...", trial, mTrials);
+                mLogger.Trace("Cluster", "Clustering trial {0} of {1} ...", trial, mTrials);
                 ArrayList<SparseVector<double>> centroids = null;
                 clustering = new ClusteringResult();
                 for (int i = 0; i < mK; i++) { clustering.AddRoot(new Cluster()); }
@@ -159,7 +159,7 @@ namespace Latino.Model
                 while (true)
                 {
                     iter++;
-                    mLogger.Info("Cluster", "Iteration {0} ...", iter);
+                    mLogger.Trace("Cluster", "Iteration {0} ...", iter);
                     clustQual = 0;
                     // assign items to clusters
                     foreach (Cluster cluster in clustering.Roots) { cluster.Items.Clear(); }
@@ -191,7 +191,7 @@ namespace Latino.Model
                         clustQual += maxSim;
                     }
                     clustQual /= (double)dataset.Count;
-                    mLogger.Info("Cluster", "Quality: {0:0.0000}", clustQual);
+                    mLogger.Trace("Cluster", "Quality: {0:0.0000}", clustQual);
                     // check if done
                     if (iter > 1 && clustQual - bestClustQual <= mEps)
                     {

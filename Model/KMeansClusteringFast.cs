@@ -128,7 +128,7 @@ namespace Latino.Model
             double globalBestClustQual = 0;
             for (int trial = 1; trial <= mTrials; trial++)
             {
-                mLogger.Info("Cluster", "Clustering trial {0} of {1} ...", trial, mTrials);
+                mLogger.Trace("Cluster", "Clustering trial {0} of {1} ...", trial, mTrials);
                 ArrayList<CentroidData> centroids = new ArrayList<CentroidData>(k);
                 ArrayList<int> bestSeeds = null;
                 for (int i = 0; i < k; i++)
@@ -254,10 +254,10 @@ namespace Latino.Model
             while (true)
             {
                 iter++;
-                mLogger.Info("Cluster", "Iteration {0} ...", iter);
+                mLogger.Trace("Cluster", "Iteration {0} ...", iter);
                 // assign items to clusters
                 Assign(centroids, dataMtx, dataset.Count, /*offs=*/0, out clustQual);                
-                mLogger.Info("Cluster", "Quality: {0:0.0000}", clustQual);
+                mLogger.Trace("Cluster", "Quality: {0:0.0000}", clustQual);
                 // update centroids
                 Update(dataset, centroids);
                 // check if done

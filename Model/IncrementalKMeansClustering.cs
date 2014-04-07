@@ -138,7 +138,7 @@ namespace Latino.Model
             if (mDataset == null)
             {
                 // initialize
-                mLogger.Info("Cluster", "Initializing ...");
+                mLogger.Trace("Cluster", "Initializing ...");
                 Utils.ThrowException(numOutdated > 0 ? new ArgumentOutOfRangeException("numOutdated") : null);
                 //Utils.ThrowException(batch.Count == 0 ? new ArgumentValueException("batch") : null);
                 if (batch.Count == 0) { return new ClusteringResult(); }
@@ -152,7 +152,7 @@ namespace Latino.Model
                 // update clusters
                 Utils.ThrowException(numOutdated > mDataset.Count ? new ArgumentOutOfRangeException("numOutdated") : null);
                 if (numOutdated == 0 && batch.Count == 0) { return GetClusteringResult(); }
-                mLogger.Info("Cluster", "Updating clusters ...");
+                mLogger.Trace("Cluster", "Updating clusters ...");
                 // assign new instances                    
                 double dummy;
                 Assign(mCentroids, ModelUtils.GetTransposedMatrix(batch), batch.Count, /*offs=*/mDataset.Count, out dummy);
@@ -198,7 +198,7 @@ namespace Latino.Model
             {
                 while (qual < mQualThresh) // split cluster at minQualIdx
                 {
-                    mLogger.Info("Cluster", "Increasing k to {0} ...", mCentroids.Count + 1);
+                    mLogger.Trace("Cluster", "Increasing k to {0} ...", mCentroids.Count + 1);
                     mCentroids.Add(mCentroids[minQualIdx].Clone());
                     mCentroids.Last.Tag = mTopicId++;
                     kMeansMainLoop(mDataset, mCentroids);                    
@@ -217,7 +217,7 @@ namespace Latino.Model
             {                
                 while (qual > mQualThresh && mCentroids.Count > 1) // join clusters 
                 {
-                    mLogger.Info("Cluster", "Decreasing k to {0} ...", mCentroids.Count - 1);
+                    mLogger.Trace("Cluster", "Decreasing k to {0} ...", mCentroids.Count - 1);
                     ArrayList<CentroidData> centroidsCopy = mCentroids.DeepClone();
                     if (mCentroids.Count == 2) // create single cluster
                     {
@@ -247,7 +247,7 @@ namespace Latino.Model
                     qual = GetClustQual();
                     if (qual >= mQualThresh) 
                     { 
-                        mLogger.Info("Cluster", "Accepted solution at k = {0}.", mCentroids.Count); 
+                        mLogger.Trace("Cluster", "Accepted solution at k = {0}.", mCentroids.Count); 
                     }
                     else 
                     { 

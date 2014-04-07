@@ -54,9 +54,6 @@ namespace Latino.TextMining
         private int mWordFormUpdate
             = 500;
 
-        private Logger mLogger
-            = Logger.GetInstanceLogger(typeof(IncrementalBowSpace));
-
         public IncrementalBowSpace()
         {
             // configure tokenizer

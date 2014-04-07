@@ -127,6 +127,8 @@ namespace Latino
             = null;
         private static CustomProgressOutputDelegate mCustomProgressOutput
             = null;
+        private static bool mDisableCustomOutputLevelFilter
+            = false;
 
         // node settings         
         private string mName; // set by the constructor
@@ -344,6 +346,12 @@ namespace Latino
             set { mCustomProgressOutput = value; }
         }
 
+        public static bool DisableCustomOutputLevelFilter
+        {
+            get { return mDisableCustomOutputLevelFilter; }
+            set { mDisableCustomOutputLevelFilter = value; }
+        }
+
         private void Output(TextWriter writer, Level level, string funcName, Exception e, string message, params object[] args)
         {
             string levelStr = level.ToString().ToUpper();
@@ -381,10 +389,10 @@ namespace Latino
                         Output(activeOutWriter, level, funcName, e, message, args);
                     }                
                 }
-                if ((activeOutType & OutputType.Custom) != 0 && mCustomOutput != null)
-                {
-                    mCustomOutput(mName, level, funcName, e, message, args);
-                }
+            }
+            if ((ActiveOutputType & OutputType.Custom) != 0 && mCustomOutput != null && (mDisableCustomOutputLevelFilter || ActiveLevel <= level))
+            {
+                mCustomOutput(mName, level, funcName, e, message, args);
             }
         }
 
@@ -444,10 +452,10 @@ namespace Latino
                         }
                     }
                 }
-                if ((activeProgressOutType & ProgressOutputType.Custom) != 0 && mCustomProgressOutput != null)
-                {
-                    mCustomProgressOutput(mName, sender, freq, funcName, message, step, numSteps, args);
-                }
+            }
+            if ((activeProgressOutType & ProgressOutputType.Custom) != 0 && mCustomProgressOutput != null && (mDisableCustomOutputLevelFilter || ((activeProgressOutType & ProgressOutputType.Off) == 0 && ActiveLevel <= level)))
+            {
+                mCustomProgressOutput(mName, sender, freq, funcName, message, step, numSteps, args);
             }
         }
 

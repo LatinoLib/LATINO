@@ -205,6 +205,16 @@ namespace Latino.TextMining
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
+        public Logger Logger
+        {
+            get { return mLogger; }
+            set
+            {
+                Utils.ThrowException(value == null ? new ArgumentNullException("Logger") : null);
+                mLogger = value;
+            }
+        }
+
         public ITokenizer Tokenizer
         {
             get { return mTokenizer; }
