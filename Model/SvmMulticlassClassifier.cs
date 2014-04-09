@@ -22,7 +22,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class SvmMulticlassFast<LblT> : IModel<LblT, SparseVector<double>>, IDisposable
+    public class SvmMulticlassClassifier<LblT> : IModel<LblT, SparseVector<double>>, IDisposable
     {
         private Dictionary<LblT, int> mLblToId // 1-based
             = new Dictionary<LblT, int>();
@@ -37,11 +37,11 @@ namespace Latino.Model
         private double mEps
             = 0.1;
 
-        public SvmMulticlassFast()
+        public SvmMulticlassClassifier()
         {
         }
 
-        public SvmMulticlassFast(BinarySerializer reader)
+        public SvmMulticlassClassifier(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }

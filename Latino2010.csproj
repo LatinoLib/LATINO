@@ -80,7 +80,7 @@
     <Compile Include="Model\KnnClassifierFast.cs" />
     <Compile Include="Model\NaiveBayesClassifier.cs" />
     <Compile Include="Model\SvmLightLib.cs" />
-    <Compile Include="Model\SvmMulticlassFast.cs" />
+    <Compile Include="Model\SvmMulticlassClassifier.cs" />
     <Compile Include="MultiSet.cs" />
     <Compile Include="MultiSetEqualityComparer.cs" />
     <Compile Include="Persistance\DatabaseConnection.cs" />
