@@ -10,7 +10,7 @@ Get It and Set It Up
  C:\Work>git clone http://source.ijs.si/mgrcar/latino.git Latino
  ```
 
-2. If you plan to use any of the SVM models (SvmBinaryClassifier, SvmMulticlassClassifier) and/or the least-squares regression model (LSqrModel), you need to add the path C:\Work\Latino\Bin to the environmental variable PATH. On a 64-bit OS, you need to add C:\Work\Latino\Bin64 instead.
+2. If you plan to use any of the SVM models (SvmBinaryClassifier, SvmMulticlassClassifier) and/or the least-squares regression model (LSqrModel), you need to add the path C:\Work\Latino\Bin32 to the environmental variable PATH. On a 64-bit OS, you need to add C:\Work\Latino\Bin64 instead.
 
 Test It
 -------
@@ -63,7 +63,7 @@ C:\Work>git clone http://source.ijs.si/mgrcar/svmlightlib.git SvmLightLib
 4. Build the library:
   * If you need the 32-bit binaries, build the configurations Debug/x86 and Release/x86. The DLL files, SvmLightLibDebug.dll and SvmLightLib.dll, will appear in the folder bin\x86 (C:\Work\SvmLightLib\bin\x86).
   * If you need the 64-bit binaries, build the configurations Debug/x64 and Release/x64. The DLL files, SvmLightLibDebug.dll and SvmLightLib.dll, will appear in the folder bin\x64 (C:\Work\SvmLightLib\bin\x64).
-5. Copy the DLL files into the LATINO Bin folder (C:\Work\Latino\Bin or C:\Work\Latino\Bin64). Make sure that you have added the LATINO Bin folder to the environmental variable PATH.
+5. Copy the DLL files into the LATINO Bin folder (C:\Work\Latino\Bin32 or C:\Work\Latino\Bin64). Make sure that you have added the LATINO Bin folder to the environmental variable PATH.
 
 ### LSqrLib
 
@@ -82,7 +82,7 @@ C:\Work>git clone http://source.ijs.si/mgrcar/lsqrlib.git LSqrLib
 3. Build the library:
   * If you need the 32-bit binaries, build the configurations Debug/x86 and Release/x86. The DLL files, LSqrDebug.dll and LSqr.dll, will appear in the folder Bin\x86 (C:\Work\LSqrLib\LSqrDll\Bin\x86).
   * If you need the 64-bit binaries, build the configurations Debug/x64 and Release/x64. The DLL files, LSqrDebug.dll and LSqr.dll, will appear in the folder Bin\x64 (C:\Work\LSqrLib\LSqrDll\Bin\x64).
-5. Copy the DLL files into the LATINO Bin folder (C:\Work\Latino\Bin or C:\Work\Latino\Bin64). Make sure that you have added the LATINO Bin folder to the environmental variable PATH.
+5. Copy the DLL files into the LATINO Bin folder (C:\Work\Latino\Bin32 or C:\Work\Latino\Bin64). Make sure that you have added the LATINO Bin folder to the environmental variable PATH.
 
 License
 -------
