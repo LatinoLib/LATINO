@@ -8,7 +8,7 @@
  *
  *  Authors: Miha Grcar, Matjaz Jursic
  *
- *  License: GNU LGPL (http://www.gnu.org/licenses/lgpl.txt)
+ *  License: MIT (http://opensource.org/licenses/MIT)
  *
  ***************************************************************************/
 

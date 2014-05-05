@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B6F54E3A-CACB-4762-B209-7E4CDDE85E1C}</ProjectGuid>
+    <ProjectGuid>{FFA3AB32-D56A-4544-BCF2-CBC51B57550B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Latino</RootNamespace>
@@ -23,9 +23,22 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>
-    </TargetFrameworkProfile>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -56,9 +69,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
@@ -67,7 +77,6 @@
   <ItemGroup>
     <Compile Include="BinaryVector.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Misc\StopWatch.cs" />
     <Compile Include="Model\AgglomerativeKMeansClusteringFast.cs" />
     <Compile Include="Model\BatchUpdatedCentroidClassifier.cs" />
     <Compile Include="Model\CentroidData.cs" />
@@ -83,7 +92,7 @@
     <Compile Include="Model\SvmMulticlassClassifier.cs" />
     <Compile Include="MultiSet.cs" />
     <Compile Include="MultiSetEqualityComparer.cs" />
-    <Compile Include="Persistance\DatabaseConnection.cs" />
+    <Compile Include="Network.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuilt.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltCompact.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltCompressed.cs" />
@@ -123,28 +132,11 @@
     <Compile Include="WebMining\HtmlTokenizer.cs" />
     <Compile Include="TextMining\SimHash.cs" />
     <Compile Include="TextMining\StopWords\SerbianStopWordsCyrillic.cs" />
-    <Compile Include="Visualization\DrawableObjects\Label.cs" />
-    <Compile Include="Visualization\DrawableObjects\Picture.cs" />
-    <Compile Include="Visualization\RTree.cs" />
-    <Compile Include="WebMining\UrlNormalizer.cs" />
-    <Compile Include="WebMining\UrlTree.cs" />
-    <Compile Include="Web\CacheRecord.cs" />
-    <Compile Include="Web\DatabaseCache.cs" />
-    <Compile Include="Web\Exceptions.cs" />
-    <Compile Include="Web\GoogleDefine.cs" />
-    <Compile Include="Web\ISearchEngineCache.cs" />
-    <Compile Include="Web\OAuth.cs" />
-    <Compile Include="Web\SearchEngine.cs" />
-    <Compile Include="Web\SearchEngineResultItem.cs" />
-    <Compile Include="Web\SearchEngineResultSet.cs" />
-    <Compile Include="Experimental\Web\BingSearchEngine.cs" />
-    <Compile Include="Web\YahooSearchEngine.cs" />
     <Compile Include="IPair.cs" />
     <Compile Include="IEnumerableList.cs" />
     <Compile Include="ICloneable.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Model\IHierarchicalModel.cs" />
-    <None Include="Experimental\Model\HierarchicalCentroidClassifier.cs" />
     <Compile Include="Model\UnlabeledDataset.cs" />
     <Compile Include="Model\IUnlabeledDataset.cs" />
     <Compile Include="Model\IUnlabeledExampleCollection.cs" />
@@ -182,7 +174,6 @@
     <Compile Include="Model\MaximumEntropyClassifier.cs" />
     <Compile Include="Model\ModelUtils.cs" />
     <Compile Include="Model\DotProductSimilarity.cs" />
-    <Compile Include="Network.cs" />
     <Compile Include="Pair.cs" />
     <Compile Include="Ref.cs" />
     <Compile Include="SetEqualityComparer.cs" />
@@ -225,31 +216,6 @@
     <Compile Include="TextMining\LemmaSharp\RuleList.cs" />
     <Compile Include="TextMining\LemmaSharp\RuleWeighted.cs" />
     <Compile Include="TextMining\StopWords\SpanishStopWords.cs" />
-    <None Include="Experimental\Visualization\IncrementalSemanticSpaceLayout.cs" />
-    <Compile Include="Visualization\LayoutSettings.cs" />
-    <Compile Include="Visualization\LayoutIndex.cs" />
-    <Compile Include="Visualization\BoundingArea.cs" />
-    <Compile Include="Visualization\SemanticSpaceLayout.cs" />
-    <Compile Include="Visualization\Vector2D.cs" />
-    <Compile Include="Visualization\DrawableObjectEventArgs.cs" />
-    <Compile Include="Visualization\DrawableObjectViewer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Visualization\DrawableObjectViewer.Designer.cs">
-      <DependentUpon>DrawableObjectViewer.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Visualization\DrawnObject.cs" />
-    <Compile Include="Visualization\EditableBitmap.cs" />
-    <Compile Include="Visualization\DrawableObjects\Ellipse.cs" />
-    <Compile Include="Visualization\FilledDrawnObject.cs" />
-    <Compile Include="Visualization\DrawableGroup.cs" />
-    <Compile Include="Visualization\ILayoutAlgorithm.cs" />
-    <Compile Include="Visualization\DrawableObjects\Line.cs" />
-    <Compile Include="Visualization\StressMajorizationLayout.cs" />
-    <Compile Include="Visualization\VisualizationUtils.cs" />
-    <Compile Include="Visualization\TransformParams.cs" />
-    <Compile Include="Visualization\Vector2DF.cs" />
-    <Compile Include="Visualization\IDrawableObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Set.cs" />
     <Compile Include="SparseVector.cs" />
@@ -276,7 +242,9 @@
     <Compile Include="TextMining\PorterStemmer.cs" />
     <Compile Include="TextMining\UnicodeTokenizer.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="Web\MemoryCache.cs" />
+    <Compile Include="WebMining\UrlNormalizer.cs" />
+    <Compile Include="WebMining\UrlTree.cs" />
+    <Compile Include="Web\OAuth.cs" />
     <Compile Include="Web\WebUtils.cs" />
     <Compile Include="WeightedNetwork.cs" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\tr-ibm857.ldp" />
@@ -291,12 +259,6 @@
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-utf-8.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-windows-1250.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-x-mac-ce.ldp" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Visualization\DrawableObjectViewer.resx">
-      <SubType>Designer</SubType>
-      <DependentUpon>DrawableObjectViewer.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WebMining\Resources\BoilerplateRemover\2ClassAllFeatures.tree" />
@@ -338,7 +300,24 @@
     <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-me-sr.lem" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="WebMining\Resources\UrlNormalizer\EffectiveTldNames.dat" />
+    <None Include="WebMining\Resources\UrlNormalizer\EffectiveTldNames.dat" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
