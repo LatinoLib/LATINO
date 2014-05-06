@@ -168,7 +168,7 @@ namespace Latino.Model.Eval
             return GetAvg(expName, algoName, metric, lbl, out stdev); // throws ArgumentNullException, InvalidOperationException
         }
 
-        public string ToString(int foldNum, string expName, PerfMetric metric, LblT lbl, string fmt) // *** set expName to null to get stats for all experiments
+        public string ToString(int foldNum, string expName, PerfMetric metric, LblT lbl, string fmt) // set expName to null to get stats for all experiments
         {
             Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
             Utils.ThrowException(fmt == null ? new ArgumentNullException("fmt") : null);
@@ -216,7 +216,7 @@ namespace Latino.Model.Eval
             return ToString(foldNum, expName, metric, default(LblT)); // throws ArgumentOutOfRangeException
         }
 
-        public string ToString(string expName, PerfMetric metric, LblT lbl, string fmt) // *** set expName to null to get stats for all experiments
+        public string ToString(string expName, PerfMetric metric, LblT lbl, string fmt) // set expName to null to get stats for all experiments
         {
             Utils.ThrowException(fmt == null ? new ArgumentNullException("fmt") : null);
             ArrayList<string> expList = new ArrayList<string>(mData.Keys);
@@ -385,7 +385,9 @@ namespace Latino.Model.Eval
         public double GetPrecision(LblT lbl)
         {
             int all;
-            return (double)GetPrecisionCount(lbl, out all) / (double)all;
+            int precCount = GetPrecisionCount(lbl, out all);
+            if (all == 0) { return 1; } // *** boundary case
+            return (double)precCount / (double)all;
         }
 
         public int GetPrecisionCount(LblT lbl, out int all)
@@ -397,7 +399,9 @@ namespace Latino.Model.Eval
         public double GetRecall(LblT lbl)
         {
             int all;
-            return (double)GetRecallCount(lbl, out all) / (double)all;
+            int recallCount = GetRecallCount(lbl, out all);
+            if (all == 0) { return 1; } // *** boundary case
+            return (double)recallCount / (double)all;
         }
 
         public int GetRecallCount(LblT lbl, out int all)
@@ -410,6 +414,7 @@ namespace Latino.Model.Eval
         {
             double p = GetPrecision(lbl);
             double r = GetRecall(lbl);
+            if (p == 0 && r == 0) { return 0; } // *** boundary case
             return (w * w + 1) * p * r / (w * w * p + r);
         }
 
@@ -418,35 +423,11 @@ namespace Latino.Model.Eval
             return GetF(1, lbl);
         }
 
-        public double GetAccuracy(LblT lbl)
-        {
-            int all;
-            return (double)GetAccuracyCount(lbl, out all) / (double)all;
-        }
-
-        public int GetAccuracyCount(LblT lbl, out int all)
-        {
-            all = SumAll();
-            int sum = 0;
-            foreach (KeyValuePair<LblT, Dictionary<LblT, int>> row in mMtx)
-            {
-                if (!row.Key.Equals(lbl)) // TODO: use lbl equality comparer
-                {
-                    foreach (KeyValuePair<LblT, int> item in row.Value)
-                    {
-                        if (!item.Key.Equals(lbl)) { sum += item.Value; } // TODO: use lbl equality comparer
-                    }
-                }
-            }
-            sum += Get(lbl, lbl);
-            return sum;
-        }
-
         // *** Micro-averaging (over documents) ***
 
         public double GetMicroAverage() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
         {
-            return (double)SumDiag() / (double)SumAll();
+            return (double)SumDiag() / (double)SumAll(); 
         }
 
         // *** Macro-averaging (over classes) ***
@@ -458,7 +439,7 @@ namespace Latino.Model.Eval
             return sum / (double)mLabels.Count;
         }
 
-        public double GetMacroRecall()
+        public double GetMacroRecall() // *** equals to macro-accuracy
         {
             double sum = 0;
             foreach (LblT lbl in mLabels) { sum += GetRecall(lbl); }
@@ -479,25 +460,17 @@ namespace Latino.Model.Eval
             return sum / (double)mLabels.Count;
         }
 
-        public double GetMacroAccuracy()
-        {
-            double sum = 0;
-            foreach (LblT lbl in mLabels) { sum += GetAccuracy(lbl); }
-            return sum / (double)mLabels.Count;
-        }
-
         public double GetScore(PerfMetric metric, LblT lbl)
         {
             switch (metric)
             {
                 case PerfMetric.Precision:
                     return GetPrecision(lbl);
+                case PerfMetric.Accuracy:
                 case PerfMetric.Recall:
                     return GetRecall(lbl);
                 case PerfMetric.F1:
                     return GetF1(lbl);
-                case PerfMetric.Accuracy:
-                    return GetAccuracy(lbl);
                 case PerfMetric.MicroPrecision:
                 case PerfMetric.MicroRecall:
                 case PerfMetric.MicroF1:
@@ -505,12 +478,11 @@ namespace Latino.Model.Eval
                     return GetMicroAverage();
                 case PerfMetric.MacroPrecision:
                     return GetMacroPrecision();
+                case PerfMetric.MacroAccuracy:
                 case PerfMetric.MacroRecall:
                     return GetMacroRecall();
                 case PerfMetric.MacroF1:
                     return GetMacroF1();
-                case PerfMetric.MacroAccuracy:
-                    return GetMacroAccuracy();
                 default:
                     throw new ArgumentValueException("metric");
             }
