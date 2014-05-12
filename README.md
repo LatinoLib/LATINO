@@ -49,7 +49,7 @@ If you plan to use any of the SVM models (SvmBinaryClassifier, SvmMulticlassClas
 
 #### Get It
 
-Clone SvmLightLib from the GIT repository into, for example, C:\Work\SvmLightLib:
+Clone [SvmLightLib](http://source.ijs.si/mgrcar/svmlightlib.git) from the GIT repository into, for example, C:\Work\SvmLightLib:
 
 ```
 C:\Work>git clone http://source.ijs.si/mgrcar/svmlightlib.git SvmLightLib
@@ -69,7 +69,7 @@ C:\Work>git clone http://source.ijs.si/mgrcar/svmlightlib.git SvmLightLib
 
 #### Get It
 
-Clone LSqrLib from the GIT repository into, for example, C:\Work\LSqrLib:
+Clone [LSqrLib](http://source.ijs.si/mgrcar/lsqrlib.git) from the GIT repository into, for example, C:\Work\LSqrLib:
 
 ```
 C:\Work>git clone http://source.ijs.si/mgrcar/lsqrlib.git LSqrLib
@@ -87,4 +87,4 @@ C:\Work>git clone http://source.ijs.si/mgrcar/lsqrlib.git LSqrLib
 License
 -------
 
-Most of LATINO is under the MIT license (see http://opensource.org/licenses/MIT). However, certain parts fall under other licenses. See LICENSE.txt for more details.
+Most of LATINO is under [the MIT license](http://opensource.org/licenses/MIT). However, certain parts fall under other licenses. See [LICENSE.txt](http://source.ijs.si/mgrcar/latino/blob/master/LICENSE.txt) for more details.
