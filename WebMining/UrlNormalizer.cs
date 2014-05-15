@@ -128,7 +128,7 @@ namespace Latino.WebMining
             }
         }
 
-        public UrlNormalizer() : this("UrlBlacklistFileName", "UrlRulesFileName")
+        public UrlNormalizer() : this("urlBlacklistFileName", "urlRulesFileName")
         {
         }
 
