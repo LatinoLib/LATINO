@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{FFA3AB32-D56A-4544-BCF2-CBC51B57550B}</ProjectGuid>
+    <ProjectGuid>{5B86AAD5-3FEA-487C-A518-4F846AF09E18}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Latino</RootNamespace>
@@ -23,7 +23,8 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -247,18 +248,7 @@
     <Compile Include="Web\OAuth.cs" />
     <Compile Include="Web\WebUtils.cs" />
     <Compile Include="WeightedNetwork.cs" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\tr-ibm857.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\tr-iso-8859-9.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\tr-utf-8.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\tr-windows-1254.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\tr-x-mac-turkish.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Turkish.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-ibm852.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-ibm870.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-iso-8859-2.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-utf-8.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-windows-1250.ldp" />
-    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\sl-x-mac-ce.ldp" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WebMining\Resources\BoilerplateRemover\2ClassAllFeatures.tree" />
@@ -300,7 +290,7 @@
     <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-me-sr.lem" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="WebMining\Resources\UrlNormalizer\EffectiveTldNames.dat" />
+    <EmbeddedResource Include="WebMining\Resources\UrlNormalizer\EffectiveTldNames.dat" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
