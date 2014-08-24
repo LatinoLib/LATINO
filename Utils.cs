@@ -460,6 +460,7 @@ namespace Latino
             // the following statements throw ArgumentNullException, FormatException, OverflowException, InvalidCastException
             if (typeof(T) == typeof(TimeSpan)) { return (T)(object)TimeSpan.Parse(val); }
             else if (typeof(T) == typeof(int)) { return (T)(object)Convert.ToInt32(val); }
+            else if (typeof(T) == typeof(long)) { return (T)(object)Convert.ToInt64(val); }
             else if (typeof(T) == typeof(double)) { return (T)(object)Convert.ToDouble(val); }
             else if (typeof(T) == typeof(bool)) { return (T)(object)(val != null && new ArrayList<string>(new string[] { "yes", "on", "true", "y", "1" }).Contains(val.ToLower())); }
             else if (typeof(T).IsEnum) { return (T)Enum.Parse(typeof(T), val, /*ignoreCase=*/true); }
@@ -565,6 +566,7 @@ namespace Latino
                 }
                 catch (SqlException e)
                 {
+                    Console.Write("X");
                     if (!e.Message.Contains("deadlock") || (i == numRetries && i != 0)) { throw e; }                    
                     if (logger != null) { logger.Warn("RetryOnDeadlock", e); }
                 }
