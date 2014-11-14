@@ -126,6 +126,25 @@ namespace Latino.Model
             }
         }
 
+        // *** count the number of times each label occurs in the dataset ***
+        public Dictionary<LblT, int> GetClassDistribution()
+        {
+            Dictionary<LblT, int> labelDistribution = new Dictionary<LblT, int>();
+            foreach (LabeledExample<LblT, ExT> labeledExample in mItems)
+            {
+                if (labelDistribution.ContainsKey(labeledExample.Label))
+                {
+                    labelDistribution[labeledExample.Label]++;
+                }
+                else
+                {
+                    labelDistribution.Add(labeledExample.Label, 1);
+                }
+            }
+            return labelDistribution;
+        }
+
+
         // *** ILabeledDataset<LblT, ExT> interface implementation ***
 
         public Type ExampleType
@@ -280,7 +299,8 @@ namespace Latino.Model
 
             public void Dispose()
             {
-            }        
+            }
+            
         }
     }
 }
