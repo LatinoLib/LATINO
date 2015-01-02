@@ -27,7 +27,7 @@ namespace Latino.WebMining
        |
        '-----------------------------------------------------------------------
     */
-    public class HtmlTokenizer : ITokenizer
+    public class HtmlTokenizer // WARNME: this is not an ITokenizer
     {
         /* .-----------------------------------------------------------------------
            |
@@ -276,8 +276,7 @@ namespace Latino.WebMining
                 {
                     tokens = new ArrayList<Token>();
                     string text = mText.Substring(node._innerstartindex, node._innerlength);
-                    textBlockTokenizer.Text = mDecodeTextBlocks ? HttpUtility.HtmlDecode(text) : text;
-                    RegexTokenizer.Enumerator tokEnum = (RegexTokenizer.Enumerator)textBlockTokenizer.GetEnumerator();
+                    RegexTokenizer.Enumerator tokEnum = (RegexTokenizer.Enumerator)textBlockTokenizer.GetTokens(mDecodeTextBlocks ? HttpUtility.HtmlDecode(text) : text).GetEnumerator();
                     int baseIdx = node._innerstartindex;
                     while (tokEnum.MoveNext())
                     {
@@ -363,18 +362,9 @@ namespace Latino.WebMining
             }
         }
 
-        public ITokenizerEnumerator GetEnumerator() {
-            return new Enumerator(mTokenList, mStemmer, mNormalize);
-        }
-
-        IEnumerator<string> IEnumerable<string>.GetEnumerator()
+        public ITokenizerEnumerator GetEnumerator() 
         {
             return new Enumerator(mTokenList, mStemmer, mNormalize);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
 
         // *** ISerializable interface implementation ***
