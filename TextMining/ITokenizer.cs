@@ -10,6 +10,7 @@
  *
  ***************************************************************************/
 
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Latino.TextMining
@@ -20,20 +21,61 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public interface ITokenizer : ITokenizerEnumerable, ISerializable
+    public interface ITokenizer : ISerializable
     {
-        string Text { get; set; }
+        ITokenizerEnumerable GetTokens(string text);
     }
 
+    /* .-----------------------------------------------------------------------
+       |
+       |  Interface ITokenizerEnumerable
+       |
+       '-----------------------------------------------------------------------
+    */
     public interface ITokenizerEnumerable : IEnumerable<string> 
     {
         new ITokenizerEnumerator GetEnumerator();
     }
 
-
-    public interface ITokenizerEnumerator : IEnumerator<string> 
+    /* .-----------------------------------------------------------------------
+       |
+       |  Interface ITokenizerEnumerator
+       |
+       '-----------------------------------------------------------------------
+    */
+    public interface ITokenizerEnumerator : IEnumerator<string>
     {
         Pair<int, int> CurrentPos { get; }
     }
 
+    /* .-----------------------------------------------------------------------
+       |
+       |  Class TokenizerEnumerable
+       |
+       '-----------------------------------------------------------------------
+    */
+    public class TokenizerEnumerable : ITokenizerEnumerable
+    {
+        private ITokenizerEnumerator mEnumerator;
+
+        public TokenizerEnumerable(ITokenizerEnumerator enumerator)
+        {
+            mEnumerator = enumerator;
+        }
+
+        public ITokenizerEnumerator GetEnumerator()
+        {
+            return mEnumerator;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return mEnumerator;
+        }
+
+        IEnumerator<string> IEnumerable<string>.GetEnumerator()
+        {
+            return mEnumerator;
+        }
+    }
 }

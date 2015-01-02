@@ -100,7 +100,7 @@
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltData.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltFull.cs" />
     <Compile Include="TextMining\SimpleTokenizer.cs" />
-    <Compile Include="WebMining\BoilerplateRemover.cs" />
+    <None Include="WebMining\BoilerplateRemover.cs" />
     <Compile Include="TextMining\CustomStemmer.cs" />
     <Compile Include="WebMining\HtmlAgilityPack\EncodingFoundException.cs" />
     <Compile Include="WebMining\HtmlAgilityPack\HtmlAttributeCollection.cs" />
@@ -130,7 +130,7 @@
     <Compile Include="WebMining\HtmlAgilityPack\HtmlWeb.cs" />
     <Compile Include="WebMining\HtmlAgilityPack\MixedCodeDocument.cs" />
     <Compile Include="WebMining\HtmlAgilityPack\HtmlCmdLine.cs" />
-    <Compile Include="WebMining\HtmlTokenizer.cs" />
+    <None Include="WebMining\HtmlTokenizer.cs" />
     <Compile Include="TextMining\SimHash.cs" />
     <Compile Include="TextMining\StopWords\SerbianStopWordsCyrillic.cs" />
     <Compile Include="IPair.cs" />

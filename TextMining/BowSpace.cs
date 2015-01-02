@@ -395,8 +395,7 @@ namespace Latino.TextMining
                     mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                     Set<string> docWords = new Set<string>();
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                    mTokenizer.Text = document;
-                    foreach (string token in (IEnumerable<string>)mTokenizer)
+                    foreach (string token in mTokenizer.GetTokens(document))
                     {
                         string word = token.Trim().ToLower();
                         if (mStopWords == null || !mStopWords.Contains(word))
@@ -441,8 +440,7 @@ namespace Latino.TextMining
                         mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                         ArrayList<WordStem> nGrams = new ArrayList<WordStem>(n);
                         Set<string> docWords = new Set<string>();
-                        mTokenizer.Text = document;
-                        foreach (string token in (IEnumerable<string>)mTokenizer)
+                        foreach (string token in mTokenizer.GetTokens(document))
                         {
                             string word = token.Trim().ToLower();
                             if (mStopWords == null || !mStopWords.Contains(word))
@@ -552,8 +550,7 @@ namespace Latino.TextMining
                 mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                mTokenizer.Text = document;
-                foreach (string token in (IEnumerable<string>)mTokenizer)
+                foreach (string token in mTokenizer.GetTokens(document))
                 {
                     string word = token.Trim().ToLower();                    
                     if (mStopWords == null || !mStopWords.Contains(word))
@@ -903,8 +900,7 @@ namespace Latino.TextMining
             Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Dictionary<int, int> tfVec = new Dictionary<int, int>();
             ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-            mTokenizer.Text = document;
-            foreach (string token in (IEnumerable<string>)mTokenizer)
+            foreach (string token in mTokenizer.GetTokens(document))
             {
                 string word = token.Trim().ToLower();
                 if (mStopWords == null || !mStopWords.Contains(word))

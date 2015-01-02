@@ -341,16 +341,6 @@ namespace Latino.TextMining
             get { return mHist.Count == 0; }
         }
 
-        public void AddTokens(ITokenizer tokenizer)
-        {
-            Utils.ThrowException(tokenizer == null ? new ArgumentNullException("tokenizer") : null);
-            Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
-            foreach (string token in tokenizer) 
-            { 
-                AddToken(token.ToUpper()); 
-            }
-        }
-
         public void AddTokensFromString(string str)
         {
             AddTokensFromString(str, TokenizerType.AlphaOnly);
@@ -362,8 +352,10 @@ namespace Latino.TextMining
             Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
             SimpleTokenizer tokenizer = new SimpleTokenizer();
             tokenizer.Type = tokType;
-            tokenizer.Text = str;
-            AddTokens(tokenizer);
+            foreach (string token in tokenizer.GetTokens(str))
+            {
+                AddToken(token.ToUpper());
+            }
         }
 
         public void AddTokensFromFile(string file, Encoding loadAs)
@@ -381,8 +373,7 @@ namespace Latino.TextMining
             string line;
             while ((line = reader.ReadLine()) != null)
             {
-                tokenizer.Text = line;
-                foreach (string token in tokenizer) 
+                foreach (string token in tokenizer.GetTokens(line)) 
                 { 
                     AddToken(token.ToUpper()); 
                 }

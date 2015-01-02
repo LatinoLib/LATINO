@@ -439,8 +439,7 @@ namespace Latino.TextMining
             Set<string> docWords = new Set<string>();
             Dictionary<int, int> tfVec = new Dictionary<int, int>();
             ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-            mTokenizer.Text = document;
-            foreach (string token in mTokenizer)
+            foreach (string token in mTokenizer.GetTokens(document))
             {
                 string word = token.Trim().ToLower();
                 if (mStopWords == null || !mStopWords.Contains(word))

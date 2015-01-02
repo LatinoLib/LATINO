@@ -25,8 +25,6 @@ namespace Latino.TextMining
     */
     public class RegexTokenizer : ITokenizer
     {
-        private string mText
-            = "";
         private Regex mTokenRegex
             = new Regex(@"\p{L}+(-\p{L}+)*", RegexOptions.Compiled);
         private Regex mDelimRegex
@@ -38,12 +36,6 @@ namespace Latino.TextMining
 
         public RegexTokenizer()
         {
-        }
-
-        public RegexTokenizer(string text)
-        {
-            Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
-            mText = text;
         }
 
         public RegexTokenizer(BinarySerializer reader)
@@ -75,29 +67,9 @@ namespace Latino.TextMining
 
         // *** ITokenizer interface implementation ***
 
-        public string Text
+        public ITokenizerEnumerable GetTokens(string text)
         {
-            get { return mText; }
-            set 
-            {
-                Utils.ThrowException(value == null ? new ArgumentNullException("Text") : null);
-                mText = value;
-            }
-        }
-
-        public ITokenizerEnumerator GetEnumerator()
-        {
-            return new Enumerator(mText, mTokenRegex, mDelimRegex, mIgnoreUnknownTokens);
-        }
-
-        IEnumerator<string> IEnumerable<string>.GetEnumerator() 
-		{
-            return new Enumerator(mText, mTokenRegex, mDelimRegex, mIgnoreUnknownTokens);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new Enumerator(mText, mTokenRegex, mDelimRegex, mIgnoreUnknownTokens);
+            return new TokenizerEnumerable(new Enumerator(text, mTokenRegex, mDelimRegex, mIgnoreUnknownTokens));
         }
 
         // *** ISerializable interface implementation ***
