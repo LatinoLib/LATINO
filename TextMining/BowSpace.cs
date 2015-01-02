@@ -622,7 +622,7 @@ namespace Latino.TextMining
         }
 
         // TODO: merge this with Initialize
-        public ArrayList<SparseVector<double>> InitializeTokenized(IEnumerable<ITokenizer> documents, bool largeScale)
+        public ArrayList<SparseVector<double>> InitializeTokenized(IEnumerable<ITokenizerEnumerable> documents, bool largeScale)
         {
             Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);
             mWordInfo.Clear();
@@ -633,13 +633,13 @@ namespace Latino.TextMining
             int docCount = 0;
             if (!largeScale)
             {
-                foreach (ITokenizer document in documents)
+                foreach (ITokenizerEnumerable document in documents)
                 {
                     docCount++;
                     mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                     Set<string> docWords = new Set<string>();
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                    foreach (string word in (IEnumerable<string>)document)
+                    foreach (string word in document)
                     {
                         //string word = token.Trim().ToLower();
                         if (mStopWords == null || !mStopWords.Contains(word))
