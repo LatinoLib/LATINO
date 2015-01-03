@@ -31,6 +31,7 @@ namespace SF.Snowball.Ext
 		}
 		private void  InitBlock()
 		{
+            // TODO: make these static?
 			a0 = new Among[]{new Among("gener", - 1, - 1, "", this)};
 			a1 = new Among[]{new Among("ied", - 1, 2, "", this), new Among("s", - 1, 3, "", this), new Among("ies", 1, 2, "", this), new Among("sses", 1, 1, "", this), new Among("ss", 1, - 1, "", this), new Among("us", 1, - 1, "", this)};
 			a2 = new Among[]{new Among("", - 1, 3, "", this), new Among("bb", 0, 2, "", this), new Among("dd", 0, 2, "", this), new Among("ff", 0, 2, "", this), new Among("gg", 0, 2, "", this), new Among("bl", 0, 1, "", this), new Among("mm", 0, 2, "", this), new Among("nn", 0, 2, "", this), new Among("pp", 0, 2, "", this), new Among("rr", 0, 2, "", this), new Among("at", 0, 1, "", this), new Among("tt", 0, 2, "", this), new Among("iz", 0, 1, "", this)};
