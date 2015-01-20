@@ -12,19 +12,20 @@
 
 using System;
 using System.IO;
+using Latino;
 using Latino.TextMining;
 
-namespace Latino.Tutorial
+namespace Tutorial.Example
 {
-    class Tutorial4_1
+    public class Tutorial4_1 : Tutorial<Tutorial4_1>
     {
-        static void Main(string[] args)
+        public override void Run(string[] args)
         {
             // Get the stop words and stemmer for English.
 
             IStemmer stemmer;
             Set<string>.ReadOnly stopWords;
-            TextMiningUtils.GetLanguageTools(Language.English, 
+            TextMiningUtils.GetLanguageTools(Language.English,
                 out stopWords, out stemmer);
 
             // Test the stemmer.
@@ -36,9 +37,9 @@ namespace Latino.Tutorial
 
             UnicodeTokenizer tokenizer = new UnicodeTokenizer();
             tokenizer.MinTokenLen = 2; // Each token must be at least 2 
-                // characters long.
+            // characters long.
             tokenizer.Filter = TokenizerFilter.AlphaStrict; // Tokens
-                // can consist of alphabetic characters only.
+            // can consist of alphabetic characters only.
 
             // Test the tokenizer.
 
@@ -53,8 +54,7 @@ namespace Latino.Tutorial
             // Load a document corpus from a file. Each line in the file
             // represents one document.
 
-            string[] docs 
-                = File.ReadAllLines("..\\..\\Data\\YahooFinance.txt");
+            string[] docs = File.ReadAllLines(@"Example\Data\YahooFinance.txt");
 
             // Create a bag-of-words space.
 
@@ -63,18 +63,18 @@ namespace Latino.Tutorial
             bowSpc.StopWords = stopWords; // Assign the stop words.
             bowSpc.Stemmer = stemmer; // Assign the stemmer.
             bowSpc.MinWordFreq = 3; // A term must appear at least 3
-                // times in the corpus for it to be part of the 
-                // vocabulary.
+            // times in the corpus for it to be part of the 
+            // vocabulary.
             bowSpc.MaxNGramLen = 3; // Terms consisting of at most 3 
-                // consecutive words will be considered.
+            // consecutive words will be considered.
             bowSpc.WordWeightType = WordWeightType.TfIdf; // Set the 
-                // weighting scheme for the bag-of-words vectors to
-                // TF-IDF.
+            // weighting scheme for the bag-of-words vectors to
+            // TF-IDF.
             bowSpc.NormalizeVectors = true; // The TF-IDF vectors will 
-                // be normalized.
+            // be normalized.
             bowSpc.CutLowWeightsPerc = 0.2; // The terms with the lowest
-                // weights, summing up to 20% of the overall weight sum,
-                // will be removed from each TF-IDF vector.
+            // weights, summing up to 20% of the overall weight sum,
+            // will be removed from each TF-IDF vector.
 
             bowSpc.Initialize(docs); // Initialize the BOW space.
 
@@ -82,7 +82,7 @@ namespace Latino.Tutorial
             // frequencies, and document frequencies) to the console.
 
             StreamWriter stdOut = new StreamWriter(Console.OpenStandardOutput());
-            bowSpc.OutputStats(stdOut); 
+            bowSpc.OutputStats(stdOut);
             stdOut.Close();
 
             // Output the TF-IDF vector representing the description of

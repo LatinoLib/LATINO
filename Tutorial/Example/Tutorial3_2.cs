@@ -11,12 +11,13 @@
  **********************************************************************/
 
 using System;
+using Latino;
 
-namespace Latino.Tutorial
+namespace Tutorial.Example
 {
-    class Tutorial3_2
+    public class Tutorial3_2 : Tutorial<Tutorial3_2>
     {
-        static void Main(string[] args)
+        public override void Run(string[] args)
         {
             // Create an ArrayList of sets of numbers and populate it.
 

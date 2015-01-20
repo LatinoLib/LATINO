@@ -12,35 +12,35 @@
 
 using System;
 using System.IO;
+using Latino;
 using Latino.TextMining;
 using Latino.Model;
 
-namespace Latino.Tutorial
+namespace Tutorial.Example
 {
-    class Tutorial4_2
+    public class Tutorial4_2 : Tutorial<Tutorial4_2>
     {
-        static void Main(string[] args)
+        public override void Run(string[] args)
         {
             // Get the stop words and stemmer for English.
 
             IStemmer stemmer;
             Set<string>.ReadOnly stopWords;
-            TextMiningUtils.GetLanguageTools(Language.English, 
+            TextMiningUtils.GetLanguageTools(Language.English,
                 out stopWords, out stemmer);
 
             // Create a tokenizer.
 
             UnicodeTokenizer tokenizer = new UnicodeTokenizer();
             tokenizer.MinTokenLen = 2; // Each token must be at least 2 
-                // characters long.
+            // characters long.
             tokenizer.Filter = TokenizerFilter.AlphaStrict; // Tokens
-                // can consist of alphabetic characters only.
+            // can consist of alphabetic characters only.
 
             // Load a document corpus from a file. Each line in the file
             // represents one document.
 
-            string[] docs 
-                = File.ReadAllLines("..\\..\\Data\\YahooFinance.txt");
+            string[] docs = File.ReadAllLines(@"Example\Data\YahooFinance.txt");
 
             // Create a bag-of-words space.
 

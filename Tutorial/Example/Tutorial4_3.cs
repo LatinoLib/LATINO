@@ -11,21 +11,18 @@
  **********************************************************************/
 
 using System;
-using Latino.Web;
-using Latino.TextMining;
 
-namespace Latino.Tutorial
+namespace Tutorial.Example
 {
-    class Tutorial4_3
+    public class Tutorial4_3 : Tutorial<Tutorial4_3>
     {
         static void Test(params object[] waka)
         {
             Console.WriteLine(waka == null);
         }
 
-        static void Main(string[] args)
+        public override void Run(string[] args)
         {
-
             /*
             DatabaseConnection dbCon = new DatabaseConnection();
             dbCon.SetConnectionString(DatabaseType.SqlServer2005);

@@ -11,10 +11,11 @@
  **********************************************************************/
 
 using System;
+using Latino;
 
-namespace Latino.Tutorial
+namespace Tutorial.Example
 {
-    class Tutorial3_1
+    public class Tutorial3_1 : Tutorial<Tutorial3_1>
     {
         class StatefulObject
         {
@@ -46,14 +47,14 @@ namespace Latino.Tutorial
             return max;
         }
 
-        static void Main(string[] args)
+        public override void Run(string[] args)
         {
             // Create an instance of StatefulObject.
 
             StatefulObject obj = new StatefulObject();
 
             // Output its state. 
-                    
+
             Console.WriteLine(obj.State);
             // Output: ( 2 4 6 8 )
 
@@ -73,8 +74,8 @@ namespace Latino.Tutorial
             // the copy do not affect the original state.
 
             ArrayList<int> state = obj.State.GetWritableCopy();
-            state.Add(12);            
-            Console.WriteLine(state); 
+            state.Add(12);
+            Console.WriteLine(state);
             // Output: ( 2 4 6 8 10 12 )            
             Console.WriteLine(obj.State);
             // Output: ( 2 4 6 8 10 )
@@ -84,7 +85,7 @@ namespace Latino.Tutorial
             // instances as parameters to such functions. This is 
             // demonstrated below.
 
-            Console.WriteLine(GetMax(obj.State)); 
+            Console.WriteLine(GetMax(obj.State));
             // Output: 10
             Console.WriteLine(GetMax(state)); // This is also possible.
             // Output: 12
@@ -116,9 +117,9 @@ namespace Latino.Tutorial
             //ArrayList<Set<int>>.ReadOnly readOnlyArray 
             //  = new ArrayList<Set<int>>.ReadOnly(array); 
 
-            Console.WriteLine(readOnlyArray); 
+            Console.WriteLine(readOnlyArray);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
-            
+
             // Try to add an empty set through the read-only adapter. It 
             // is not possible. It is possible, however, to change each 
             // of the three contained sets. This means that read-only 
@@ -126,19 +127,19 @@ namespace Latino.Tutorial
 
             //readOnlyArray.Add(new Set<int>()); // Not possible.
             readOnlyArray[0].Add(7); // Still possible.
-            Console.WriteLine(readOnlyArray); 
+            Console.WriteLine(readOnlyArray);
             // Output: ( { 1 3 5 7 } { 2 4 6 } { 1 2 3 } )
 
             // To create a "deeply" read-only instance, you need to make
             // contained instances read-only as well. 
 
-            ArrayList<Set<int>.ReadOnly>.ReadOnly readOnlyArray2 
+            ArrayList<Set<int>.ReadOnly>.ReadOnly readOnlyArray2
                 = new ArrayList<Set<int>.ReadOnly>(
                     new Set<int>.ReadOnly[] { 
                         new Set<int>(new int[] { 1, 3, 5 }), 
                         new Set<int>(new int[] { 2, 4, 6 }), 
                         new Set<int>(new int[] { 1, 2, 3 }) });
-            Console.WriteLine(readOnlyArray2); 
+            Console.WriteLine(readOnlyArray2);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
             //readOnlyArray2.Add(new Set<int>()); // Not possible.
             //readOnlyArray2[0].Add(7); // Also not possible.

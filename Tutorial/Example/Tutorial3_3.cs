@@ -12,8 +12,9 @@
 
 using System;
 using System.IO;
+using Latino;
 
-namespace Latino.Tutorial
+namespace Tutorial.Example
 {
     // This is how you implement a serializable object.
     class SerializableObject : ISerializable
@@ -39,9 +40,9 @@ namespace Latino.Tutorial
         }
     }
 
-    class Tutorial3_3
+    public class Tutorial3_3 : Tutorial<Tutorial3_3>
     {
-        static void Main(string[] args)
+        public override void Run(string[] args)
         {
             // Create an ArrayList of sets of numbers and populate it.
 
@@ -68,7 +69,7 @@ namespace Latino.Tutorial
 
             // Serialize the instance into a file.
 
-            BinarySerializer fileSer = new BinarySerializer("array.bin", 
+            BinarySerializer fileSer = new BinarySerializer("array.bin",
                 FileMode.Create);
             array.Save(fileSer);
             fileSer.Close();

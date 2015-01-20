@@ -13,18 +13,18 @@
 using System;
 using Latino;
 
-namespace Latino.Tutorial
+namespace Tutorial.Example
 {
-    class Tutorial1
+    public class Tutorial1 : Tutorial<Tutorial1>
     {
-        static void Main(string[] args)
+        public override void Run(string[] args)
         {
             // *** ArrayList ***
             Console.WriteLine("*** ArrayList ***");
             Console.WriteLine();
             // create an ArrayList 
             Console.WriteLine("Create an ArrayList ...");
-            ArrayList<int> list = new ArrayList<int>(new int[] { 1, 2, 3 });            
+            ArrayList<int> list = new ArrayList<int>(new int[] { 1, 2, 3 });
             Console.WriteLine(list);
             // add more items
             Console.WriteLine("Add more items ...");
@@ -99,7 +99,7 @@ namespace Latino.Tutorial
             // convert to array
             Console.WriteLine("Convert to array ...");
             int[] array2 = set2.ToArray();
-            Console.WriteLine(new ArrayList<int>(array2)); 
+            Console.WriteLine(new ArrayList<int>(array2));
             // convert to Set of string
             Console.WriteLine("Convert to Set of string ...");
             Set<string> set3 = new Set<string>(set2.ToArray<string>());
@@ -108,7 +108,7 @@ namespace Latino.Tutorial
             Console.WriteLine("Get length ...");
             Console.WriteLine(set3.Count);
             Console.WriteLine();
-            
+
             /*
             // *** BinaryVector ***
             Console.WriteLine("*** BinaryVector ***");
