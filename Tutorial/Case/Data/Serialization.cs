@@ -51,7 +51,7 @@ namespace Tutorial.Case.Data
                     new Set<int>(new int[] { 1, 3, 5 }), 
                     new Set<int>(new int[] { 2, 4, 6 }), 
                     new Set<int>(new int[] { 1, 2, 3 }) });
-            Console.WriteLine(array);
+            Output.WriteLine(array);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
 
             // Serialize the instance into memory.
@@ -64,7 +64,7 @@ namespace Tutorial.Case.Data
 
             memSer.Stream.Position = 0;
             array = new ArrayList<Set<int>>(memSer);
-            Console.WriteLine(array);
+            Output.WriteLine(array);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
 
             // Serialize the instance into a file.
@@ -80,7 +80,7 @@ namespace Tutorial.Case.Data
             fileSer = new BinarySerializer("array.bin", FileMode.Open);
             array = new ArrayList<Set<int>>(fileSer);
             fileSer.Close();
-            Console.WriteLine(array);
+            Output.WriteLine(array);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
 
             // Create an instance of SerializableObject and assign the
@@ -91,7 +91,7 @@ namespace Tutorial.Case.Data
 
             // Serialize serObj into memory and deserialize it again. 
 
-            Console.WriteLine(serObj.Tag);
+            Output.WriteLine(serObj.Tag);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
             memSer = new BinarySerializer();
             serObj.Save(memSer);
@@ -99,7 +99,7 @@ namespace Tutorial.Case.Data
 
             memSer.Stream.Position = 0;
             serObj = new SerializableObject(memSer);
-            Console.WriteLine(serObj.Tag);
+            Output.WriteLine(serObj.Tag);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
         }
     }

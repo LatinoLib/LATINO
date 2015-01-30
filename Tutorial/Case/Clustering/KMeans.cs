@@ -73,7 +73,7 @@ namespace Tutorial.Case.Clustering
             {
                 SparseVector<double>.ReadOnly centroid = cl.ComputeCentroid(ud, CentroidType.NrmL2);
                 Console.Write(bowSpc.GetKeywordsStr(centroid, 5));
-                Console.WriteLine(" ({0} companies)", cl.Items.Count);
+                Output.WriteLine(" ({0} companies)", cl.Items.Count);
             }
 
             // Output the documents that are contained in the first 
@@ -81,7 +81,7 @@ namespace Tutorial.Case.Clustering
 
             foreach (int docIdx in cr.Roots[0].Items)
             {
-                Console.WriteLine(docs[docIdx]);
+                Output.WriteLine(docs[docIdx]);
             }
         }
     }

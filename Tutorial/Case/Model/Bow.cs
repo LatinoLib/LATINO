@@ -30,7 +30,7 @@ namespace Tutorial.Case.Model
 
             // Test the stemmer.
 
-            Console.WriteLine(stemmer.GetStem("running"));
+            Output.WriteLine(stemmer.GetStem("running"));
             // Output: run
 
             // Create a tokenizer.
@@ -48,7 +48,7 @@ namespace Tutorial.Case.Model
             {
                 Console.Write("\"{0}\" ", token);
             }
-            Console.WriteLine();
+            Output.WriteLine();
             // Output: "one" "two" "three"
 
             // Load a document corpus from a file. Each line in the file
@@ -94,7 +94,7 @@ namespace Tutorial.Case.Model
                 // Google can be found at the row 4192 in the corpus.
             foreach (IdxDat<double> termInfo in googVec)
             {
-                Console.WriteLine("{0} : {1}", 
+                Output.WriteLine("{0} : {1}", 
                     bowSpc.Words[termInfo.Idx].MostFrequentForm, 
                     termInfo.Dat);
             }
@@ -102,7 +102,7 @@ namespace Tutorial.Case.Model
             // Extract the top 5 terms with the highest TF-IDF weights 
             // from the vector representing Google.
 
-            Console.WriteLine(bowSpc.GetKeywordsStr(googVec, 5));
+            Output.WriteLine(bowSpc.GetKeywordsStr(googVec, 5));
             // Output: google, relevant, targeted advertising, search, 
             // index
              */

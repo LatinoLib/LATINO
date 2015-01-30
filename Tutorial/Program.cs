@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Tutorial.Case;
 using Tutorial.Case.Clustering;
 using Tutorial.Case.Data;
@@ -13,6 +14,9 @@ namespace Tutorial
     {
         static void Main(string[] args)
         {
+            // output
+            var sw = new StreamWriter("report.txt", true);
+
             // data
 //            DataStructures.RunInstance(args);
 //            SparseVector.RunInstance(args);
@@ -29,7 +33,7 @@ namespace Tutorial
 //            KMeans.RunInstance(args);
             
             // validation
-            NFold.RunInstance(args);
+            NFold.RunInstance(sw, args);
 
             // other
 //            Searching.RunInstance(args);

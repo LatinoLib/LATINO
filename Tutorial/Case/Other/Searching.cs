@@ -36,8 +36,8 @@ namespace Tutorial.Case.Other
             
 
 
-            //Console.WriteLine(WebUtils.NormalizeQuery("ata +fabo + - - -\"maMma   mia\"       -dec\"\" -\"\""));
-            Console.WriteLine("\"{0}\"", WebUtils.NormalizeQuery(""));
+            //WriteLine(WebUtils.NormalizeQuery("ata +fabo + - - -\"maMma   mia\"       -dec\"\" -\"\""));
+            WriteLine("\"{0}\"", WebUtils.NormalizeQuery(""));
             Test();
             return;
              
@@ -48,7 +48,7 @@ namespace Tutorial.Case.Other
             int c = 0;
             foreach (SearchEngineResultItem item in searchEngine.ResultSet)
             {
-                Console.WriteLine("{0}. {1}\r\n{2}\r\n", ++c, item.Title, item.Snippet);
+                WriteLine("{0}. {1}\r\n{2}\r\n", ++c, item.Title, item.Snippet);
             }
              * 
              */

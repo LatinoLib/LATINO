@@ -55,7 +55,7 @@ namespace Tutorial.Case.Data
 
             // Output its state. 
 
-            Console.WriteLine(obj.State);
+            Output.WriteLine(obj.State);
             // Output: ( 2 4 6 8 )
 
             // Attempt to modify the state through the State property. 
@@ -66,7 +66,7 @@ namespace Tutorial.Case.Data
             //obj.State.Add(10); // This is not possible.
             //obj.State.Remove(8); // This is also not possible.
             obj.Add(10); // This is the only way to modify the state.
-            Console.WriteLine(obj.State);
+            Output.WriteLine(obj.State);
             // Output: ( 2 4 6 8 10 )
 
             // Create a "snapshot" of the state. You will get a copy 
@@ -75,9 +75,9 @@ namespace Tutorial.Case.Data
 
             ArrayList<int> state = obj.State.GetWritableCopy();
             state.Add(12);
-            Console.WriteLine(state);
+            Output.WriteLine(state);
             // Output: ( 2 4 6 8 10 12 )            
-            Console.WriteLine(obj.State);
+            Output.WriteLine(obj.State);
             // Output: ( 2 4 6 8 10 )
 
             // Invoke GetMax by passing the state as the parameter. 
@@ -85,9 +85,9 @@ namespace Tutorial.Case.Data
             // instances as parameters to such functions. This is 
             // demonstrated below.
 
-            Console.WriteLine(GetMax(obj.State));
+            Output.WriteLine(GetMax(obj.State));
             // Output: 10
-            Console.WriteLine(GetMax(state)); // This is also possible.
+            Output.WriteLine(GetMax(state)); // This is also possible.
             // Output: 12
 
             // By setting the PUBLIC_INNER conditional compilation 
@@ -96,7 +96,7 @@ namespace Tutorial.Case.Data
             // instance to become incoherent and is thus to be avoided. 
 
             obj.State.Inner.Add(12);
-            Console.WriteLine(obj.State);
+            Output.WriteLine(obj.State);
             // Output: ( 2 4 6 8 10 12 )
 
             // Create an ArrayList of sets of numbers and populate it.
@@ -106,7 +106,7 @@ namespace Tutorial.Case.Data
                     new Set<int>(new int[] { 1, 3, 5 }), 
                     new Set<int>(new int[] { 2, 4, 6 }), 
                     new Set<int>(new int[] { 1, 2, 3 }) });
-            Console.WriteLine(array);
+            Output.WriteLine(array);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
 
             // Create a read-only adapter for the created array of sets.
@@ -117,7 +117,7 @@ namespace Tutorial.Case.Data
             //ArrayList<Set<int>>.ReadOnly readOnlyArray 
             //  = new ArrayList<Set<int>>.ReadOnly(array); 
 
-            Console.WriteLine(readOnlyArray);
+            Output.WriteLine(readOnlyArray);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
 
             // Try to add an empty set through the read-only adapter. It 
@@ -127,7 +127,7 @@ namespace Tutorial.Case.Data
 
             //readOnlyArray.Add(new Set<int>()); // Not possible.
             readOnlyArray[0].Add(7); // Still possible.
-            Console.WriteLine(readOnlyArray);
+            Output.WriteLine(readOnlyArray);
             // Output: ( { 1 3 5 7 } { 2 4 6 } { 1 2 3 } )
 
             // To create a "deeply" read-only instance, you need to make
@@ -139,7 +139,7 @@ namespace Tutorial.Case.Data
                         new Set<int>(new int[] { 1, 3, 5 }), 
                         new Set<int>(new int[] { 2, 4, 6 }), 
                         new Set<int>(new int[] { 1, 2, 3 }) });
-            Console.WriteLine(readOnlyArray2);
+            Output.WriteLine(readOnlyArray2);
             // Output: ( { 1 3 5 } { 2 4 6 } { 1 2 3 } )
             //readOnlyArray2.Add(new Set<int>()); // Not possible.
             //readOnlyArray2[0].Add(7); // Also not possible.

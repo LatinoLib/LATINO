@@ -10,7 +10,8 @@
  *
  **********************************************************************/
 
-using System;
+using System.IO;
+using System.Linq;
 using Latino;
 using Latino.Model;
 using Latino.Model.Eval;
@@ -23,36 +24,52 @@ namespace Tutorial.Case.Validation
         public override void Run(string[] args)
         {
             // get classifier and labeled data
-            BinarySvm classifierInst = BinarySvm.RunInstance(args);
+            BinarySvm classifierInst = BinarySvm.RunInstanceNull(args);
             var classifier = (SvmBinaryClassifier<string>)classifierInst.Result["classifier"];
             var labeledData = (LabeledDataset<string, SparseVector<double>>)classifierInst.Result["labeled_data"];
 
             // validation
-            labeledData.Shuffle();
+            labeledData.SortShuffled();
             var perfData = new PerfData<string>();
+            foreach (var g in labeledData.GroupBy(le => le.Label))
+            {
+                Output.WriteLine("total {0} {1}\t {2:0.00}", g.Key, g.Count(), (double)g.Count() / labeledData.Count);
+            }
 
             const int foldCount = 10;
-            Console.WriteLine("Performing {0}-fold cross validation...", foldCount);
+            Output.WriteLine("Performing {0}-fold cross validation...", foldCount);
             for (int i = 0; i < foldCount; i++)
             {
                 int foldN = i + 1;
+
                 LabeledDataset<string, SparseVector<double>> testSet;
                 LabeledDataset<string, SparseVector<double>> trainSet;
-                labeledData.SplitForCrossValidation(foldCount, foldN, out trainSet, out testSet);
+                labeledData.SplitForStratifiedCrossValidation(foldCount, foldN, out trainSet, out testSet);
 
-                int correctCount = 0;
+                foreach (var g in testSet.GroupBy(le => le.Label))
+                {
+                    Output.WriteLine("test {0} {1}\t {2:0.00}", g.Key, g.Count(), (double)g.Count() / testSet.Count);
+                }
+                foreach (var g in trainSet.GroupBy(le => le.Label))
+                {
+                    Output.WriteLine("train {0} {1}\t {2:0.00}", g.Key, g.Count(), (double)g.Count() / trainSet.Count);
+                }
+
+                classifier.Train(trainSet);
+
                 PerfMatrix<string> foldMatrix = perfData.GetPerfMatrix("tutorial", "binary svm", foldN);
                 foreach (LabeledExample<string, SparseVector<double>> labeledExample in testSet)
                 {
                     var prediction = classifier.Predict(labeledExample.Example);
                     foldMatrix.AddCount(labeledExample.Label, prediction.BestClassLabel);
-                    if (prediction.BestClassLabel == labeledExample.Label) { correctCount++; }
                 }
-                Console.WriteLine("Accuracy for {0}-fold: {1}", i, foldMatrix.GetMicroAverage());
-                Console.WriteLine("accuracy {0}", (double)correctCount / testSet.Count);
+                Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", i, foldMatrix.GetMicroAverage());
             }
 
-            Console.WriteLine(perfData.GetSumPerfMatrix("tutorial", "binary svm").ToString());
+            Output.WriteLine("Sum confusion matrix:");
+            PerfMatrix<string> sumPerfMatrix = perfData.GetSumPerfMatrix("tutorial", "binary svm");
+            Output.WriteLine(sumPerfMatrix.ToString());
+            Output.WriteLine("Average accuracy: {0:0.00}\n", sumPerfMatrix.GetMicroAverage());
         }
     }
 }

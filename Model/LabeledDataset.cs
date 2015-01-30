@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -97,6 +98,74 @@ namespace Latino.Model
             mItems.Shuffle(rnd); // throws ArgumentNullException
         }
 
+        public void SortShuffled()
+        {
+            mItems = new ArrayList<LabeledExample<LblT, ExT>>(mItems
+                .GroupBy(le => le.Label)
+                .SelectMany(g =>
+                {
+                    var list = new ArrayList<LabeledExample<LblT, ExT>>(g);
+                    list.Shuffle();
+                    return list;
+                }));
+        }
+
+        public void Sort()
+        {
+            mItems = new ArrayList<LabeledExample<LblT, ExT>>(mItems.OrderBy(le => le.Label));
+        }
+
+        public void SplitForStratifiedCrossValidation(int numFolds, int fold, out LabeledDataset<LblT, ExT> trainSet, out LabeledDataset<LblT, ExT> testSet)
+        {
+            Utils.ThrowException(mItems.Count < 2 ? new InvalidOperationException() : null);
+            Utils.ThrowException((numFolds < 2 || numFolds > mItems.Count) ? new ArgumentOutOfRangeException("numFolds") : null);
+            Utils.ThrowException((fold < 1 || fold > numFolds) ? new ArgumentOutOfRangeException("fold") : null);
+
+            // calc label segments
+            
+            var labelSegments = new List<Pair<LblT, int>>();
+            LblT label = default(LblT);
+            for (int i = 0, startN = 0;; i++)
+            {
+                if (i > 0 && (i == mItems.Count || !label.Equals(mItems[i].Label)))
+                {
+                    Utils.ThrowException(labelSegments.Any(p => p.First.Equals(label)) ? new InvalidOperationException("items not sorted") : null);
+                    labelSegments.Add(new Pair<LblT, int>(label, i - startN));
+                    startN = i;
+                }
+                if (i == mItems.Count) { break; }
+                label = mItems[i].Label;
+            }
+
+            // populate sets
+
+            trainSet = new LabeledDataset<LblT, ExT>();
+            testSet = new LabeledDataset<LblT, ExT>();
+
+            int segStart = 0;
+            foreach (Pair<LblT, int> segment in labelSegments)
+            {
+                int len = segment.Second / numFolds;
+                if (len == 0 && segment.Second % numFolds >= fold) { len = 1; }
+                int testStart = segStart + (fold - 1) * len, testEnd = testStart + len;
+
+                for (int i = segStart; i < testStart; i++)
+                {
+                    trainSet.Add(mItems[i].Label, mItems[i].Example);
+                }
+                for (int i = testStart; i < testEnd; i++)
+                {
+                    testSet.Add(mItems[i].Label, mItems[i].Example);
+                }
+                int segEnd = segStart + segment.Second;
+                for (int i = testEnd; i < segEnd; i++)
+                {
+                    trainSet.Add(mItems[i].Label, mItems[i].Example);
+                }
+                segStart = segEnd;
+            }
+        }
+
         public void SplitForCrossValidation(int numFolds, int fold, out LabeledDataset<LblT, ExT> trainSet, out LabeledDataset<LblT, ExT> testSet)
         {
             Utils.ThrowException(mItems.Count < 2 ? new InvalidOperationException() : null);
@@ -104,7 +173,7 @@ namespace Latino.Model
             Utils.ThrowException((fold < 1 || fold > numFolds) ? new ArgumentOutOfRangeException("fold") : null);
             trainSet = new LabeledDataset<LblT, ExT>();
             testSet = new LabeledDataset<LblT, ExT>();
-            double step = (double)mItems.Count / (double)numFolds;
+            double step = (double)mItems.Count / numFolds;
             double d = 0;
             for (int i = 0; i < numFolds; i++, d += step)
             {

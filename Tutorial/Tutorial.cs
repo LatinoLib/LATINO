@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace Tutorial
 {
@@ -6,6 +8,7 @@ namespace Tutorial
     {
         private readonly Dictionary<string, object> mResult = new Dictionary<string, object>();
 
+        public StreamWriter Output { get; set; }
         public Dictionary<string, object> Result
         {
             get { return mResult; }
@@ -18,10 +21,23 @@ namespace Tutorial
 
         public static T RunInstance(string[] args)
         {
-            var instance = new T();
+            var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
+            Console.SetOut(writer);
+            return RunInstance(writer, args);
+        }
+
+        public static T RunInstanceNull(string[] args)
+        {
+            return RunInstance(StreamWriter.Null, args);
+        }
+
+        public static T RunInstance(StreamWriter writer, string[] args)
+        {
+            var instance = new T { Output = writer };
             instance.Run(args);
             LastResult = instance.Result;
             LastInstance = instance;
+            instance.Output.Flush();
             return instance;
         }
     }

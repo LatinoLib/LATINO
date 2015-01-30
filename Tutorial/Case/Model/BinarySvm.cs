@@ -81,11 +81,11 @@ namespace Tutorial.Case.Model
             foreach (LabeledExample<string, SparseVector<double>> labeledExample in testSet)
             {
                 var prediction = svmBinClass.Predict(labeledExample.Example);
-                Console.WriteLine("{0}\tpredict: {1}", labeledExample.Label, prediction.BestClassLabel);
+                Output.WriteLine("{0}\tpredict: {1}", labeledExample.Label, prediction.BestClassLabel);
                 if (prediction.BestClassLabel == labeledExample.Label) { correctCount++; }
             }
             Result.Add("accuracy", (double)correctCount / testSet.Count);
-            Console.WriteLine("Accuracy on test set: {0}", Result["accuracy"]);
+            Output.WriteLine("Accuracy on test set: {0}", Result["accuracy"]);
 
             Result.Add("classifier", svmBinClass);
             Result.Add("labeled_data", labeledSet);
