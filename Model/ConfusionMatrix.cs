@@ -111,6 +111,35 @@ namespace Latino.Model.Eval
             }
         }
 
+        public PerfMatrix<LblT> GetSumPerfMatrix(string expName, string algoName)
+        {
+            Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
+            Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
+
+            Dictionary<string, FoldData> algoData;
+            if (mData.TryGetValue(expName, out algoData))
+            {
+                FoldData foldData;
+                if (algoData.TryGetValue(algoName, out foldData))
+                {
+                    PerfMatrix<LblT> sumMtx = new PerfMatrix<LblT>(mLblEqCmp);
+                    foreach (PerfMatrix<LblT> foldMtx in foldData)
+                    {
+                        Set<LblT> labels = foldMtx.GetLabels();
+                        foreach (LblT actual in labels)
+                        {
+                            foreach (LblT predicted in labels)
+                            {
+                                sumMtx.AddCount(actual, predicted, foldMtx.Get(actual, predicted));
+                            }
+                        }
+                    }
+                    return sumMtx;
+                }
+            }
+            return null;
+        }
+
         public double GetVal(int foldNum, string expName, string algoName, PerfMetric metric, LblT lbl)
         {
             Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
@@ -316,6 +345,11 @@ namespace Latino.Model.Eval
         public void AddCount(LblT actual, LblT predicted)
         {
             AddCount(actual, predicted, /*count=*/1);
+        }
+
+        public Set<LblT> GetLabels()
+        {
+            return new Set<LblT>(mLabels);
         }
 
         public int Get(LblT actual, LblT predicted)

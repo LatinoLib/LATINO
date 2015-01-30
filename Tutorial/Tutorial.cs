@@ -1,15 +1,18 @@
-﻿namespace Tutorial
-{
-    public static partial class Tutorial
-    {
-    }
+﻿using System.Collections.Generic;
 
+namespace Tutorial
+{
     public abstract class Tutorial<T> where T : Tutorial<T>, new()
     {
-        public object Result { get; set; }
-        
-        public static T LastInstance { get; set; }
-        public static object LastResult { get; set; }
+        private readonly Dictionary<string, object> mResult = new Dictionary<string, object>();
+
+        public Dictionary<string, object> Result
+        {
+            get { return mResult; }
+        }
+
+        public static T LastInstance { get; private set; }
+        public static Dictionary<string, object> LastResult { get; private set; }
 
         public abstract void Run(string[] args);
 

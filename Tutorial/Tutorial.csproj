@@ -43,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Case\Data\DataStructures.cs" />
-    <Compile Include="Case\Model\Svm.cs" />
+    <Compile Include="Case\Model\BinarySvm.cs" />
     <Compile Include="Case\Validation\NFold.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -16,13 +16,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using Latino;
 using Latino.Model;
-using Latino.Model.Eval;
 using Latino.TextMining;
 using Microsoft.VisualBasic.FileIO;
 
 namespace Tutorial.Case.Model
 {
-    public class Svm : Tutorial<Svm>
+    public class BinarySvm : Tutorial<BinarySvm>
     {
         public override void Run(string[] args)
         {
@@ -57,56 +56,44 @@ namespace Tutorial.Case.Model
                 };
             ArrayList<SparseVector<double>> bowData = bowSpc.Initialize(data.Select(d => d.Text));
 
-            // label training set
-            var trainingSet = new LabeledDataset<string, SparseVector<double>>();
-            for (int i = 0; i < data.Count * 3 / 4; i++)
+            // label data
+            var labeledSet = new LabeledDataset<string, SparseVector<double>>();
+            for (int i = 0; i < data.Count; i++)
             {
-                trainingSet.Add(data[i].Polarity == 0 ? "Negative" : "Positive", bowData[i]);
+                labeledSet.Add(data[i].Polarity == 0 ? "Negative" : "Positive", bowData[i]);
             }
+            labeledSet.Shuffle();
+
+            int testSize = labeledSet.Count * 1 / 10;
+            var trainingSet = new LabeledDataset<string, SparseVector<double>>(labeledSet.Skip(testSize));
+            var testSet = new LabeledDataset<string, SparseVector<double>>(labeledSet.Take(testSize));
 
             //-------------------- SVM
 
             var svmBinClass = new SvmBinaryClassifier<string>();
             //svmBinClass.BiasedHyperplane = false;
-            //svmBinClass.CustomParams = "-t 3";   //non-linear kernel
+            //svmBinClass.CustomParams = "-t 3";   // non-linear kernel
             //svmBinClass.CustomParams = String.Format("-j {0}",j);
 
             svmBinClass.Train(trainingSet);
-
-            // prepare test set
-            var testSet = new LabeledDataset<string, SparseVector<double>>();
-            for (int i = data.Count * 1 / 4; i < data.Count; i++)
-            {
-                testSet.Add(data[i].Polarity == 0 ? "Negative" : "Positive", bowData[i]);
-            }
-
-            var matrix = new PerfMatrix<string>(StringComparer.InvariantCulture);
 
             int correctCount = 0;
             foreach (LabeledExample<string, SparseVector<double>> labeledExample in testSet)
             {
                 var prediction = svmBinClass.Predict(labeledExample.Example);
-                Console.WriteLine(prediction.BestClassLabel + "\t" + labeledExample.Label);
+                Console.WriteLine("{0}\tpredict: {1}", labeledExample.Label, prediction.BestClassLabel);
                 if (prediction.BestClassLabel == labeledExample.Label) { correctCount++; }
-                matrix.AddCount(labeledExample.Label, prediction.BestClassLabel);
             }
-            Result = (double)correctCount / testSet.Count;
-            Console.WriteLine("Accuracy on test set: {0}", Result);
+            Result.Add("accuracy", (double)correctCount / testSet.Count);
+            Console.WriteLine("Accuracy on test set: {0}", Result["accuracy"]);
 
-            Console.WriteLine(matrix.ToString());
-
-            foreach (string label in new[] { "Positive", "Negative"})
-            {
-                foreach (PerfMetric metric in Enum.GetValues(typeof(PerfMetric)))
-                {
-                    Console.WriteLine("Score for '{0}', metric {1}: {2}", label, metric, matrix.GetScore(metric, label));
-                }
-            }
+            Result.Add("classifier", svmBinClass);
+            Result.Add("labeled_data", labeledSet);
         }
 
         private static List<LabeledTweet> GetLabeledTweets()
         {
-            var parser = new TextFieldParser(@"Example\Data\testdata.manual.2009.06.14.csv")
+            var parser = new TextFieldParser(@"Data\testdata.manual.2009.06.14.csv")
                 {
                     TextFieldType = FieldType.Delimited
                 };

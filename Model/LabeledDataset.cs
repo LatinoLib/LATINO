@@ -24,7 +24,7 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class LabeledDataset<LblT, ExT> : ILabeledDataset<LblT, ExT>, IUnlabeledExampleCollection<ExT>
+    public class LabeledDataset<LblT, ExT> : ILabeledDataset<LblT, ExT>
     {
         private ArrayList<LabeledExample<LblT, ExT>> mItems
             = new ArrayList<LabeledExample<LblT, ExT>>();
@@ -219,18 +219,6 @@ namespace Latino.Model
         public UnlabeledDataset<ExT> ToUnlabeledDataset()
         {
             return ModelUtils.ConvertToUnlabeledDataset<LblT, ExT>(this);
-        }
-
-        // *** IUnlabeledExampleCollection<ExT> interface implementation ***
-
-        ExT IEnumerableList<ExT>.this[int index]
-        {
-            get { return mItems[index].Example; } // throws ArgumentOutOfRangeException
-        }
-
-        IEnumerator<ExT> IEnumerable<ExT>.GetEnumerator()
-        {
-            return new UnlabeledDatasetEnumerator(this);
         }
 
         // *** ISerializable interface implementation ***
