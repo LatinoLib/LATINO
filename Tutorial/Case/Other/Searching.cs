@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    Tutorial4_3.cs
+ *  File:    Searching.cs
  *  Desc:    Tutorial 4.3: Supervised machine learning
  *  Created: Apr-2010
  *
@@ -12,9 +12,9 @@
 
 using System;
 
-namespace Tutorial.Example
+namespace Tutorial.Case.Other
 {
-    public class Tutorial4_3 : Tutorial<Tutorial4_3>
+    public class Searching : Tutorial<Searching>
     {
         static void Test(params object[] waka)
         {

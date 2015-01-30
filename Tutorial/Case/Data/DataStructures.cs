@@ -1,8 +1,8 @@
-﻿/*==========================================================================;
+/*==========================================================================;
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    Tutorial1.cs
+ *  File:    DataStructures.cs
  *  Desc:    Tutorial 1: Fundamental data structures
  *  Created: Dec-2009
  *
@@ -13,9 +13,9 @@
 using System;
 using Latino;
 
-namespace Tutorial.Example
+namespace Tutorial.Case.Data
 {
-    public class Tutorial1 : Tutorial<Tutorial1>
+    public class DataStructures : Tutorial<DataStructures>
     {
         public override void Run(string[] args)
         {

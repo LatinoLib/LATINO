@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    Tutorial3_1.cs
+ *  File:    C04_Sateful.cs
  *  Desc:    Tutorial 3.1: Read-only adapters
  *  Created: Dec-2009
  *
@@ -13,9 +13,9 @@
 using System;
 using Latino;
 
-namespace Tutorial.Example
+namespace Tutorial.Case.Data
 {
-    public class Tutorial3_1 : Tutorial<Tutorial3_1>
+    public class C04_Sateful : Tutorial<C04_Sateful>
     {
         class StatefulObject
         {

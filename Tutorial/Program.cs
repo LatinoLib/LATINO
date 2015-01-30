@@ -1,4 +1,8 @@
-﻿using Tutorial.Example;
+﻿using System;
+using System.Collections.Generic;
+using Tutorial.Case;
+using Tutorial.Case.Data;
+using Tutorial.Case.Model;
 
 namespace Tutorial
 {
@@ -6,15 +10,25 @@ namespace Tutorial
     {
         static void Main(string[] args)
         {
-            Tutorial1.Instance.Run(args);
-            Tutorial2_1.Instance.Run(args);
-            Tutorial2_2.Instance.Run(args);
-            Tutorial3_1.Instance.Run(args);
-            Tutorial3_2.Instance.Run(args);
-            Tutorial3_3.Instance.Run(args);
-            Tutorial4_1.Instance.Run(args);
-            Tutorial4_2.Instance.Run(args);
-            Tutorial4_3.Instance.Run(args);
+            DataStructures.RunInstance(args);
+//            SparseVector.Instance.Run(args);
+//            SparseMatrix.Instance.Run(args);
+//            C04_Sateful.Instance.Run(args);
+//            C03_Cloning.Instance.Run(args);
+//            Serialization.Instance.Run(args);
+//            Bow.Instance.Run(args);
+//            KMeans.Instance.Run(args);
+//            Searching.Instance.Run(args);
+            var results = new List<double>();
+            for (int i = 0; i < 1; i++)
+            {
+                results.Add((double)Svm.RunInstance(args).Result);
+            }
+            Console.WriteLine("\n\n\n");
+            foreach (double result in results)
+            {
+                Console.WriteLine("Accurracy: {0}", result);
+            }
         }
     }
 }

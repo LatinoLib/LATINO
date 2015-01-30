@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    Tutorial4_2.cs
+ *  File:    KMeans.cs
  *  Desc:    Tutorial 4.2: Unsupervised machine learning
  *  Created: Apr-2010
  *
@@ -16,9 +16,9 @@ using Latino;
 using Latino.TextMining;
 using Latino.Model;
 
-namespace Tutorial.Example
+namespace Tutorial.Case.Clustering
 {
-    public class Tutorial4_2 : Tutorial<Tutorial4_2>
+    public class KMeans : Tutorial<KMeans>
     {
         public override void Run(string[] args)
         {
@@ -54,7 +54,7 @@ namespace Tutorial.Example
             bowSpc.NormalizeVectors = true; // The TF-IDF vectors will be normalized.
             bowSpc.CutLowWeightsPerc = 0.2; // The terms with the lowest weights, summing up to 20% of the overall weight sum, will be removed from each TF-IDF vector.
 
-            ArrayList<SparseVector<double>> sparseVectors = bowSpc.Initialize(docs); // Initialize the BOW space.
+            ArrayList<SparseVector<double>> sparseVectors = bowSpc.Initialize(docs); // Initialize the Bow space.
             UnlabeledDataset<SparseVector<double>> ud = new UnlabeledDataset<SparseVector<double>>(sparseVectors);
 
             // Compute 100 clusters of documents.

@@ -58,9 +58,9 @@ namespace Latino.Model.Eval
             }
         }
 
-        private Dictionary<string, Dictionary<string, FoldData>> mData
+        private readonly Dictionary<string, Dictionary<string, FoldData>> mData
             = new Dictionary<string, Dictionary<string, FoldData>>();
-        private IEqualityComparer<LblT> mLblEqCmp
+        private readonly IEqualityComparer<LblT> mLblEqCmp
             = null;
 
         public PerfData()

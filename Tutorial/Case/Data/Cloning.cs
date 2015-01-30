@@ -2,8 +2,8 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    Tutorial3_2.cs
- *  Desc:    Tutorial 3.2: Cloning
+ *  File:    C03_Cloning.cs
+ *  Desc:    Tutorial 3.2: C03_Cloning
  *  Created: Dec-2009
  *
  *  Authors: Miha Grcar
@@ -13,9 +13,9 @@
 using System;
 using Latino;
 
-namespace Tutorial.Example
+namespace Tutorial.Case.Data
 {
-    public class Tutorial3_2 : Tutorial<Tutorial3_2>
+    public class C03_Cloning : Tutorial<C03_Cloning>
     {
         public override void Run(string[] args)
         {

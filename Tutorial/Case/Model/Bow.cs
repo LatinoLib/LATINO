@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    Tutorial4_1.cs
+ *  File:    Bow.cs
  *  Desc:    Tutorial 4.1: Text preprocessing
  *  Created: Apr-2010
  *
@@ -15,9 +15,9 @@ using System.IO;
 using Latino;
 using Latino.TextMining;
 
-namespace Tutorial.Example
+namespace Tutorial.Case.Model
 {
-    public class Tutorial4_1 : Tutorial<Tutorial4_1>
+    public class Bow : Tutorial<Bow>
     {
         public override void Run(string[] args)
         {
@@ -76,7 +76,7 @@ namespace Tutorial.Example
             // weights, summing up to 20% of the overall weight sum,
             // will be removed from each TF-IDF vector.
 
-            bowSpc.Initialize(docs); // Initialize the BOW space.
+            bowSpc.Initialize(docs); // Initialize the Bow space.
 
             // Output the vocabulary (the terms, their stems, 
             // frequencies, and document frequencies) to the console.

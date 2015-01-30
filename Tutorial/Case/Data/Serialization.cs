@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    Tutorial3_3.cs
+ *  File:    Serialization.cs
  *  Desc:    Tutorial 3.3: Serialization
  *  Created: Dec-2009
  *
@@ -14,7 +14,7 @@ using System;
 using System.IO;
 using Latino;
 
-namespace Tutorial.Example
+namespace Tutorial.Case.Data
 {
     // This is how you implement a serializable object.
     class SerializableObject : ISerializable
@@ -40,7 +40,7 @@ namespace Tutorial.Example
         }
     }
 
-    public class Tutorial3_3 : Tutorial<Tutorial3_3>
+    public class Serialization : Tutorial<Serialization>
     {
         public override void Run(string[] args)
         {
