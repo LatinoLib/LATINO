@@ -98,21 +98,16 @@ namespace Latino.Model
             mItems.Shuffle(rnd); // throws ArgumentNullException
         }
 
-        public void SortShuffled()
+        public void GroupLabels(bool shuffle = true)
         {
             mItems = new ArrayList<LabeledExample<LblT, ExT>>(mItems
                 .GroupBy(le => le.Label)
                 .SelectMany(g =>
                 {
                     var list = new ArrayList<LabeledExample<LblT, ExT>>(g);
-                    list.Shuffle();
+                    if (shuffle) { list.Shuffle(); }
                     return list;
                 }));
-        }
-
-        public void Sort()
-        {
-            mItems = new ArrayList<LabeledExample<LblT, ExT>>(mItems.OrderBy(le => le.Label));
         }
 
         public void SplitForStratifiedCrossValidation(int numFolds, int fold, out LabeledDataset<LblT, ExT> trainSet, out LabeledDataset<LblT, ExT> testSet)
@@ -136,18 +131,20 @@ namespace Latino.Model
                 if (i == mItems.Count) { break; }
                 label = mItems[i].Label;
             }
+            Utils.ThrowException(mItems.Count < numFolds * labelSegments.Count ? new ArgumentException("too small to stratify") : null);
 
             // populate sets
 
             trainSet = new LabeledDataset<LblT, ExT>();
             testSet = new LabeledDataset<LblT, ExT>();
-
             int segStart = 0;
             foreach (Pair<LblT, int> segment in labelSegments)
             {
                 int len = segment.Second / numFolds;
-                if (len == 0 && segment.Second % numFolds >= fold) { len = 1; }
-                int testStart = segStart + (fold - 1) * len, testEnd = testStart + len;
+                int testStart = segStart + (fold - 1) * len;
+                int mod = segment.Second % numFolds;
+                if (fold <= mod) { len++; testStart += fold - 1; } else { testStart += mod; }
+                int testEnd = testStart + len;
 
                 for (int i = segStart; i < testStart; i++)
                 {

@@ -10,7 +10,6 @@
  *
  **********************************************************************/
 
-using System.IO;
 using System.Linq;
 using Latino;
 using Latino.Model;
@@ -29,7 +28,7 @@ namespace Tutorial.Case.Validation
             var labeledData = (LabeledDataset<string, SparseVector<double>>)classifierInst.Result["labeled_data"];
 
             // validation
-            labeledData.SortShuffled();
+            labeledData.GroupLabels();
             var perfData = new PerfData<string>();
             foreach (var g in labeledData.GroupBy(le => le.Label))
             {
@@ -45,15 +44,6 @@ namespace Tutorial.Case.Validation
                 LabeledDataset<string, SparseVector<double>> testSet;
                 LabeledDataset<string, SparseVector<double>> trainSet;
                 labeledData.SplitForStratifiedCrossValidation(foldCount, foldN, out trainSet, out testSet);
-
-                foreach (var g in testSet.GroupBy(le => le.Label))
-                {
-                    Output.WriteLine("test {0} {1}\t {2:0.00}", g.Key, g.Count(), (double)g.Count() / testSet.Count);
-                }
-                foreach (var g in trainSet.GroupBy(le => le.Label))
-                {
-                    Output.WriteLine("train {0} {1}\t {2:0.00}", g.Key, g.Count(), (double)g.Count() / trainSet.Count);
-                }
 
                 classifier.Train(trainSet);
 

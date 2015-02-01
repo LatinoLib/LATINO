@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Latino", "Latino.csproj", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial", "Tutorial\Tutorial.csproj", "{147CDE57-CBBD-4381-A70D-A21E34DA8B06}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LatinoTest", "LatinoTest\LatinoTest.csproj", "{CC1C0C12-9FD2-42DD-9C33-4B87FC3787B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{147CDE57-CBBD-4381-A70D-A21E34DA8B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{147CDE57-CBBD-4381-A70D-A21E34DA8B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{147CDE57-CBBD-4381-A70D-A21E34DA8B06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC1C0C12-9FD2-42DD-9C33-4B87FC3787B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC1C0C12-9FD2-42DD-9C33-4B87FC3787B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC1C0C12-9FD2-42DD-9C33-4B87FC3787B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC1C0C12-9FD2-42DD-9C33-4B87FC3787B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
