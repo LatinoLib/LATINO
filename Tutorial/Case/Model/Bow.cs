@@ -19,7 +19,7 @@ namespace Tutorial.Case.Model
 {
     public class Bow : Tutorial<Bow>
     {
-        public override void Run(string[] args)
+        public override void Run(object[] args)
         {
             // Get the stop words and stemmer for English.
 

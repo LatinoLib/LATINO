@@ -131,7 +131,7 @@ namespace Latino.Model
                 if (i == mItems.Count) { break; }
                 label = mItems[i].Label;
             }
-            Utils.ThrowException(mItems.Count < numFolds * labelSegments.Count ? new ArgumentException("too small to stratify") : null);
+            Utils.ThrowException(mItems.Count < numFolds * labelSegments.Count ? new ArgumentException("dataset too small to stratify") : null);
 
             // populate sets
 

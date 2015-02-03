@@ -20,7 +20,7 @@ namespace Tutorial.Case.Clustering
 {
     public class KMeans : Tutorial<KMeans>
     {
-        public override void Run(string[] args)
+        public override void Run(object[] args)
         {
             // Get the stop words and stemmer for English.
 

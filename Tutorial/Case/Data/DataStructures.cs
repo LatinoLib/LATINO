@@ -17,7 +17,7 @@ namespace Tutorial.Case.Data
 {
     public class DataStructures : Tutorial<DataStructures>
     {
-        public override void Run(string[] args)
+        public override void Run(object[] args)
         {
             // *** ArrayList ***
             Output.WriteLine("*** ArrayList ***");

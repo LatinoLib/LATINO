@@ -17,7 +17,7 @@ namespace Tutorial.Case.Data
 {
     public class SparseVector : Tutorial<SparseVector>
     {
-        public override void Run(string[] args)
+        public override void Run(object[] args)
         {
             // create SparseVector
             Output.WriteLine("Create SparseVector ...");

@@ -140,6 +140,27 @@ namespace Latino.Model.Eval
             return null;
         }
 
+        public Set<LblT> GetLabels(string expName, string algoName)
+        {
+            Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
+            Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
+
+            var labels = new Set<LblT>();
+            Dictionary<string, FoldData> algoData;
+            if (mData.TryGetValue(expName, out algoData))
+            {
+                FoldData foldData;
+                if (algoData.TryGetValue(algoName, out foldData))
+                {
+                    foreach (PerfMatrix<LblT> foldMtx in foldData)
+                    {
+                        labels.AddRange(foldMtx.GetLabels());
+                    }
+                }
+            }
+            return labels;
+        }
+
         public double GetVal(int foldNum, string expName, string algoName, PerfMetric metric, LblT lbl)
         {
             Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
@@ -177,14 +198,14 @@ namespace Latino.Model.Eval
                         if (mtx == null) { throw new InvalidOperationException(); }
                         sum += mtx.GetScore(metric, lbl);
                     }
-                    double avg = sum / (double)foldData.Count;
+                    double avg = sum / foldData.Count;
                     sum = 0;
                     foreach (PerfMatrix<LblT> mtx in foldData)
                     {
                         double val = mtx.GetScore(metric, lbl) - avg;
                         sum += val * val;
                     }
-                    stdev = Math.Sqrt(sum / (double)foldData.Count);
+                    stdev = Math.Sqrt(sum / foldData.Count);
                     return avg;
                 }
             }

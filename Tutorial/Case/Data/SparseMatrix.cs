@@ -17,7 +17,7 @@ namespace Tutorial.Case.Data
 {
     public class SparseMatrix : Tutorial<SparseMatrix>
     {
-        public override void Run(string[] args)
+        public override void Run(object[] args)
         {
             // create SparseMatrix
             Output.WriteLine("Create SparseMatrix ...");

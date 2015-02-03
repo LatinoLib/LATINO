@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    NFold.cs
+ *  File:    BinarySvm.cs
  *  Desc:    Tutorial 5.1: Supervised machine learning
  *  Created: Apr-2010
  *
@@ -23,7 +23,7 @@ namespace Tutorial.Case.Model
 {
     public class BinarySvm : Tutorial<BinarySvm>
     {
-        public override void Run(string[] args)
+        public override void Run(object[] args)
         {
             // prepare data
             IStemmer stemmer;
@@ -64,28 +64,34 @@ namespace Tutorial.Case.Model
             }
             labeledSet.Shuffle();
 
-            int testSize = labeledSet.Count * 1 / 10;
+            int testSize = labeledSet.Count / 10;
             var trainingSet = new LabeledDataset<string, SparseVector<double>>(labeledSet.Skip(testSize));
             var testSet = new LabeledDataset<string, SparseVector<double>>(labeledSet.Take(testSize));
 
             //-------------------- SVM
 
             var svmBinClass = new SvmBinaryClassifier<string>();
-            //svmBinClass.BiasedHyperplane = false;
-            //svmBinClass.CustomParams = "-t 3";   // non-linear kernel
-            //svmBinClass.CustomParams = String.Format("-j {0}",j);
+            if (args.Any()) { svmBinClass.C = (int)args[0]; }
+//            svmBinClass.BiasedHyperplane = true;
+//            svmBinClass.CustomParams = "-t 3";   // non-linear kernel
+//            svmBinClass.CustomParams = String.Format("-j {0}",j);
 
             svmBinClass.Train(trainingSet);
 
-            int correctCount = 0;
+            int correct = 0;
+            double avgDist = 0;
             foreach (LabeledExample<string, SparseVector<double>> labeledExample in testSet)
             {
                 var prediction = svmBinClass.Predict(labeledExample.Example);
-                Output.WriteLine("{0}\tpredict: {1}", labeledExample.Label, prediction.BestClassLabel);
-                if (prediction.BestClassLabel == labeledExample.Label) { correctCount++; }
+//                Output.WriteLine("actual: {0}\tpredicted: {1}\t score: {2:0.0000}", labeledExample.Label, prediction.BestClassLabel, prediction.BestScore);
+                avgDist += prediction.BestScore;
+                if (prediction.BestClassLabel == labeledExample.Label) { correct++; }
             }
-            Result.Add("accuracy", (double)correctCount / testSet.Count);
-            Output.WriteLine("Accuracy on test set: {0}", Result["accuracy"]);
+
+            Output.WriteLine("Accuracy: {0:0.00}",  100.0 * correct / testSet.Count);
+            Output.WriteLine("Avg. distance: {0:0.00}",  avgDist / testSet.Count);
+
+            Result.Add("accuracy", (double)correct / testSet.Count);
 
             Result.Add("classifier", svmBinClass);
             Result.Add("labeled_data", labeledSet);

@@ -47,7 +47,7 @@ namespace Tutorial.Case.Data
             return max;
         }
 
-        public override void Run(string[] args)
+        public override void Run(object[] args)
         {
             // Create an instance of StatefulObject.
 

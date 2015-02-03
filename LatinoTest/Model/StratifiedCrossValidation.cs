@@ -49,10 +49,10 @@ namespace LatinoTest.Model
                     {
                         LabeledDataset<int, int> trainSet, testSet;
                         ld.SplitForStratifiedCrossValidation(numFolds, i + 1, out trainSet, out testSet);
-                        AssertBijection(trainSet.Concat(testSet), ld);
+                        AssertSetEquality(trainSet.Concat(testSet), ld);
                         aggTestSet.AddRange(testSet);
                     }
-                    AssertBijection(aggTestSet, ld);
+                    AssertSetEquality(aggTestSet, ld);
                 }
             }
         }
@@ -80,7 +80,7 @@ namespace LatinoTest.Model
                     {
                         LabeledDataset<int, int> trainSet, testSet;
                         ld.SplitForStratifiedCrossValidation(numFolds, i + 1, out trainSet, out testSet);
-                        AssertBijection(trainSet.Concat(testSet), ld);
+                        AssertSetEquality(trainSet.Concat(testSet), ld);
                         aggTestSet.AddRange(testSet);
 
                         foreach (double distr in testSet.GroupBy(le => le.Label).Select(g => (double)g.Count() / testSet.Count))
@@ -92,7 +92,7 @@ namespace LatinoTest.Model
                             Assert.IsTrue(Math.Abs(labelDistr - distr) <= 1.0 / trainSet.Count);
                         }
                     }
-                    AssertBijection(aggTestSet, ld);
+                    AssertSetEquality(aggTestSet, ld);
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace LatinoTest.Model
                 {
                     LabeledDataset<int, int> trainSet, testSet;
                     ld.SplitForStratifiedCrossValidation(numFolds, i + 1, out trainSet, out testSet);
-                    AssertBijection(trainSet.Concat(testSet), ld);
+                    AssertSetEquality(trainSet.Concat(testSet), ld);
                     aggTestSet.AddRange(testSet);
 
                     List<double> test = new List<double>();
@@ -137,7 +137,7 @@ namespace LatinoTest.Model
                         int label = group.Key;
                         int j = 0;
                         for (; labelCounts[j, 0] != label; j++) { }
-                        Assert.IsTrue(Math.Abs(labelDistrs[j] - distr) <= 1.0 / testSet.Count);
+                        Assert.IsTrue(Math.Abs(labelDistrs[j] - distr) <= 1.0 / testSet.Count + 0.00001);
                         test.Add((double)group.Count() / testSet.Count);
                     }
 
@@ -148,15 +148,15 @@ namespace LatinoTest.Model
                         int label = group.Key;
                         int j = 0;
                         for (; labelCounts[j, 0] != label; j++) { }
-                        Assert.IsTrue(Math.Abs(labelDistrs[j] - distr) <= (1.0 / trainSet.Count + 0.00001));
+                        Assert.IsTrue(Math.Abs(labelDistrs[j] - distr) <= 1.0 / trainSet.Count + 0.00001);
                         train.Add((double)group.Count() / trainSet.Count);
                     }
                 }
-                AssertBijection(aggTestSet, ld);
+                AssertSetEquality(aggTestSet, ld);
             }
         }
 
-        private static void AssertBijection(IEnumerable<LabeledExample<int, int>> le1, IEnumerable<LabeledExample<int, int>> le2)
+        private static void AssertSetEquality(IEnumerable<LabeledExample<int, int>> le1, IEnumerable<LabeledExample<int, int>> le2)
         {
             List<int> examples1 = le1.Select(le => le.Example).ToList();
             List<int> examples2 = le2.Select(le => le.Example).ToList();

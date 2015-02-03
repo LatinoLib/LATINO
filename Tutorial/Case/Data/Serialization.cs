@@ -42,7 +42,7 @@ namespace Tutorial.Case.Data
 
     public class Serialization : Tutorial<Serialization>
     {
-        public override void Run(string[] args)
+        public override void Run(object[] args)
         {
             // Create an ArrayList of sets of numbers and populate it.
 

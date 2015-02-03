@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using Tutorial.Case;
+﻿using System.IO;
+using Latino;
 using Tutorial.Case.Clustering;
 using Tutorial.Case.Data;
 using Tutorial.Case.Model;
@@ -15,28 +13,31 @@ namespace Tutorial
         static void Main(string[] args)
         {
             // output
+//            Logger.GetRootLogger().LocalOutputType = Logger.OutputType.Custom; // disable latino logger
             var sw = new StreamWriter("report.txt", true);
+            sw.WriteLine("************");
 
             // data
-//            DataStructures.RunInstance(args);
-//            SparseVector.RunInstance(args);
-//            SparseMatrix.RunInstance(args);
-//            Sateful.RunInstance(args);
-//            Cloning.RunInstance(args);
-//            Serialization.RunInstance(args);
+//            DataStructures.RunInstanceWr(sw, args);
+//            SparseVector.RunInstanceWr(sw, args);
+//            SparseMatrix.RunInstanceWr(sw, args);
+//            Sateful.RunInstanceWr(sw, args);
+//            Cloning.RunInstanceWr(sw, args);
+//            Serialization.RunInstanceWr(sw, args);
 
             // model
-//            Bow.RunInstance(args);
-//            BinarySvm.RunInstance(args);
+//            Bow.RunInstanceWr(sw, args);
+            BinarySvm.RunInstanceWr(sw, args);
 
             // clustering
-//            KMeans.RunInstance(args);
+//            KMeans.RunInstanceWr(sw, args);
             
             // validation
-            NFold.RunInstance(sw, args);
+//            NFold.RunInstanceWr(sw, args);
 
             // other
-//            Searching.RunInstance(args);
+//            Searching.RunInstanceWr(sw, args);
         }
+
     }
 }

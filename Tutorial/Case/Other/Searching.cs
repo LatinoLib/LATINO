@@ -21,7 +21,7 @@ namespace Tutorial.Case.Other
             Console.WriteLine(waka == null);
         }
 
-        public override void Run(string[] args)
+        public override void Run(object[] args)
         {
             /*
             DatabaseConnection dbCon = new DatabaseConnection();

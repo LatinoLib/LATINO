@@ -17,21 +17,21 @@ namespace Tutorial
         public static T LastInstance { get; private set; }
         public static Dictionary<string, object> LastResult { get; private set; }
 
-        public abstract void Run(string[] args);
+        public abstract void Run(object[] args);
 
-        public static T RunInstance(string[] args)
+        public static T RunInstance(params object[] args)
         {
             var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
             Console.SetOut(writer);
-            return RunInstance(writer, args);
+            return RunInstanceWr(writer, args);
         }
 
-        public static T RunInstanceNull(string[] args)
+        public static T RunInstanceNull(params object[] args)
         {
-            return RunInstance(StreamWriter.Null, args);
+            return RunInstanceWr(StreamWriter.Null, args);
         }
 
-        public static T RunInstance(StreamWriter writer, string[] args)
+        public static T RunInstanceWr(StreamWriter writer, params object[] args)
         {
             var instance = new T { Output = writer };
             instance.Run(args);
