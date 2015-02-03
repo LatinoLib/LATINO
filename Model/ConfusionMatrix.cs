@@ -387,6 +387,16 @@ namespace Latino.Model.Eval
             return 0;
         }
 
+        public int GetActual(LblT lbl)
+        {
+            return SumRow(lbl);
+        }
+
+        public int GetPredicted(LblT lbl)
+        {
+            return SumCol(lbl);
+        }
+
         public void Reset()
         {
             mMtx.Clear();

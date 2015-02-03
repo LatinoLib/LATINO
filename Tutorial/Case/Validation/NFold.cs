@@ -32,7 +32,6 @@ namespace Tutorial.Case.Validation
             var labeledData = (LabeledDataset<string, SparseVector<double>>)classifierInst.Result["labeled_data"];
             bool stratified = true;
 
-
             // cross validation
             if (stratified)
             {
@@ -72,7 +71,7 @@ namespace Tutorial.Case.Validation
                     Prediction<string> prediction = classifier.Predict(labeledExample.Example);
                     foldMatrix.AddCount(labeledExample.Label, prediction.BestClassLabel);
                 }
-                Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", i, foldMatrix.GetMicroAverage());
+                Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", foldN, foldMatrix.GetMicroAverage());
             }
 
             Output.WriteLine("Sum confusion matrix:");

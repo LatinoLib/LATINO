@@ -92,6 +92,7 @@
     <Compile Include="MultiSet.cs" />
     <Compile Include="MultiSetEqualityComparer.cs" />
     <Compile Include="Network.cs" />
+    <Compile Include="Preconditions.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuilt.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltCompact.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltCompressed.cs" />

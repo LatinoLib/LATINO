@@ -39,7 +39,6 @@ namespace Tutorial.Case.Model
 
             // take data for two classes from cvs file
             var data = new List<LabeledTweet>(GetLabeledTweets().Where(lt => lt.Polarity != 2)).ToList();
-            data = data.OrderBy(a => Guid.NewGuid()).ToList();
 
             // Create a bag-of-words space.
             var bowSpc = new BowSpace
@@ -50,7 +49,7 @@ namespace Tutorial.Case.Model
                     MinWordFreq = 1,                        // A term must appear at least n-times in the corpus for it to be part of the vocabulary.
                     MaxNGramLen = 2,                        // Terms consisting of at most n-consecutive words will be considered.
                     WordWeightType = WordWeightType.TermFreq,  // Set the weighting scheme for the bag-of-words vectors to TF.
-//                    WordWeightType = WordWeightType.TfIdf,  // Set the weighting scheme for the bag-of-words vectors to TF-IDF.
+                    //WordWeightType = WordWeightType.TfIdf,  // Set the weighting scheme for the bag-of-words vectors to TF-IDF.
                     NormalizeVectors = true,                // The TF-IDF vectors will be normalized.
                     CutLowWeightsPerc = 0                   // The terms with the lowest weights, summing up to 20% of the overall weight sum, will be removed from each TF-IDF vector.
                 };
@@ -60,7 +59,7 @@ namespace Tutorial.Case.Model
             var labeledSet = new LabeledDataset<string, SparseVector<double>>();
             for (int i = 0; i < data.Count; i++)
             {
-                labeledSet.Add(data[i].Polarity == 0 ? "Negative" : "Positive", bowData[i]);
+                labeledSet.Add(data[i].Label, bowData[i]);
             }
             labeledSet.Shuffle();
 
@@ -72,9 +71,9 @@ namespace Tutorial.Case.Model
 
             var svmBinClass = new SvmBinaryClassifier<string>();
             if (args.Any()) { svmBinClass.C = (int)args[0]; }
-//            svmBinClass.BiasedHyperplane = true;
-//            svmBinClass.CustomParams = "-t 3";   // non-linear kernel
-//            svmBinClass.CustomParams = String.Format("-j {0}",j);
+            //svmBinClass.BiasedHyperplane = true;
+            //svmBinClass.CustomParams = "-t 3";   // non-linear kernel
+            //svmBinClass.CustomParams = String.Format("-j {0}",j);
 
             svmBinClass.Train(trainingSet);
 
@@ -83,7 +82,7 @@ namespace Tutorial.Case.Model
             foreach (LabeledExample<string, SparseVector<double>> labeledExample in testSet)
             {
                 var prediction = svmBinClass.Predict(labeledExample.Example);
-//                Output.WriteLine("actual: {0}\tpredicted: {1}\t score: {2:0.0000}", labeledExample.Label, prediction.BestClassLabel, prediction.BestScore);
+                //Output.WriteLine("actual: {0}\tpredicted: {1}\t score: {2:0.0000}", labeledExample.Label, prediction.BestClassLabel, prediction.BestScore);
                 avgDist += prediction.BestScore;
                 if (prediction.BestClassLabel == labeledExample.Label) { correct++; }
             }
@@ -131,12 +130,26 @@ namespace Tutorial.Case.Model
 
         private class LabeledTweet
         {
-            public int Polarity { get; set; } //  0 = negative, 2 = neutral, 4 = positive
+            public int Polarity { get; set; }
             public int Id { get; set; }
             public DateTime Date { get; set; }
             public string Query { get; set; }
             public string User { get; set; }
             public string Text { get; set; }
+ 
+            public string Label
+            {
+                get
+                {
+                    switch (Polarity)
+                    {
+                        case 0: return "Negative";
+                        case 2: return "Neutral";
+                        case 4: return "Positive";
+                        default: return "";
+                    }
+                }
+            }
         }
     }
 }
