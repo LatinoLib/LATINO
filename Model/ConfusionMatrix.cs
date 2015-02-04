@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
@@ -557,21 +558,22 @@ namespace Latino.Model.Eval
         {
             StringBuilder str = new StringBuilder();
             ArrayList<LblT> labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
-            string line = "\t";
+            int len = labels.Max(l => l.ToString().Length) + 2;
+
+            str.Append("".PadRight(len));
             foreach (LblT predicted in labels)
             {
-                line += predicted + "\t";
+                str.Append(predicted.ToString().PadLeft(len));
             }
-            str.AppendLine(line.TrimEnd('\t'));
+            str.AppendLine();
             foreach (LblT actual in labels)
             {
-                str.Append(actual + "\t");
-                line = "";
+                str.Append(actual.ToString().PadLeft(len));
                 foreach (LblT predicted in labels)
                 {
-                    line += Get(actual, predicted) + "\t";
+                    str.Append(Get(actual, predicted).ToString(CultureInfo.InvariantCulture).PadLeft(len));
                 }
-                str.AppendLine(line.TrimEnd('\t'));
+                str.AppendLine();
             }
             return str.ToString().TrimEnd();
         }

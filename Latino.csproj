@@ -80,6 +80,7 @@
     <Compile Include="Model\BatchUpdatedCentroidClassifier.cs" />
     <Compile Include="Model\CentroidData.cs" />
     <Compile Include="Model\ConfusionMatrix.cs" />
+    <Compile Include="Model\CrossValidation.cs" />
     <Compile Include="Model\HierarchicalBisectingClusteringFast.cs" />
     <Compile Include="Model\NearestCentroidClassifier.cs" />
     <Compile Include="Model\SvmBinaryClassifier.cs" />
