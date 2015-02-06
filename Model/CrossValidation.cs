@@ -23,6 +23,8 @@ namespace Latino.Model.Eval
         public string AlgName { get; set; }
 
         public Action<CrossValidation<LblT, ExT>, int> BeforeFoldAction { get; set; }
+        public Func<CrossValidation<LblT, ExT>, int, LabeledDataset<LblT, ExT>, ILabeledDataset<LblT>> TrainSetBeforeTrainFunc { get; set; }
+        public Func<CrossValidation<LblT, ExT>, int, LabeledDataset<LblT, ExT>, ILabeledDataset<LblT>> TestSetBeforeTrainFunc { get; set; }
         public Action<CrossValidation<LblT, ExT>, int, LabeledDataset<LblT, ExT>> AfterTrainAction { get; set; }
         public Action<CrossValidation<LblT, ExT>, int, LabeledExample<LblT, ExT>, Prediction<LblT>> AfterPredictAction { get; set; }
         public Action<CrossValidation<LblT, ExT>, int, LabeledDataset<LblT, ExT>, List<Pair<LabeledExample<LblT, ExT>, Prediction<LblT>>>> AfterFoldAction { get; set; }
@@ -47,12 +49,14 @@ namespace Latino.Model.Eval
                 if (IsStratified) { Dataset.SplitForStratifiedCrossValidation(NumFolds, foldN, out trainSet, out testSet); }
                 else { Dataset.SplitForCrossValidation(NumFolds, foldN, out trainSet, out testSet); }
 
-                Model.Train(trainSet);
+                ILabeledDataset<LblT> mappedTrainSet = MapTrainSetBeforeTrain(foldN, trainSet);
+                Model.Train(mappedTrainSet);
                 AfterTrain(foldN, trainSet);
 
+                ILabeledDataset<LblT> mappedTestSet = MapTestSetBeforeTrain(foldN, testSet);
                 PerfMatrix<LblT> foldMatrix = PerfData.GetPerfMatrix(ExpName, AlgName, foldN);
                 var foldPredictions = new List<Pair<LabeledExample<LblT, ExT>, Prediction<LblT>>>();
-                foreach (LabeledExample<LblT, ExT> labeled in testSet)
+                foreach (LabeledExample<LblT, ExT> labeled in mappedTestSet)
                 {
                     Prediction<LblT> prediction = Model.Predict(labeled.Example);
                     foldMatrix.AddCount(labeled.Label, prediction.BestClassLabel);
@@ -61,6 +65,16 @@ namespace Latino.Model.Eval
                 }
                 AfterFold(foldN, trainSet, foldPredictions);
             }
+        }
+
+        protected virtual ILabeledDataset<LblT> MapTrainSetBeforeTrain(int foldN, LabeledDataset<LblT, ExT> trainSet)
+        {
+            return TrainSetBeforeTrainFunc != null ? TrainSetBeforeTrainFunc(this, foldN, trainSet) : trainSet;
+        }
+
+        protected virtual ILabeledDataset<LblT> MapTestSetBeforeTrain(int foldN, LabeledDataset<LblT, ExT> testSet)
+        {
+            return TestSetBeforeTrainFunc != null ? TestSetBeforeTrainFunc(this, foldN, testSet) : testSet;
         }
 
         protected virtual void AfterTrain(int foldN, LabeledDataset<LblT, ExT> trainSet)
