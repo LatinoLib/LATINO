@@ -30,6 +30,7 @@ namespace Tutorial.Case.Validation
             BinarySvm classifierInst = BinarySvm.RunInstanceNull(args);
             var classifier = (SvmBinaryClassifier<string>)classifierInst.Result["classifier"];
             var labeledData = (LabeledDataset<string, SparseVector<double>>)classifierInst.Result["labeled_data"];
+
             bool stratified = true;
 
             // cross validation

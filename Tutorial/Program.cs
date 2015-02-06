@@ -13,8 +13,8 @@ namespace Tutorial
         static void Main(string[] args)
         {
             // output
-            //Logger.GetRootLogger().LocalOutputType = Logger.OutputType.Custom; // disable latino logger
-            var sw = new StreamWriter("report.txt", true);
+            Logger.GetRootLogger().LocalOutputType = Logger.OutputType.Custom; // disable latino logger
+            var sw = new StreamWriter("report.txt", true); // use file for output
             sw.WriteLine("************");
 
             // data
@@ -27,13 +27,14 @@ namespace Tutorial
 
             // model
             //Bow.RunInstanceWr(sw, args);
-            BinarySvm.RunInstanceWr(sw, args);
+            //BinarySvm.RunInstanceWr(sw, args);
 
             // clustering
             //KMeans.RunInstanceWr(sw, args);
             
             // validation
             //NFold.RunInstanceWr(sw, args);
+            NFoldClass.RunInstanceWr(sw, args);
 
             // other
             //Searching.RunInstanceWr(sw, args);

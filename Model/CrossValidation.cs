@@ -14,7 +14,7 @@ namespace Latino.Model.Eval
         }
 
         public LabeledDataset<LblT, ExT> Dataset { get; set; }
-        public IModel<LblT, ExT> Model { get; set; }
+        public IModel<LblT> Model { get; set; }
         public PerfData<LblT> PerfData { get; set; }
 
         public int NumFolds { get; set; }

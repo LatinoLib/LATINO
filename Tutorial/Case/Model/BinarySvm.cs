@@ -69,7 +69,7 @@ namespace Tutorial.Case.Model
 
             //-------------------- SVM
 
-            var svmBinClass = new SvmBinaryClassifier<string>();
+            var svmBinClass = new SvmBinaryClassifier<string> { VerbosityLevel = SvmLightVerbosityLevel.Off };
             if (args.Any()) { svmBinClass.C = (int)args[0]; }
             //svmBinClass.BiasedHyperplane = true;
             //svmBinClass.CustomParams = "-t 3";   // non-linear kernel
