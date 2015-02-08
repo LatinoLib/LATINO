@@ -30,7 +30,7 @@ namespace Tutorial.Case.Validation
             var ds = (LabeledDataset<string, BinaryVector>)labeledData.ConvertDataset(typeof(BinaryVector), false);
 
             // cross validation ...with the convenience class
-            var validation = new CrossValidation<string, BinaryVector>
+            var validation = new CrossValidator<string, BinaryVector>
             {
                 NumFolds = 10, // default
                 IsStratified = true, // default
@@ -42,8 +42,8 @@ namespace Tutorial.Case.Validation
                     var model = (NaiveBayesClassifier<string>)sender.Model;
                     // do stuff after model is trained for a fold...
                 },
-                //AfterPredictAction = (sender, foldN, labeledExample, prediction) =>
-                    //Console.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", labeledExample.Label, prediction.BestClassLabel, prediction.BestScore),
+                AfterPredictAction = (sender, foldN, labeledExample, prediction) =>
+                    Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", labeledExample.Label, prediction.BestClassLabel, prediction.BestScore),
                 AfterFoldAction = (sender, foldN, trainSet, foldPredictions) =>
                 {
                     PerfMatrix<string> foldMatrix = sender.PerfData.GetPerfMatrix(sender.ExpName, sender.AlgName, foldN);
