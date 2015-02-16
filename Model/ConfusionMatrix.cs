@@ -558,23 +558,53 @@ namespace Latino.Model.Eval
         {
             StringBuilder str = new StringBuilder();
             ArrayList<LblT> labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
-            int len = labels.Max(l => l.ToString().Length) + 2;
+            var all = SumAll();
+            int len = Math.Max(labels.Max(l => l.ToString().Length), Math.Max(all.ToString(CultureInfo.InvariantCulture).Length, 11)) + 2;
 
             str.Append("".PadRight(len));
+            str.Append("|".PadLeft(4));
             foreach (LblT predicted in labels)
             {
                 str.Append(predicted.ToString().PadLeft(len));
             }
+            str.Append("|".PadLeft(4));
+            str.Append("sum actual".PadLeft(len));
+            str.Append("%".PadLeft(len));
             str.AppendLine();
+            str.AppendLine(new string('-', (labels.Count + 3) * len + 8));
+
             foreach (LblT actual in labels)
             {
                 str.Append(actual.ToString().PadLeft(len));
+                str.Append("|".PadLeft(4));
                 foreach (LblT predicted in labels)
                 {
                     str.Append(Get(actual, predicted).ToString(CultureInfo.InvariantCulture).PadLeft(len));
                 }
+                str.Append("|".PadLeft(4));
+                str.Append(SumRow(actual).ToString(CultureInfo.InvariantCulture).PadLeft(len));
+                str.Append(((float)SumRow(actual) / all).ToString("P1").PadLeft(len));
                 str.AppendLine();
             }
+
+            str.AppendLine(new string('-', (labels.Count + 3) * len + 8));
+            str.Append("sum predicted".PadLeft(len));
+            str.Append("|".PadLeft(4));
+            foreach (LblT predicted in labels)
+            {
+                str.Append(SumCol(predicted).ToString(CultureInfo.InvariantCulture).PadLeft(len));
+            }
+            str.Append("|".PadLeft(4));
+            str.AppendLine(all.ToString(CultureInfo.InvariantCulture).PadLeft(len));
+
+            str.Append("%".PadLeft(len));
+            str.Append("|".PadLeft(4));
+            foreach (LblT predicted in labels)
+            {
+                str.Append(((float)SumCol(predicted) / all).ToString("P1").PadLeft(len));
+            }
+            str.AppendLine();
+
             return str.ToString().TrimEnd();
         }
     }
