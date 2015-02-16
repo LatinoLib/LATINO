@@ -50,7 +50,7 @@ namespace Tutorial.Case.Validation
                     Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", foldN, foldMatrix.GetMicroAverage());
                 }
             };
-            validation.Perform();
+            validation.Run();
 
             Output.WriteLine("Sum confusion matrix:");
             PerfMatrix<string> sumPerfMatrix = validation.PerfData.GetSumPerfMatrix("", "");

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Latino.Model.Eval
 {
-    public class CrossValidator<LblT, ExT> : MappedCrossValidator<LblT, ExT, ExT>
+    public class CrossValidator<LblT, ExT> : MappingCrossValidator<LblT, ExT, ExT>
     {
         protected override ILabeledDataset<LblT, ExT> MapTestSet(int foldN, ILabeledDataset<LblT, ExT> testSet)
         {
@@ -16,9 +16,9 @@ namespace Latino.Model.Eval
         }
     }
 
-    public class MappedCrossValidator<LblT, ExT1, ExT2>
+    public class MappingCrossValidator<LblT, ExT1, ExT2>
     {
-        public MappedCrossValidator()
+        public MappingCrossValidator()
         {
             NumFolds = 10;
             IsStratified = true;
@@ -35,14 +35,14 @@ namespace Latino.Model.Eval
         public string ExpName { get; set; }
         public string AlgName { get; set; }
 
-        public Action<MappedCrossValidator<LblT, ExT1, ExT2>, int> BeforeFoldAction { get; set; }
-        public Func<MappedCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT2>> TrainSetFunc { get; set; }
-        public Func<MappedCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT2>> TestSetFunc { get; set; }
-        public Action<MappedCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>> AfterTrainAction { get; set; }
-        public Action<MappedCrossValidator<LblT, ExT1, ExT2>, int, LabeledExample<LblT, ExT2>, Prediction<LblT>> AfterPredictAction { get; set; }
-        public Action<MappedCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, List<Pair<LabeledExample<LblT, ExT2>, Prediction<LblT>>>> AfterFoldAction { get; set; }
+        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int> BeforeFoldAction { get; set; }
+        public Func<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT2>> TrainSetFunc { get; set; }
+        public Func<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT2>> TestSetFunc { get; set; }
+        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>> AfterTrainAction { get; set; }
+        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, LabeledExample<LblT, ExT2>, Prediction<LblT>> AfterPredictAction { get; set; }
+        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, List<Pair<LabeledExample<LblT, ExT2>, Prediction<LblT>>>> AfterFoldAction { get; set; }
 
-        public void Perform()
+        public void Run()
         {
             Preconditions.CheckArgumentRange(NumFolds >= 2 && NumFolds < Dataset.Count);
             Preconditions.CheckNotNullArgument(Model);
@@ -82,20 +82,12 @@ namespace Latino.Model.Eval
 
         protected virtual ILabeledDataset<LblT, ExT2> MapTrainSet(int foldN, ILabeledDataset<LblT, ExT1> trainSet)
         {
-            if (TrainSetFunc != null)
-            {
-                return TrainSetFunc(this, foldN, trainSet);
-            }
-            throw new NotSupportedException();
+            return TrainSetFunc != null ? TrainSetFunc(this, foldN, trainSet) : (ILabeledDataset<LblT, ExT2>)trainSet;
         }
 
         protected virtual ILabeledDataset<LblT, ExT2> MapTestSet(int foldN, ILabeledDataset<LblT, ExT1> testSet)
         {
-            if (TestSetFunc != null)
-            {
-                return TestSetFunc(this, foldN, testSet);
-            }
-            throw new NotSupportedException();
+            return TestSetFunc != null ? TestSetFunc(this, foldN, testSet) : (ILabeledDataset<LblT, ExT2>)testSet;
         }
 
         protected virtual void AfterTrain(int foldN, ILabeledDataset<LblT, ExT1> trainSet)
