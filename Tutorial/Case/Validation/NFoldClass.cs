@@ -35,21 +35,21 @@ namespace Tutorial.Case.Validation
                 NumFolds = 10, // default
                 IsStratified = true, // default
 
-                Model = new NaiveBayesClassifier<string>(),
                 Dataset = ds,
-                AfterTrainAction = (sender, foldN, trainSet) =>
+                AfterTrainAction = (sender, foldN, model, trainSet) =>
                 {
-                    var model = (NaiveBayesClassifier<string>)sender.Model;
+                    var m = (NaiveBayesClassifier<string>)model;
                     // do stuff after model is trained for a fold...
                 },
-                AfterPredictAction = (sender, foldN, labeledExample, prediction) =>
-                    Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", labeledExample.Label, prediction.BestClassLabel, prediction.BestScore),
+                AfterPredictAction = (sender, foldN, model, kv) =>
+                    Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", kv.Key.Label, kv.Value.BestClassLabel, kv.Value.BestScore),
                 AfterFoldAction = (sender, foldN, trainSet, foldPredictions) =>
                 {
-                    PerfMatrix<string> foldMatrix = sender.PerfData.GetPerfMatrix(sender.ExpName, sender.AlgName, foldN);
+                    PerfMatrix<string> foldMatrix = sender.PerfData.GetPerfMatrix(sender.ExpName, sender.GetModelName(sender.Models[0]), foldN);
                     Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", foldN, foldMatrix.GetMicroAverage());
                 }
             };
+            validation.Models.Add(new NaiveBayesClassifier<string>());
             validation.Run();
 
             Output.WriteLine("Sum confusion matrix:");
