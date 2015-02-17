@@ -23,12 +23,12 @@ namespace Latino.Model.Eval
         MicroPrecision,
         MicroRecall,
         MicroF1,
-        MicroAccuracy,
+        
         // macro-averaged
         MacroPrecision,
         MacroRecall,
-        MacroF1,
-        MacroAccuracy
+        MacroF1
+        
     }
 
     /* .-----------------------------------------------------------------------
@@ -489,12 +489,31 @@ namespace Latino.Model.Eval
             return GetF(1, lbl);
         }
 
-        // *** Micro-averaging (over documents) ***
+        // *** Micro-averaging (over examples) ***
 
-        public double GetMicroAverage() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
+        public double GetAccuracy() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
         {
             return (double)SumDiag() / (double)SumAll(); 
         }
+
+        public double GetMicroPrecision() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
+        {
+            double result = mLabels.Sum(lbl => GetActual(lbl)*GetPrecision(lbl));
+            return result/SumAll();
+        }
+
+        public double GetMicroRecall() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
+        {
+            double result = mLabels.Sum(lbl => GetActual(lbl) * GetRecall(lbl));
+            return result / SumAll();
+        }
+
+        public double GetMicroF1() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
+        {
+            double result = mLabels.Sum(lbl => GetActual(lbl) * GetF1(lbl));
+            return result / SumAll();
+        }
+
 
         // *** Macro-averaging (over classes) ***
 
@@ -533,18 +552,19 @@ namespace Latino.Model.Eval
                 case PerfMetric.Precision:
                     return GetPrecision(lbl);
                 case PerfMetric.Accuracy:
+                    return GetAccuracy();
                 case PerfMetric.Recall:
                     return GetRecall(lbl);
                 case PerfMetric.F1:
                     return GetF1(lbl);
                 case PerfMetric.MicroPrecision:
+                    return GetMicroPrecision();
                 case PerfMetric.MicroRecall:
+                    return GetMicroRecall();
                 case PerfMetric.MicroF1:
-                case PerfMetric.MicroAccuracy:
-                    return GetMicroAverage();
+                    return GetMicroF1();                
                 case PerfMetric.MacroPrecision:
-                    return GetMacroPrecision();
-                case PerfMetric.MacroAccuracy:
+                    return GetMacroPrecision();                
                 case PerfMetric.MacroRecall:
                     return GetMacroRecall();
                 case PerfMetric.MacroF1:
@@ -553,6 +573,7 @@ namespace Latino.Model.Eval
                     throw new ArgumentValueException("metric");
             }
         }
+
 
         public override string ToString()
         {
@@ -606,6 +627,36 @@ namespace Latino.Model.Eval
             str.AppendLine();
 
             return str.ToString().TrimEnd();
+        }
+
+        public string ToString(IEnumerable<PerfMetric> metrics) //metrices = null for all metrices
+        {
+            List<PerfMetric> _metrics = metrics == null ? 
+                new List<PerfMetric>(Enum.GetValues(typeof (PerfMetric)).Cast<PerfMetric>()) 
+                : metrics.ToList();
+
+            ArrayList<LblT> labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
+            int len = Math.Max(labels.Max(l => l.ToString().Length), 13) + 2;
+            
+            StringBuilder str = new StringBuilder();
+
+            //header
+            str.Append("".PadRight(len));
+            foreach (PerfMetric metric in _metrics)
+            {
+                str.Append (metric.ToString().PadLeft(len));
+            }
+            str.AppendLine();
+            foreach (LblT lbl in labels)
+            {
+                str.Append(lbl.ToString().PadLeft(len));                 
+                foreach (PerfMetric metric in _metrics)
+                {
+                    str.Append(GetScore(metric, lbl).ToString("n3").PadLeft(len));                 
+                }
+                str.AppendLine();
+            }
+            return str.ToString();
         }
     }
 }
