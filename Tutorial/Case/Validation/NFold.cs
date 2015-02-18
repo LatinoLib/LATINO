@@ -72,18 +72,18 @@ namespace Tutorial.Case.Validation
                     Prediction<string> prediction = classifier.Predict(labeledExample.Example);
                     foldMatrix.AddCount(labeledExample.Label, prediction.BestClassLabel);
                 }
-                Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", foldN, foldMatrix.GetMicroAverage());
+                Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", foldN, foldMatrix.GetAccuracy());
             }
 
             Output.WriteLine("Sum confusion matrix:");
             PerfMatrix<string> sumPerfMatrix = perfData.GetSumPerfMatrix("tutorial", "binary svm");
             Output.WriteLine(sumPerfMatrix.ToString());
-            Output.WriteLine("Average accuracy: {0:0.00}", sumPerfMatrix.GetMicroAverage());
+            Output.WriteLine("Average accuracy: {0:0.00}", sumPerfMatrix.GetAccuracy());
             foreach (string label in perfData.GetLabels("tutorial", "binary svm"))
             {
                 double stdDev;
-                Output.WriteLine("Accuracy for '{0}': {1:0.00} std. dev: {2:0.00}", label, 
-                    perfData.GetAvg("tutorial", "binary svm", PerfMetric.MicroAccuracy, label, out stdDev), stdDev);
+                Output.WriteLine("Precision for '{0}': {1:0.00} std. dev: {2:0.00}", label, 
+                    perfData.GetAvg("tutorial", "binary svm", PerfMetric.Precision, label, out stdDev), stdDev);
             }
         }
     }

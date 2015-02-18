@@ -11,6 +11,7 @@
  **********************************************************************/
 
 using System;
+using System.Collections.Generic;
 using Latino;
 using Latino.Model;
 using Latino.Model.Eval;
@@ -34,33 +35,34 @@ namespace Tutorial.Case.Validation
             {
                 NumFolds = 10, // default
                 IsStratified = true, // default
+                ExpName = "", // default
 
                 Dataset = ds,
-                AfterTrainAction = (sender, foldN, model, trainSet) =>
+                AfterTrainEventHandler = (sender, foldN, model, trainSet) =>
                 {
                     var m = (NaiveBayesClassifier<string>)model;
                     // do stuff after model is trained for a fold...
                 },
-                AfterPredictAction = (sender, foldN, model, kv) =>
-                    Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", kv.Key.Label, kv.Value.BestClassLabel, kv.Value.BestScore),
-                AfterFoldAction = (sender, foldN, trainSet, foldPredictions) =>
+                AfterPredictEventHandler = (sender, foldN, model, le, prediction) =>
+                    Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", le.Label, prediction.BestClassLabel, prediction.BestScore),
+                AfterFoldEventHandler = (sender, foldN, trainSet, foldPredictions) =>
                 {
-                    PerfMatrix<string> foldMatrix = sender.PerfData.GetPerfMatrix(sender.ExpName, sender.GetModelName(sender.Models[0]), foldN);
-                    Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", foldN, foldMatrix.GetMicroAverage());
+                    PerfMatrix<string> foldMatrix = sender.PerfData.GetPerfMatrix(sender.ExpName, sender.GetModelName(0), foldN);
+                    Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", foldN, foldMatrix.GetAccuracy());
                 }
             };
             validation.Models.Add(new NaiveBayesClassifier<string>());
             validation.Run();
 
             Output.WriteLine("Sum confusion matrix:");
-            PerfMatrix<string> sumPerfMatrix = validation.PerfData.GetSumPerfMatrix("", "");
+            PerfMatrix<string> sumPerfMatrix = validation.PerfData.GetSumPerfMatrix("", validation.GetModelName(0));
             Output.WriteLine(sumPerfMatrix.ToString());
-            Output.WriteLine("Average accuracy: {0:0.00}", sumPerfMatrix.GetMicroAverage());
-            foreach (string label in validation.PerfData.GetLabels("", ""))
+            Output.WriteLine("Average accuracy: {0:0.00}", sumPerfMatrix.GetAccuracy());
+            foreach (string label in validation.PerfData.GetLabels("", validation.GetModelName(0)))
             {
                 double stdDev;
-                Output.WriteLine("Accuracy for '{0}': {1:0.00} std. dev: {2:0.00}", label,
-                    validation.PerfData.GetAvg("", "", PerfMetric.MicroAccuracy, label, out stdDev), stdDev);
+                Output.WriteLine("Precision for '{0}': {1:0.00} std. dev: {2:0.00}", label,
+                    validation.PerfData.GetAvg("", validation.GetModelName(0), PerfMetric.Precision, label, out stdDev), stdDev);
             }
         }
     }

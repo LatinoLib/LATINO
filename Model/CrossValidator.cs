@@ -37,12 +37,15 @@ namespace Latino.Model.Eval
         public string ExpName { get; set; }
         public int Parallelism { get; set; }
 
+        public delegate void AfterPredictAction(MappingCrossValidator<LblT, ExT1, ExT2> sender, int fondN,
+            IModel<LblT, ExT2> model, LabeledExample<LblT, ExT2> labeledExample, Prediction<LblT> prediction);
+
         public Func<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT2>> TrainSetFunc { get; set; }
         public Func<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT2>> TestSetFunc { get; set; }
-        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, IModel<LblT, ExT2>, ILabeledDataset<LblT, ExT2>> AfterTrainAction { get; set; }
-        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, IModel<LblT, ExT2>, KeyValuePair<LabeledExample<LblT, ExT2>, Prediction<LblT>>> AfterPredictAction { get; set; }
-        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT1>> BeforeFoldAction { get; set; }
-        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT1>> AfterFoldAction { get; set; }
+        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, IModel<LblT, ExT2>, ILabeledDataset<LblT, ExT2>> AfterTrainEventHandler { get; set; }
+        public AfterPredictAction AfterPredictEventHandler { get; set; }
+        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT1>> BeforeFoldEventHandler { get; set; }
+        public Action<MappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT1>> AfterFoldEventHandler { get; set; }
 
         public void Run()
         {
@@ -91,6 +94,12 @@ namespace Latino.Model.Eval
             }
         }
 
+        public string GetModelName(int modelN)
+        {
+            Preconditions.CheckArgumentRange(modelN >= 0 && modelN < Models.Count);
+            return GetModelName(Models[modelN]);
+        }
+
         public string GetModelName(IModel<LblT, ExT2> model)
         {
             Preconditions.CheckNotNullArgument(model);
@@ -109,33 +118,33 @@ namespace Latino.Model.Eval
 
         protected virtual void AfterTrain(int foldN, IModel<LblT, ExT2> model, ILabeledDataset<LblT, ExT2> trainSet)
         {
-            if (AfterTrainAction != null)
+            if (AfterTrainEventHandler != null)
             {
-                AfterTrainAction(this, foldN, model, trainSet);
+                AfterTrainEventHandler(this, foldN, model, trainSet);
             }
         }
 
         protected virtual void AfterPredict(int foldN, IModel<LblT, ExT2> model, LabeledExample<LblT, ExT2> labeledExample, Prediction<LblT> prediction)
         {
-            if (AfterPredictAction != null)
+            if (AfterPredictEventHandler != null)
             {
-                AfterPredictAction(this, foldN, model, new KeyValuePair<LabeledExample<LblT, ExT2>, Prediction<LblT>>(labeledExample, prediction));
+                AfterPredictEventHandler(this, foldN, model, labeledExample, prediction);
             }
         }
 
         protected virtual void BeforeFold(int foldN, ILabeledDataset<LblT, ExT1> trainSet, ILabeledDataset<LblT, ExT1> testSet)
         {
-            if (AfterFoldAction != null)
+            if (BeforeFoldEventHandler != null)
             {
-                BeforeFoldAction(this, foldN, trainSet, testSet);
+                BeforeFoldEventHandler(this, foldN, trainSet, testSet);
             }
         }
 
         protected virtual void AfterFold(int foldN, ILabeledDataset<LblT, ExT1> trainSet, ILabeledDataset<LblT, ExT1> testSet)
         {
-            if (AfterFoldAction != null)
+            if (AfterFoldEventHandler != null)
             {
-                AfterFoldAction(this, foldN, trainSet, testSet);
+                AfterFoldEventHandler(this, foldN, trainSet, testSet);
             }
         }
     }

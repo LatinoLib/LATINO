@@ -40,7 +40,7 @@ namespace Tutorial.Case.Clustering
             // Load a document corpus from a file. Each line in the file
             // represents one document.
 
-            string[] docs = File.ReadAllLines(@"Example\Data\YahooFinance.txt");
+            string[] docs = File.ReadAllLines(@"Data\YahooFinance.txt");
 
             // Create a bag-of-words space.
 

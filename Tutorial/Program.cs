@@ -17,6 +17,8 @@ namespace Tutorial
             var sw = new StreamWriter("report.txt", true); // use file for output
             sw.WriteLine("************");
 
+            //TestAll(args);
+
             // data
             //DataStructures.RunInstanceWr(sw, args);
             //SparseVector.RunInstanceWr(sw, args);
@@ -38,6 +40,31 @@ namespace Tutorial
 
             // other
             //Searching.RunInstanceWr(sw, args);
+        }
+
+        static void TestAll(string[] args)
+        {
+            // data
+            DataStructures.RunInstanceNull(args);
+            SparseVector.RunInstanceNull(args);
+            SparseMatrix.RunInstanceNull(args);
+            Sateful.RunInstanceNull(args);
+            Cloning.RunInstanceNull(args);
+            Serialization.RunInstanceNull(args);
+
+            // model
+            Bow.RunInstanceNull(args);
+            BinarySvm.RunInstanceNull(args);
+
+            // clustering
+            KMeans.RunInstanceNull(args);
+
+            // validation
+            NFold.RunInstanceNull(args);
+            NFoldClass.RunInstanceNull(args);
+
+            // other
+            Searching.RunInstanceNull(args);
         }
 
     }
