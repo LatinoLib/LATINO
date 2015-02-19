@@ -14,11 +14,11 @@ namespace Latino.Model.Eval
     */
     public enum PerfMetric
     {
-        // class-specific metrics
-        Precision,
-        Recall,
-        F1,
         Accuracy,
+        Error,
+         // special
+        Kappa,
+
         // micro-averaged
         MicroPrecision,
         MicroRecall,
@@ -28,7 +28,27 @@ namespace Latino.Model.Eval
         MacroPrecision,
         MacroRecall,
         MacroF1
-        
+    }
+
+    public enum ClassPerfMetric
+    {
+        // class-specific metrics
+        Precision,
+        Recall,
+        F1
+    }
+
+
+    public enum OrdinalPerfMetric
+    {
+        // class-specific metrics        
+        MeanAbsoluteError,
+        MeanSquaredError,
+        ErrorTolerance1,
+        MeanSquaredErrorNormalized1,
+        MeanAbsoluteErrorNormalized1,        
+        WeightedKappaLinear,
+        WeightedKappaSquared
     }
 
     /* .-----------------------------------------------------------------------
@@ -162,7 +182,27 @@ namespace Latino.Model.Eval
             return labels;
         }
 
-        public double GetVal(int foldNum, string expName, string algoName, PerfMetric metric, LblT lbl)
+        public double GetVal(int foldNum, string expName, string algoName, PerfMetric metric)
+        {
+            Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
+            Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
+            Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
+            Dictionary<string, FoldData> algoData;
+            if (mData.TryGetValue(expName, out algoData))
+            {
+                FoldData foldData;
+                if (algoData.TryGetValue(algoName, out foldData))
+                {
+                    if (foldNum <= foldData.Count && foldData[foldNum - 1] != null)
+                    {
+                        return foldData[foldNum - 1].GetScore(metric);
+                    }
+                }
+            }
+            return double.NaN;
+        }
+
+        public double GetVal(int foldNum, string expName, string algoName, ClassPerfMetric metric, LblT lbl)
         {
             Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
@@ -182,8 +222,44 @@ namespace Latino.Model.Eval
             return double.NaN;
         }
 
-        public double GetAvg(string expName, string algoName, PerfMetric metric, LblT lbl, out double stdev) // TODO: test if stdev is correct
+        public double GetVal(int foldNum, string expName, string algoName, OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels)
         {
+            Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
+            Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
+            Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
+            Dictionary<string, FoldData> algoData;
+            if (mData.TryGetValue(expName, out algoData))
+            {
+                FoldData foldData;
+                if (algoData.TryGetValue(algoName, out foldData))
+                {
+                    if (foldNum <= foldData.Count && foldData[foldNum - 1] != null)
+                    {
+                        return foldData[foldNum - 1].GetScore(metric, orderedLabels);
+                    }
+                }
+            }
+            return double.NaN;
+        }
+
+        public double GetAvg(string expName, string algoName, PerfMetric metric, out double stdev)
+        {
+            return GetAvg(expName, algoName, (mtx) => mtx.GetScore(metric), out stdev);
+        }
+
+        public double GetAvg(string expName, string algoName, ClassPerfMetric metric, LblT lbl, out double stdev)
+        {
+            return GetAvg(expName, algoName, (mtx) => mtx.GetScore(metric, lbl), out stdev);
+        }
+
+        public double GetAvg(string expName, string algoName, OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels, out double stdev)
+        {
+            return GetAvg(expName, algoName, (mtx) => mtx.GetScore(metric, orderedLabels), out stdev);
+        }
+
+        private double GetAvg(string expName, string algoName, Func<PerfMatrix<LblT>, double> scoreFunc, out double stdev) // TODO: test if stdev is correct
+        {
+            Preconditions.CheckNotNullArgument(scoreFunc);
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
             stdev = double.NaN;
@@ -197,13 +273,13 @@ namespace Latino.Model.Eval
                     foreach (PerfMatrix<LblT> mtx in foldData)
                     {
                         if (mtx == null) { throw new InvalidOperationException(); }
-                        sum += mtx.GetScore(metric, lbl);
+                        sum += scoreFunc(mtx);
                     }
                     double avg = sum / foldData.Count;
                     sum = 0;
                     foreach (PerfMatrix<LblT> mtx in foldData)
                     {
-                        double val = mtx.GetScore(metric, lbl) - avg;
+                        double val = scoreFunc(mtx) - avg;
                         sum += val * val;
                     }
                     stdev = Math.Sqrt(sum / foldData.Count);
@@ -216,7 +292,7 @@ namespace Latino.Model.Eval
         public double GetAvg(string expName, string algoName, PerfMetric metric, LblT lbl)
         {
             double stdev;
-            return GetAvg(expName, algoName, metric, lbl, out stdev); // throws ArgumentNullException, InvalidOperationException
+            return GetAvg(expName, algoName, metric, out stdev); // throws ArgumentNullException, InvalidOperationException
         }
 
         public string ToString(int foldNum, string expName, PerfMetric metric, LblT lbl, string fmt) // set expName to null to get stats for all experiments
@@ -242,14 +318,14 @@ namespace Latino.Model.Eval
                 sb.Append(algoName);
                 if (expName != null)
                 {
-                    double val = GetVal(foldNum, expName, algoName, metric, lbl);
+                    double val = GetVal(foldNum, expName, algoName, metric);
                     sb.Append("\t" + val.ToString(fmt));
                 }
                 else
                 {
                     foreach (string exp in expList)
                     {
-                        sb.Append("\t" + GetVal(foldNum, exp, algoName, metric, lbl).ToString(fmt));
+                        sb.Append("\t" + GetVal(foldNum, exp, algoName, metric).ToString(fmt));
                     }
                 }
                 sb.AppendLine();
@@ -292,14 +368,14 @@ namespace Latino.Model.Eval
                     foreach (string exp in expList)
                     {
                         double stdev;
-                        double val = GetAvg(exp, algoName, metric, lbl, out stdev); // throws InvalidOperationException
+                        double val = GetAvg(exp, algoName, metric, out stdev); // throws InvalidOperationException
                         sb.Append("\t" + val.ToString(fmt));
                     }
                 }
                 else
                 {
                     double stdev;
-                    sb.Append("\t" + GetAvg(expName, algoName, metric, lbl, out stdev).ToString(fmt)); // throws InvalidOperationException
+                    sb.Append("\t" + GetAvg(expName, algoName, metric, out stdev).ToString(fmt)); // throws InvalidOperationException
                 }
                 sb.AppendLine();
             }
@@ -323,12 +399,15 @@ namespace Latino.Model.Eval
        |
        '-----------------------------------------------------------------------
     */
+
     public class PerfMatrix<LblT>
     {
         private Dictionary<LblT, Dictionary<LblT, int>> mMtx
             = new Dictionary<LblT, Dictionary<LblT, int>>(); // TODO: set lbl equality comparer
+
         private Set<LblT> mLabels
             = new Set<LblT>(); // TODO: set lbl equality comparer
+
         private IEqualityComparer<LblT> mLblEqCmp;
 
         public PerfMatrix(IEqualityComparer<LblT> lblEqCmp)
@@ -343,7 +422,7 @@ namespace Latino.Model.Eval
 
         public void AddCount(LblT actual, LblT predicted, int count)
         {
-            mLabels.AddRange(new LblT[] { actual, predicted });
+            mLabels.AddRange(new LblT[] {actual, predicted});
             Dictionary<LblT, int> row;
             if (mMtx.TryGetValue(actual, out row))
             {
@@ -410,7 +489,10 @@ namespace Latino.Model.Eval
             if (mMtx.TryGetValue(lbl, out row))
             {
                 int sum = 0;
-                foreach (int c in row.Values) { sum += c; }
+                foreach (int c in row.Values)
+                {
+                    sum += c;
+                }
                 return sum;
             }
             return 0;
@@ -422,7 +504,10 @@ namespace Latino.Model.Eval
             foreach (Dictionary<LblT, int> row in mMtx.Values)
             {
                 int c;
-                if (row.TryGetValue(lbl, out c)) { sum += c; }
+                if (row.TryGetValue(lbl, out c))
+                {
+                    sum += c;
+                }
             }
             return sum;
         }
@@ -432,7 +517,10 @@ namespace Latino.Model.Eval
             int sum = 0;
             foreach (Dictionary<LblT, int> row in mMtx.Values)
             {
-                foreach (int val in row.Values) { sum += val; }
+                foreach (int val in row.Values)
+                {
+                    sum += val;
+                }
             }
             return sum;
         }
@@ -443,7 +531,10 @@ namespace Latino.Model.Eval
             foreach (KeyValuePair<LblT, Dictionary<LblT, int>> row in mMtx)
             {
                 int c;
-                if (row.Value.TryGetValue(row.Key, out c)) { sum += c; }
+                if (row.Value.TryGetValue(row.Key, out c))
+                {
+                    sum += c;
+                }
             }
             return sum;
         }
@@ -452,8 +543,11 @@ namespace Latino.Model.Eval
         {
             int all;
             int precCount = GetPrecisionCount(lbl, out all);
-            if (all == 0) { return 1; } // *** boundary case
-            return (double)precCount / (double)all;
+            if (all == 0)
+            {
+                return 1;
+            } // *** boundary case
+            return (double) precCount/(double) all;
         }
 
         public int GetPrecisionCount(LblT lbl, out int all)
@@ -466,8 +560,11 @@ namespace Latino.Model.Eval
         {
             int all;
             int recallCount = GetRecallCount(lbl, out all);
-            if (all == 0) { return 1; } // *** boundary case
-            return (double)recallCount / (double)all;
+            if (all == 0)
+            {
+                return 1;
+            } // *** boundary case
+            return (double) recallCount/(double) all;
         }
 
         public int GetRecallCount(LblT lbl, out int all)
@@ -480,8 +577,11 @@ namespace Latino.Model.Eval
         {
             double p = GetPrecision(lbl);
             double r = GetRecall(lbl);
-            if (p == 0 && r == 0) { return 0; } // *** boundary case
-            return (w * w + 1) * p * r / (w * w * p + r);
+            if (p == 0 && r == 0)
+            {
+                return 0;
+            } // *** boundary case
+            return (w*w + 1)*p*r/(w*w*p + r);
         }
 
         public double GetF1(LblT lbl)
@@ -491,27 +591,33 @@ namespace Latino.Model.Eval
 
         // *** Micro-averaging (over examples) ***
 
-        public double GetAccuracy() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
+        public double GetAccuracy()
         {
-            return (double)SumDiag() / (double)SumAll(); 
+            return (double) SumDiag()/(double) SumAll();
         }
 
-        public double GetMicroPrecision() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
+        public double GetError()
+        {
+            return 1 - GetAccuracy();
+        }
+
+
+        public double GetMicroPrecision()
         {
             double result = mLabels.Sum(lbl => GetActual(lbl)*GetPrecision(lbl));
             return result/SumAll();
         }
 
-        public double GetMicroRecall() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
+        public double GetMicroRecall()
         {
-            double result = mLabels.Sum(lbl => GetActual(lbl) * GetRecall(lbl));
-            return result / SumAll();
+            double result = mLabels.Sum(lbl => GetActual(lbl)*GetRecall(lbl));
+            return result/SumAll();
         }
 
-        public double GetMicroF1() // *** equal to micro-precision, micro-recall, micro-F, micro-accuracy 
+        public double GetMicroF1()
         {
-            double result = mLabels.Sum(lbl => GetActual(lbl) * GetF1(lbl));
-            return result / SumAll();
+            double result = mLabels.Sum(lbl => GetActual(lbl)*GetF1(lbl));
+            return result/SumAll();
         }
 
 
@@ -520,67 +626,95 @@ namespace Latino.Model.Eval
         public double GetMacroPrecision()
         {
             double sum = 0;
-            foreach (LblT lbl in mLabels) { sum += GetPrecision(lbl); }
-            return sum / (double)mLabels.Count;
+            foreach (LblT lbl in mLabels)
+            {
+                sum += GetPrecision(lbl);
+            }
+            return sum/(double) mLabels.Count;
         }
 
-        public double GetMacroRecall() // *** equals to macro-accuracy
+        public double GetMacroRecall()
         {
             double sum = 0;
-            foreach (LblT lbl in mLabels) { sum += GetRecall(lbl); }
-            return sum / (double)mLabels.Count;
+            foreach (LblT lbl in mLabels)
+            {
+                sum += GetRecall(lbl);
+            }
+            return sum/(double) mLabels.Count;
         }
 
         public double GetMacroF(double w)
         {
             double sum = 0;
-            foreach (LblT lbl in mLabels) { sum += GetF(w, lbl); }
-            return sum / (double)mLabels.Count;
+            foreach (LblT lbl in mLabels)
+            {
+                sum += GetF(w, lbl);
+            }
+            return sum/(double) mLabels.Count;
         }
 
         public double GetMacroF1()
         {
             double sum = 0;
-            foreach (LblT lbl in mLabels) { sum += GetF1(lbl); }
-            return sum / (double)mLabels.Count;
+            foreach (LblT lbl in mLabels)
+            {
+                sum += GetF1(lbl);
+            }
+            return sum/(double) mLabels.Count;
         }
 
-        public double GetScore(PerfMetric metric, LblT lbl)
+
+        public double GetScore(PerfMetric metric)
         {
             switch (metric)
-            {
-                case PerfMetric.Precision:
-                    return GetPrecision(lbl);
+            {             
                 case PerfMetric.Accuracy:
                     return GetAccuracy();
-                case PerfMetric.Recall:
-                    return GetRecall(lbl);
-                case PerfMetric.F1:
-                    return GetF1(lbl);
                 case PerfMetric.MicroPrecision:
                     return GetMicroPrecision();
                 case PerfMetric.MicroRecall:
                     return GetMicroRecall();
                 case PerfMetric.MicroF1:
-                    return GetMicroF1();                
+                    return GetMicroF1();
                 case PerfMetric.MacroPrecision:
-                    return GetMacroPrecision();                
+                    return GetMacroPrecision();
                 case PerfMetric.MacroRecall:
                     return GetMacroRecall();
                 case PerfMetric.MacroF1:
                     return GetMacroF1();
+                case PerfMetric.Error:
+                    return GetError();
+                case PerfMetric.Kappa:
+                    return GetKappa();
                 default:
                     throw new ArgumentValueException("metric");
             }
         }
 
 
+        public double GetScore(ClassPerfMetric metric, LblT lbl)
+        {
+            switch (metric)
+            {
+                case ClassPerfMetric.Precision:
+                    return GetPrecision(lbl);
+                case ClassPerfMetric.Recall:
+                    return GetRecall(lbl);
+                case ClassPerfMetric.F1:
+                    return GetF1(lbl);                
+                default:
+                    throw new ArgumentValueException("metric");
+            }
+        }
+
         public override string ToString()
         {
             StringBuilder str = new StringBuilder();
             ArrayList<LblT> labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
             var all = SumAll();
-            int len = Math.Max(labels.Max(l => l.ToString().Length), Math.Max(all.ToString(CultureInfo.InvariantCulture).Length, 11)) + 2;
+            int len =
+                Math.Max(labels.Max(l => l.ToString().Length),
+                         Math.Max(all.ToString(CultureInfo.InvariantCulture).Length, 11)) + 2;
 
             str.Append("".PadRight(len));
             str.Append("|".PadLeft(4));
@@ -592,7 +726,7 @@ namespace Latino.Model.Eval
             str.Append("sum actual".PadLeft(len));
             str.Append("%".PadLeft(len));
             str.AppendLine();
-            str.AppendLine(new string('-', (labels.Count + 3) * len + 8));
+            str.AppendLine(new string('-', (labels.Count + 3)*len + 8));
 
             foreach (LblT actual in labels)
             {
@@ -604,11 +738,11 @@ namespace Latino.Model.Eval
                 }
                 str.Append("|".PadLeft(4));
                 str.Append(SumRow(actual).ToString(CultureInfo.InvariantCulture).PadLeft(len));
-                str.Append(((float)SumRow(actual) / all).ToString("P1").PadLeft(len));
+                str.Append(((float) SumRow(actual)/all).ToString("P1").PadLeft(len));
                 str.AppendLine();
             }
 
-            str.AppendLine(new string('-', (labels.Count + 3) * len + 8));
+            str.AppendLine(new string('-', (labels.Count + 3)*len + 8));
             str.Append("sum predicted".PadLeft(len));
             str.Append("|".PadLeft(4));
             foreach (LblT predicted in labels)
@@ -622,41 +756,275 @@ namespace Latino.Model.Eval
             str.Append("|".PadLeft(4));
             foreach (LblT predicted in labels)
             {
-                str.Append(((float)SumCol(predicted) / all).ToString("P1").PadLeft(len));
+                str.Append(((float) SumCol(predicted)/all).ToString("P1").PadLeft(len));
             }
             str.AppendLine();
 
             return str.ToString().TrimEnd();
         }
 
-        public string ToString(IEnumerable<PerfMetric> metrics) //metrices = null for all metrices
+        //General metrices
+        public string ToString(IEnumerable<PerfMetric> perfMetrics) // empty for all metrics
         {
-            List<PerfMetric> _metrics = metrics == null ? 
-                new List<PerfMetric>(Enum.GetValues(typeof (PerfMetric)).Cast<PerfMetric>()) 
-                : metrics.ToList();
+            PerfMetric[] metrics = perfMetrics as PerfMetric[] ?? perfMetrics.ToArray();
+            if (!metrics.Any())
+            {
+                metrics = Enum.GetValues(typeof (PerfMetric)).Cast<PerfMetric>().ToArray();
+            }
 
-            ArrayList<LblT> labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
-            int len = Math.Max(labels.Max(l => l.ToString().Length), 13) + 2;
-            
             StringBuilder str = new StringBuilder();
 
-            //header
-            str.Append("".PadRight(len));
-            foreach (PerfMetric metric in _metrics)
+            str.AppendLine("\nGeneral metrices:");
+            foreach (var perfMetric in metrics)
+            {                
+                str.Append(perfMetric.ToString().PadLeft(30));
+                str.AppendLine(GetScore(perfMetric).ToString("n2").PadLeft(6));                
+            }
+            return str.ToString();
+        }
+
+        //Class-specific metrices
+        public string ToString(IEnumerable<ClassPerfMetric> classMetrics) // metrices = empty for all metrics
+        {
+            ClassPerfMetric[] metrics = classMetrics as ClassPerfMetric[] ?? classMetrics.ToArray();
+            if (!metrics.Any())
             {
-                str.Append (metric.ToString().PadLeft(len));
+                metrics = Enum.GetValues(typeof(ClassPerfMetric)).Cast<ClassPerfMetric>().ToArray();
+            }
+
+            ArrayList<LblT> labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
+
+            var str = new StringBuilder();
+            str.AppendLine("\nClass-specific metrices:");
+            int len = Math.Max(labels.Max(l => l.ToString().Length), 13) + 2;
+            str.Append("".PadRight(len));
+            foreach (ClassPerfMetric metric in metrics)
+            {
+                str.Append(metric.ToString().PadLeft(len));
             }
             str.AppendLine();
             foreach (LblT lbl in labels)
             {
-                str.Append(lbl.ToString().PadLeft(len));                 
-                foreach (PerfMetric metric in _metrics)
+                str.Append(lbl.ToString().PadLeft(len));
+                foreach (ClassPerfMetric metric in metrics)
                 {
-                    str.Append(GetScore(metric, lbl).ToString("n3").PadLeft(len));                 
+                    str.Append(GetScore(metric, lbl).ToString("n3").PadLeft(len));                    
                 }
                 str.AppendLine();
             }
             return str.ToString();
         }
+
+        // Ordinal regression metrices
+        public string ToString(IEnumerable<LblT> orderedLabels, IEnumerable<OrdinalPerfMetric> metrics)
+        {
+            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
+            List<OrdinalPerfMetric> ordinalMetrics =
+                new List<OrdinalPerfMetric>(Enum.GetValues(typeof(OrdinalPerfMetric)).Cast<OrdinalPerfMetric>());
+
+            StringBuilder str = new StringBuilder();
+            str.AppendLine("\nOrdinal metrices:");
+            foreach (OrdinalPerfMetric metric in ordinalMetrics)
+            {
+                str.Append(metric.ToString().PadLeft(30));
+                str.AppendLine(GetScore(metric, labels).ToString("n2").PadLeft(6));
+            }
+            return str.ToString();
+        }
+
+
+        // *** Ordinal regression measures ***
+
+        public double GetError(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
+        {
+            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();            
+            Preconditions.CheckArgument(!mLabels.Except(labels).Any());
+            Preconditions.CheckArgument(!labels.Except(mLabels).Any());
+
+            double sum = 0;
+            foreach (LblT actual in mLabels)
+            {
+                foreach (LblT predicted in mLabels)
+                {
+                    sum += Get(actual, predicted) * weights[actual][predicted];
+                }
+            }
+            return sum / SumAll();
+        }
+
+        public double GetKappa()
+        {
+            return GetWeightedKappa(mLabels, GetErrorXWeights(mLabels));
+        }
+
+        // implementation of http://vassarstats.net/kappaexp.html and http://vassarstats.net/kappa.html
+
+        public double GetWeightedKappa(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
+        {
+            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
+            Preconditions.CheckArgument(!mLabels.Except(labels).Any());
+            Preconditions.CheckArgument(!labels.Except(mLabels).Any());
+
+            // the observed matrix            
+            double s = SumAll();
+            var observed = new Dictionary<LblT, Dictionary<LblT, double>>();
+            foreach (LblT actual in labels)
+            {
+                var row = new Dictionary<LblT, double>();
+                foreach (LblT predicted in labels)
+                {
+                    row.Add(predicted, Get(actual, predicted)/s);
+                }
+                observed.Add(actual, row);
+            }
+
+            // the matrix of expected values
+            
+            var expected = new Dictionary<LblT, Dictionary<LblT, double>>();
+            foreach (LblT actual in labels)
+            {
+                var row = new Dictionary<LblT, double>();
+                foreach (LblT predicted in labels)
+                {
+                    row.Add(predicted, GetActual(actual) / s * GetPredicted(predicted)/s);  //a[i]*p[j]/s/s
+                }
+                expected.Add(actual, row);
+            }
+
+            // the weights matrix            
+            foreach (LblT actual in labels)
+            {
+                foreach (LblT predicted in labels)
+                {
+                    weights[actual][predicted] = 1 - weights[actual][predicted];
+                }
+            }
+
+            double s1 = 0, s2 = 0;
+            foreach (LblT actual in labels)
+            {
+                foreach (LblT predicted in labels)
+                {
+                    s1 += weights[actual][predicted] * observed[actual][predicted];
+                    s2 += weights[actual][predicted] * expected[actual][predicted];
+                }
+            }
+            double kappa = 1 - (1 - s1) / (1 - s2);            
+            return kappa;
+         }
+
+
+        public double GetScore(OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels)
+        {
+            LblT[] labels = orderedLabels as LblT[] ?? orderedLabels.ToArray();
+            switch (metric)
+            {
+                case OrdinalPerfMetric.MeanAbsoluteError:
+                    return GetError(labels, GetLinearWeights(labels));
+                case OrdinalPerfMetric.MeanSquaredError:
+                    return GetError(labels, GetSquareWeights(labels));
+                case OrdinalPerfMetric.ErrorTolerance1:
+                    return GetError(labels, GetErrorXWeights(labels, tolerance: 1));
+                case OrdinalPerfMetric.MeanAbsoluteErrorNormalized1:
+                    return GetError(labels, GetLinearWeights(labels, normalize: true));
+                case OrdinalPerfMetric.MeanSquaredErrorNormalized1:
+                    return GetError(labels, GetSquareWeights(labels, normalize: true));
+                case OrdinalPerfMetric.WeightedKappaLinear:
+                    return GetWeightedKappa(labels, GetLinearWeights(labels, normalize: true));
+                case OrdinalPerfMetric.WeightedKappaSquared:
+                    return GetWeightedKappa(labels, GetSquareWeights(labels, normalize: true));
+                default:
+                    throw new ArgumentValueException("invalid ordered metric");
+            }
+        }
+
+        // weight metrices
+
+        public static Dictionary<LblT, Dictionary<LblT, double>> ZeroMatrix(Set<LblT> labels )
+        {
+            return labels.ToDictionary(ol => ol, ol => labels.ToDictionary(ol1 => ol1, ol1 => 0.0));
+        }
+
+        public static Dictionary<LblT, Dictionary<LblT, double>> GetErrorXWeights(IEnumerable<LblT> orderedLabels, int tolerance = 0)
+        {
+            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
+            Dictionary<LblT, Dictionary<LblT, double>> weights = ZeroMatrix(new Set<LblT>(labels));
+            for (int i = 0; i < labels.Count; i++)
+            {
+                for (int j = 0; j < labels.Count; j++)
+                {
+                    weights[labels[i]][labels[j]] = Math.Abs(i - j) > tolerance ? 1 : 0;
+                }
+            }
+            return weights;
+        }
+        
+        public static Dictionary<LblT, Dictionary<LblT, double>> GetLinearWeights(IEnumerable<LblT> orderedLabels, bool normalize = false)
+        {
+            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
+            Dictionary<LblT, Dictionary<LblT, double>> weights = ZeroMatrix(new Set<LblT>(labels));
+            double step = 1;
+            if (normalize)
+            {
+                step = 1.0 / (labels.Count - 1);
+            }
+            for (int i = 0; i < labels.Count; i++)
+            {
+                for (int j = 0; j < labels.Count; j++)
+                {
+                    weights[labels[i]][labels[j]] = Math.Abs(i * step - j * step);
+                }
+            }
+            return weights;
+        }
+
+        public static Dictionary<LblT, Dictionary<LblT, double>> GetSquareWeights(IEnumerable<LblT> orderedLabels, bool normalize = false)
+        {
+            LblT[] labels = orderedLabels as LblT[] ?? orderedLabels.ToArray();
+
+            Dictionary<LblT, Dictionary<LblT, double>> weights = GetLinearWeights(labels, normalize);
+            foreach (LblT lblAct in labels)
+            {
+                foreach (var lblPred in labels)
+                {
+                    weights[lblAct][lblPred] = weights[lblAct][lblPred]*weights[lblAct][lblPred];
+                }
+            }
+            return weights;
+        }
+
+
+        // (weights) matrix to string
+        /*
+        public string ToString(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> matrix)
+        {          
+            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
+            StringBuilder str = new StringBuilder();
+
+            int len = Math.Max(labels.Max(l => l.ToString().Length), 11);
+
+            str.Append("".PadRight(len));
+            str.Append("|".PadLeft(4));
+            foreach (LblT predicted in labels)
+            {
+                str.Append(predicted.ToString().PadLeft(len));
+            }
+            str.AppendLine();
+            str.AppendLine(new string('-', (labels.Count + 1) * len + 4));            
+            foreach (LblT actual in labels)
+            {
+                str.Append(actual.ToString().PadLeft(len));
+                str.Append("|".PadLeft(4));
+                foreach (LblT predicted in labels)
+                {
+                    str.Append(matrix[actual][predicted].ToString().PadLeft(len));
+                }
+                str.AppendLine();
+            }
+            return str.ToString();
+        }
+        */
+
     }
+
 }
