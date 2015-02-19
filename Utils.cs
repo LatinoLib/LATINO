@@ -16,6 +16,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Xml;
 using System.Text;
@@ -732,5 +733,16 @@ namespace Latino
 
         public delegate T UnaryOperatorDelegate<T>(T val);
         public delegate T BinaryOperatorDelegate<T>(T a, T b);
+
+        // *** Misc ***
+
+        public static Dictionary<string, object> GetPropertyValues(object o, params string[] exclude)
+        {
+            Preconditions.CheckNotNullArgument(o);
+
+            return o.GetType().GetProperties()
+                .Where(p => p.GetGetMethod() != null && (exclude == null || !exclude.Contains(p.Name)))
+                .ToDictionary(property => property.Name, property => property.GetValue(o, null));
+        }
     }
 }
