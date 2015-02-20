@@ -284,6 +284,11 @@ namespace Latino
                 Utils.ThrowException(ctor == null ? new ArgumentNotSupportedException("type") : null);
                 return (ValueType)ctor.Invoke(new object[] { this }); // throws MemberAccessException, MethodAccessException, TargetInvocationException, NotSupportedException, SecurityException
             }
+            else if (type.IsEnum)
+            {
+                Type enumType = ReadType();
+                return (ValueType)Enum.Parse(enumType, ReadString());
+            }
             else if (!type.IsEnum)
             {
                 // deserialize struct 
@@ -539,6 +544,11 @@ namespace Latino
             else if (val is ISerializable)
             {
                 ((ISerializable)val).Save(this); // throws serialization-related exceptions
+            }
+            else if (val.GetType().IsEnum)
+            {
+                WriteType(val.GetType());
+                WriteString(val.ToString());
             }
             else if (!val.GetType().IsEnum)
             {

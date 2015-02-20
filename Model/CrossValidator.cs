@@ -175,7 +175,10 @@ namespace Latino.Model.Eval
                 foreach (LabeledExample<LblT, ExT2> le in mappedTestSet)
                 {
                     Prediction<LblT> prediction = model.Predict(le.Example);
-                    foldMatrix.AddCount(le.Label, prediction.BestClassLabel);
+                    if (prediction.Any())
+                    {
+                        foldMatrix.AddCount(le.Label, prediction.BestClassLabel);
+                    }
                     foldPredictions.Add(new Pair<LabeledExample<LblT, ExT2>, Prediction<LblT>>(le, prediction));
                     AfterPredict(foldN, model, le, prediction);
                 }
