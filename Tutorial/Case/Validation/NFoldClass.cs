@@ -62,7 +62,7 @@ namespace Tutorial.Case.Validation
             {
                 double stdDev;
                 Output.WriteLine("Precision for '{0}': {1:0.00} std. dev: {2:0.00}", label,
-                    validation.PerfData.GetAvg("", validation.GetModelName(0), PerfMetric.Precision, label, out stdDev), stdDev);
+                    validation.PerfData.GetAvg("", validation.GetModelName(0), ClassPerfMetric.Precision, label, out stdDev), stdDev);
             }
         }
     }

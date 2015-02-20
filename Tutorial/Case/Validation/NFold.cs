@@ -83,7 +83,7 @@ namespace Tutorial.Case.Validation
             {
                 double stdDev;
                 Output.WriteLine("Precision for '{0}': {1:0.00} std. dev: {2:0.00}", label, 
-                    perfData.GetAvg("tutorial", "binary svm", PerfMetric.Precision, label, out stdDev), stdDev);
+                    perfData.GetAvg("tutorial", "binary svm", ClassPerfMetric.Precision, label, out stdDev), stdDev);
             }
         }
     }
