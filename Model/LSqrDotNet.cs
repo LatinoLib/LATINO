@@ -31,16 +31,16 @@ namespace Latino.Model
 
         // *** External functions ***
 
-        [DllImport(LSQR_DLL)]
+        [DllImport(LSQR_DLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern int NewMatrix(int rowCount);
 
-        [DllImport(LSQR_DLL)]
+        [DllImport(LSQR_DLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void DeleteMatrix(int id);
 
-        [DllImport(LSQR_DLL)]
+        [DllImport(LSQR_DLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern void InsertValue(int matId, int rowIdx, int colIdx, double val);
 
-        [DllImport(LSQR_DLL)]
+        [DllImport(LSQR_DLL, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr DoLSqr(int matId, int matTranspId, double[] initSol, double[] rhs, int maxIter);
 
         // *** Wrappers for external DoLSqr ***

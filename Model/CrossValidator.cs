@@ -26,7 +26,7 @@ namespace Latino.Model.Eval
         }
     }
 
-    public class TaskMappingCrossValidator<LblT, ExT1, ExT2> : AbstractMappingCrossValidator<LblT, ExT1, ExT2>
+    public class TaskMappingCrossValidator<LblT, InputExT, ModelExT> : AbstractMappingCrossValidator<LblT, InputExT, ModelExT>
     {
         private readonly object mLock = new object();
 
@@ -34,14 +34,14 @@ namespace Latino.Model.Eval
         {
         }
 
-        public TaskMappingCrossValidator(IEnumerable<Func<IModel<LblT, ExT2>>> modelFuncs)
+        public TaskMappingCrossValidator(IEnumerable<Func<IModel<LblT, ModelExT>>> modelFuncs)
         {
             ModelFuncs = modelFuncs.ToList();
         }
 
-        public List<Func<IModel<LblT, ExT2>>> ModelFuncs { get; protected set; }
+        public List<Func<IModel<LblT, ModelExT>>> ModelFuncs { get; protected set; }
 
-        public override List<IModel<LblT, ExT2>> Models
+        public override List<IModel<LblT, ModelExT>> Models
         {
             get
             {
@@ -98,7 +98,7 @@ namespace Latino.Model.Eval
     }
 
 
-    public abstract class AbstractMappingCrossValidator<LblT, ExT1, ExT2>
+    public abstract class AbstractMappingCrossValidator<LblT, InputExT, ModelExT>
     {
         protected AbstractMappingCrossValidator()
         {
@@ -109,7 +109,7 @@ namespace Latino.Model.Eval
             ExpName = "";
         }
 
-        public LabeledDataset<LblT, ExT1> Dataset { get; set; }
+        public LabeledDataset<LblT, InputExT> Dataset { get; set; }
 
         public int NumFolds { get; set; }
         public bool IsStratified { get; set; }
@@ -118,18 +118,18 @@ namespace Latino.Model.Eval
         public int Parallelism { get; set; }
 
         public PerfData<LblT> PerfData { get; private set; }
-        public abstract List<IModel<LblT, ExT2>> Models { get; }
+        public abstract List<IModel<LblT, ModelExT>> Models { get; }
 
-        public delegate void AfterPredictAction(AbstractMappingCrossValidator<LblT, ExT1, ExT2> sender, int fondN,
-            IModel<LblT, ExT2> model, LabeledExample<LblT, ExT2> labeledExample, Prediction<LblT> prediction);
+        public delegate void AfterPredictAction(AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int fondN,
+            IModel<LblT, ModelExT> model, LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction);
 
-        public Func<AbstractMappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT2>> TrainSetMap { get; set; }
-        public Func<AbstractMappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT2>> TestSetMap { get; set; }
-        public Action<AbstractMappingCrossValidator<LblT, ExT1, ExT2>, int, IModel<LblT, ExT2>, ILabeledDataset<LblT, ExT2>> BeforeTrainEventHandler { get; set; }
-        public Action<AbstractMappingCrossValidator<LblT, ExT1, ExT2>, int, IModel<LblT, ExT2>, ILabeledDataset<LblT, ExT2>> AfterTrainEventHandler { get; set; }
+        public Func<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, ILabeledDataset<LblT, InputExT>, ILabeledDataset<LblT, ModelExT>> TrainSetMap { get; set; }
+        public Func<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, ILabeledDataset<LblT, InputExT>, ILabeledDataset<LblT, ModelExT>> TestSetMap { get; set; }
+        public Action<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, IModel<LblT, ModelExT>, ILabeledDataset<LblT, ModelExT>> BeforeTrainEventHandler { get; set; }
+        public Action<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, IModel<LblT, ModelExT>, ILabeledDataset<LblT, ModelExT>> AfterTrainEventHandler { get; set; }
         public AfterPredictAction AfterPredictEventHandler { get; set; }
-        public Action<AbstractMappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT1>> BeforeFoldEventHandler { get; set; }
-        public Action<AbstractMappingCrossValidator<LblT, ExT1, ExT2>, int, ILabeledDataset<LblT, ExT1>, ILabeledDataset<LblT, ExT1>> AfterFoldEventHandler { get; set; }
+        public Action<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, ILabeledDataset<LblT, InputExT>, ILabeledDataset<LblT, InputExT>> BeforeFoldEventHandler { get; set; }
+        public Action<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, ILabeledDataset<LblT, InputExT>, ILabeledDataset<LblT, InputExT>> AfterFoldEventHandler { get; set; }
 
         protected virtual void PrepareRun()
         {
@@ -145,7 +145,7 @@ namespace Latino.Model.Eval
         protected void RunFold(int foldN)
         {
             // fold data
-            LabeledDataset<LblT, ExT1> testSet, trainSet;
+            LabeledDataset<LblT, InputExT> testSet, trainSet;
             if (IsStratified)
             {
                 Dataset.SplitForStratifiedCrossValidation(NumFolds, foldN, out trainSet, out testSet);
@@ -158,11 +158,11 @@ namespace Latino.Model.Eval
             BeforeFold(foldN, trainSet, testSet);
 
             // pefrorm mapping
-            ILabeledDataset<LblT, ExT2> mappedTrainSet = MapTrainSet(foldN, trainSet);
-            ILabeledDataset<LblT, ExT2> mappedTestSet = MapTestSet(foldN, testSet);
+            ILabeledDataset<LblT, ModelExT> mappedTrainSet = MapTrainSet(foldN, trainSet);
+            ILabeledDataset<LblT, ModelExT> mappedTestSet = MapTestSet(foldN, testSet);
 
             // validate
-            foreach (IModel<LblT, ExT2> model in Models)
+            foreach (IModel<LblT, ModelExT> model in Models)
             {
                 // train
                 BeforeTrain(foldN, model, mappedTrainSet);
@@ -171,15 +171,15 @@ namespace Latino.Model.Eval
 
                 // test
                 PerfMatrix<LblT> foldMatrix = GetPerfMatrix(GetModelName(model), foldN);
-                var foldPredictions = new List<Pair<LabeledExample<LblT, ExT2>, Prediction<LblT>>>();
-                foreach (LabeledExample<LblT, ExT2> le in mappedTestSet)
+                var foldPredictions = new List<Pair<LabeledExample<LblT, ModelExT>, Prediction<LblT>>>();
+                foreach (LabeledExample<LblT, ModelExT> le in mappedTestSet)
                 {
                     Prediction<LblT> prediction = model.Predict(le.Example);
                     if (prediction.Any())
                     {
                         foldMatrix.AddCount(le.Label, prediction.BestClassLabel);
                     }
-                    foldPredictions.Add(new Pair<LabeledExample<LblT, ExT2>, Prediction<LblT>>(le, prediction));
+                    foldPredictions.Add(new Pair<LabeledExample<LblT, ModelExT>, Prediction<LblT>>(le, prediction));
                     AfterPredict(foldN, model, le, prediction);
                 }
             }
@@ -198,23 +198,23 @@ namespace Latino.Model.Eval
             return GetModelName(Models[modelN]);
         }
         
-        public string GetModelName(IModel<LblT, ExT2> model)
+        public string GetModelName(IModel<LblT, ModelExT> model)
         {
             Preconditions.CheckNotNullArgument(model);
             return model.GetType().Name;
         }
 
-        protected virtual ILabeledDataset<LblT, ExT2> MapTrainSet(int foldN, ILabeledDataset<LblT, ExT1> trainSet)
+        protected virtual ILabeledDataset<LblT, ModelExT> MapTrainSet(int foldN, ILabeledDataset<LblT, InputExT> trainSet)
         {
-            return TrainSetMap != null ? TrainSetMap(this, foldN, trainSet) : (ILabeledDataset<LblT, ExT2>)trainSet;
+            return TrainSetMap != null ? TrainSetMap(this, foldN, trainSet) : (ILabeledDataset<LblT, ModelExT>)trainSet;
         }
 
-        protected virtual ILabeledDataset<LblT, ExT2> MapTestSet(int foldN, ILabeledDataset<LblT, ExT1> testSet)
+        protected virtual ILabeledDataset<LblT, ModelExT> MapTestSet(int foldN, ILabeledDataset<LblT, InputExT> testSet)
         {
-            return TestSetMap != null ? TestSetMap(this, foldN, testSet) : (ILabeledDataset<LblT, ExT2>)testSet;
+            return TestSetMap != null ? TestSetMap(this, foldN, testSet) : (ILabeledDataset<LblT, ModelExT>)testSet;
         }
 
-        protected virtual void BeforeTrain(int foldN, IModel<LblT, ExT2> model, ILabeledDataset<LblT, ExT2> trainSet)
+        protected virtual void BeforeTrain(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainSet)
         {
             if (BeforeTrainEventHandler != null)
             {
@@ -222,7 +222,7 @@ namespace Latino.Model.Eval
             }
         }
 
-        protected virtual void AfterTrain(int foldN, IModel<LblT, ExT2> model, ILabeledDataset<LblT, ExT2> trainSet)
+        protected virtual void AfterTrain(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainSet)
         {
             if (AfterTrainEventHandler != null)
             {
@@ -230,7 +230,7 @@ namespace Latino.Model.Eval
             }
         }
 
-        protected virtual void AfterPredict(int foldN, IModel<LblT, ExT2> model, LabeledExample<LblT, ExT2> labeledExample, Prediction<LblT> prediction)
+        protected virtual void AfterPredict(int foldN, IModel<LblT, ModelExT> model, LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction)
         {
             if (AfterPredictEventHandler != null)
             {
@@ -238,7 +238,7 @@ namespace Latino.Model.Eval
             }
         }
 
-        protected virtual void BeforeFold(int foldN, ILabeledDataset<LblT, ExT1> trainSet, ILabeledDataset<LblT, ExT1> testSet)
+        protected virtual void BeforeFold(int foldN, ILabeledDataset<LblT, InputExT> trainSet, ILabeledDataset<LblT, InputExT> testSet)
         {
             if (BeforeFoldEventHandler != null)
             {
@@ -246,7 +246,7 @@ namespace Latino.Model.Eval
             }
         }
 
-        protected virtual void AfterFold(int foldN, ILabeledDataset<LblT, ExT1> trainSet, ILabeledDataset<LblT, ExT1> testSet)
+        protected virtual void AfterFold(int foldN, ILabeledDataset<LblT, InputExT> trainSet, ILabeledDataset<LblT, InputExT> testSet)
         {
             if (AfterFoldEventHandler != null)
             {
