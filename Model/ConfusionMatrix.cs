@@ -808,7 +808,7 @@ namespace Latino.Model.Eval
             OrdinalPerfMetric[] metrics = ordinalMetrics as OrdinalPerfMetric[] ?? Preconditions.CheckNotNullArgument(ordinalMetrics.ToArray());
             if (!metrics.Any())
             {
-                metrics = Enum.GetValues(typeof(PerfMetric)).Cast<OrdinalPerfMetric>().ToArray();
+                metrics = Enum.GetValues(typeof(OrdinalPerfMetric)).Cast<OrdinalPerfMetric>().ToArray();
             }
 
             StringBuilder str = new StringBuilder();
