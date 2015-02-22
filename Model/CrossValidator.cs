@@ -71,21 +71,21 @@ namespace Latino.Model.Eval
         }
     }
 
-    public class MappingCrossValidator<LblT, ExT1, ExT2> : AbstractMappingCrossValidator<LblT, ExT1, ExT2>
+    public class MappingCrossValidator<LblT, InputExT, ModelExT> : AbstractMappingCrossValidator<LblT, InputExT, ModelExT>
     {
-        private readonly List<IModel<LblT, ExT2>> mModels;
+        private readonly List<IModel<LblT, ModelExT>> mModels;
 
         public MappingCrossValidator()
         {
-            mModels = new List<IModel<LblT, ExT2>>();
+            mModels = new List<IModel<LblT, ModelExT>>();
         }
 
-        public MappingCrossValidator(IEnumerable<IModel<LblT, ExT2>> models)
+        public MappingCrossValidator(IEnumerable<IModel<LblT, ModelExT>> models)
         {
             mModels = Preconditions.CheckNotNullArgument(models).ToList();
         }
 
-        public override List<IModel<LblT, ExT2>> Models { get { return mModels; } }
+        public override List<IModel<LblT, ModelExT>> Models { get { return mModels; } }
 
         public void Run()
         {
@@ -120,16 +120,25 @@ namespace Latino.Model.Eval
         public PerfData<LblT> PerfData { get; private set; }
         public abstract List<IModel<LblT, ModelExT>> Models { get; }
 
-        public delegate void AfterPredictAction(AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int fondN,
-            IModel<LblT, ModelExT> model, LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction);
+        public delegate ILabeledDataset<LblT, ModelExT> TrainSetFunc(
+            AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, ILabeledDataset<LblT, InputExT> trainSet);
+        public delegate ILabeledDataset<LblT, ModelExT> TestSetFunc(
+            AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, ILabeledDataset<LblT, InputExT> testSet);
+        public delegate void TrainAction(
+            AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainSet);
+        public delegate void AfterPredictAction(
+            AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int fondN, IModel<LblT, ModelExT> model, LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction);
+        public delegate void FoldAction(
+            AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, ILabeledDataset<LblT, InputExT> trainSet, ILabeledDataset<LblT, InputExT> testSet);
 
-        public Func<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, ILabeledDataset<LblT, InputExT>, ILabeledDataset<LblT, ModelExT>> TrainSetMap { get; set; }
-        public Func<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, ILabeledDataset<LblT, InputExT>, ILabeledDataset<LblT, ModelExT>> TestSetMap { get; set; }
-        public Action<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, IModel<LblT, ModelExT>, ILabeledDataset<LblT, ModelExT>> BeforeTrainEventHandler { get; set; }
-        public Action<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, IModel<LblT, ModelExT>, ILabeledDataset<LblT, ModelExT>> AfterTrainEventHandler { get; set; }
+        public TrainSetFunc TrainSetMap { get; set; }
+        public TestSetFunc TestSetMap { get; set; }
+        public TrainAction BeforeTrainEventHandler { get; set; }
+        public TrainAction AfterTrainEventHandler { get; set; }
         public AfterPredictAction AfterPredictEventHandler { get; set; }
-        public Action<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, ILabeledDataset<LblT, InputExT>, ILabeledDataset<LblT, InputExT>> BeforeFoldEventHandler { get; set; }
-        public Action<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, int, ILabeledDataset<LblT, InputExT>, ILabeledDataset<LblT, InputExT>> AfterFoldEventHandler { get; set; }
+        public FoldAction BeforeFoldEventHandler { get; set; }
+        public FoldAction AfterFoldEventHandler { get; set; }
+        public Func<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, IModel<LblT, ModelExT>, string> ModelNameFunc { get; set; }
 
         protected virtual void PrepareRun()
         {
@@ -198,10 +207,10 @@ namespace Latino.Model.Eval
             return GetModelName(Models[modelN]);
         }
         
-        public string GetModelName(IModel<LblT, ModelExT> model)
+        public virtual string GetModelName(IModel<LblT, ModelExT> model)
         {
             Preconditions.CheckNotNullArgument(model);
-            return model.GetType().Name;
+            return ModelNameFunc == null ? model.GetType().Name : ModelNameFunc(this, model);
         }
 
         protected virtual ILabeledDataset<LblT, ModelExT> MapTrainSet(int foldN, ILabeledDataset<LblT, InputExT> trainSet)

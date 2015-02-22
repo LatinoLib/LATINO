@@ -805,7 +805,6 @@ namespace Latino.Model.Eval
         public string ToString(IEnumerable<LblT> orderedLabels, IEnumerable<OrdinalPerfMetric> ordinalMetrics)
         {
             LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNullArgument(orderedLabels).ToArray();
-
             OrdinalPerfMetric[] metrics = ordinalMetrics as OrdinalPerfMetric[] ?? Preconditions.CheckNotNullArgument(ordinalMetrics.ToArray());
             if (!metrics.Any())
             {
@@ -943,7 +942,7 @@ namespace Latino.Model.Eval
 
         // weight metrices
 
-        public static Dictionary<LblT, Dictionary<LblT, double>> ZeroMatrix(Set<LblT> labels )
+        public static Dictionary<LblT, Dictionary<LblT, double>> GetZeroMatrix(Set<LblT> labels)
         {
             return labels.ToDictionary(ol => ol, ol => labels.ToDictionary(ol1 => ol1, ol1 => 0.0));
         }
@@ -951,7 +950,7 @@ namespace Latino.Model.Eval
         public static Dictionary<LblT, Dictionary<LblT, double>> GetErrorXWeights(IEnumerable<LblT> orderedLabels, int tolerance = 0)
         {
             List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
-            Dictionary<LblT, Dictionary<LblT, double>> weights = ZeroMatrix(new Set<LblT>(labels));
+            Dictionary<LblT, Dictionary<LblT, double>> weights = GetZeroMatrix(new Set<LblT>(labels));
             for (int i = 0; i < labels.Count; i++)
             {
                 for (int j = 0; j < labels.Count; j++)
@@ -965,7 +964,7 @@ namespace Latino.Model.Eval
         public static Dictionary<LblT, Dictionary<LblT, double>> GetLinearWeights(IEnumerable<LblT> orderedLabels, bool normalize = false)
         {
             List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
-            Dictionary<LblT, Dictionary<LblT, double>> weights = ZeroMatrix(new Set<LblT>(labels));
+            Dictionary<LblT, Dictionary<LblT, double>> weights = GetZeroMatrix(new Set<LblT>(labels));
             double step = 1;
             if (normalize)
             {
