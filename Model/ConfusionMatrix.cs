@@ -46,7 +46,8 @@ namespace Latino.Model.Eval
         MeanSquaredErrorNormalized1,
         MeanAbsoluteErrorNormalized1,        
         WeightedKappaLinear,
-        WeightedKappaSquared
+        WeightedKappaSquared,
+        F1AvgExtremeClasses
     }
 
     /* .-----------------------------------------------------------------------
@@ -904,6 +905,16 @@ namespace Latino.Model.Eval
          }
 
 
+        public double GetF1AvgExtremeClasses(IEnumerable<LblT> orderedLabels) 
+        {            
+            LblT label1 = orderedLabels.First<LblT>();
+            LblT label2 = orderedLabels.Last<LblT>();
+
+            return (GetF1(label1) + GetF1(label2)) / 2;
+        }
+        
+
+
         public double GetScore(OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels)
         {
             LblT[] labels = orderedLabels as LblT[] ?? orderedLabels.ToArray();
@@ -923,6 +934,8 @@ namespace Latino.Model.Eval
                     return GetWeightedKappa(labels, GetLinearWeights(labels, normalize: true));
                 case OrdinalPerfMetric.WeightedKappaSquared:
                     return GetWeightedKappa(labels, GetSquareWeights(labels, normalize: true));
+                case OrdinalPerfMetric.F1AvgExtremeClasses:
+                    return GetF1AvgExtremeClasses(labels);
                 default:
                     throw new ArgumentValueException("invalid ordered metric");
             }
