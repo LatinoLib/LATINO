@@ -79,10 +79,15 @@ namespace Tutorial.Case.Validation
             PerfMatrix<string> sumPerfMatrix = perfData.GetSumPerfMatrix("tutorial", "binary svm");
             Output.WriteLine(sumPerfMatrix.ToString());
             Output.WriteLine("Average accuracy: {0:0.00}", sumPerfMatrix.GetAccuracy());
+            Output.WriteLine();
+            Output.WriteLine(sumPerfMatrix.ToString(new PerfMetric[] { }));
+            Output.WriteLine(sumPerfMatrix.ToString(perfData.GetLabels("tutorial", "binary svm"), new OrdinalPerfMetric[] { }));
+            Output.WriteLine(sumPerfMatrix.ToString(new ClassPerfMetric[] { }));
+
             foreach (string label in perfData.GetLabels("tutorial", "binary svm"))
             {
                 double stdDev;
-                Output.WriteLine("Precision for '{0}': {1:0.00} std. dev: {2:0.00}", label, 
+                Output.WriteLine("Precision for '{0}': {1:0.00} std. dev: {2:0.00}", label,
                     perfData.GetAvg("tutorial", "binary svm", ClassPerfMetric.Precision, label, out stdDev), stdDev);
             }
         }
