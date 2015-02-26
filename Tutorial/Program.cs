@@ -35,11 +35,14 @@ namespace Tutorial
             //KMeans.RunInstanceWr(sw, args);
             
             // validation
-            //NFold.RunInstanceWr(sw, args);
-            NFoldClass.RunInstanceWr(sw, args);
+            // NFold.RunInstanceWr(sw, args);
+            //NFoldClass.RunInstanceWr(sw, args);
 
             // other
             //Searching.RunInstanceWr(sw, args);
+
+            // text processing
+            TextProcessing.RunInstance(sw, args);
         }
 
         static void TestAll(string[] args)
