@@ -4,9 +4,9 @@
  *
  *  File:    TextProcessing.cs
  *  Desc:    Tutorial X: Text processing utitilite: emoticon, url, unusual punctuation handling 
- *  Created: Dec-2009
+ *  Created: Dec-2015
  *
- *  Authors: Miha Grcar
+ *  Authors: petra
  *
  ***************************************************************************/
 
