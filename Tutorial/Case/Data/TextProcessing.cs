@@ -12,12 +12,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Latino;
-using Latino.Model;
 using Latino.TextMining;
 using Microsoft.VisualBasic.FileIO;
 
@@ -43,11 +40,12 @@ namespace Tutorial.Case.Data
                 "............................As u may have noticed, not too happy about the GM situation, nor AIG, Lehman, et al",
                 "RT @SmartChickPDX: Was just told that Nike layoffs started today :-(",
                 "not at begginning, middle endnote, beginning of gord noticed end eof word endnot and end of sentence not. and line not",
-                "Un inutile strage di poveri animali innocenti, esseri umani degradati e degradanti ...:-((("
+                "Un inutile strage di poveri animali innocenti, esseri umani degradati e degradanti ...:-(((",
+                "loooooooooove is niceeee, while school is not"
                 
 
             };
-
+            /*
             // read the data
             string filename = @"Data\testdata.manual.2009.06.14.csv";                        
             var parser = new TextFieldParser(filename, Encoding.ASCII)
@@ -67,30 +65,30 @@ namespace Tutorial.Case.Data
             {
                 parser.Close();
             }
-            
-           
+            */
             
             // initialize the emoticons
             var emoticonTransform = new Dictionary<Regex, string>
             {
-                { SocialMediaProcessing.HappyEmoticonsRegex, "***Happy***"},
-                { SocialMediaProcessing.SadEmoticonsRegex, "***Sad***"}
+                { SocialMediaProcessing.HappyEmoticonsRegex, "__HAPPY__"},
+                { SocialMediaProcessing.SadEmoticonsRegex, "__SAD__"}
             };
 
             // order of application of these functions IS important
             foreach (var example in corpus)     
             {
                 var str = example;
-                str = SocialMediaProcessing.ReplaceUrls(str, "***URL***");           
-                str = SocialMediaProcessing.IsUppercased(str, "***UPPERCASE***");    
-                str = SocialMediaProcessing.ReplaceUsers(str, "***USER***");   
-                str = SocialMediaProcessing.ReplaceHashTags(str, "***HASH***");   
-                str = SocialMediaProcessing.ReplaceNegations(str, Language.Italian, "***NEGATION***");  
-                str = SocialMediaProcessing.ReplaceStockSymbol(str, "***STOCK***");    
-                str = SocialMediaProcessing.ReplaceMultiplePunctuation(str, "***MULTI!!!***");   
+                str = SocialMediaProcessing.ReplaceUrls(str);
+                str = SocialMediaProcessing.AddLengthFeatures(str);
+                str = SocialMediaProcessing.IsUppercased(str);
+                str = SocialMediaProcessing.ReplaceUsers(str);
+                str = SocialMediaProcessing.ReplaceHashTags(str);
+                str = SocialMediaProcessing.ReplaceNegations(str, Language.Italian);
+                str = SocialMediaProcessing.ReplaceStockSymbol(str);
+                str = SocialMediaProcessing.ReplaceMultiplePunctuation(str);
                 str = SocialMediaProcessing.ReplaceEmoticons(str, emoticonTransform);          // to be used after ReplaceUrls
-                str = SocialMediaProcessing.RemoveCharacterRepetition(str);   
-//                str = Emoticons.ReplaceUnicodeCategory(str, UnicodeCategory.OtherSymbol, "***UnicodeEmoticon***");
+                str = SocialMediaProcessing.RemoveCharacterRepetition(str);
+                //                str = Emoticons.ReplaceUnicodeCategory(str, UnicodeCategory.OtherSymbol, "__UnicodeEmoticon__");
                 
                 if (str != example) // print only modified strings
                 {

@@ -9,35 +9,35 @@ namespace Latino
     public static class SocialMediaProcessing
     {
 
-        public static string ReplaceUsers(string text, String replacement)
+        public static string ReplaceUsers(string text, String replacement = " __USER__")
         {
             return Regex.Replace(text, @"@(\w+)", replacement);
         }
 
-        public static string ReplaceStockSymbol(string text, String replacement)
+        public static string ReplaceStockSymbol(string text, String replacement = " __STOCK__")
         // matches also $700
         {
             return Regex.Replace(text, @"\$(\w+)", replacement);
         }
 
-        public static string ReplaceUrls(string text, String replacement)
+        public static string ReplaceUrls(string text, String replacement = " __URL__")
         {
             return Regex.Replace(text, @"http(\S)*|www(\S)*", replacement);
         }
 
-        public static string ReplaceHashTags(string text, String replacement)
+        public static string ReplaceHashTags(string text, String replacement = " __HASH__")
         {
             return Regex.Replace(text, @"#(\w+)", replacement);
         }
 
-        public static string ReplaceMultiplePunctuation(string text, String replacement)
+        public static string ReplaceMultiplePunctuation(string text, String replacement=" __PUNCT")
         {
             string newText = text;
-            newText = Regex.Replace(newText, @"((!+\?+)+!*)|((\?+!+)+\?*)", " ***MULTIMIX*** ");
-            newText = Regex.Replace(newText, @"!{2,}", " ***MULTIPLEEXCLAMATION*** ");
-            newText = Regex.Replace(newText, @"!{1}", " ***SINGLEEXCLAMATION*** ");
-            newText = Regex.Replace(newText, @"\?{2,}", " ***MULTIPLEQUESTION*** ");
-            newText = Regex.Replace(newText, @"\?{1}", " ***SINGLEQUESTION*** ");
+            newText = Regex.Replace(newText, @"((!+\?+)+!*)|((\?+!+)+\?*)", " " + replacement + "_MULTIMIX"+"__");
+            newText = Regex.Replace(newText, @"!{2,}", " " + replacement + "_MULTIEXCLAMATION" + "__");
+            newText = Regex.Replace(newText, @"!{1}", " " + replacement + "SINGLEEXCLAMATION" + "__");
+            newText = Regex.Replace(newText, @"\?{2,}", replacement + "MULTIQUESTION" + "__");
+            newText = Regex.Replace(newText, @"\?{1}", replacement + "SINGLEQUESTION" + "__");
             return newText;
         }
 
@@ -46,7 +46,7 @@ namespace Latino
         //            return Regex.Replace(text, regexLetterRepetition, "replacement"); 
         //        }
 
-        public static string IsUppercased(string text, string newFeature)
+        public static string IsUppercased(string text, string newFeature = " __UPPERCASED__")
         {
             Regex regex = new Regex(@"\b[A-Z]{4}\b", RegexOptions.Compiled);   // at least 4 consecutive capital letters
             if (regex.IsMatch(text))
@@ -57,7 +57,7 @@ namespace Latino
         }
 
 
-        public static string ReplaceNegations(string text, Language language, string replacement)
+        public static string ReplaceNegations(string text, Language language, string replacement = " __NEGATED__")
         {
             string negations;
             switch (language)
@@ -74,10 +74,15 @@ namespace Latino
             return regex.Replace(text, replacement);
         }
 
-        public static string RemoveCharacterRepetition(string text)
+        public static string RemoveCharacterRepetition(string text, string replacement = " __EXAGGERATED__")   // if there is more then 3 consecutive identical characters, truncate to threee
         {
-            Regex r = new Regex("(.)(?<=\\1\\1\\1)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-            return r.Replace(text, String.Empty);
+            Regex r = new Regex("(.)(?<=\\1\\1\\1\\1)", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+            string tmp = r.Replace(text, String.Empty);
+            if (tmp != text)
+            {
+                return tmp + replacement;
+            }
+            return tmp;
         }
 
 
@@ -85,6 +90,19 @@ namespace Latino
         // to be used after ReplaceUrls
         {
             return emoticons.Aggregate(str, (current, emoticonPair) => emoticonPair.Key.Replace(current, emoticonPair.Value));
+        }
+
+        public static string AddLengthFeatures(string str, int maxLength =1000)
+        // to be used after ReplaceUrls
+        {
+            int strLen = str.Length;
+            int len = 2;
+            while (len <= maxLength)
+            {
+                str += strLen <= len ? " __LenghtLEQ" + len + "__" : " __LenghtGT" + len + "__";
+                len *= 2;
+            }
+            return str;
         }
 
         
