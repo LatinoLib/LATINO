@@ -12,8 +12,11 @@ namespace Tutorial
     {
         static void Main(string[] args)
         {
+            // disable latino logger
+            Logger.GetRootLogger().LocalOutputType = Logger.OutputType.Custom;
+            Logger.GetRootLogger().LocalProgressOutputType = Logger.ProgressOutputType.Custom;
+
             // output
-            Logger.GetRootLogger().LocalOutputType = Logger.OutputType.Custom; // disable latino logger
             var sw = new StreamWriter("report.txt", true); // use file for output
             sw.WriteLine("************");
 
@@ -35,8 +38,9 @@ namespace Tutorial
             //KMeans.RunInstanceWr(sw, args);
             
             // validation
-            // NFold.RunInstanceWr(sw, args);
+            //NFold.RunInstanceWr(sw, args);
             //NFoldClass.RunInstanceWr(sw, args);
+            NFoldParallel.RunInstanceWr(sw, args);
 
             // other
             //Searching.RunInstanceWr(sw, args);

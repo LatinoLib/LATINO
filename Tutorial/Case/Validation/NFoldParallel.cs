@@ -11,7 +11,7 @@
  **********************************************************************/
 
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Latino;
 using Latino.Model;
 using Latino.Model.Eval;
@@ -19,7 +19,7 @@ using Tutorial.Case.Model;
 
 namespace Tutorial.Case.Validation
 {
-    public class NFoldClass : Tutorial<NFoldClass>
+    public class NFoldParallel : Tutorial<NFoldParallel>
     {
         public override void Run(object[] args)
         {
@@ -30,8 +30,12 @@ namespace Tutorial.Case.Validation
             // convert dataset to binary vector
             var ds = (LabeledDataset<string, BinaryVector>)labeledData.ConvertDataset(typeof(BinaryVector), false);
 
-            // cross validation ...with the convenience class
-            var validation = new CrossValidator<string, BinaryVector>
+            // cross validation with task validator
+            var validator = new TaskCrossValidator<string, BinaryVector>(new Func<IModel<string, BinaryVector>>[]
+                {
+                    // model instances are constructed on the fly
+                    () => new NaiveBayesClassifier<string>()
+                })
             {
                 NumFolds = 10, // default
                 IsStratified = true, // default
@@ -44,25 +48,36 @@ namespace Tutorial.Case.Validation
                     // do stuff after model is trained for a fold...
                 },
                 OnAfterPrediction = (sender, foldN, model, le, prediction) =>
-                    Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", le.Label, prediction.BestClassLabel, prediction.BestScore),
-                OnAfterFold = (sender, foldN, trainSet, foldPredictions) =>
                 {
-                    PerfMatrix<string> foldMatrix = sender.PerfData.GetPerfMatrix(sender.ExpName, sender.GetModelName(0), foldN);
-                    Output.WriteLine("Accuracy for {0}-fold: {1:0.00}", foldN, foldMatrix.GetAccuracy());
+                    lock (Output) Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", le.Label, prediction.BestClassLabel, prediction.BestScore);
                 }
             };
-            validation.Models.Add(new NaiveBayesClassifier<string>());
-            validation.Run();
+
+
+            var cores = (int)(Math.Round(Environment.ProcessorCount * 0.9) - 1); // use 90% of cpu cores
+            Output.WriteLine("Multi-threaded using {0} cores\n", cores);
+            Output.Flush();
+
+            Parallel.ForEach(
+                validator.GetFoldAndModelTasks(),
+                new ParallelOptions { MaxDegreeOfParallelism = cores },
+                foldTask => Parallel.ForEach(
+                    foldTask(),
+                    new ParallelOptions { MaxDegreeOfParallelism = cores },
+                    modelTask => modelTask()
+                )
+            );
+
 
             Output.WriteLine("Sum confusion matrix:");
-            PerfMatrix<string> sumPerfMatrix = validation.PerfData.GetSumPerfMatrix("", validation.GetModelName(0));
+            PerfMatrix<string> sumPerfMatrix = validator.PerfData.GetSumPerfMatrix("", validator.GetModelName(0));
             Output.WriteLine(sumPerfMatrix.ToString());
             Output.WriteLine("Average accuracy: {0:0.00}", sumPerfMatrix.GetAccuracy());
-            foreach (string label in validation.PerfData.GetLabels("", validation.GetModelName(0)))
+            foreach (string label in validator.PerfData.GetLabels("", validator.GetModelName(0)))
             {
                 double stdDev;
                 Output.WriteLine("Precision for '{0}': {1:0.00} std. dev: {2:0.00}", label,
-                    validation.PerfData.GetAvg("", validation.GetModelName(0), ClassPerfMetric.Precision, label, out stdDev), stdDev);
+                    validator.PerfData.GetAvg("", validator.GetModelName(0), ClassPerfMetric.Precision, label, out stdDev), stdDev);
             }
         }
     }

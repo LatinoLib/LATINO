@@ -42,7 +42,7 @@ namespace Latino.TextMining
     */
     public class Word : IEnumerable<KeyValuePair<string, int>>, ISerializable
     {
-        internal int mIdx
+        public int mIdx //todo undo
             = -1;
         internal Dictionary<string, int> mForms
             = new Dictionary<string, int>();
@@ -147,6 +147,11 @@ namespace Latino.TextMining
             mFreq = reader.ReadInt();
             mIdf = reader.ReadDouble();
             mForms = Utils.LoadDictionary<string, int>(reader);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} [{1}]", mStem, mMostFrequentForm);
         }
     }
 
@@ -898,7 +903,7 @@ namespace Latino.TextMining
             return ProcessDocument(document, mStemmer); // throws ArgumentNullException
         }
 
-        public SparseVector<double> ProcessDocument(string document, IStemmer stemmer)
+        public virtual SparseVector<double> ProcessDocument(string document, IStemmer stemmer)
         {
             Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Dictionary<int, int> tfVec = new Dictionary<int, int>();

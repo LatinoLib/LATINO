@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -29,6 +30,9 @@ namespace Latino.Model.Eval
     public class TaskMappingCrossValidator<LblT, InputExT, ModelExT> : AbstractMappingCrossValidator<LblT, InputExT, ModelExT>
     {
         private readonly object mLock = new object();
+        private List<Action> mFoldTasks;
+        private List<Func<Action[]>> mFoldRetModelTasks;
+        private ConcurrentDictionary<int, List<Action>> mFoldModelTasks;
 
         public TaskMappingCrossValidator()
         {
@@ -36,7 +40,7 @@ namespace Latino.Model.Eval
 
         public TaskMappingCrossValidator(IEnumerable<Func<IModel<LblT, ModelExT>>> modelFuncs)
         {
-            ModelFuncs = modelFuncs.ToList();
+            ModelFuncs = modelFuncs as List<Func<IModel<LblT, ModelExT>>> ?? modelFuncs.ToList();
         }
 
         public List<Func<IModel<LblT, ModelExT>>> ModelFuncs { get; protected set; }
@@ -49,17 +53,56 @@ namespace Latino.Model.Eval
             }
         }
         
-        public IEnumerable<Action> RunGetFoldTasks()
+        public Action[] GetFoldTasks()
         {
-            PrepareRun();
+            Preconditions.CheckState(mFoldTasks == null && mFoldRetModelTasks == null, "this instance can not be reused");
 
-            var tasks = new List<Action>();
-            for (int i = 0; i < NumFolds; i++)
+            mFoldTasks = new List<Action>();
+            DoRun();
+            return mFoldTasks.ToArray();
+        }
+
+        public Func<Action[]>[] GetFoldAndModelTasks()
+        {
+            Preconditions.CheckState(mFoldTasks == null && mFoldRetModelTasks == null, "this instance can not be reused");
+            
+            mFoldRetModelTasks = new List<Func<Action[]>>();
+            mFoldModelTasks = new ConcurrentDictionary<int, List<Action>>();
+            DoRun();
+            return mFoldRetModelTasks.ToArray();
+        }
+
+        protected override void DoRunFold(int foldN)
+        {
+            if (mFoldTasks != null)
             {
-                int li = i;
-                tasks.Add(() => RunFold(li + 1));
+                mFoldTasks.Add(() => RunFold(foldN));
             }
-            return tasks;
+            else
+            {
+                if (!mFoldModelTasks.TryAdd(foldN, new List<Action>())) { throw new Exception(); }
+                mFoldRetModelTasks.Add(() =>
+                {
+                    RunFold(foldN);
+                    return mFoldModelTasks[foldN].ToArray();
+                });
+            }
+        }
+
+        protected override void DoRunModel(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> mappedTrainSet,
+            ILabeledDataset<LblT, ModelExT> mappedTestSet, CrossValidationTimeProfile modelProfile)
+        {
+            if (mFoldTasks != null)
+            {
+                RunModel(foldN, model, mappedTrainSet, mappedTestSet, modelProfile);
+            }
+            else
+            {
+                lock (mFoldModelTasks[foldN])
+                {
+                    mFoldModelTasks[foldN].Add(() => RunModel(foldN, model, mappedTrainSet, mappedTestSet, modelProfile));
+                }
+            }
         }
 
         protected override PerfMatrix<LblT> GetPerfMatrix(string algName, int foldN)
@@ -89,17 +132,27 @@ namespace Latino.Model.Eval
 
         public void Run()
         {
-            PrepareRun();
-            for (int i = 0; i < NumFolds; i++)
-            {
-                RunFold(i + 1);
-            }
+            DoRun();
+        }
+
+        protected override void DoRunFold(int foldN)
+        {
+            RunFold(foldN);
+        }
+
+        protected override void DoRunModel(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> mappedTrainSet, 
+            ILabeledDataset<LblT, ModelExT> mappedTestSet, CrossValidationTimeProfile modelProfile)
+        {
+            RunModel(foldN, model, mappedTrainSet, mappedTestSet, modelProfile);
         }
     }
 
 
     public abstract class AbstractMappingCrossValidator<LblT, InputExT, ModelExT>
     {
+        protected readonly ConcurrentDictionary<int, ConcurrentDictionary<string, CrossValidationTimeProfile>> mFoldModelTimes =
+            new ConcurrentDictionary<int, ConcurrentDictionary<string, CrossValidationTimeProfile>>();
+
         protected AbstractMappingCrossValidator()
         {
 
@@ -115,32 +168,35 @@ namespace Latino.Model.Eval
         public bool IsStratified { get; set; }
         public bool IsShuffleStratified { get; set; }
         public string ExpName { get; set; }
-        public int Parallelism { get; set; }
 
         public PerfData<LblT> PerfData { get; private set; }
         public abstract List<IModel<LblT, ModelExT>> Models { get; }
+
 
         public delegate ILabeledDataset<LblT, ModelExT> TrainSetFunc(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, ILabeledDataset<LblT, InputExT> trainSet);
         public delegate ILabeledDataset<LblT, ModelExT> TestSetFunc(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, ILabeledDataset<LblT, InputExT> testSet);
-        public delegate void TrainAction(
-            AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainSet);
-        public delegate void AfterPredictAction(
+        public delegate void FoldPhaseHandler(
+            AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> dataset);
+        public delegate void AfterPredictHandler(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int fondN, IModel<LblT, ModelExT> model, LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction);
-        public delegate void FoldAction(
+        public delegate void FoldHandler(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, ILabeledDataset<LblT, InputExT> trainSet, ILabeledDataset<LblT, InputExT> testSet);
 
-        public TrainSetFunc TrainSetMap { get; set; }
-        public TestSetFunc TestSetMap { get; set; }
-        public TrainAction BeforeTrainEventHandler { get; set; }
-        public TrainAction AfterTrainEventHandler { get; set; }
-        public AfterPredictAction AfterPredictEventHandler { get; set; }
-        public FoldAction BeforeFoldEventHandler { get; set; }
-        public FoldAction AfterFoldEventHandler { get; set; }
+        public TrainSetFunc OnTrainSetMap { get; set; }
+        public TestSetFunc OnTestSetMap { get; set; }
+        public FoldPhaseHandler OnBeforeTrain { get; set; }
+        public FoldPhaseHandler OnAfterTrain { get; set; }
+        public FoldPhaseHandler OnBeforeTest { get; set; }
+        public FoldPhaseHandler OnAfterTest { get; set; }
+        public AfterPredictHandler OnAfterPrediction { get; set; }
+        public FoldHandler OnBeforeFold { get; set; }
+        public FoldHandler OnAfterFold { get; set; }
         public Func<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, IModel<LblT, ModelExT>, string> ModelNameFunc { get; set; }
 
-        protected virtual void PrepareRun()
+
+        protected void DoRun()
         {
             Preconditions.CheckArgumentRange(NumFolds >= 2 && NumFolds < Dataset.Count);
             Preconditions.CheckArgument(Models.Any());
@@ -149,10 +205,26 @@ namespace Latino.Model.Eval
             if (IsStratified) { Dataset.GroupLabels(IsShuffleStratified); } else { Dataset.Shuffle(new Random(1)); }
 
             PerfData = new PerfData<LblT>();
+            mFoldModelTimes.Clear();
+            for (int i = 0; i < NumFolds; i++)
+            {
+                DoRunFold(i + 1);
+            }
         }
+
+        protected abstract void DoRunFold(int foldN);
+
+        protected abstract void DoRunModel(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> mappedTrainSet,
+            ILabeledDataset<LblT, ModelExT> mappedTestSet, CrossValidationTimeProfile modelProfile);
+
 
         protected void RunFold(int foldN)
         {
+            var foldProfile = new CrossValidationTimeProfile { FoldN = foldN, FoldStartTime = DateTime.Now };
+            var foldProfiles = new ConcurrentDictionary<string, CrossValidationTimeProfile>();
+            foldProfiles.TryAdd("", foldProfile);
+            mFoldModelTimes.TryAdd(foldN, foldProfiles);
+
             // fold data
             LabeledDataset<LblT, InputExT> testSet, trainSet;
             if (IsStratified)
@@ -173,28 +245,53 @@ namespace Latino.Model.Eval
             // validate
             foreach (IModel<LblT, ModelExT> model in Models)
             {
-                // train
-                BeforeTrain(foldN, model, mappedTrainSet);
-                model.Train(mappedTrainSet);
-                AfterTrain(foldN, model, mappedTrainSet);
-
-                // test
-                PerfMatrix<LblT> foldMatrix = GetPerfMatrix(GetModelName(model), foldN);
-                var foldPredictions = new List<Pair<LabeledExample<LblT, ModelExT>, Prediction<LblT>>>();
-                foreach (LabeledExample<LblT, ModelExT> le in mappedTestSet)
-                {
-                    Prediction<LblT> prediction = model.Predict(le.Example);
-                    if (prediction.Any())
+                string modelName = GetModelName(model);
+                var modelProfile = new CrossValidationTimeProfile
                     {
-                        foldMatrix.AddCount(le.Label, prediction.BestClassLabel);
-                    }
-                    foldPredictions.Add(new Pair<LabeledExample<LblT, ModelExT>, Prediction<LblT>>(le, prediction));
-                    AfterPredict(foldN, model, le, prediction);
-                }
+                        FoldN = foldN, 
+                        ModelName = modelName, 
+                        FoldStartTime = foldProfile.FoldStartTime,
+                        TrainStartTime = DateTime.Now
+                    };
+                foldProfiles.TryAdd(modelName, modelProfile);
+
+                DoRunModel(foldN, model, mappedTrainSet, mappedTestSet, modelProfile);
             }
 
+            foldProfile.FoldEndTime = DateTime.Now;
             AfterFold(foldN, trainSet, testSet);
         }
+
+
+        protected void RunModel(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> mappedTrainSet, 
+            ILabeledDataset<LblT, ModelExT> mappedTestSet, CrossValidationTimeProfile modelProfile)
+        {
+            // train
+            BeforeTrain(foldN, model, mappedTrainSet);
+            model.Train(mappedTrainSet);
+            AfterTrain(foldN, model, mappedTrainSet);
+            modelProfile.TrainEndTime = DateTime.Now;
+
+            // test
+            modelProfile.TestStartTime = DateTime.Now;
+            BeforeTest(foldN, model, mappedTestSet);
+            PerfMatrix<LblT> foldMatrix = GetPerfMatrix(GetModelName(model), foldN);
+            var foldPredictions = new List<Pair<LabeledExample<LblT, ModelExT>, Prediction<LblT>>>();
+            foreach (LabeledExample<LblT, ModelExT> le in mappedTestSet)
+            {
+                Prediction<LblT> prediction = model.Predict(le.Example);
+                if (prediction.Any())
+                {
+                    foldMatrix.AddCount(le.Label, prediction.BestClassLabel);
+                }
+                foldPredictions.Add(new Pair<LabeledExample<LblT, ModelExT>, Prediction<LblT>>(le, prediction));
+                AfterPrediction(foldN, model, le, prediction);
+            }
+
+            modelProfile.TestEndTime = DateTime.Now;
+            AfterTest(foldN, model, mappedTestSet);
+        }
+
 
         protected virtual PerfMatrix<LblT> GetPerfMatrix(string algName, int foldN)
         {
@@ -213,54 +310,125 @@ namespace Latino.Model.Eval
             return ModelNameFunc == null ? model.GetType().Name : ModelNameFunc(this, model);
         }
 
+        public CrossValidationTimeProfile[] GetFoldTimeProfile(int foldN)
+        {
+            ConcurrentDictionary<string, CrossValidationTimeProfile> modelTimes;
+            return mFoldModelTimes.TryGetValue(foldN, out modelTimes) ? modelTimes.Values.ToArray() : null;
+        }
+
+        public CrossValidationTimeProfile GetFoldTimeProfile(int foldN, int modelN)
+        {
+            Preconditions.CheckArgumentRange(modelN >= 0 && modelN < Models.Count);
+            return GetFoldModelTimeProfile(foldN, Models[modelN]);
+            
+        }
+        public CrossValidationTimeProfile GetFoldModelTimeProfile(int foldN, IModel<LblT, ModelExT> model)
+        {
+            ConcurrentDictionary<string, CrossValidationTimeProfile> modelTimes;
+            if (mFoldModelTimes.TryGetValue(foldN, out modelTimes))
+            {
+                CrossValidationTimeProfile profile;
+                return modelTimes.TryGetValue(GetModelName(model), out profile) ? profile : null;
+            }
+            return null;
+        }
+
+        public Dictionary<int, Dictionary<string, CrossValidationTimeProfile>> GetTimeProfile()
+        {
+            return mFoldModelTimes.ToDictionary(kv => kv.Key, kv => kv.Value.ToDictionary(kvv => kvv.Key, kvv => kvv.Value));
+        }
+
         protected virtual ILabeledDataset<LblT, ModelExT> MapTrainSet(int foldN, ILabeledDataset<LblT, InputExT> trainSet)
         {
-            return TrainSetMap != null ? TrainSetMap(this, foldN, trainSet) : (ILabeledDataset<LblT, ModelExT>)trainSet;
+            return OnTrainSetMap != null ? OnTrainSetMap(this, foldN, trainSet) : (ILabeledDataset<LblT, ModelExT>)trainSet;
         }
 
         protected virtual ILabeledDataset<LblT, ModelExT> MapTestSet(int foldN, ILabeledDataset<LblT, InputExT> testSet)
         {
-            return TestSetMap != null ? TestSetMap(this, foldN, testSet) : (ILabeledDataset<LblT, ModelExT>)testSet;
+            return OnTestSetMap != null ? OnTestSetMap(this, foldN, testSet) : (ILabeledDataset<LblT, ModelExT>)testSet;
         }
 
         protected virtual void BeforeTrain(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainSet)
         {
-            if (BeforeTrainEventHandler != null)
+            if (OnBeforeTrain != null)
             {
-                BeforeTrainEventHandler(this, foldN, model, trainSet);
+                OnBeforeTrain(this, foldN, model, trainSet);
             }
         }
 
         protected virtual void AfterTrain(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainSet)
         {
-            if (AfterTrainEventHandler != null)
+            if (OnAfterTrain != null)
             {
-                AfterTrainEventHandler(this, foldN, model, trainSet);
+                OnAfterTrain(this, foldN, model, trainSet);
             }
         }
 
-        protected virtual void AfterPredict(int foldN, IModel<LblT, ModelExT> model, LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction)
+        protected virtual void BeforeTest(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> testSet)
         {
-            if (AfterPredictEventHandler != null)
+            if (OnBeforeTest != null)
             {
-                AfterPredictEventHandler(this, foldN, model, labeledExample, prediction);
+                OnBeforeTest(this, foldN, model, testSet);
+            }
+        }
+
+        protected virtual void AfterTest(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> testSet)
+        {
+            if (OnAfterTest != null)
+            {
+                OnAfterTest(this, foldN, model, testSet);
+            }
+        }
+
+        protected virtual void AfterPrediction(int foldN, IModel<LblT, ModelExT> model, LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction)
+        {
+            if (OnAfterPrediction != null)
+            {
+                OnAfterPrediction(this, foldN, model, labeledExample, prediction);
             }
         }
 
         protected virtual void BeforeFold(int foldN, ILabeledDataset<LblT, InputExT> trainSet, ILabeledDataset<LblT, InputExT> testSet)
         {
-            if (BeforeFoldEventHandler != null)
+            if (OnBeforeFold != null)
             {
-                BeforeFoldEventHandler(this, foldN, trainSet, testSet);
+                OnBeforeFold(this, foldN, trainSet, testSet);
             }
         }
 
         protected virtual void AfterFold(int foldN, ILabeledDataset<LblT, InputExT> trainSet, ILabeledDataset<LblT, InputExT> testSet)
         {
-            if (AfterFoldEventHandler != null)
+            if (OnAfterFold != null)
             {
-                AfterFoldEventHandler(this, foldN, trainSet, testSet);
+                OnAfterFold(this, foldN, trainSet, testSet);
             }
+        }
+    }
+
+    public class CrossValidationTimeProfile
+    {
+        public int FoldN { get; set; }
+        public string ModelName { get; set; }
+
+        public DateTime? FoldStartTime { get; set; }
+        public DateTime? FoldEndTime { get; set; }
+        public TimeSpan? FoldDuration
+        {
+            get { return FoldEndTime == null || FoldStartTime == null ? default(TimeSpan?) : FoldEndTime - FoldStartTime; }
+        }
+
+        public DateTime? TrainStartTime { get; set; }
+        public DateTime? TrainEndTime { get; set; }
+        public TimeSpan? TrainDuration
+        {
+            get { return TrainEndTime == null || TestStartTime == null ? default(TimeSpan?) : TrainEndTime - TrainStartTime; }
+        }
+
+        public DateTime? TestStartTime { get; set; }
+        public DateTime? TestEndTime { get; set; }
+        public TimeSpan? TestDuration
+        {
+            get { return TestEndTime == null || TestStartTime == null ? default(TimeSpan?) : TestEndTime - TestStartTime; }
         }
     }
 }

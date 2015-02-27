@@ -31,6 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
@@ -46,6 +47,7 @@
     <Compile Include="Case\Data\TextProcessing.cs" />
     <Compile Include="Case\Data\DataStructures.cs" />
     <Compile Include="Case\Model\BinarySvm.cs" />
+    <Compile Include="Case\Validation\NFoldParallel.cs" />
     <Compile Include="Case\Validation\NFoldClass.cs" />
     <Compile Include="Case\Validation\NFold.cs" />
     <Compile Include="Program.cs" />
