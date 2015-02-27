@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Latino.TextMining;
 
-namespace Latino
+namespace Latino.TextMining
 {
     public static class SocialMediaProcessing
     {
