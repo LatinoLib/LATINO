@@ -69,10 +69,10 @@ namespace Tutorial.Case.Data
             
             // initialize the emoticons
             var emoticonTransform = new Dictionary<Regex, string>
-            {
-                { SocialMediaProcessing.HappyEmoticonsRegex, "__HAPPY__"},
-                { SocialMediaProcessing.SadEmoticonsRegex, "__SAD__"}
-            };
+                {
+                    { SocialMediaProcessing.HappyEmoticonsRegex, "__HAPPY__"},
+                    { SocialMediaProcessing.SadEmoticonsRegex, "__SAD__"}
+                };
 
             // order of application of these functions IS important
             foreach (var example in corpus)     

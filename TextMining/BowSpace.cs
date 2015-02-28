@@ -42,7 +42,7 @@ namespace Latino.TextMining
     */
     public class Word : IEnumerable<KeyValuePair<string, int>>, ISerializable
     {
-        public int mIdx //todo undo
+        internal int mIdx
             = -1;
         internal Dictionary<string, int> mForms
             = new Dictionary<string, int>();
