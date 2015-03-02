@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Latino.TextMining
 {
+
     public static class SocialMediaProcessing
     {
         /*
@@ -31,6 +33,7 @@ namespace Latino.TextMining
         */
 
         // punctuation emoticons
+
         public static readonly string[] SmileyOrHappyFace =
             {
                 ":-)", ":)", ":D", ":o)", ":]", ":3", ":c)", ":>", "=]", "8)", "=)", ":}", ":^)", ":っ)"
@@ -48,20 +51,17 @@ namespace Latino.TextMining
         public static readonly string[] Angry = { ":-||", ":@", ">:(" };
         public static readonly string[] Crying = { ":'-(", ":'(" };
         public static readonly string[] TearsOfHappiness = { ":'-)", ":')" };
-        //public static readonly string[]  HorrorDisgustSadnessGreatDismay = {     "D:<", "D:", "D8", "D;", "D=", "DX", "v.v", "D-':"      };
-        public static readonly string[] HorrorDisgustSadnessGreatDismay = { "D:<", "D:", "D8", "D;", "D=", "v.v", "D-':" };
+        public static readonly string[] HorrorDisgustSadnessGreatDismay = { "D:<", "D:", "D8", "D;", "D=", "DX", "v.v", "D-':" };
         public static readonly string[] SurpriseShockYawn =
             {
                 ">:O", ":-O", ":O", ":-o", ":o", "8-0", "O_O", "o-o", "O_o", "o_O", "o_o", "O-O"
             };
-        public static readonly string[] Kiss = {":*", ":^*", "('}{')"};
-        //public static readonly string[]  WinkSmirk       = {     ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)", ":-"        };
-        public static readonly string[] WinkSmirk = { ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)" };
-        //public static readonly string[]  TongueStickingOutCheekyPlayful  = {     ">:P", ":-P", ":P", "X-P", "x-p", "xp", "XP", ":-p", ":p", "=p", ":-Þ", ":Þ", ":þ", ":-þ", ":-b", ":b", "d:"    };        
+        public static readonly string[] Kiss = { ":*", ":^*", "('}{')" };
+        public static readonly string[] WinkSmirk = { ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)", ":-" };
         public static readonly string[] TongueStickingOutCheekyPlayful =
             {
-                ">:P", ":-P", ":P", "X-P", "x-p", ":-p", ":p", "=p", ":-Þ", ":Þ", ":þ", ":-þ", ":-b", ":b", "d:"
-            };
+                ">:P", ":-P", ":P", "X-P", "x-p", "xp", "XP", ":-p", ":p", "=p", ":-Þ", ":Þ", ":þ", ":-þ", ":-b", ":b", "d:"
+            };        
         public static readonly string[] SkepticalAnnoyedUndecidedUneasyHesitant =
             {
                 @">:\", ">:/", ":-/", ":-.", ":/", @":\", "=/", @"=\ :L", "=L :S", ">.<"
@@ -97,49 +97,77 @@ namespace Latino.TextMining
         public static readonly string[] LennyFace = { "( ͡° ͜ʖ ͡°)" };
 
 
-        // punctuation emoticon groups
-        
-        public static readonly string[] BasicHappyEmoticons = new[]
-            {
-                SmileyOrHappyFace, Rose, Heart
-            }.SelectMany(ss => ss).ToArray();
+        // punctuation emoticon sets and features
 
-        public static readonly string[] HappyEmoticons = new[]
-            {
+        public static readonly StringSet BasicHappyEmoticons = new StringSet
+            (
+                SmileyOrHappyFace, Rose, Heart
+            );
+
+        public static readonly StringSet HappyEmoticons = new StringSet
+            (
                 SmileyOrHappyFace, LaughingbigGrinlaughWithGlasses, VeryHappyOrDoubleChin, TearsOfHappiness, Kiss,
                 WinkSmirk, TongueStickingOutCheekyPlayful, AngelSaintInnocent, HighFive, Cool, TongueInCheek,
                 DumbDunceLike, Cheer, Cheerleader, Rose, Heart, LennyFace
-            }.SelectMany(ss => ss).ToArray();
+            );
 
-        public static readonly string[] BasicSadEmoticons = new[]
-            {
+        public static readonly StringSet BasicSadEmoticons = new StringSet
+            (
                 FrownSad, WinkyFrowny, Angry, StraightFaceNoExpressionIndecision, BrokenHeart
-            }.SelectMany(ss => ss).ToArray();
+            );
 
-        public static readonly string[] SadEmoticons = new[]
-            {
+        public static readonly StringSet SadEmoticons = new StringSet
+            (
                 FrownSad, WinkyFrowny, Angry, Crying, HorrorDisgustSadnessGreatDismay, SurpriseShockYawn,
                 SkepticalAnnoyedUndecidedUneasyHesitant, StraightFaceNoExpressionIndecision,
                 SealedLipsOrWearingBraces, Evil, BoredYawning, DrunkConfused, BeingSick, LookOfDisapproval,
                 FishSomethingFishy, BrokenHeart
-            }.SelectMany(ss => ss).ToArray();
+            );
 
 
-        public static readonly Regex HappyEmoticonsRegex =
-            new Regex(@"(" + string.Join("|", HappyEmoticons.Select(Regex.Escape).ToArray()) + @")", 
-                RegexOptions.Compiled);
+        // note: emoticon features are to be used after ReplaceUrls
 
-        public static readonly Regex BasicHappyEmoticonsRegex =
-            new Regex(@"(" + string.Join("|", BasicHappyEmoticons.Select(Regex.Escape).ToArray()) + @")",
-                RegexOptions.Compiled);
+        public class BasicHappyEmoticonsFeature : TermsOrTextFeature
+        {
+            public BasicHappyEmoticonsFeature(string markToken = "__HAPPY__")
+                : base(markToken)
+            {
+                SearchTerms = BasicHappyEmoticons;
+                Operation = TextFeatureOperation.Append;
+                IsWordBoundaryEnclosing = true;
+            }
+        }
 
-        public static readonly Regex SadEmoticonsRegex =
-            new Regex(@"(" + string.Join("|", SadEmoticons.Select(Regex.Escape).ToArray()) + @")", RegexOptions.Compiled);
+        public class HappyEmoticonsFeature : TermsOrTextFeature
+        {
+            public HappyEmoticonsFeature(string markToken = "__HAPPY__")
+                : base(markToken)
+            {
+                SearchTerms = HappyEmoticons;
+                Operation = TextFeatureOperation.Append;
+                IsWordBoundaryEnclosing = true;
+            }
+        }
 
-        public static readonly Regex BasicSadEmoticonsRegex =
-            new Regex(@"(" + string.Join("|", BasicSadEmoticons.Select(Regex.Escape).ToArray()) + @")",
-                RegexOptions.Compiled);
+        public class SadEmoticonsFeature : TermsOrTextFeature
+        {
+            public SadEmoticonsFeature(string markToken = "__SAD__") : base(markToken)
+            {
+                SearchTerms = SadEmoticons;
+                Operation = TextFeatureOperation.Append;
+                IsWordBoundaryEnclosing = true;
+            }
+        }
 
+        public class BasicSadEmoticonsFeature : TermsOrTextFeature
+        {
+            public BasicSadEmoticonsFeature(string markToken = "__SAD__") : base(markToken)
+            {
+                SearchTerms = BasicSadEmoticons;
+                Operation = TextFeatureOperation.Append;
+                IsWordBoundaryEnclosing = true;
+            }
+        }
 
 
         // unicode emoticons
@@ -241,108 +269,261 @@ namespace Latino.TextMining
         public static readonly string KullAndCrossbones = char.ConvertFromUtf32(0x2620); //      ☠ 		
 
 
+        // static feature instances
+        public static readonly TwitterUserFeature TwitterUserFeatureInst = new TwitterUserFeature();
+        public static readonly StockSymbolFeature StockSymbolFeatureInst = new StockSymbolFeature();
+        public static readonly UrlFeature UrlFeatureInst = new UrlFeature();
+        public static readonly BasicHappyEmoticonsFeature BasicHappyEmoticonsFeatureInst = new BasicHappyEmoticonsFeature();
+        public static readonly HappyEmoticonsFeature HappyEmoticonsFeatureInst = new HappyEmoticonsFeature();
+        public static readonly SadEmoticonsFeature SadEmoticonsFeatureInst = new SadEmoticonsFeature();
+        public static readonly BasicSadEmoticonsFeature BasicSadEmoticonsFeatureInst = new BasicSadEmoticonsFeature();
+        public static readonly HashTagFeature HashTagFeatureInst = new HashTagFeature();
+        public static readonly SingleQuestionMarkFeature SingleQuestionMarkFeatureInst = new SingleQuestionMarkFeature();
+        public static readonly SingleExclamationFeature SingleExclamationFeatureInst = new SingleExclamationFeature();
+        public static readonly MultipleQuestionMarkFeature MultipleQuestionMarkFeatureInst = new MultipleQuestionMarkFeature();
+        public static readonly MultipleExclamationFeature MultipleExclamationFeatureInst = new MultipleExclamationFeature();
+        public static readonly MultipleMixedPunctuationFeature MultipleMixedPunctuationFeatureInst = new MultipleMixedPunctuationFeature();
+        public static readonly UppercasedFeature UppercasedFeatureInst = new UppercasedFeature();
+        public static readonly NegationFeature EnglishNegationFeatureInst = new NegationFeature(Language.English);
+        public static readonly NegationFeature ItalianNegationFeatureInst = new NegationFeature(Language.Italian);
+        public static readonly RepetitionFeature RepetitionFeatureInst = new RepetitionFeature();
+        public static readonly MessageLengthFeature MessageLengthFeatureInst = new MessageLengthFeature();
 
 
-
-        public static string ReplaceUsers(string text, String replacement = " __USER__")
+        public class TwitterUserFeature : TextFeature
         {
-            return Regex.Replace(text, @"@(\w+)", replacement);
-        }
-
-        public static string ReplaceStockSymbol(string text, String replacement = " __STOCK__")
-            // matches also $700
-        {
-            return Regex.Replace(text, @"\$(\w+)", replacement);
-        }
-
-        public static string ReplaceUrls(string text, String replacement = " __URL__")
-        {
-            return Regex.Replace(text, @"http(\S)*|www(\S)*", replacement);
-        }
-
-        public static string ReplaceHashTags(string text, String replacement = " __HASH__")
-        {
-            return Regex.Replace(text, @"#(\w+)", replacement);
-        }
-
-        public static string ReplaceMultiplePunctuation(string text, String replacement = " __PUNCT")
-        {
-            string newText = text;
-            newText = Regex.Replace(newText, @"((!+\?+)+!*)|((\?+!+)+\?*)", " " + replacement + "_MULTIMIX" + "__");
-            newText = Regex.Replace(newText, @"!{2,}", " " + replacement + "_MULTIEXCLAMATION" + "__");
-            newText = Regex.Replace(newText, @"!{1}", " " + replacement + "SINGLEEXCLAMATION" + "__");
-            newText = Regex.Replace(newText, @"\?{2,}", replacement + "MULTIQUESTION" + "__");
-            newText = Regex.Replace(newText, @"\?{1}", replacement + "SINGLEQUESTION" + "__");
-            return newText;
-        }
-
-        //        public static string ReplaceLetterRepetition(String text, String replacement)
-        //        {
-        //            return Regex.Replace(text, regexLetterRepetition, "replacement"); 
-        //        }
-
-        public static string IsUppercased(string text, string newFeature = " __UPPERCASED__")
-        {
-            var regex = new Regex(@"\b[A-Z]{4}\b", RegexOptions.Compiled); // at least 4 consecutive capital letters
-            if (regex.IsMatch(text))
+            public TwitterUserFeature(string markToken = "__USER__") : base(markToken)
             {
-                return text + " " + newFeature;
+                Operation = TextFeatureOperation.Replace;
             }
-            return text;
-        }
 
-
-        public static string ReplaceNegations(string text, Language language, string replacement = " __NEGATED__")
-        {
-            string negations;
-            switch (language)
+            protected override string GetPattern(ref RegexOptions options)
             {
-                case Language.English:
-                    negations =
-                        @"not|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|cannot|didnot|havenot";
-                    break;
-                case Language.Italian:
-                    negations = @"mai|nessuno|niente|nulla|né|nessun|neanche|nemmeno|neppure|no";
-                    break;
-                default:
-                    throw new ArgumentValueException("language not supported");
+                return @"@(\w+)";
             }
-            var regex = new Regex(@"\b(" + negations + @")\b", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            return regex.Replace(text, replacement);
         }
 
-        public static string RemoveCharacterRepetition(string text, string replacement = " __EXAGGERATED__")
-            // if there is more then 3 consecutive identical characters, truncate to threee
+        public class StockSymbolFeature : TextFeature
         {
-            var r = new Regex("(.)(?<=\\1\\1\\1\\1)",
-                RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-            string tmp = r.Replace(text, String.Empty);
-            if (tmp != text)
+            public StockSymbolFeature(string markToken = "__STOCK__") : base(markToken)
             {
-                return tmp + replacement;
+                Operation = TextFeatureOperation.Append;
             }
-            return tmp;
-        }
 
-
-        public static string ReplaceEmoticons(string str, Dictionary<Regex, string> emoticons)
-            // to be used after ReplaceUrls
-        {
-            return emoticons.Aggregate(str,
-                (current, emoticonPair) => emoticonPair.Key.Replace(current, emoticonPair.Value));
-        }
-
-        public static string AddLengthFeatures(string str, int maxLength = 1000)
-            // to be used after ReplaceUrls
-        {
-            int strLen = str.Length;
-            int len = 2;
-            while (len <= maxLength)
+            protected override string GetPattern(ref RegexOptions options)
             {
-                str += strLen <= len ? " __LenghtLEQ" + len + "__" : " __LenghtGT" + len + "__";
-                len *= 2;
+                return @"\$(\w+)"; // matches also $700
             }
-            return str;
+        }
+
+        public class UrlFeature : TextFeature
+        {
+            public UrlFeature(string markToken = "__URL__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"http(\S)*|www(\S)*";
+            }
+        }
+
+        public class HashTagFeature : TextFeature
+        {
+            public HashTagFeature(string markToken = "__HASH__")
+                : base(markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"#(\w+)";
+            }
+        }
+
+        public class SingleExclamationFeature : TextFeature
+        {
+            public SingleExclamationFeature(string markToken = "__PUNCT_SINGLEEXCLAMATION__") : base(" " + markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"(?<!!+)(!)(?!!+)";
+            }
+        }
+
+        public class SingleQuestionMarkFeature : TextFeature
+        {
+            public SingleQuestionMarkFeature(string markToken = "__PUNCT_SINGLEQUESTION__") : base(" " + markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"(?<!\?+)(\?)(?!\?+)";
+            }
+        }
+
+        public class MultipleMixedPunctuationFeature : TextFeature
+        {
+            public MultipleMixedPunctuationFeature(string markToken = "__PUNCT_MULTIMIX__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+                IsEmcloseMarkTokenWithSpace = true;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"((!+\?+)+!*)|((\?+!+)+\?*)";
+            }
+        }
+
+        public class MultipleExclamationFeature : TextFeature
+        {
+            public MultipleExclamationFeature(string markToken = "__PUNCT_MULTIEXCLAMATION__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+                IsEmcloseMarkTokenWithSpace = true;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"!{2,}";
+            }
+        }
+
+        public class MultipleQuestionMarkFeature : TextFeature
+        {
+            public MultipleQuestionMarkFeature(string markToken = "__PUNCT_MULTIQUESTION__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+                IsEmcloseMarkTokenWithSpace = true;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"\?{2,}";
+            }
+
+            protected internal override string PerformCustomOperation(string input)
+            {
+                input = Regex.Replace(input, " " + MarkToken);
+                return input;
+            }
+        }
+
+        public class UppercasedFeature : TextFeature
+        {
+            public UppercasedFeature(string markToken = "__UPPERCASED__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Append;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"\b[A-Z]{4}\b";
+            }
+        }
+
+        public class NegationFeature : TextFeature
+        {
+            private readonly Language mLanguage;
+
+            public NegationFeature(Language language, string markToken = "__NEGATED__") : base(markToken)
+            {
+                mLanguage = language;
+                Operation = TextFeatureOperation.Replace;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                options |= RegexOptions.IgnoreCase;
+                string pattern = @"\b(";
+                switch (mLanguage)
+                {
+                    case Language.English :
+                        pattern += @"not|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|cannot|didnot|havenot";
+                        break;
+
+                    case Language.Italian:
+                        pattern += @"mai|nessuno|niente|nulla|né|nessun|neanche|nemmeno|neppure|no";
+                        break;
+
+                    default:
+                        throw new NotSupportedException();
+                }
+                pattern += @")\b";
+
+                return pattern;
+            }
+        }
+
+        // if there is more then 3 consecutive identical characters, truncate to threee
+        public class RepetitionFeature : TextFeature
+        {
+            public RepetitionFeature(string markToken = "__EXAGGERATED__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Custom;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                options |= RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
+                return @"(.)(?<=\1\1\1\1)";
+            }
+
+            protected internal override string PerformCustomOperation(string input)
+            {
+                if (Regex.IsMatch(input))
+                {
+                    return Regex.Replace(input, string.Empty) + " " + MarkToken;
+                }
+                return input;
+            }
+        }
+
+        public class MessageLengthFeature : TextFeature
+        {
+            private readonly int mMaxLength;
+            private readonly ConcurrentDictionary<int, string> mEqStrings = new ConcurrentDictionary<int, string>();
+            private readonly ConcurrentDictionary<int, string> mGtStrings = new ConcurrentDictionary<int, string>();
+
+            public MessageLengthFeature(int maxLength = 1000) : base("")
+            {
+                Operation = TextFeatureOperation.Custom;
+                mMaxLength = maxLength;
+            }
+
+            protected internal override string PerformCustomOperation(string input)
+            {
+                int strLen = input.Length;
+                var tokens = new List<string>();
+                for (int len = 2; len < mMaxLength; len *= 2)
+                {
+                    string token;
+                    if (strLen <= len)
+                    {
+                        if (!mEqStrings.TryGetValue(len, out token))
+                        {
+                            mEqStrings.TryAdd(len, token = string.Format("__LenghtLEQ{0}__", len));
+                        }
+                    }
+                    else
+                    {
+                        if (!mGtStrings.TryGetValue(len, out token))
+                        {
+                            mGtStrings.TryAdd(len, token = string.Format("__LenghtGT{0}__", len));
+                        }
+                    }
+                    tokens.Add(token);
+                }
+                return input + " " + string.Join(" ", tokens);
+            }
         }
     }
 }

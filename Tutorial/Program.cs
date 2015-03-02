@@ -40,7 +40,7 @@ namespace Tutorial
             // validation
             //NFold.RunInstanceWr(sw, args);
             //NFoldClass.RunInstanceWr(sw, args);
-            NFoldParallel.RunInstanceWr(sw, args);
+            //NFoldParallel.RunInstanceWr(sw, args);
 
             // other
             //Searching.RunInstanceWr(sw, args);
