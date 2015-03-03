@@ -100,7 +100,7 @@
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltCompressed.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltData.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltFull.cs" />
-    <Compile Include="ReadOnlyCollBuilder.cs" />
+    <Compile Include="ReadOnlyCollectionBuilder.cs" />
     <Compile Include="TextMining\SimpleTokenizer.cs" />
     <Compile Include="TextMining\SocialMediaProcessing.cs" />
     <Compile Include="TextMining\TextFeature.cs" />

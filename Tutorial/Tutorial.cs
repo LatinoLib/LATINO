@@ -21,6 +21,7 @@ namespace Tutorial
 
         public static T RunInstance(params object[] args)
         {
+            // output to console
             var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true };
             Console.SetOut(writer);
             return RunInstanceWr(writer, args);
@@ -28,11 +29,13 @@ namespace Tutorial
 
         public static T RunInstanceNull(params object[] args)
         {
+            // output to NULL
             return RunInstanceWr(StreamWriter.Null, args);
         }
 
         public static T RunInstanceWr(StreamWriter writer, params object[] args)
         {
+            // output to custom writer
             var instance = new T { Output = writer };
             instance.Run(args);
             LastResult = instance.Result;

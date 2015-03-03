@@ -123,52 +123,108 @@ namespace Latino.TextMining
 
         // note: emoticon features are to be used after ReplaceUrls
 
-        public class BasicHappyEmoticonsFeature : TermsOrTextFeature
+        public class BasicHappyEmoticonsFeature : AnyOfTermsTextFeature
         {
             public BasicHappyEmoticonsFeature(string markToken = "__HAPPY__")
                 : base(markToken)
             {
-                SearchTerms = BasicHappyEmoticons;
-                Operation = TextFeatureOperation.Append;
-                IsWordBoundaryEnclosing = true;
+                Terms = BasicHappyEmoticons;
+                Operation = TextFeatureOperation.Replace;
+                IsEncloseTermLetterEdges = true;
             }
         }
 
-        public class HappyEmoticonsFeature : TermsOrTextFeature
+        public class BasicSadEmoticonsFeature : AnyOfTermsTextFeature
+        {
+            public BasicSadEmoticonsFeature(string markToken = "__SAD__") : base(markToken)
+            {
+                Terms = BasicSadEmoticons;
+                Operation = TextFeatureOperation.Replace;
+                IsEncloseTermLetterEdges = true;
+            }
+        }
+
+        public class HappyEmoticonsFeature : AnyOfTermsTextFeature
         {
             public HappyEmoticonsFeature(string markToken = "__HAPPY__")
                 : base(markToken)
             {
-                SearchTerms = HappyEmoticons;
-                Operation = TextFeatureOperation.Append;
-                IsWordBoundaryEnclosing = true;
+                Terms = HappyEmoticons;
+                Operation = TextFeatureOperation.Replace;
+                IsEncloseTermLetterEdges = true;
             }
         }
 
-        public class SadEmoticonsFeature : TermsOrTextFeature
+        public class SadEmoticonsFeature : AnyOfTermsTextFeature
         {
             public SadEmoticonsFeature(string markToken = "__SAD__") : base(markToken)
             {
-                SearchTerms = SadEmoticons;
-                Operation = TextFeatureOperation.Append;
-                IsWordBoundaryEnclosing = true;
+                Terms = SadEmoticons;
+                Operation = TextFeatureOperation.Replace;
+                IsEncloseTermLetterEdges = true;
             }
         }
 
-        public class BasicSadEmoticonsFeature : TermsOrTextFeature
+        public class LastHappyEmoticonsFeature : HappyEmoticonsFeature
         {
-            public BasicSadEmoticonsFeature(string markToken = "__SAD__") : base(markToken)
+            public LastHappyEmoticonsFeature(string markToken = "__LAST_HAPPY__") : base(markToken)
             {
-                SearchTerms = BasicSadEmoticons;
-                Operation = TextFeatureOperation.Append;
-                IsWordBoundaryEnclosing = true;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return string.Format("{0}$", base.GetPattern(ref options));
+            }
+        }
+
+        public class LastSadEmoticonsFeature : SadEmoticonsFeature
+        {
+            public LastSadEmoticonsFeature(string markToken = "__LAST_SAD__") : base(markToken)
+            {
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return string.Format("{0}$", base.GetPattern(ref options));
+            }
+        }
+
+        public class HappyEmoticonsLenTwoFeature : HappyEmoticonsFeature
+        {
+            public HappyEmoticonsLenTwoFeature(string markToken = "__HAPPY__") : base(markToken)
+            {
+                Terms = new Strings(Terms.Where(s => s.Length <= 2));
+            }
+        }
+
+        public class SadEmoticonsLenTwoFeature : SadEmoticonsFeature
+        {
+            public SadEmoticonsLenTwoFeature(string markToken = "__SAD__") : base(markToken)
+            {
+                Terms = new Strings(Terms.Where(s => s.Length <= 2));
+            }
+        }
+
+        public class HappyEmoticonsLenOverTwoFeature : HappyEmoticonsFeature
+        {
+            public HappyEmoticonsLenOverTwoFeature(string markToken = "__HAPPY__") : base(markToken)
+            {
+                Terms = new Strings(Terms.Where(s => s.Length > 2));
+            }
+        }
+
+        public class SadEmoticonsLenOverTwoFeature : SadEmoticonsFeature
+        {
+            public SadEmoticonsLenOverTwoFeature(string markToken = "__SAD__") : base(markToken)
+            {
+                Terms = new Strings(Terms.Where(s => s.Length > 2));
             }
         }
 
 
         // unicode emoticons
         // official from http://www.unicode.org/charts/PDF/U1F600.pdf
-        /*
+
         // Faces		
         public static readonly string GrinningFace = char.ConvertFromUtf32(0x1F600); //      😀
         public static readonly string GrinningFaceWithSmilingEyes = char.ConvertFromUtf32(0x1F601); //      😁
@@ -262,29 +318,14 @@ namespace Latino.TextMining
         public static readonly string LackSmilingFace = char.ConvertFromUtf32(0x263b); //      ☻ 
         public static readonly string NowmanWithoutSnow = char.ConvertFromUtf32(0x26c4); //      ⛄ 
         public static readonly string KullAndCrossbones = char.ConvertFromUtf32(0x2620); //      ☠ 		
-        */
 
-        // static feature instances
-        public static readonly TwitterUserFeature TwitterUserFeatureInst = new TwitterUserFeature();
-        public static readonly StockSymbolFeature StockSymbolFeatureInst = new StockSymbolFeature();
-        public static readonly UrlFeature UrlFeatureInst = new UrlFeature();
-        public static readonly BasicHappyEmoticonsFeature BasicHappyEmoticonsFeatureInst = new BasicHappyEmoticonsFeature();
-        public static readonly HappyEmoticonsFeature HappyEmoticonsFeatureInst = new HappyEmoticonsFeature();
-        public static readonly SadEmoticonsFeature SadEmoticonsFeatureInst = new SadEmoticonsFeature();
-        public static readonly BasicSadEmoticonsFeature BasicSadEmoticonsFeatureInst = new BasicSadEmoticonsFeature();
-        public static readonly HashTagFeature HashTagFeatureInst = new HashTagFeature();
-        public static readonly SingleQuestionMarkFeature SingleQuestionMarkFeatureInst = new SingleQuestionMarkFeature();
-        public static readonly SingleExclamationFeature SingleExclamationFeatureInst = new SingleExclamationFeature();
-        public static readonly MultipleQuestionMarkFeature MultipleQuestionMarkFeatureInst = new MultipleQuestionMarkFeature();
-        public static readonly MultipleExclamationFeature MultipleExclamationFeatureInst = new MultipleExclamationFeature();
-        public static readonly MultipleMixedPunctuationFeature MultipleMixedPunctuationFeatureInst = new MultipleMixedPunctuationFeature();
-        public static readonly UppercasedFeature UppercasedFeatureInst = new UppercasedFeature();
-        public static readonly NegationFeature EnglishNegationFeatureInst = new NegationFeature(Language.English);
-        public static readonly NegationFeature ItalianNegationFeatureInst = new NegationFeature(Language.Italian);
-        public static readonly SwearingFeature ItalianSwearingFeatureInst = new SwearingFeature(Language.Italian);
-        public static readonly PositiveWordFeature ItalianPositiveWortdFeatureInst = new PositiveWordFeature(Language.Italian);
-        public static readonly RepetitionFeature RepetitionFeatureInst = new RepetitionFeature();
-        public static readonly MessageLengthFeature MessageLengthFeatureInst = new MessageLengthFeature();
+
+        public static readonly TextFeature[] HappySadEmoticonsFetatures = new TextFeature[] {
+            new HappyEmoticonsLenTwoFeature(),
+            new SadEmoticonsLenTwoFeature(),
+            new HappyEmoticonsLenOverTwoFeature(),
+            new SadEmoticonsLenOverTwoFeature()
+        };
         
 
         public class TwitterUserFeature : TextFeature
@@ -342,7 +383,7 @@ namespace Latino.TextMining
 
         public class SingleExclamationFeature : TextFeature
         {
-            public SingleExclamationFeature(string markToken = "__PUNCT_SINGLEEXCLAMATION__") : base(" " + markToken)
+            public SingleExclamationFeature(string markToken = "__PUNCT_SINGLE_EXCLAMATION__") : base(" " + markToken)
             {
                 Operation = TextFeatureOperation.Replace;
             }
@@ -353,9 +394,22 @@ namespace Latino.TextMining
             }
         }
 
+        public class LastExclamationFeature : TextFeature
+        {
+            public LastExclamationFeature(string markToken = "__PUNCT_LAST_EXCLAMATION__") : base(" " + markToken)
+            {
+                Operation = TextFeatureOperation.Append;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"(!)$";
+            }
+        }
+
         public class SingleQuestionMarkFeature : TextFeature
         {
-            public SingleQuestionMarkFeature(string markToken = "__PUNCT_SINGLEQUESTION__") : base(" " + markToken)
+            public SingleQuestionMarkFeature(string markToken = "__PUNCT_SINGLE_QUESTION__") : base(" " + markToken)
             {
                 Operation = TextFeatureOperation.Replace;
             }
@@ -363,6 +417,20 @@ namespace Latino.TextMining
             protected override string GetPattern(ref RegexOptions options)
             {
                 return @"(?<!\?+)(\?)(?!\?+)";
+            }
+        }
+
+        public class LastQuestionMarkFeature : TextFeature
+        {
+            public LastQuestionMarkFeature(string markToken = "__PUNCT_LAST_QUESTION__")
+                : base(" " + markToken)
+            {
+                Operation = TextFeatureOperation.Append;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"(\?)$";
             }
         }
 
@@ -382,7 +450,7 @@ namespace Latino.TextMining
 
         public class MultipleExclamationFeature : TextFeature
         {
-            public MultipleExclamationFeature(string markToken = "__PUNCT_MULTIEXCLAMATION__") : base(markToken)
+            public MultipleExclamationFeature(string markToken = "__PUNCT_MULTI_EXCLAMATION__") : base(markToken)
             {
                 Operation = TextFeatureOperation.Replace;
                 IsEmcloseMarkTokenWithSpace = true;
@@ -396,7 +464,7 @@ namespace Latino.TextMining
 
         public class MultipleQuestionMarkFeature : TextFeature
         {
-            public MultipleQuestionMarkFeature(string markToken = "__PUNCT_MULTIQUESTION__") : base(markToken)
+            public MultipleQuestionMarkFeature(string markToken = "__PUNCT_MULTI_QUESTION__") : base(markToken)
             {
                 Operation = TextFeatureOperation.Replace;
                 IsEmcloseMarkTokenWithSpace = true;
@@ -427,7 +495,7 @@ namespace Latino.TextMining
             }
         }
 
-        public class NegationFeature : TextFeature
+        public class NegationFeature : AnyOfTermsTextFeature
         {
             private readonly Language mLanguage;
 
@@ -435,33 +503,31 @@ namespace Latino.TextMining
             {
                 mLanguage = language;
                 Operation = TextFeatureOperation.Replace;
-            }
+                RegexOptions = RegexOptions.IgnoreCase;
+                IsEncloseAllTerms = true;
 
-            protected override string GetPattern(ref RegexOptions options)
-            {
-                options |= RegexOptions.IgnoreCase;
-                string pattern = @"\b(";
                 switch (mLanguage)
                 {
-                    case Language.English :
-                        pattern += @"not|isn't|aren't|wasn't|weren't|hasn't|haven't|hadn't|doesn't|don't|didn't|cannot|didnot|havenot";
+                    case Language.English:
+                        Terms = new Strings(@"
+                            not,isn't,aren't,wasn't,weren't,hasn't,haven't,hadn't,doesn't,don't,didn't,cannot,didnot,havenot
+                            ".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
                         break;
 
                     case Language.Italian:
-                        pattern += @"mai|nessuno|niente|nulla|né|nessun|neanche|nemmeno|neppure|no";
+                        Terms = new Strings(@"
+                            mai,nessuno,niente,nulla,né,nessun,neanche,nemmeno,neppure,no
+                            ".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
                         break;
 
                     default:
                         throw new NotSupportedException();
                 }
-                pattern += @")\b";
-
-                return pattern;
             }
         }
 
 
-        public class SwearingFeature : TextFeature
+        public class SwearingFeature : AnyOfTermsTextFeature
         {
             private readonly Language mLanguage;
 
@@ -470,29 +536,27 @@ namespace Latino.TextMining
             {
                 mLanguage = language;
                 Operation = TextFeatureOperation.Append;
-            }
+                RegexOptions = RegexOptions.IgnoreCase;
+                IsEncloseAllTerms = true;
 
-            protected override string GetPattern(ref RegexOptions options)
-            {
-                options |= RegexOptions.IgnoreCase;
-                string pattern = @"\b(";
                 switch (mLanguage)
                 {
                     case Language.Italian:  // http://en.wikipedia.org/wiki/Italian_profanity and others
-                        pattern += @"bastardo|bocchino|cagna|carogna|cazzate|cazzo|coglione|coglioni|cornuto|culo|dio dannato|fanculo|finocchio|fottiti|frocio|gnocca|li mortacci tua|mannaggia|merda|merdoso|mignotta|minchia|non mi rompere|pigliainculo|pompino|porca|puttana|rottinculo|stronzo|succhiacazzi|troia|vaffanculo|zoccola";
+                        Terms = new Strings(@"
+                            bastardo,bocchino,cagna,carogna,cazzate,cazzo,coglione,coglioni,cornuto,culo,dio dannato,fanculo,finocchio,
+                            fottiti,frocio,gnocca,li mortacci tua,mannaggia,merda,merdoso,mignotta,minchia,non mi rompere,pigliainculo,
+                            pompino,porca,puttana,rottinculo,stronzo,succhiacazzi,troia,vaffanculo,zoccola
+                            ".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
                         break;
 
                     default:
                         throw new NotSupportedException();
                 }
-                pattern += @")\b";
-
-                return pattern;
             }
         }
 
 
-        public class PositiveWordFeature : TextFeature
+        public class PositiveWordFeature : AnyOfTermsTextFeature
         {
             private readonly Language mLanguage;
 
@@ -501,24 +565,32 @@ namespace Latino.TextMining
             {
                 mLanguage = language;
                 Operation = TextFeatureOperation.Append;
-            }
+                RegexOptions = RegexOptions.IgnoreCase;
+                IsEncloseAllTerms = true;
 
-            protected override string GetPattern(ref RegexOptions options)
-            {
-                options |= RegexOptions.IgnoreCase;
-                string pattern = @"\b(";
                 switch (mLanguage)
                 {
                     case Language.Italian:  // https://scienzanewthought.wordpress.com/tag/dizionario-delle-parole-positive/  transformed to word roots
-                        pattern += @"abbondan|affabili|affett|aiuta|allegria|altruism|amabili|ama|amici|ammira|amor|amorevolez|anima|appagament|apprezzament|approva|armoni|autocontroll|autoguarigi|autoironi|autostima|beatitudin|bellez|ben|benefici|benessere|benevolen|bontà|buonumore|buonsens|calma|canta|cari|clemen|coeren|compassi|compliment|comprensi|concordi|confida|confort|consapevolez|consola|contempla|contentez|Coraggi|cordiali|correttez|cortesia|costan|cred|cura|dedi|diligen|dinamism|diO|discerniment|disciplin|disponibili|distensi|divertiment|dolcez|dona|educa|elogi|elogia|empatia|energia|entusiasm|equilibri|esultan|esulta|estasi|euforia|fede|fedeltà|felici|fermez|fervor|fiduci|focalizza|for|fratellan|gaudi|gaiez|generosi|gentilez|gioi|gioviali|giovinez|giubil|giusti|gratitudine|grazia|guarigi|ilari|imparziali|impegn|incorruttibili|indulgen|integri|intui|ispira|lealtà|leggerez|leti|liberali|loda|lode|luce|magnanimi|mansuetud|medita|medita|metod|misericord|mitez|modestia|modera|morali|motiva|natura|oculatez|onest|onor|operosi|ottimism|pace|passi|pazien|perdona|perdon|perfe|perseveran|poten|prega|preghiera|preziosi|prezios|prospera|prosperi|puntuali|purez|quiet|rallegrar|relax|rettitudi|ricchez|riconoscen|rider|riflessi|rilassament|ringrazia|ringraziament|risat|rispett|riveren|saggez|salute|santi|sapien|semplici|sereni|seriet|signorili|silenzi|simpatia|sinceri|soavi|soddisfa|solidar|sorrid|sorris|speran|spirituali|stima|success|temperan|tenerez|tolleran|tranquilli|uguaglian|umilt|uni|valor|valorizza|veri|virtù|vita|vitali|volere|volont|zelo";
+                        Terms = new Strings(@"
+                            abbondan,affabili,affett,aiuta,allegria,altruism,amabili,ama,amici,ammira,amor,amorevolez,anima,appagament,
+                            apprezzament,approva,armoni,autocontroll,autoguarigi,autoironi,autostima,beatitudin,bellez,ben,benefici,benessere, 
+                            benevolen,bontà,buonumore,buonsens,calma,canta,cari,clemen,coeren,compassi,compliment,comprensi,concordi,confida, 
+                            confort,consapevolez,consola,contempla,contentez,Coraggi,cordiali,correttez,cortesia,costan,cred,cura,dedi,diligen,dinamism,
+                            diO,discerniment,disciplin,disponibili,distensi,divertiment,dolcez,dona,educa,elogi,elogia,empatia,energia,entusiasm, 
+                            equilibri,esultan,esulta,estasi,euforia,fede,fedeltà,felici,fermez,fervor,fiduci,focalizza,for,fratellan,gaudi,gaiez,generosi,
+                            gentilez,gioi,gioviali,giovinez,giubil,giusti,gratitudine,grazia,guarigi,ilari,imparziali,impegn,incorruttibili,indulgen,integri,
+                            intui,ispira,lealtà,leggerez,leti,liberali,loda,lode,luce,magnanimi,mansuetud,medita,medita,metod,misericord,mitez,modestia, 
+                            modera,morali,motiva,natura,oculatez,onest,onor,operosi,ottimism,pace,passi,pazien,perdona,perdon,perfe,perseveran,poten,prega, 
+                            preghiera,preziosi,prezios,prospera,prosperi,puntuali,purez,quiet,rallegrar,relax,rettitudi,ricchez,riconoscen,rider,riflessi, 
+                            rilassament,ringrazia,ringraziament,risat,rispett,riveren,saggez,salute,santi,sapien,semplici,sereni,seriet,signorili,silenzi, 
+                            simpatia,sinceri,soavi,soddisfa,solidar,sorrid,sorris,speran,spirituali,stima,success,temperan,tenerez,tolleran,tranquilli, 
+                            uguaglian,umilt,uni,valor,valorizza,veri,virtù,vita,vitali,volere,volont,zelo
+                            ".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
                         break;
 
                     default:
                         throw new NotSupportedException();
                 }
-                pattern += @")";
-
-                return pattern;
             }
         }
 

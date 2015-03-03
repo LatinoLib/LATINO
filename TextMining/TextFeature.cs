@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,8 +17,8 @@ namespace Latino.TextMining
     public class TextFeatureProcessor
     {
         private readonly List<TextFeature> mFeatures = new List<TextFeature>();
-        private readonly List<string> mAppends = new List<string>(128);
-        private readonly List<string> mDistinctAppends = new List<string>(128);
+        private readonly List<string> mAppends = new List<string>();
+        private readonly List<string> mDistinctAppends = new List<string>();
 
         public string Run(string text)
         {
@@ -69,6 +68,12 @@ namespace Latino.TextMining
             return this;
         }
 
+        public TextFeatureProcessor With(IEnumerable<TextFeature> features)
+        {
+            mFeatures.AddRange(Preconditions.CheckNotNullArgument(features));
+            return this;
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder(GetType().Name).Append(":\n");
@@ -83,8 +88,6 @@ namespace Latino.TextMining
     public abstract class TextFeature
     {
         private readonly string mMarkToken;
-        private Strings mSearchTerms;
-        private bool mIsSearchModified = true;
         private Regex mRegex;
 
         protected TextFeature(string markToken)
@@ -92,16 +95,6 @@ namespace Latino.TextMining
             mMarkToken = Preconditions.CheckNotNullArgument(markToken);
             Operation = TextFeatureOperation.Replace;
             IsEmcloseMarkTokenWithSpace = false;
-        }
-
-        public Strings SearchTerms
-        {
-            get { return mSearchTerms; }
-            protected set
-            {
-                mIsSearchModified = true;
-                mSearchTerms = value;
-            }
         }
 
         public string MarkToken
@@ -121,12 +114,11 @@ namespace Latino.TextMining
         {
             get
             {
-                if (mIsSearchModified)
+                if (mRegex == null)
                 {
                     var regexOptions = RegexOptions.None;
                     string pattern = GetPattern(ref regexOptions);
                     mRegex = new Regex(pattern, regexOptions | RegexOptions.Compiled);
-                    mIsSearchModified = false;
                 }
                 return mRegex;
             }
@@ -150,10 +142,8 @@ namespace Latino.TextMining
 
     public class CustomTextFeature : TextFeature
     {
-        public CustomTextFeature(Strings searchTerms, string markToken)
-            : base(markToken)
+        public CustomTextFeature(string markToken) : base(markToken)
         {
-            SearchTerms = searchTerms;
         }
 
         public Func<string> OnGetPattern { get; set; }
@@ -165,32 +155,36 @@ namespace Latino.TextMining
         }
     }
 
-    public class TermsOrTextFeature : TextFeature
+    public class AnyOfTermsTextFeature : TextFeature
     {
-        public TermsOrTextFeature(Strings searchTerms, string markToken)
-            : base(markToken)
+        public AnyOfTermsTextFeature(IEnumerable<string> terms, string markToken) : base(markToken)
         {
-            SearchTerms = searchTerms;
+            Terms = new Strings(terms);
         }
 
-        protected TermsOrTextFeature(string markToken)
-            : base(markToken)
+        protected AnyOfTermsTextFeature(string markToken) : base(markToken)
         {
         }
 
-        public bool IsWordBoundaryEnclosing { get; set; }
+        public Strings Terms { get; protected set; }
+        public bool IsEncloseTermLetterEdges { get; set; }
+        public bool IsEncloseAllTerms { get; set; }
+        public RegexOptions RegexOptions { get; set; }
 
         protected override string GetPattern(ref RegexOptions options)
         {
-            if (IsWordBoundaryEnclosing)
+            options |= RegexOptions;
+            if (IsEncloseTermLetterEdges || !IsEncloseAllTerms)
             {
-                return "(" + string.Join("|", SearchTerms
+                return "(" + string.Join("|", Terms
                     .OrderByDescending(s => s.Length)
                     .Select(Regex.Escape)
                     .Select(s => string.Format("{0}{1}{2}", Char.IsLetter(s.First()) ? "\\b" : "", s, Char.IsLetter(s.Last()) ? "\\b" : ""))
                     .ToArray()) + ")";
             }
-            return "(" + string.Join("|", SearchTerms.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray()) + ")";
+            return IsEncloseAllTerms 
+                ? string.Format(@"\b({0})\b", string.Join("|", Terms.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray())) 
+                : string.Format(@"({0})", string.Join("|", Terms.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray()));
         }
     }
 }

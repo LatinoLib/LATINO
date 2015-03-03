@@ -46,8 +46,9 @@ namespace Tutorial
             //Searching.RunInstanceWr(sw, args);
 
             // text processing
-            TextProcessing.RunInstance(sw, args);
+            TextProcessing.RunInstanceWr(sw, args);
         }
+
 
         static void TestAll(string[] args)
         {
@@ -72,6 +73,7 @@ namespace Tutorial
 
             // other
             Searching.RunInstanceNull(args);
+            TextProcessing.RunInstanceNull(args);
         }
 
     }

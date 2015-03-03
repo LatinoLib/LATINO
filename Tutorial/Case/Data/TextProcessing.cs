@@ -11,12 +11,7 @@
  ***************************************************************************/
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using Latino;
 using Latino.TextMining;
-using Microsoft.VisualBasic.FileIO;
 
 namespace Tutorial.Case.Data
 {
@@ -24,7 +19,7 @@ namespace Tutorial.Case.Data
     {
         public override void Run(object[] args)
         {
-            var corpus = new List<string>()
+            var corpus = new[]
                 {
                     "This is my first document.", 
                     "This is my second document.", 
@@ -36,7 +31,7 @@ namespace Tutorial.Case.Data
                     "twitter users @user",
                     "...On that note, I hate Word. I hate Pages. I hate LaTeX. There, I said it. I hate LaTeX. All you TEXN3RDS can come kill me now.",
                     ".Although today's keynote rocked, for every great announcement, AT&amp;T shit on us just a little bit more.",
-                    "............................As u may have noticed, not too happy about the GM situation, nor AIG, Lehman, et al",
+                    "............................As u may have noticed, not too happy about the GM situation, nor AIG, Lehman, et al?",
                     "RT @SmartChickPDX: Was just told that Nike layoffs started today :-(",
                     "not at begginning, middle endnote, beginning of gord noticed end eof word endnot and end of sentence not. and line not",
                     "Un inutile strage di poveri animali innocenti, esseri umani degradati e degradanti ...:-(((",
@@ -55,72 +50,78 @@ namespace Tutorial.Case.Data
                     "Bellissima ;) E alquanto realistica purtroppo -.-",
                     "Bionda se ti vedo io ti prendo a pedate e ti appendo a testa in giů.",
                     "Un esempio chiave Mario monti e loro si puliscono il culo col vostro voto e anche della costituzione e della cosě detta democrazia.  Monti = goldman sachs , trilaterale, massone, aspen.",
+
                     @":-) :) :D :o) :] :3 :c) :> =] 8) =) :} :^) :っ)	Smiley or happy face.[4][5][6]",
-@":-D 8-D 8D x-D xD X-D XD =-D =D =-3 =3 B^D	Laughing,[4] big grin,[5][6] laugh with glasses[7]",
-@":-))	Very happy or double chin[7]",
-@">:[ :-( :(  :-c :c :-<  :っC :< :-[ :[ :{	Frown,[4][5][6] sad[8]",
-@";(	Winky frowny, used to signify sadness, with a bit of sarcasm. It is easily misunderstood.[9]",
-@":-|| :@ >:(	Angry[7]",
-@":'-( :'(	Crying[8]",
-@":'-) :')	Tears of happiness[8]",
-@"D:< D: D8 D; D= DX v.v D-':	Horror, disgust, sadness, great dismay[5][6]",
-@">:O :-O :O :-o :o 8-0 O_O o-o O_o o_O o_o O-O	Surprise,[3] shock,[4][10] yawn[11]",
-@":* :^* ( '}{' )	Kiss, couple kissing[7]",
-@";-) ;) *-) *) ;-] ;] ;D ;^) :-,	Wink,[4][5][6] smirk[10][11]",
-@">:P :-P :P X-P x-p xp XP :-p :p =p :-Þ :Þ :þ :-þ :-b :b d:	Tongue sticking out, cheeky/playful,[4] blowing a raspberry",
-@">:\ >:/ :-/ :-. :/ :\ =/ =\ :L =L :S >.<	Skeptical, annoyed, undecided, uneasy, hesitant[4]",
-@":| :-|	Straight face[5] no expression, indecision[8]",
-@":$	Embarrassed,[6] blushing[7]",
-@":-X :X :-# :#	Sealed lips or wearing braces[4]",
-@"O:-) 0:-3 0:3 0:-) 0:) 0;^)	Angel,[4][5][10] saint,[8] innocent",
-@">:) >;) >:-)	Evil[5]",
-@"}:-) }:) 3:-) 3:)	Devilish[8]",
-@"o/\o ^5 >_>^ ^<_<	High five[11]",
-@"|;-) |-O	Cool,[8] bored/yawning[10]",
-@":-J	Tongue-in-cheek[12]",
-@":-& :&	Tongue-tied[8]",
-@"#-)	Partied all night[8]",
-@"%-) %)	Drunk,[8] confused",
-@":-###.. :###..	Being sick[8]",
-@"<:-|	Dumb, dunce-like[10]",
-@"ಠ_ಠ	Look of disapproval[13] The Unicode character ಠ is from the Kannada alphabet and can be called differently in HTML notation: &#3232; and &#x0CA0; (for Unicode)",
-@"<*)))-{ ><(((*> ><>	Fish, something's fishy,[10] Christian fish[7]",
-@"*\0/*	Cheerleader[7]",
-@"@}-;-'--- @>-->--	Rose[4][10]",
-@"~(_8^(I)	Homer Simpson[10]",
-@"5:-) ~:-\	Elvis Presley[10][11]",
-@"//0-0\\	John Lennon[10]",
-@"*<|:-)	Santa Claus[14]",
-@"=:o]	Bill Clinton[14]",
-@",:-) 7:^]	Ronald Reagan[14]",
-@"<3 </3	Heart and broken-heart (reverse-rotation)[15]",
-@"( ͡° ͜ʖ ͡°)",
+                    @":-D 8-D 8D x-D xD X-D XD =-D =D =-3 =3 B^D	Laughing,[4] big grin,[5][6] laugh with glasses[7]",
+                    @":-))	Very happy or double chin[7]",
+                    @">:[ :-( :(  :-c :c :-<  :っC :< :-[ :[ :{	Frown,[4][5][6] sad[8]",
+                    @";(	Winky frowny, used to signify sadness, with a bit of sarcasm. It is easily misunderstood.[9]",
+                    @":-|| :@ >:(	Angry[7]",
+                    @":'-( :'(	Crying[8]",
+                    @":'-) :')	Tears of happiness[8]",
+                    @"D:< D: D8 D; D= DX v.v D-':	Horror, disgust, sadness, great dismay[5][6]",
+                    @">:O :-O :O :-o :o 8-0 O_O o-o O_o o_O o_o O-O	Surprise,[3] shock,[4][10] yawn[11]",
+                    @":* :^* ( '}{' )	Kiss, couple kissing[7]",
+                    @";-) ;) *-) *) ;-] ;] ;D ;^) :-,	Wink,[4][5][6] smirk[10][11]",
+                    @">:P :-P :P X-P x-p xp XP :-p :p =p :-Þ :Þ :þ :-þ :-b :b d:	Tongue sticking out, cheeky/playful,[4] blowing a raspberry",
+                    @">:\ >:/ :-/ :-. :/ :\ =/ =\ :L =L :S >.<	Skeptical, annoyed, undecided, uneasy, hesitant[4]",
+                    @":| :-|	Straight face[5] no expression, indecision[8]",
+                    @":$	Embarrassed,[6] blushing[7]",
+                    @":-X :X :-# :#	Sealed lips or wearing braces[4]",
+                    @"O:-) 0:-3 0:3 0:-) 0:) 0;^)	Angel,[4][5][10] saint,[8] innocent",
+                    @">:) >;) >:-)	Evil[5]",
+                    @"}:-) }:) 3:-) 3:)	Devilish[8]",
+                    @"o/\o ^5 >_>^ ^<_<	High five[11]",
+                    @"|;-) |-O	Cool,[8] bored/yawning[10]",
+                    @":-J	Tongue-in-cheek[12]",
+                    @":-& :&	Tongue-tied[8]",
+                    @"#-)	Partied all night[8]",
+                    @"%-) %)	Drunk,[8] confused",
+                    @":-###.. :###..	Being sick[8]",
+                    @"<:-|	Dumb, dunce-like[10]",
+                    @"ಠ_ಠ	Look of disapproval[13] The Unicode character ಠ is from the Kannada alphabet and can be called differently in HTML notation: &#3232; and &#x0CA0; (for Unicode)",
+                    @"<*)))-{ ><(((*> ><>	Fish, something's fishy,[10] Christian fish[7]",
+                    @"*\0/*	Cheerleader[7]",
+                    @"@}-;-'--- @>-->--	Rose[4][10]",
+                    @"~(_8^(I)	Homer Simpson[10]",
+                    @"5:-) ~:-\	Elvis Presley[10][11]",
+                    @"//0-0\\	John Lennon[10]",
+                    @"*<|:-)	Santa Claus[14]",
+                    @"=:o]	Bill Clinton[14]",
+                    @",:-) 7:^]	Ronald Reagan[14]",
+                    @"<3 </3	Heart and broken-heart (reverse-rotation)[15]",
+                    @"( ͡° ͜ʖ ͡°)",
                 };
 
             var processor = new TextFeatureProcessor()
-                    .With(SocialMediaProcessing.UrlFeatureInst)
-                //      .With(SocialMediaProcessing.MessageLengthFeatureInst)
-                    .With(SocialMediaProcessing.StockSymbolFeatureInst)
-                    .With(SocialMediaProcessing.UppercasedFeatureInst)
-                    .With(SocialMediaProcessing.TwitterUserFeatureInst)
-                    .With(SocialMediaProcessing.HashTagFeatureInst)
-                    .With(SocialMediaProcessing.ItalianNegationFeatureInst)
-                    .With(SocialMediaProcessing.ItalianSwearingFeatureInst)
-                    .With(SocialMediaProcessing.ItalianPositiveWortdFeatureInst)
+                .With(new SocialMediaProcessing.UrlFeature())
+                //.With(new SocialMediaProcessing.MessageLengthFeature())
+                .With(new SocialMediaProcessing.StockSymbolFeature())
+                .With(new SocialMediaProcessing.UppercasedFeature())
+                .With(new SocialMediaProcessing.TwitterUserFeature())
+                .With(new SocialMediaProcessing.HashTagFeature())
+                .With(new SocialMediaProcessing.NegationFeature(Language.Italian))
 
-                    .With(SocialMediaProcessing.SingleExclamationFeatureInst)
-                    .With(SocialMediaProcessing.SingleQuestionMarkFeatureInst)
-                    .With(SocialMediaProcessing.MultipleMixedPunctuationFeatureInst)
-                    .With(SocialMediaProcessing.MultipleQuestionMarkFeatureInst)
-                    .With(SocialMediaProcessing.MultipleExclamationFeatureInst)
+                //.With(new SocialMediaProcessing.SwearingFeature(Language.Italian))
+                //.With(new SocialMediaProcessing.PositiveWordFeature(Language.Italian))
 
-                    
-                    .With(new SocialMediaProcessing.SadEmoticonsFeature { Operation = TextFeatureOperation.Replace })  //negatives should come first
-                    .With(new SocialMediaProcessing.HappyEmoticonsFeature { Operation = TextFeatureOperation.Replace })
+                .With(new SocialMediaProcessing.LastExclamationFeature())
+                .With(new SocialMediaProcessing.LastQuestionMarkFeature())
+                .With(new SocialMediaProcessing.SingleExclamationFeature())
+                .With(new SocialMediaProcessing.SingleQuestionMarkFeature())
+                .With(new SocialMediaProcessing.MultipleMixedPunctuationFeature())
+                .With(new SocialMediaProcessing.MultipleQuestionMarkFeature())
+                .With(new SocialMediaProcessing.MultipleExclamationFeature())
 
+                .With(new SocialMediaProcessing.LastSadEmoticonsFeature { Operation = TextFeatureOperation.Append })
+                .With(new SocialMediaProcessing.LastHappyEmoticonsFeature { Operation = TextFeatureOperation.Append })
+                .With(new TextFeature[] {
+                        new SocialMediaProcessing.HappyEmoticonsLenTwoFeature(),
+                        new SocialMediaProcessing.SadEmoticonsLenTwoFeature(),
+                        new SocialMediaProcessing.HappyEmoticonsLenOverTwoFeature(),
+                        new SocialMediaProcessing.SadEmoticonsLenOverTwoFeature()})
 
-                    .With(SocialMediaProcessing.RepetitionFeatureInst);
-                
+                .With(new SocialMediaProcessing.RepetitionFeature());
 
 
             // order of application of these functions IS important
@@ -133,12 +134,14 @@ namespace Tutorial.Case.Data
                 
                 if (str != example) // print only modified strings
                 {
-                    Console.WriteLine(example);
-                    Console.WriteLine(str);
-                    Console.WriteLine();
+                    Output.WriteLine(example);
+                    Output.WriteLine(str);
+                    Output.WriteLine();
+                    Output.Flush();
                 }
                                 
             }
+            Output.Flush();
         }
     }
 }
