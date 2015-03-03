@@ -320,13 +320,13 @@ namespace Latino.TextMining
         public static readonly string KullAndCrossbones = char.ConvertFromUtf32(0x2620); //      ☠ 		
 
 
+
         public static readonly TextFeature[] HappySadEmoticonsFetatures = new TextFeature[] {
             new HappyEmoticonsLenTwoFeature(),
             new SadEmoticonsLenTwoFeature(),
             new HappyEmoticonsLenOverTwoFeature(),
             new SadEmoticonsLenOverTwoFeature()
         };
-        
 
         public class TwitterUserFeature : TextFeature
         {

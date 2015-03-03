@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -19,6 +20,14 @@ namespace Latino.TextMining
         private readonly List<TextFeature> mFeatures = new List<TextFeature>();
         private readonly List<string> mAppends = new List<string>();
         private readonly List<string> mDistinctAppends = new List<string>();
+
+        public List<TextFeature> Features
+        {
+            get
+            {
+                return mFeatures;
+            }
+        }
 
         public string Run(string text)
         {
