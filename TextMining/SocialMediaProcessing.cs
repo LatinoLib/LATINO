@@ -33,7 +33,7 @@ namespace Latino.TextMining
         */
 
         // punctuation emoticons
-
+        // source: http://en.wikipedia.org/wiki/List_of_emoticons Feb., 2015
         public static readonly string[] SmileyOrHappyFace =
             {
                 ":-)", ":)", ":D", ":o)", ":]", ":3", ":c)", ":>", "=]", "8)", "=)", ":}", ":^)", ":っ)"
@@ -45,7 +45,7 @@ namespace Latino.TextMining
         public static readonly string[] VeryHappyOrDoubleChin = { ":-))" };
         public static readonly string[] FrownSad =
             {
-                ">:[", ":-(", ":(", ":-c", ":c", ":-<", ":っC", ":<", ":-[", ":[", ":{"
+                ">:[", ":-(", ":(", ":-c", /*":c",*/ ":-<", ":っC", ":<", ":-[", ":[", ":{"
             };
         public static readonly string[] WinkyFrowny = { ";(" };
         public static readonly string[] Angry = { ":-||", ":@", ">:(" };
@@ -54,10 +54,10 @@ namespace Latino.TextMining
         public static readonly string[] HorrorDisgustSadnessGreatDismay = { "D:<", "D:", "D8", "D;", "D=", "DX", "v.v", "D-':" };
         public static readonly string[] SurpriseShockYawn =
             {
-                ">:O", ":-O", ":O", ":-o", ":o", "8-0", "O_O", "o-o", "O_o", "o_O", "o_o", "O-O"
+                ">:O", ":-O", /*":O",*/ ":-o", /*":o",*/ "8-0", "O_O", "o-o", "O_o", "o_O", "o_o", "O-O"
             };
         public static readonly string[] Kiss = { ":*", ":^*", "('}{')" };
-        public static readonly string[] WinkSmirk = { ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)", ":-" };
+        public static readonly string[] WinkSmirk = { ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)"/*, ":-"*/ };
         public static readonly string[] TongueStickingOutCheekyPlayful =
             {
                 ">:P", ":-P", ":P", "X-P", "x-p", "xp", "XP", ":-p", ":p", "=p", ":-Þ", ":Þ", ":þ", ":-þ", ":-b", ":b", "d:"
@@ -116,7 +116,7 @@ namespace Latino.TextMining
         public static readonly Strings SadEmoticons = new Strings(
                 FrownSad, WinkyFrowny, Angry, Crying, HorrorDisgustSadnessGreatDismay, SurpriseShockYawn,
                 SkepticalAnnoyedUndecidedUneasyHesitant, StraightFaceNoExpressionIndecision,
-                SealedLipsOrWearingBraces, Evil, BoredYawning, DrunkConfused, BeingSick, LookOfDisapproval,
+                SealedLipsOrWearingBraces, BoredYawning, DrunkConfused, BeingSick, LookOfDisapproval,
                 FishSomethingFishy, BrokenHeart
             );
 
@@ -168,7 +168,7 @@ namespace Latino.TextMining
 
         // unicode emoticons
         // official from http://www.unicode.org/charts/PDF/U1F600.pdf
-
+        /*
         // Faces		
         public static readonly string GrinningFace = char.ConvertFromUtf32(0x1F600); //      😀
         public static readonly string GrinningFaceWithSmilingEyes = char.ConvertFromUtf32(0x1F601); //      😁
@@ -219,7 +219,6 @@ namespace Latino.TextMining
         public static readonly string FaceWithOpenMouth = char.ConvertFromUtf32(0x1F62E); //      😮
         public static readonly string HushedFace = char.ConvertFromUtf32(0x1F62F); //      😯
         public static readonly string FaceWithOpenMouthAndColdSweat = char.ConvertFromUtf32(0x1F630); //      😰
-        public static readonly string FaceScreamingInFear = char.ConvertFromUtf32(0x1F631); //      😱
         public static readonly string AstonishedFace = char.ConvertFromUtf32(0x1F632); //      😲
         public static readonly string FlushedFace = char.ConvertFromUtf32(0x1F633); //      😳
         public static readonly string SleepingFace = char.ConvertFromUtf32(0x1F634); //      😴
@@ -263,7 +262,7 @@ namespace Latino.TextMining
         public static readonly string LackSmilingFace = char.ConvertFromUtf32(0x263b); //      ☻ 
         public static readonly string NowmanWithoutSnow = char.ConvertFromUtf32(0x26c4); //      ⛄ 
         public static readonly string KullAndCrossbones = char.ConvertFromUtf32(0x2620); //      ☠ 		
-
+        */
 
         // static feature instances
         public static readonly TwitterUserFeature TwitterUserFeatureInst = new TwitterUserFeature();
@@ -282,9 +281,11 @@ namespace Latino.TextMining
         public static readonly UppercasedFeature UppercasedFeatureInst = new UppercasedFeature();
         public static readonly NegationFeature EnglishNegationFeatureInst = new NegationFeature(Language.English);
         public static readonly NegationFeature ItalianNegationFeatureInst = new NegationFeature(Language.Italian);
+        public static readonly SwearingFeature ItalianSwearingFeatureInst = new SwearingFeature(Language.Italian);
+        public static readonly PositiveWordFeature ItalianPositiveWortdFeatureInst = new PositiveWordFeature(Language.Italian);
         public static readonly RepetitionFeature RepetitionFeatureInst = new RepetitionFeature();
         public static readonly MessageLengthFeature MessageLengthFeatureInst = new MessageLengthFeature();
-
+        
 
         public class TwitterUserFeature : TextFeature
         {
@@ -422,7 +423,7 @@ namespace Latino.TextMining
 
             protected override string GetPattern(ref RegexOptions options)
             {
-                return @"\b[A-Z]{4}\b";
+                return @"\b[A-Z]{4,}\b";
             }
         }
 
@@ -458,6 +459,69 @@ namespace Latino.TextMining
                 return pattern;
             }
         }
+
+
+        public class SwearingFeature : TextFeature
+        {
+            private readonly Language mLanguage;
+
+            public SwearingFeature(Language language, string markToken = "__SWEARING__")
+                : base(markToken)
+            {
+                mLanguage = language;
+                Operation = TextFeatureOperation.Append;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                options |= RegexOptions.IgnoreCase;
+                string pattern = @"\b(";
+                switch (mLanguage)
+                {
+                    case Language.Italian:  // http://en.wikipedia.org/wiki/Italian_profanity and others
+                        pattern += @"bastardo|bocchino|cagna|carogna|cazzate|cazzo|coglione|coglioni|cornuto|culo|dio dannato|fanculo|finocchio|fottiti|frocio|gnocca|li mortacci tua|mannaggia|merda|merdoso|mignotta|minchia|non mi rompere|pigliainculo|pompino|porca|puttana|rottinculo|stronzo|succhiacazzi|troia|vaffanculo|zoccola";
+                        break;
+
+                    default:
+                        throw new NotSupportedException();
+                }
+                pattern += @")\b";
+
+                return pattern;
+            }
+        }
+
+
+        public class PositiveWordFeature : TextFeature
+        {
+            private readonly Language mLanguage;
+
+            public PositiveWordFeature(Language language, string markToken = "__POSITIVE_WORD__")
+                : base(markToken)
+            {
+                mLanguage = language;
+                Operation = TextFeatureOperation.Append;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                options |= RegexOptions.IgnoreCase;
+                string pattern = @"\b(";
+                switch (mLanguage)
+                {
+                    case Language.Italian:  // https://scienzanewthought.wordpress.com/tag/dizionario-delle-parole-positive/  transformed to word roots
+                        pattern += @"abbondan|affabili|affett|aiuta|allegria|altruism|amabili|ama|amici|ammira|amor|amorevolez|anima|appagament|apprezzament|approva|armoni|autocontroll|autoguarigi|autoironi|autostima|beatitudin|bellez|ben|benefici|benessere|benevolen|bontà|buonumore|buonsens|calma|canta|cari|clemen|coeren|compassi|compliment|comprensi|concordi|confida|confort|consapevolez|consola|contempla|contentez|Coraggi|cordiali|correttez|cortesia|costan|cred|cura|dedi|diligen|dinamism|diO|discerniment|disciplin|disponibili|distensi|divertiment|dolcez|dona|educa|elogi|elogia|empatia|energia|entusiasm|equilibri|esultan|esulta|estasi|euforia|fede|fedeltà|felici|fermez|fervor|fiduci|focalizza|for|fratellan|gaudi|gaiez|generosi|gentilez|gioi|gioviali|giovinez|giubil|giusti|gratitudine|grazia|guarigi|ilari|imparziali|impegn|incorruttibili|indulgen|integri|intui|ispira|lealtà|leggerez|leti|liberali|loda|lode|luce|magnanimi|mansuetud|medita|medita|metod|misericord|mitez|modestia|modera|morali|motiva|natura|oculatez|onest|onor|operosi|ottimism|pace|passi|pazien|perdona|perdon|perfe|perseveran|poten|prega|preghiera|preziosi|prezios|prospera|prosperi|puntuali|purez|quiet|rallegrar|relax|rettitudi|ricchez|riconoscen|rider|riflessi|rilassament|ringrazia|ringraziament|risat|rispett|riveren|saggez|salute|santi|sapien|semplici|sereni|seriet|signorili|silenzi|simpatia|sinceri|soavi|soddisfa|solidar|sorrid|sorris|speran|spirituali|stima|success|temperan|tenerez|tolleran|tranquilli|uguaglian|umilt|uni|valor|valorizza|veri|virtù|vita|vitali|volere|volont|zelo";
+                        break;
+
+                    default:
+                        throw new NotSupportedException();
+                }
+                pattern += @")";
+
+                return pattern;
+            }
+        }
+
 
         // if there is more then 3 consecutive identical characters, truncate to threee
         public class RepetitionFeature : TextFeature
