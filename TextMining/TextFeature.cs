@@ -11,6 +11,7 @@ namespace Latino.TextMining
     {
         Replace,
         Append,
+        AppendDistinct,
         Custom
     }
 
@@ -18,10 +19,12 @@ namespace Latino.TextMining
     {
         private readonly List<TextFeature> mFeatures = new List<TextFeature>();
         private readonly List<string> mAppends = new List<string>(128);
+        private readonly List<string> mDistinctAppends = new List<string>(128);
 
         public string Run(string text)
         {
             mAppends.Clear();
+            mDistinctAppends.Clear();
             foreach (TextFeature feature in mFeatures)
             {
                 switch (feature.Operation)
@@ -40,11 +43,22 @@ namespace Latino.TextMining
                             mAppends.Add(feature.MarkToken);
                         }
                         break;
+
+                    case TextFeatureOperation.AppendDistinct:
+                        if (feature.Regex.IsMatch(text))
+                        {
+                            mDistinctAppends.Add(feature.MarkToken);
+                        }
+                        break;
                 }
             }
             if (mAppends.Any())
             {
-                text += " " + string.Join(" ", mAppends.Distinct());
+                text += " " + string.Join(" ", mAppends);
+            }
+            if (mDistinctAppends.Any())
+            {
+                text += " " + string.Join(" ", mDistinctAppends.Distinct());
             }
             return text;
         }
@@ -69,7 +83,7 @@ namespace Latino.TextMining
     public abstract class TextFeature
     {
         private readonly string mMarkToken;
-        private StringSet mSearchTerms;
+        private Strings mSearchTerms;
         private bool mIsSearchModified = true;
         private Regex mRegex;
 
@@ -80,7 +94,7 @@ namespace Latino.TextMining
             IsEmcloseMarkTokenWithSpace = false;
         }
 
-        public StringSet SearchTerms
+        public Strings SearchTerms
         {
             get { return mSearchTerms; }
             protected set
@@ -136,7 +150,7 @@ namespace Latino.TextMining
 
     public class CustomTextFeature : TextFeature
     {
-        public CustomTextFeature(StringSet searchTerms, string markToken)
+        public CustomTextFeature(Strings searchTerms, string markToken)
             : base(markToken)
         {
             SearchTerms = searchTerms;
@@ -153,7 +167,7 @@ namespace Latino.TextMining
 
     public class TermsOrTextFeature : TextFeature
     {
-        public TermsOrTextFeature(StringSet searchTerms, string markToken)
+        public TermsOrTextFeature(Strings searchTerms, string markToken)
             : base(markToken)
         {
             SearchTerms = searchTerms;
@@ -177,46 +191,6 @@ namespace Latino.TextMining
                     .ToArray()) + ")";
             }
             return "(" + string.Join("|", SearchTerms.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray()) + ")";
-        }
-    }
-
-    public class StringSet : IEnumerable<string>
-    {
-        private readonly string[] mTokens;
-
-        public StringSet(params string[] tokens)
-        {
-            mTokens = tokens.ToArray();
-        }
-
-        public StringSet(params string[][] tokens)
-        {
-            var tokenList = new List<string>();
-            foreach (string[] strings in tokens)
-            {
-                tokenList.AddRange(strings);
-            }
-            mTokens = tokenList.ToArray();
-        }
-
-        public StringSet(params StringSet[] groups)
-        {
-            var tokenList = new List<string>();
-            foreach (StringSet tokenGroup in groups)
-            {
-                tokenList.AddRange(tokenGroup.mTokens);
-            }
-            mTokens = tokenList.ToArray();
-        }
-
-        public IEnumerator<string> GetEnumerator()
-        {
-            return mTokens.Cast<string>().GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

@@ -99,25 +99,21 @@ namespace Latino.TextMining
 
         // punctuation emoticon sets and features
 
-        public static readonly StringSet BasicHappyEmoticons = new StringSet
-            (
+        public static readonly Strings BasicHappyEmoticons = new Strings(
                 SmileyOrHappyFace, Rose, Heart
             );
 
-        public static readonly StringSet HappyEmoticons = new StringSet
-            (
+        public static readonly Strings HappyEmoticons = new Strings(
                 SmileyOrHappyFace, LaughingbigGrinlaughWithGlasses, VeryHappyOrDoubleChin, TearsOfHappiness, Kiss,
                 WinkSmirk, TongueStickingOutCheekyPlayful, AngelSaintInnocent, HighFive, Cool, TongueInCheek,
                 DumbDunceLike, Cheer, Cheerleader, Rose, Heart, LennyFace
             );
 
-        public static readonly StringSet BasicSadEmoticons = new StringSet
-            (
+        public static readonly Strings BasicSadEmoticons = new Strings(
                 FrownSad, WinkyFrowny, Angry, StraightFaceNoExpressionIndecision, BrokenHeart
             );
 
-        public static readonly StringSet SadEmoticons = new StringSet
-            (
+        public static readonly Strings SadEmoticons = new Strings(
                 FrownSad, WinkyFrowny, Angry, Crying, HorrorDisgustSadnessGreatDismay, SurpriseShockYawn,
                 SkepticalAnnoyedUndecidedUneasyHesitant, StraightFaceNoExpressionIndecision,
                 SealedLipsOrWearingBraces, Evil, BoredYawning, DrunkConfused, BeingSick, LookOfDisapproval,
