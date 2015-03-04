@@ -17,6 +17,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Xml;
 using System.Text;
@@ -328,6 +329,19 @@ namespace Latino
                 else { return CaseType.aBc; }
             }
         }
+
+        public static string NormalizeDiacriticalCharacters(string input)
+        {
+            string normalized = Preconditions.CheckNotNullArgument(input).Normalize(NormalizationForm.FormD);
+            return new string(normalized
+                .Where(c =>
+                {
+                    UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(c);
+                    return category != UnicodeCategory.NonSpacingMark;
+                }).ToArray());
+        }
+
+
 
         // *** IO utilities ***
 
@@ -729,13 +743,6 @@ namespace Latino
             catch { }
         }
 
-        // *** Delegates ***
-
-        public delegate T UnaryOperatorDelegate<T>(T val);
-        public delegate T BinaryOperatorDelegate<T>(T a, T b);
-
-        // *** Misc ***
-
         public static Dictionary<string, object> GetPropertyValues(object o, params string[] exclude)
         {
             Preconditions.CheckNotNullArgument(o);
@@ -744,5 +751,31 @@ namespace Latino
                 .Where(p => p.GetGetMethod() != null && (exclude == null || !exclude.Contains(p.Name)))
                 .ToDictionary(property => property.Name, property => property.GetValue(o, null));
         }
+
+        // *** Reflection ***
+
+        public static object CreateInstance(Type type)
+        {
+            var constructors = type.GetConstructors();
+            var defaultConstructor = constructors.SingleOrDefault(c => !c.GetParameters().Any());
+            if (defaultConstructor == null)
+            {
+                var pseudoDefaultConstructor = constructors.FirstOrDefault(
+                    ci => ci.GetParameters().All(p => p.GetCustomAttributes(typeof(OptionalAttribute), false).Any()));
+                if (pseudoDefaultConstructor == null)
+                {
+                    throw new InvalidOperationException("No default constructor found");
+                }
+                return pseudoDefaultConstructor
+                    .Invoke(pseudoDefaultConstructor.GetParameters().Select(p => p.DefaultValue).ToArray());
+            }
+            return Activator.CreateInstance(type);
+        }
+
+        // *** Delegates ***
+
+        public delegate T UnaryOperatorDelegate<T>(T val);
+        public delegate T BinaryOperatorDelegate<T>(T a, T b);
+ 
     }
 }

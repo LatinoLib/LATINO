@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Latino
 {
-    public class ReadOnlyCollectionBuilder<T> : ReadOnlyCollection<T>
+    public class ReadOnlyCollectionBuilder<T> : ReadOnlyCollection<T>, ISerializable
     {
         public ReadOnlyCollectionBuilder(params T[] items) : base(items)
         {
@@ -15,10 +15,31 @@ namespace Latino
         {
         }
 
-        public ReadOnlyCollectionBuilder(params ReadOnlyCollectionBuilder<T>[] colls) : base(colls.SelectMany(b => b).ToList())
+        public ReadOnlyCollectionBuilder(BinarySerializer reader) : base(Load(reader))
         {
         }
+
+        public void Save(BinarySerializer writer)
+        {
+            writer.WriteInt(Count);
+            foreach (T item in Items)
+            {
+                writer.WriteObject(item);
+            }
+        }
+
+        public static IList<T> Load(BinarySerializer reader)
+        {
+            int count = reader.ReadInt();
+            var items = new List<T>();
+            for (int i = 0; i < count; i++)
+            {
+                items.Add(reader.ReadObject<T>());
+            }
+            return items;
+        }
     }
+
 
     public class Strings : ReadOnlyCollectionBuilder<string>
     {
@@ -31,6 +52,10 @@ namespace Latino
         }
 
         public Strings(params ReadOnlyCollectionBuilder<string>[] colls) : base(colls)
+        {
+        }
+
+        public Strings(BinarySerializer reader) : base(reader)
         {
         }
 

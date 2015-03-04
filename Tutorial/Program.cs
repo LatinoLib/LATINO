@@ -46,7 +46,7 @@ namespace Tutorial
             //Searching.RunInstanceWr(sw, args);
 
             // text processing
-            TextProcessing.RunInstanceWr(sw, args);
+            TextProcessing.RunInstance(sw, args);
         }
 
 

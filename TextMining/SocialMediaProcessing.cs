@@ -11,38 +11,6 @@ namespace Latino.TextMining
 
     public static class SocialMediaProcessing
     {
-        // Unicode 'Symbol, Other' Category, # of characters = 5082 
-        // includes unicode emoticons from http://en.wikipedia.org/wiki/List_of_emoticons
-        // list is here unicode ranges http://www.fileformat.info/info/unicode/category/So/list.htm
-        public static string ReplaceUnicodeCategory(string str, UnicodeCategory unicodeCategory = UnicodeCategory.OtherSymbol, string repacement = "__UNICODE_OTHER__")
-        {
-            var result = new StringBuilder();
-            for (int i = 0; i < str.Length; i++)
-            {
-                if (CharUnicodeInfo.GetUnicodeCategory(str, i) == unicodeCategory)
-                {
-                    Console.WriteLine("*****unicodechar*********: "+((int)str[i]).ToString("X4") + str[i]);
-                    result.Append(repacement);
-                }
-                else
-                {
-                    result.Append(str[i]);
-                }
-            }            
-            return result.ToString();
-        }
-
-        public static string NormalizeDiacriticalCharacters(string input, NormalizationForm form = NormalizationForm.FormD)
-        {
-            string normalized = Preconditions.CheckNotNullArgument(input).Normalize(form);
-            return new string(normalized
-                .Where(c =>
-                {
-                    UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(c);
-                    return category != UnicodeCategory.NonSpacingMark;
-                }).ToArray());
-        }
-
         // punctuation emoticons
         // source: http://en.wikipedia.org/wiki/List_of_emoticons Feb., 2015
         public static readonly string[] SmileyOrHappyFace =
@@ -56,7 +24,7 @@ namespace Latino.TextMining
         public static readonly string[] VeryHappyOrDoubleChin = { ":-))" };
         public static readonly string[] FrownSad =
             {
-                ">:[", ":-(", ":(", ":-c", /*":c",*/ ":-<", ":っC", ":<", ":-[", ":[", ":{"
+                ">:[", ":-(", ":(", ":-c", ":c", ":-<", ":っC", ":<", ":-[", ":[", ":{"
             };
         public static readonly string[] WinkyFrowny = { ";(" };
         public static readonly string[] Angry = { ":-||", ":@", ">:(" };
@@ -65,18 +33,19 @@ namespace Latino.TextMining
         public static readonly string[] HorrorDisgustSadnessGreatDismay = { "D:<", "D:", "D8", "D;", "D=", "DX", "v.v", "D-':" };
         public static readonly string[] SurpriseShockYawn =
             {
-                ">:O", ":-O", /*":O",*/ ":-o", /*":o",*/ "8-0", "O_O", "o-o", "O_o", "o_O", "o_o", "O-O"
+                ">:O", ":-O", ":O", ":-o", ":o", "8-0", "O_O", "o-o", "O_o", "o_O", "o_o", "O-O"
             };
         public static readonly string[] Kiss = { ":*", ":^*", "('}{')" };
-        public static readonly string[] WinkSmirk = { ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)"/*, ":-"*/ };
+        public static readonly string[] WinkSmirk = { ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)", ":-" };
         public static readonly string[] TongueStickingOutCheekyPlayful =
             {
                 ">:P", ":-P", ":P", "X-P", "x-p", "xp", "XP", ":-p", ":p", "=p", ":-Þ", ":Þ", ":þ", ":-þ", ":-b", ":b", "d:"
             };        
         public static readonly string[] SkepticalAnnoyedUndecidedUneasyHesitant =
             {
-                @">:\", ">:/", ":-/", ":-.", ":/", @":\", "=/", @"=\ :L", "=L :S", ">.<"
+                @">:\", ">:/", ":-/", ":-.", ":/", @":\", "=/", @"=\ :L", "=L :S", ">.<", "-_-", "-.-"
             };
+
         public static readonly string[] StraightFaceNoExpressionIndecision = { ":|", ":-|" };
         public static readonly string[] EmbarrassedBlushing = { ":$" };
         public static readonly string[] SealedLipsOrWearingBraces = { ":-X", ":X", ":-#", ":#" };
@@ -136,49 +105,69 @@ namespace Latino.TextMining
 
         public class BasicHappyEmoticonsFeature : AnyOfTermsTextFeature
         {
-            public BasicHappyEmoticonsFeature(string markToken = "__HAPPY__")
+            public BasicHappyEmoticonsFeature(string markToken = "__HAPPY_EMOTICON__")
                 : base(markToken)
             {
                 Terms = BasicHappyEmoticons;
                 Operation = TextFeatureOperation.Replace;
-                IsEncloseTermLetterEdges = true;
+                WordBoundEnclosing = EncloseOption.OnlyLetterEdges;
+            }
+
+            public BasicHappyEmoticonsFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
         public class BasicSadEmoticonsFeature : AnyOfTermsTextFeature
         {
-            public BasicSadEmoticonsFeature(string markToken = "__SAD__") : base(markToken)
+            public BasicSadEmoticonsFeature(string markToken = "__SAD_EMOTICON__") : base(markToken)
             {
                 Terms = BasicSadEmoticons;
                 Operation = TextFeatureOperation.Replace;
-                IsEncloseTermLetterEdges = true;
+                WordBoundEnclosing = EncloseOption.OnlyLetterEdges;
+            }
+
+            public BasicSadEmoticonsFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
         public class HappyEmoticonsFeature : AnyOfTermsTextFeature
         {
-            public HappyEmoticonsFeature(string markToken = "__HAPPY__")
+            public HappyEmoticonsFeature(string markToken = "__HAPPY_EMOTICON__")
                 : base(markToken)
             {
                 Terms = HappyEmoticons;
                 Operation = TextFeatureOperation.Replace;
-                IsEncloseTermLetterEdges = true;
+                WordBoundEnclosing = EncloseOption.OnlyLetterEdges;
+            }
+
+            public HappyEmoticonsFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
         public class SadEmoticonsFeature : AnyOfTermsTextFeature
         {
-            public SadEmoticonsFeature(string markToken = "__SAD__") : base(markToken)
+            public SadEmoticonsFeature(string markToken = "__SAD_EMOTICON__") : base(markToken)
             {
                 Terms = SadEmoticons;
                 Operation = TextFeatureOperation.Replace;
-                IsEncloseTermLetterEdges = true;
+                WordBoundEnclosing = EncloseOption.OnlyLetterEdges;
+            }
+
+            public SadEmoticonsFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
         public class LastHappyEmoticonsFeature : HappyEmoticonsFeature
         {
             public LastHappyEmoticonsFeature(string markToken = "__LAST_HAPPY__") : base(markToken)
+            {
+            }
+
+            public LastHappyEmoticonsFeature(BinarySerializer reader) : base(reader)
             {
             }
 
@@ -194,6 +183,10 @@ namespace Latino.TextMining
             {
             }
 
+            public LastSadEmoticonsFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
             protected override string GetPattern(ref RegexOptions options)
             {
                 return string.Format("{0}$", base.GetPattern(ref options));
@@ -202,33 +195,49 @@ namespace Latino.TextMining
 
         public class HappyEmoticonsLenTwoFeature : HappyEmoticonsFeature
         {
-            public HappyEmoticonsLenTwoFeature(string markToken = "__HAPPY__") : base(markToken)
+            public HappyEmoticonsLenTwoFeature(string markToken = "__HAPPY_EMOTICON__") : base(markToken)
             {
                 Terms = new Strings(Terms.Where(s => s.Length <= 2));
+            }
+
+            public HappyEmoticonsLenTwoFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
         public class SadEmoticonsLenTwoFeature : SadEmoticonsFeature
         {
-            public SadEmoticonsLenTwoFeature(string markToken = "__SAD__") : base(markToken)
+            public SadEmoticonsLenTwoFeature(string markToken = "__SAD_EMOTICON__") : base(markToken)
             {
                 Terms = new Strings(Terms.Where(s => s.Length <= 2));
+            }
+
+            public SadEmoticonsLenTwoFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
         public class HappyEmoticonsLenOverTwoFeature : HappyEmoticonsFeature
         {
-            public HappyEmoticonsLenOverTwoFeature(string markToken = "__HAPPY__") : base(markToken)
+            public HappyEmoticonsLenOverTwoFeature(string markToken = "__HAPPY_EMOTICON__") : base(markToken)
             {
                 Terms = new Strings(Terms.Where(s => s.Length > 2));
+            }
+
+            public HappyEmoticonsLenOverTwoFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
         public class SadEmoticonsLenOverTwoFeature : SadEmoticonsFeature
         {
-            public SadEmoticonsLenOverTwoFeature(string markToken = "__SAD__") : base(markToken)
+            public SadEmoticonsLenOverTwoFeature(string markToken = "__SAD_EMOTICON__") : base(markToken)
             {
                 Terms = new Strings(Terms.Where(s => s.Length > 2));
+            }
+
+            public SadEmoticonsLenOverTwoFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
@@ -328,7 +337,7 @@ namespace Latino.TextMining
         public static readonly string HiteSmilingFace = char.ConvertFromUtf32(0x263a); //      ☺ 
         public static readonly string LackSmilingFace = char.ConvertFromUtf32(0x263b); //      ☻ 
         public static readonly string NowmanWithoutSnow = char.ConvertFromUtf32(0x26c4); //      ⛄ 
-        public static readonly string KullAndCrossbones = char.ConvertFromUtf32(0x2620); //      ☠ 		
+        public static readonly string KullAndCrossbones = char.ConvertFromUtf32(0x2620); //      ☠
 
 
 
@@ -346,6 +355,10 @@ namespace Latino.TextMining
                 Operation = TextFeatureOperation.Replace;
             }
 
+            public TwitterUserFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
             protected override string GetPattern(ref RegexOptions options)
             {
                 return @"@(\w+)";
@@ -359,6 +372,10 @@ namespace Latino.TextMining
                 Operation = TextFeatureOperation.Append;
             }
 
+            public StockSymbolFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
             protected override string GetPattern(ref RegexOptions options)
             {
                 return @"\$(\p{L}\w*)";
@@ -370,6 +387,10 @@ namespace Latino.TextMining
             public UrlFeature(string markToken = "__URL__") : base(markToken)
             {
                 Operation = TextFeatureOperation.Replace;
+            }
+
+            public UrlFeature(BinarySerializer reader) : base(reader)
+            {
             }
 
             protected override string GetPattern(ref RegexOptions options)
@@ -386,6 +407,10 @@ namespace Latino.TextMining
                 Operation = TextFeatureOperation.Replace;
             }
 
+            public HashTagFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
             protected override string GetPattern(ref RegexOptions options)
             {
                 return @"#(\w+)";
@@ -397,6 +422,10 @@ namespace Latino.TextMining
             public SingleExclamationFeature(string markToken = "__PUNCT_SINGLE_EXCLAMATION__") : base(" " + markToken)
             {
                 Operation = TextFeatureOperation.Replace;
+            }
+
+            public SingleExclamationFeature(BinarySerializer reader) : base(reader)
+            {
             }
 
             protected override string GetPattern(ref RegexOptions options)
@@ -412,6 +441,10 @@ namespace Latino.TextMining
                 Operation = TextFeatureOperation.Append;
             }
 
+            public LastExclamationFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
             protected override string GetPattern(ref RegexOptions options)
             {
                 return @"(!)$";
@@ -425,6 +458,10 @@ namespace Latino.TextMining
                 Operation = TextFeatureOperation.Replace;
             }
 
+            public SingleQuestionMarkFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
             protected override string GetPattern(ref RegexOptions options)
             {
                 return @"(?<!\?+)(\?)(?!\?+)";
@@ -433,10 +470,13 @@ namespace Latino.TextMining
 
         public class LastQuestionMarkFeature : TextFeature
         {
-            public LastQuestionMarkFeature(string markToken = "__PUNCT_LAST_QUESTION__")
-                : base(" " + markToken)
+            public LastQuestionMarkFeature(string markToken = "__PUNCT_LAST_QUESTION__") : base(" " + markToken)
             {
                 Operation = TextFeatureOperation.Append;
+            }
+
+            public LastQuestionMarkFeature(BinarySerializer reader) : base(reader)
+            {
             }
 
             protected override string GetPattern(ref RegexOptions options)
@@ -450,7 +490,11 @@ namespace Latino.TextMining
             public MultipleMixedPunctuationFeature(string markToken = "__PUNCT_MULTIMIX__") : base(markToken)
             {
                 Operation = TextFeatureOperation.Replace;
-                IsEmcloseMarkTokenWithSpace = true;
+                IsEncloseMarkTokenWithSpace = true;
+            }
+
+            public MultipleMixedPunctuationFeature(BinarySerializer reader) : base(reader)
+            {
             }
 
             protected override string GetPattern(ref RegexOptions options)
@@ -464,7 +508,11 @@ namespace Latino.TextMining
             public MultipleExclamationFeature(string markToken = "__PUNCT_MULTI_EXCLAMATION__") : base(markToken)
             {
                 Operation = TextFeatureOperation.Replace;
-                IsEmcloseMarkTokenWithSpace = true;
+                IsEncloseMarkTokenWithSpace = true;
+            }
+
+            public MultipleExclamationFeature(BinarySerializer reader) : base(reader)
+            {
             }
 
             protected override string GetPattern(ref RegexOptions options)
@@ -478,7 +526,11 @@ namespace Latino.TextMining
             public MultipleDotFeature(string markToken = "__PUNCT_MULTI_DOT__") : base(markToken)
             {
                 Operation = TextFeatureOperation.Replace;
-                IsEmcloseMarkTokenWithSpace = true;
+                IsEncloseMarkTokenWithSpace = true;
+            }
+
+            public MultipleDotFeature(BinarySerializer reader) : base(reader)
+            {
             }
 
             protected override string GetPattern(ref RegexOptions options)
@@ -492,7 +544,11 @@ namespace Latino.TextMining
             public MultipleQuestionMarkFeature(string markToken = "__PUNCT_MULTI_QUESTION__") : base(markToken)
             {
                 Operation = TextFeatureOperation.Replace;
-                IsEmcloseMarkTokenWithSpace = true;
+                IsEncloseMarkTokenWithSpace = true;
+            }
+
+            public MultipleQuestionMarkFeature(BinarySerializer reader) : base(reader)
+            {
             }
 
             protected override string GetPattern(ref RegexOptions options)
@@ -514,6 +570,10 @@ namespace Latino.TextMining
                 Operation = TextFeatureOperation.Append;
             }
 
+            public UppercasedFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
             protected override string GetPattern(ref RegexOptions options)
             {
                 return @"\b[A-Z]{4,}\b";
@@ -529,18 +589,18 @@ namespace Latino.TextMining
                 mLanguage = language;
                 Operation = TextFeatureOperation.Replace;
                 RegexOptions = RegexOptions.IgnoreCase;
-                IsEncloseAllTerms = true;
+                WordBoundEnclosing = EncloseOption.BothEdges;
 
                 switch (mLanguage)
                 {
                     case Language.English:
-                        Terms = Strings.Split(";", @"
+                        Terms = Strings.Split(",", @"
                             not,isn't,aren't,wasn't,weren't,hasn't,haven't,hadn't,doesn't,don't,didn't,cannot,didnot,havenot
                             ");
                         break;
 
                     case Language.Italian:
-                        Terms = Strings.Split(";", @"
+                        Terms = Strings.Split(",", @"
                             mai,nessuno,niente,nulla,né,nessun,neanche,nemmeno,neppure,no
                             ");
                         break;
@@ -548,6 +608,10 @@ namespace Latino.TextMining
                     default:
                         throw new NotSupportedException();
                 }
+            }
+
+            public NegationFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
@@ -562,18 +626,19 @@ namespace Latino.TextMining
                 mLanguage = language;
                 Operation = TextFeatureOperation.Append;
                 RegexOptions = RegexOptions.IgnoreCase;
-                IsEncloseAllTerms = true;
+                WordBoundEnclosing = EncloseOption.LeftEdge;
 
                 switch (mLanguage)
                 {
                     case Language.Italian:  // http://en.wikipedia.org/wiki/Italian_profanity and others
-                        Terms = Strings.Split(";", @"
+                        Terms = Strings.Split(",", @"
                             bastardo,bocchino,cagna,carogna,cazzate,cazzo,coglione,coglioni,cornuto,culo,dio dannato,fanculo,finocchio,
                             fottiti,frocio,gnocca,li mortacci tua,mannaggia,merda,merdoso,mignotta,minchia,non mi rompere,pigliainculo,
                             pompino,porca,puttana,rottinculo,stronzo,succhiacazzi,troia,vaffanculo,zoccola
                             "
                             +
-                            @"p.....a|cazzi|p*****a|co*****i|c****|m*****a|m***a|m...|vigliacco|inc...a|shit|stronzate|schif|m___a|ca__o|cagare|pinocchio|m_ _ _a"
+                            @"p.....a,cazzi,p*****a,co*****i,c****,m*****a,m***a,m...,vigliacco,inc...a,shit,stronzate,schif,m___a,ca__o,cagare,
+                            pinocchio,m_ _ _a,rimbambit,sigh,fott,lumaca,sh*t,catzo"
                             );
                         break;
 
@@ -582,10 +647,8 @@ namespace Latino.TextMining
                 }
             }
 
-            protected override string GetPattern(ref RegexOptions options)
+            public SwearingFeature(BinarySerializer reader) : base(reader)
             {
-                string pattern = base.GetPattern(ref options);
-                return pattern.Substring(0, pattern.Length - "\\b".Length);
             }
         }
 
@@ -600,12 +663,12 @@ namespace Latino.TextMining
                 mLanguage = language;
                 Operation = TextFeatureOperation.Append;
                 RegexOptions = RegexOptions.IgnoreCase;
-                IsEncloseAllTerms = true;
+                WordBoundEnclosing = EncloseOption.LeftEdge;
 
                 switch (mLanguage)
                 {
                     case Language.Italian:  // https://scienzanewthought.wordpress.com/tag/dizionario-delle-parole-positive/  transformed to word roots
-                        Terms = Strings.Split(";", @"
+                        Terms = Strings.Split(",", @"
                             abbondan,affabili,affett,aiuta,allegria,altruism,amabili,ama,amici,ammira,amor,amorevolez,anima,appagament,
                             apprezzament,approva,armoni,autocontroll,autoguarigi,autoironi,autostima,beatitudin,bellez,ben,benefici,benessere, 
                             benevolen,bontà,buonumore,buonsens,calma,canta,cari,clemen,coeren,compassi,compliment,comprensi,concordi,confida, 
@@ -619,14 +682,18 @@ namespace Latino.TextMining
                             rilassament,ringrazia,ringraziament,risat,rispett,riveren,saggez,salute,santi,sapien,semplici,sereni,seriet,signorili,silenzi, 
                             simpatia,sinceri,soavi,soddisfa,solidar,sorrid,sorris,speran,spirituali,stima,success,temperan,tenerez,tolleran,tranquilli, 
                             uguaglian,umilt,uni,valor,valorizza,veri,virtù,vita,vitali,volere,volont,zelo
-                            " + 
-                            "hahaha,brav,grand,buon,divertent"
+                            " +
+                            "hahaha,ahahah,brav,grand,buon,divertent,content,viva,Bellissim,EHEHEH,Idem,yes,cool,angel,ottim,god"
                             );
                         break;
 
                     default:
                         throw new NotSupportedException();
                 }
+            }
+
+            public PositiveWordFeature(BinarySerializer reader) : base(reader)
+            {
             }
         }
 
@@ -639,10 +706,14 @@ namespace Latino.TextMining
                 Operation = TextFeatureOperation.Custom;
             }
 
+            public RepetitionFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
             protected override string GetPattern(ref RegexOptions options)
             {
                 options |= RegexOptions.IgnoreCase | RegexOptions.CultureInvariant;
-                return @"(.)(?<=\1\1\1\1)";
+                return @"(.)(?<=\1\1\1)";
             }
 
             protected internal override string PerformCustomOperation(string input)
@@ -665,6 +736,10 @@ namespace Latino.TextMining
             {
                 Operation = TextFeatureOperation.Custom;
                 mMaxLength = maxLength;
+            }
+
+            public MessageLengthFeature(BinarySerializer reader) : base(reader)
+            {
             }
 
             protected internal override string PerformCustomOperation(string input)
@@ -691,6 +766,35 @@ namespace Latino.TextMining
                     tokens.Add(token);
                 }
                 return input + " " + string.Join(" ", tokens);
+            }
+        }
+
+        public class UnicodeOtherFeature : TextFeature
+        {
+            public UnicodeOtherFeature(string markToken = "__UNICODE_OTHER__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Custom;
+            }
+
+            public UnicodeOtherFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
+            protected internal override string PerformCustomOperation(string input)
+            {
+                var result = new StringBuilder();
+                for (int i = 0; i < input.Length; i++)
+                {
+                    if (CharUnicodeInfo.GetUnicodeCategory(input, i) == UnicodeCategory.OtherSymbol)
+                    {
+                        result.Append(MarkToken);
+                    }
+                    else
+                    {
+                        result.Append(input[i]);
+                    }
+                }
+                return result.ToString();
             }
         }
     }

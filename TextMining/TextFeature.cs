@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -15,11 +15,28 @@ namespace Latino.TextMining
         Custom
     }
 
-    public class TextFeatureProcessor
+    public class TextFeatureProcessor : ISerializable
     {
         private readonly List<TextFeature> mFeatures = new List<TextFeature>();
         private readonly List<string> mAppends = new List<string>();
         private readonly List<string> mDistinctAppends = new List<string>();
+
+        public TextFeatureProcessor()
+        {
+        }
+
+        public TextFeatureProcessor(BinarySerializer reader)
+        {
+            Load(reader);
+        }
+
+        static TextFeatureProcessor()
+        {
+            IsRecreateFeaturesAfterLoad = false;
+        }
+
+        public static bool IsRecreateFeaturesAfterLoad { get; set; }
+
 
         public List<TextFeature> Features
         {
@@ -83,6 +100,34 @@ namespace Latino.TextMining
             return this;
         }
 
+        public void Save(BinarySerializer writer)
+        {
+            writer.WriteInt(mFeatures.Count);
+            foreach (TextFeature feature in mFeatures)
+            {
+                writer.WriteObject(feature);
+            }
+        }
+
+        public void Load(BinarySerializer reader)
+        {
+            mFeatures.Clear();
+            int count = reader.ReadInt();
+            for (int i = 0; i < count; i++)
+            {
+                var textFeature = reader.ReadObject<TextFeature>();
+                if (IsRecreateFeaturesAfterLoad)
+                {
+                    // derived features must have default ctor (or at lleast one optional parameters only) 
+                    mFeatures.Add((TextFeature)Utils.CreateInstance(textFeature.GetType()));
+                }
+                else
+                {
+                    mFeatures.Add(textFeature);
+                }
+            }
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder(GetType().Name).Append(":\n");
@@ -94,30 +139,36 @@ namespace Latino.TextMining
         }
     }
 
-    public abstract class TextFeature
+
+    public abstract class TextFeature : ISerializable
     {
-        private readonly string mMarkToken;
+        private string mMarkToken;
         private Regex mRegex;
 
         protected TextFeature(string markToken)
         {
             mMarkToken = Preconditions.CheckNotNullArgument(markToken);
             Operation = TextFeatureOperation.Replace;
-            IsEmcloseMarkTokenWithSpace = false;
+            IsEncloseMarkTokenWithSpace = false;
+        }
+
+        protected TextFeature(BinarySerializer reader)
+        {
+            Load(reader);
         }
 
         public string MarkToken
         {
             get
             {
-                return IsEmcloseMarkTokenWithSpace 
+                return IsEncloseMarkTokenWithSpace 
                     ? string.Format(" {0} ", mMarkToken) 
                     : mMarkToken;
             }
         }
 
         public TextFeatureOperation Operation { get; set; }
-        public bool IsEmcloseMarkTokenWithSpace { get; set; }
+        public bool IsEncloseMarkTokenWithSpace { get; set; }
 
         public Regex Regex
         {
@@ -147,28 +198,46 @@ namespace Latino.TextMining
         {
             return string.Format("{0} [op: {1}; mark: {2}]", GetType().Name, Operation, MarkToken);
         }
-    }
 
-    public class CustomTextFeature : TextFeature
-    {
-        public CustomTextFeature(string markToken) : base(markToken)
+        public virtual void Save(BinarySerializer writer)
         {
+            writer.WriteString(mMarkToken);
+            writer.WriteValue(Operation);
+            writer.WriteBool(IsEncloseMarkTokenWithSpace);
+            writer.WriteString(mRegex == null ? "" : mRegex.ToString());
         }
 
-        public Func<string> OnGetPattern { get; set; }
-
-        protected override string GetPattern(ref RegexOptions options)
+        public void Load(BinarySerializer reader)
         {
-            Preconditions.CheckNotNullArgument(OnGetPattern);
-            return OnGetPattern();
+            mMarkToken = reader.ReadString();
+            Operation = reader.ReadValue<TextFeatureOperation>();
+            IsEncloseMarkTokenWithSpace = reader.ReadBool();
+            string pattern = reader.ReadString();
+            mRegex = pattern ==  "" ? null : new Regex(pattern);
         }
     }
+
 
     public class AnyOfTermsTextFeature : TextFeature
     {
+        [Flags]
+        public enum EncloseOption
+        {
+            None = 0,
+            OnlyLetterEdges = 1 << 0,
+            LeftEdge = 1 << 1,
+            RightEdge = 1 << 2,
+            BothEdges = LeftEdge | RightEdge
+        }
+
         public AnyOfTermsTextFeature(IEnumerable<string> terms, string markToken) : base(markToken)
         {
             Terms = new Strings(terms);
+        }
+
+        public AnyOfTermsTextFeature(BinarySerializer reader) : base(reader)
+        {
+            Load(reader);
         }
 
         protected AnyOfTermsTextFeature(string markToken) : base(markToken)
@@ -176,14 +245,13 @@ namespace Latino.TextMining
         }
 
         public Strings Terms { get; protected set; }
-        public bool IsEncloseTermLetterEdges { get; set; }
-        public bool IsEncloseAllTerms { get; set; }
+        public EncloseOption WordBoundEnclosing { get; set; }
         public RegexOptions RegexOptions { get; set; }
 
         protected override string GetPattern(ref RegexOptions options)
         {
             options |= RegexOptions;
-            if (IsEncloseTermLetterEdges || !IsEncloseAllTerms)
+            if (WordBoundEnclosing.HasFlag(EncloseOption.OnlyLetterEdges))
             {
                 return "(" + string.Join("|", Terms
                     .OrderByDescending(s => s.Length)
@@ -191,9 +259,32 @@ namespace Latino.TextMining
                     .Select(s => string.Format("{0}{1}{2}", Char.IsLetter(s.First()) ? "\\b" : "", s, Char.IsLetter(s.Last()) ? "\\b" : ""))
                     .ToArray()) + ")";
             }
-            return IsEncloseAllTerms 
-                ? string.Format(@"\b({0})\b", string.Join("|", Terms.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray())) 
-                : string.Format(@"({0})", string.Join("|", Terms.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray()));
+
+            if ((WordBoundEnclosing & EncloseOption.BothEdges) != 0)
+            {
+                return string.Format(@"{0}({1}){2}", 
+                    WordBoundEnclosing.HasFlag(EncloseOption.LeftEdge) ? "\\b" : "", 
+                    string.Join("|", Terms.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray()),
+                    WordBoundEnclosing.HasFlag(EncloseOption.RightEdge) ? "\\b" : ""
+                );
+            }
+
+            return string.Format(@"({0})", string.Join("|", Terms.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray()));
+        }
+
+        public override void Save(BinarySerializer writer)
+        {
+            base.Save(writer);
+            Terms.Save(writer);
+            writer.WriteValue(WordBoundEnclosing);
+            writer.WriteValue(RegexOptions);
+        }
+
+        public new void Load(BinarySerializer reader)
+        {
+            Terms = new Strings(reader);
+            WordBoundEnclosing = reader.ReadValue<EncloseOption>();
+            RegexOptions = reader.ReadValue<RegexOptions>();
         }
     }
 }

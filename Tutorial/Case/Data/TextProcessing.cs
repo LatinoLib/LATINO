@@ -36,7 +36,8 @@ namespace Tutorial.Case.Data
                     "not at begginning, middle endnote, beginning of gord noticed end eof word endnot and end of sentence not. and line not",
                     "Un inutile strage di poveri animali innocenti, esseri umani degradati e degradanti ...:-(((",
                     "loooooooooove is niceeee, while school is not",
-                    "che cazzo dici",
+                    "YESSS...",
+                    "che cazzo dici cazzo",
                     "MERDA !!!",
                     "Grande popolo sterminato senza pietŕ č ricordato da nessuno!",
                     "Solo che qui non li bruciano nei forni e neanche li uccidono con il gas Comunque stanno solo in fila per fare i controlli di sicurezza, in aeroporto ci sono file anche piů lunghe, ma tanto Carmelo vuo vedere solo quello che vuole vedere. A Carmč ripigliate !",
@@ -102,8 +103,8 @@ namespace Tutorial.Case.Data
                 .With(new SocialMediaProcessing.HashTagFeature())
                 .With(new SocialMediaProcessing.NegationFeature(Language.Italian))
 
-                //.With(new SocialMediaProcessing.SwearingFeature(Language.Italian))
-                //.With(new SocialMediaProcessing.PositiveWordFeature(Language.Italian))
+                .With(new SocialMediaProcessing.SwearingFeature(Language.Italian))
+                .With(new SocialMediaProcessing.PositiveWordFeature(Language.Italian))
 
                 .With(new SocialMediaProcessing.LastExclamationFeature())
                 .With(new SocialMediaProcessing.LastQuestionMarkFeature())
@@ -125,10 +126,11 @@ namespace Tutorial.Case.Data
 
 
             // order of application of these functions IS important
-            foreach (var example in corpus)     
+            foreach (string example in corpus)     
             {
                 
-                // todo add unicode emoticons
+                if (example.Contains("cazzo"))
+                {
 
                 string str = processor.Run(example);
                 
@@ -138,6 +140,7 @@ namespace Tutorial.Case.Data
                     Output.WriteLine(str);
                     Output.WriteLine();
                     Output.Flush();
+                }
                 }
                                 
             }
