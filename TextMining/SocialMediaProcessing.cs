@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Latino.TextMining
@@ -9,11 +11,10 @@ namespace Latino.TextMining
 
     public static class SocialMediaProcessing
     {
-        /*
         // Unicode 'Symbol, Other' Category, # of characters = 5082 
         // includes unicode emoticons from http://en.wikipedia.org/wiki/List_of_emoticons
         // list is here unicode ranges http://www.fileformat.info/info/unicode/category/So/list.htm
-        public static string ReplaceUnicodeCategory(string str, UnicodeCategory unicodeCategory = UnicodeCategory.OtherSymbol, string repacement = "***OtherSymbol***")
+        public static string ReplaceUnicodeCategory(string str, UnicodeCategory unicodeCategory = UnicodeCategory.OtherSymbol, string repacement = "__UNICODE_OTHER__")
         {
             var result = new StringBuilder();
             for (int i = 0; i < str.Length; i++)
@@ -30,7 +31,11 @@ namespace Latino.TextMining
             }            
             return result.ToString();
         }
-        */
+
+        public static string NormalizeDiacriticalCharacters(string input, NormalizationForm form = NormalizationForm.FormKD)
+        {
+            return Preconditions.CheckNotNullArgument(input).Normalize(form);
+        }
 
         // punctuation emoticons
         // source: http://en.wikipedia.org/wiki/List_of_emoticons Feb., 2015
@@ -350,7 +355,7 @@ namespace Latino.TextMining
 
             protected override string GetPattern(ref RegexOptions options)
             {
-                return @"\$(\w+)"; // matches also $700
+                return @"\$(\p{L}\w*)";
             }
         }
 
@@ -509,15 +514,15 @@ namespace Latino.TextMining
                 switch (mLanguage)
                 {
                     case Language.English:
-                        Terms = new Strings(@"
+                        Terms = Strings.Split(";", @"
                             not,isn't,aren't,wasn't,weren't,hasn't,haven't,hadn't,doesn't,don't,didn't,cannot,didnot,havenot
-                            ".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
+                            ");
                         break;
 
                     case Language.Italian:
-                        Terms = new Strings(@"
+                        Terms = Strings.Split(";", @"
                             mai,nessuno,niente,nulla,né,nessun,neanche,nemmeno,neppure,no
-                            ".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
+                            ");
                         break;
 
                     default:
@@ -542,11 +547,11 @@ namespace Latino.TextMining
                 switch (mLanguage)
                 {
                     case Language.Italian:  // http://en.wikipedia.org/wiki/Italian_profanity and others
-                        Terms = new Strings(@"
+                        Terms = Strings.Split(";", @"
                             bastardo,bocchino,cagna,carogna,cazzate,cazzo,coglione,coglioni,cornuto,culo,dio dannato,fanculo,finocchio,
                             fottiti,frocio,gnocca,li mortacci tua,mannaggia,merda,merdoso,mignotta,minchia,non mi rompere,pigliainculo,
                             pompino,porca,puttana,rottinculo,stronzo,succhiacazzi,troia,vaffanculo,zoccola
-                            ".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
+                            ");
                         break;
 
                     default:
@@ -571,7 +576,7 @@ namespace Latino.TextMining
                 switch (mLanguage)
                 {
                     case Language.Italian:  // https://scienzanewthought.wordpress.com/tag/dizionario-delle-parole-positive/  transformed to word roots
-                        Terms = new Strings(@"
+                        Terms = Strings.Split(";", @"
                             abbondan,affabili,affett,aiuta,allegria,altruism,amabili,ama,amici,ammira,amor,amorevolez,anima,appagament,
                             apprezzament,approva,armoni,autocontroll,autoguarigi,autoironi,autostima,beatitudin,bellez,ben,benefici,benessere, 
                             benevolen,bontà,buonumore,buonsens,calma,canta,cari,clemen,coeren,compassi,compliment,comprensi,concordi,confida, 
@@ -585,7 +590,7 @@ namespace Latino.TextMining
                             rilassament,ringrazia,ringraziament,risat,rispett,riveren,saggez,salute,santi,sapien,semplici,sereni,seriet,signorili,silenzi, 
                             simpatia,sinceri,soavi,soddisfa,solidar,sorrid,sorris,speran,spirituali,stima,success,temperan,tenerez,tolleran,tranquilli, 
                             uguaglian,umilt,uni,valor,valorizza,veri,virtù,vita,vitali,volere,volont,zelo
-                            ".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
+                            ");
                         break;
 
                     default:
