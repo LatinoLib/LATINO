@@ -32,9 +32,15 @@ namespace Latino.TextMining
             return result.ToString();
         }
 
-        public static string NormalizeDiacriticalCharacters(string input, NormalizationForm form = NormalizationForm.FormKD)
+        public static string NormalizeDiacriticalCharacters(string input, NormalizationForm form = NormalizationForm.FormD)
         {
-            return Preconditions.CheckNotNullArgument(input).Normalize(form);
+            string normalized = Preconditions.CheckNotNullArgument(input).Normalize(form);
+            return new string(normalized
+                .Where(c =>
+                {
+                    UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(c);
+                    return category != UnicodeCategory.NonSpacingMark;
+                }).ToArray());
         }
 
         // punctuation emoticons
@@ -467,6 +473,20 @@ namespace Latino.TextMining
             }
         }
 
+        public class MultipleDotFeature : TextFeature
+        {
+            public MultipleDotFeature(string markToken = "__PUNCT_MULTI_DOT__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+                IsEmcloseMarkTokenWithSpace = true;
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"\.{4,}";
+            }
+        }
+
         public class MultipleQuestionMarkFeature : TextFeature
         {
             public MultipleQuestionMarkFeature(string markToken = "__PUNCT_MULTI_QUESTION__") : base(markToken)
@@ -551,12 +571,21 @@ namespace Latino.TextMining
                             bastardo,bocchino,cagna,carogna,cazzate,cazzo,coglione,coglioni,cornuto,culo,dio dannato,fanculo,finocchio,
                             fottiti,frocio,gnocca,li mortacci tua,mannaggia,merda,merdoso,mignotta,minchia,non mi rompere,pigliainculo,
                             pompino,porca,puttana,rottinculo,stronzo,succhiacazzi,troia,vaffanculo,zoccola
-                            ");
+                            "
+                            +
+                            @"p.....a|cazzi|p*****a|co*****i|c****|m*****a|m***a|m...|vigliacco|inc...a|shit|stronzate|schif|m___a|ca__o|cagare|pinocchio|m_ _ _a"
+                            );
                         break;
 
                     default:
                         throw new NotSupportedException();
                 }
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                string pattern = base.GetPattern(ref options);
+                return pattern.Substring(0, pattern.Length - "\\b".Length);
             }
         }
 
@@ -590,7 +619,9 @@ namespace Latino.TextMining
                             rilassament,ringrazia,ringraziament,risat,rispett,riveren,saggez,salute,santi,sapien,semplici,sereni,seriet,signorili,silenzi, 
                             simpatia,sinceri,soavi,soddisfa,solidar,sorrid,sorris,speran,spirituali,stima,success,temperan,tenerez,tolleran,tranquilli, 
                             uguaglian,umilt,uni,valor,valorizza,veri,virtù,vita,vitali,volere,volont,zelo
-                            ");
+                            " + 
+                            "hahaha,brav,grand,buon,divertent"
+                            );
                         break;
 
                     default:
@@ -647,14 +678,14 @@ namespace Latino.TextMining
                     {
                         if (!mEqStrings.TryGetValue(len, out token))
                         {
-                            mEqStrings.TryAdd(len, token = string.Format("__LenghtLEQ{0}__", len));
+                            mEqStrings.TryAdd(len, token = string.Format("__LengthLEQ{0}__", len));
                         }
                     }
                     else
                     {
                         if (!mGtStrings.TryGetValue(len, out token))
                         {
-                            mGtStrings.TryAdd(len, token = string.Format("__LenghtGT{0}__", len));
+                            mGtStrings.TryAdd(len, token = string.Format("__LengthGT{0}__", len));
                         }
                     }
                     tokens.Add(token);
