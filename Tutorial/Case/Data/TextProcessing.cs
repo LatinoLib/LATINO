@@ -115,13 +115,9 @@ namespace Tutorial.Case.Data
                 .With(new SocialMediaProcessing.MultipleQuestionMarkFeature())
                 .With(new SocialMediaProcessing.MultipleExclamationFeature())
 
-                .With(new SocialMediaProcessing.LastSadEmoticonsFeature { Operation = TextFeatureOperation.Append })
-                .With(new SocialMediaProcessing.LastHappyEmoticonsFeature { Operation = TextFeatureOperation.Append })
-                .With(new TextFeature[] {
-                        new SocialMediaProcessing.HappyEmoticonsLenTwoFeature(),
-                        new SocialMediaProcessing.SadEmoticonsLenTwoFeature(),
-                        new SocialMediaProcessing.HappyEmoticonsLenOverTwoFeature(),
-                        new SocialMediaProcessing.SadEmoticonsLenOverTwoFeature()})
+                .With(new SocialMediaProcessing.LastSadEmoticonsFeature())
+                .With(new SocialMediaProcessing.LastHappyEmoticonsFeature())
+                .With(new SocialMediaProcessing.HappySadEmoticonsFeature())
 
                 .With(new SocialMediaProcessing.RepetitionFeature());
 

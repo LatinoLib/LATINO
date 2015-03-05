@@ -50,7 +50,8 @@ namespace Latino.TextMining
         {
             mAppends.Clear();
             mDistinctAppends.Clear();
-            foreach (TextFeature feature in mFeatures)
+            foreach (TextFeature feature in mFeatures
+                .SelectMany(f => f is TextFeatureGroup ? ((TextFeatureGroup)f).Features : new[] { f }))
             {
                 switch (feature.Operation)
                 {
@@ -214,6 +215,57 @@ namespace Latino.TextMining
             IsEncloseMarkTokenWithSpace = reader.ReadBool();
             string pattern = reader.ReadString();
             mRegex = pattern ==  "" ? null : new Regex(pattern);
+        }
+    }
+
+
+    public class TextFeatureGroup : TextFeature
+    {
+        protected TextFeatureGroup(TextFeature[] features) : base("")
+        {
+            Operation = TextFeatureOperation.Custom;
+            Features = Preconditions.CheckNotNullArgument(features);
+        }
+
+        public TextFeatureGroup(BinarySerializer reader) : base(reader)
+        {
+            Load(reader);
+        }
+
+        public TextFeature[] Features { get; protected set; }
+
+        protected internal override string PerformCustomOperation(string input)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public new void Load(BinarySerializer reader)
+        {
+            int count = reader.ReadInt();
+            Features = new TextFeature[count];
+            for (int i = 0; i < count; i++)
+            {
+                var textFeature = reader.ReadObject<TextFeature>();
+                if (TextFeatureProcessor.IsRecreateFeaturesAfterLoad)
+                {
+                    // derived features must have default ctor (or at lleast one optional parameters only) 
+                    Features[i] = (TextFeature)Utils.CreateInstance(textFeature.GetType());
+                }
+                else
+                {
+                    Features[i] = textFeature;
+                }
+            }
+        }
+
+        public override void Save(BinarySerializer writer)
+        {
+            base.Save(writer);
+            writer.WriteInt(Features.Length);
+            foreach (TextFeature feature in Features)
+            {
+                writer.WriteObject(feature);
+            }
         }
     }
 

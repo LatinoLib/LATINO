@@ -110,7 +110,7 @@ namespace Latino.TextMining
 
         public class BasicHappyEmoticonsFeature : AnyOfTermsTextFeature
         {
-            public BasicHappyEmoticonsFeature(string markToken = "__HAPPY_EMOTICON__")
+            public BasicHappyEmoticonsFeature(string markToken = "__BASIC_HAPPY_EMOTICON__")
                 : base(markToken)
             {
                 Terms = BasicHappyEmoticons;
@@ -125,7 +125,7 @@ namespace Latino.TextMining
 
         public class BasicSadEmoticonsFeature : AnyOfTermsTextFeature
         {
-            public BasicSadEmoticonsFeature(string markToken = "__SAD_EMOTICON__") : base(markToken)
+            public BasicSadEmoticonsFeature(string markToken = "__BASIC_SAD_EMOTICON__") : base(markToken)
             {
                 Terms = BasicSadEmoticons;
                 Operation = TextFeatureOperation.Replace;
@@ -168,8 +168,9 @@ namespace Latino.TextMining
 
         public class LastHappyEmoticonsFeature : HappyEmoticonsFeature
         {
-            public LastHappyEmoticonsFeature(string markToken = "__LAST_HAPPY__") : base(markToken)
+            public LastHappyEmoticonsFeature(string markToken = "__LAST_HAPPY_EMOTICON__") : base(markToken)
             {
+                Operation = TextFeatureOperation.Append;
             }
 
             public LastHappyEmoticonsFeature(BinarySerializer reader) : base(reader)
@@ -184,8 +185,9 @@ namespace Latino.TextMining
 
         public class LastSadEmoticonsFeature : SadEmoticonsFeature
         {
-            public LastSadEmoticonsFeature(string markToken = "__LAST_SAD__") : base(markToken)
+            public LastSadEmoticonsFeature(string markToken = "__LAST_SAD_EMOTICON__") : base(markToken)
             {
+                Operation = TextFeatureOperation.Append;
             }
 
             public LastSadEmoticonsFeature(BinarySerializer reader) : base(reader)
@@ -198,56 +200,86 @@ namespace Latino.TextMining
             }
         }
 
-        public class HappyEmoticonsLenTwoFeature : HappyEmoticonsFeature
+        public class HappySadEmoticonsFeature : TextFeatureGroup
         {
-            public HappyEmoticonsLenTwoFeature(string markToken = "__HAPPY_EMOTICON__") : base(markToken)
-            {
-                Terms = new Strings(Terms.Where(s => s.Length <= 2));
-            }
 
-            public HappyEmoticonsLenTwoFeature(BinarySerializer reader) : base(reader)
+            public HappySadEmoticonsFeature(string markToken = "") : base(GetFeatures(markToken))
             {
             }
-        }
 
-        public class SadEmoticonsLenTwoFeature : SadEmoticonsFeature
-        {
-            public SadEmoticonsLenTwoFeature(string markToken = "__SAD_EMOTICON__") : base(markToken)
-            {
-                Terms = new Strings(Terms.Where(s => s.Length <= 2));
-            }
-
-            public SadEmoticonsLenTwoFeature(BinarySerializer reader) : base(reader)
+            public HappySadEmoticonsFeature(BinarySerializer reader) : base(reader)
             {
             }
-        }
 
-        public class HappyEmoticonsLenOverTwoFeature : HappyEmoticonsFeature
-        {
-            public HappyEmoticonsLenOverTwoFeature(string markToken = "__HAPPY_EMOTICON__") : base(markToken)
+            private static TextFeature[] GetFeatures(string markToken)
             {
-                Terms = new Strings(Terms.Where(s => s.Length > 2));
+                if (markToken == "")
+                {
+                    return new TextFeature[] {
+                        new HappyEmoticonsLenOverTwoFeature(),
+                        new SadEmoticonsLenOverTwoFeature(),
+                        new HappyEmoticonsLenTwoFeature(),
+                        new SadEmoticonsLenTwoFeature() 
+                    };
+                }
+                return new TextFeature[] {
+                    new HappyEmoticonsLenOverTwoFeature(markToken),
+                    new SadEmoticonsLenOverTwoFeature(markToken),
+                    new HappyEmoticonsLenTwoFeature(markToken),
+                    new SadEmoticonsLenTwoFeature(markToken) 
+                };
             }
 
-            public HappyEmoticonsLenOverTwoFeature(BinarySerializer reader) : base(reader)
+            public class HappyEmoticonsLenTwoFeature : HappyEmoticonsFeature
             {
-            }
-        }
+                public HappyEmoticonsLenTwoFeature(string markToken = "__HAPPY_EMOTICON__") : base(markToken)
+                {
+                    Terms = new Strings(Terms.Where(s => s.Length <= 2));
+                }
 
-        public class HappySadEmoticonsLenOverTwoFeature : HappyEmoticonsFeature
-        {
-            
-        }
-
-        public class SadEmoticonsLenOverTwoFeature : SadEmoticonsFeature
-        {
-            public SadEmoticonsLenOverTwoFeature(string markToken = "__SAD_EMOTICON__") : base(markToken)
-            {
-                Terms = new Strings(Terms.Where(s => s.Length > 2));
+                public HappyEmoticonsLenTwoFeature(BinarySerializer reader) : base(reader)
+                {
+                }
             }
 
-            public SadEmoticonsLenOverTwoFeature(BinarySerializer reader) : base(reader)
+            public class SadEmoticonsLenTwoFeature : SadEmoticonsFeature
             {
+                public SadEmoticonsLenTwoFeature(string markToken = "__SAD_EMOTICON__") : base(markToken)
+                {
+                    Terms = new Strings(Terms.Where(s => s.Length <= 2));
+                }
+
+                public SadEmoticonsLenTwoFeature(BinarySerializer reader) : base(reader)
+                {
+                }
+            }
+
+            public class HappyEmoticonsLenOverTwoFeature : HappyEmoticonsFeature
+            {
+                public HappyEmoticonsLenOverTwoFeature(string markToken = "__HAPPY_EMOTICON__")
+                    : base(markToken)
+                {
+                    Terms = new Strings(Terms.Where(s => s.Length > 2));
+                }
+
+                public HappyEmoticonsLenOverTwoFeature(BinarySerializer reader)
+                    : base(reader)
+                {
+                }
+            }
+
+            public class SadEmoticonsLenOverTwoFeature : SadEmoticonsFeature
+            {
+                public SadEmoticonsLenOverTwoFeature(string markToken = "__SAD_EMOTICON__")
+                    : base(markToken)
+                {
+                    Terms = new Strings(Terms.Where(s => s.Length > 2));
+                }
+
+                public SadEmoticonsLenOverTwoFeature(BinarySerializer reader)
+                    : base(reader)
+                {
+                }
             }
         }
 
@@ -350,14 +382,6 @@ namespace Latino.TextMining
         public static readonly string KullAndCrossbones = char.ConvertFromUtf32(0x2620); //      ☠
 
 
-
-        public static readonly TextFeature[] HappySadEmoticonsFetatures = new TextFeature[] {
-            new HappyEmoticonsLenTwoFeature(),
-            new SadEmoticonsLenTwoFeature(),
-            new HappyEmoticonsLenOverTwoFeature(),
-            new SadEmoticonsLenOverTwoFeature()
-        };
-
         public class TwitterUserFeature : TextFeature
         {
             public TwitterUserFeature(string markToken = "__USER__") : base(markToken)
@@ -424,6 +448,31 @@ namespace Latino.TextMining
             protected override string GetPattern(ref RegexOptions options)
             {
                 return @"#(\w+)";
+            }
+        }
+
+        public class PunctuationFeature : TextFeatureGroup
+        {
+            public PunctuationFeature() : base(GetFeatures())
+            {
+            }
+
+            public PunctuationFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
+            private static TextFeature[] GetFeatures()
+            {
+                return new TextFeature[] {
+                    new LastExclamationFeature(),
+                    new LastQuestionMarkFeature(),
+                    new SingleExclamationFeature(),
+                    new SingleQuestionMarkFeature(),
+                    new MultipleMixedPunctuationFeature(),
+                    new MultipleQuestionMarkFeature(),
+                    new MultipleExclamationFeature(),
+                    new MultipleDotFeature()
+                };
             }
         }
 
