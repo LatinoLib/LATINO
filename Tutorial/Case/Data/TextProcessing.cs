@@ -95,6 +95,7 @@ namespace Tutorial.Case.Data
                 };
 
             var processor = new TextFeatureProcessor()
+                .With(new SocialMediaProcessing.NormalizeDiacriticalCharactersFeature())
                 .With(new SocialMediaProcessing.UrlFeature())
                 //.With(new SocialMediaProcessing.MessageLengthFeature())
                 .With(new SocialMediaProcessing.StockSymbolFeature())

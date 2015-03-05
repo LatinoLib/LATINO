@@ -330,18 +330,6 @@ namespace Latino
             }
         }
 
-        public static string NormalizeDiacriticalCharacters(string input)
-        {
-            string normalized = Preconditions.CheckNotNullArgument(input).Normalize(NormalizationForm.FormD);
-            return new string(normalized
-                .Where(c =>
-                {
-                    UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(c);
-                    return category != UnicodeCategory.NonSpacingMark;
-                }).ToArray());
-        }
-
-
 
         // *** IO utilities ***
 

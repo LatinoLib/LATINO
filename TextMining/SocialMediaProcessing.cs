@@ -9,6 +9,11 @@ using System.Text.RegularExpressions;
 namespace Latino.TextMining
 {
 
+    public abstract class TextProcessing
+    {
+        
+    }
+
     public static class SocialMediaProcessing
     {
         // punctuation emoticons
@@ -227,6 +232,11 @@ namespace Latino.TextMining
             public HappyEmoticonsLenOverTwoFeature(BinarySerializer reader) : base(reader)
             {
             }
+        }
+
+        public class HappySadEmoticonsLenOverTwoFeature : HappyEmoticonsFeature
+        {
+            
         }
 
         public class SadEmoticonsLenOverTwoFeature : SadEmoticonsFeature
@@ -766,6 +776,23 @@ namespace Latino.TextMining
                     tokens.Add(token);
                 }
                 return input + " " + string.Join(" ", tokens);
+            }
+        }
+
+        public class NormalizeDiacriticalCharactersFeature : TextFeature
+        {
+            public NormalizeDiacriticalCharactersFeature() : base("")
+            {
+                Operation = TextFeatureOperation.Custom;
+            }
+
+            public NormalizeDiacriticalCharactersFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
+            protected internal override string PerformCustomOperation(string input)
+            {
+                return TextMiningUtils.NormalizeDiacriticalCharacters(input);
             }
         }
 
