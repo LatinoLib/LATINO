@@ -43,7 +43,7 @@ namespace Tutorial.Case.Validation
                     var m = (NaiveBayesClassifier<string>)model;
                     // do stuff after model is trained for a fold...
                 },
-                OnAfterPrediction = (sender, foldN, model, le, prediction) =>
+                OnAfterPrediction = (sender, foldN, model, ex, le, prediction) =>
                     Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", le.Label, prediction.BestClassLabel, prediction.BestScore),
                 OnAfterFold = (sender, foldN, trainSet, foldPredictions) =>
                 {
