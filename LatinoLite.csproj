@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5B86AAD5-3FEA-487C-A518-4F846AF09E18}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Latino</RootNamespace>
+    <AssemblyName>Latino</AssemblyName>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;THROW_EXCEPTIONS, LATINO, PUBLIC_INNER</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BinaryVector.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Model\AgglomerativeKMeansClusteringFast.cs" />
+    <Compile Include="Model\BatchUpdatedCentroidClassifier.cs" />
+    <Compile Include="Model\CentroidData.cs" />
+    <Compile Include="Model\ConfusionMatrix.cs" />
+    <Compile Include="Model\HierarchicalBisectingClusteringFast.cs" />
+    <Compile Include="Model\NearestCentroidClassifier.cs" />
+    <Compile Include="Model\SvmBinaryClassifier.cs" />
+    <Compile Include="Model\MajorityClassifier.cs" />
+    <Compile Include="Model\MaximumEntropyClassifierFast.cs" />
+    <Compile Include="Model\KnnClassifierFast.cs" />
+    <Compile Include="Model\NaiveBayesClassifier.cs" />
+    <Compile Include="Model\SvmLightLib.cs" />
+    <Compile Include="Model\SvmMulticlassClassifier.cs" />
+    <Compile Include="MultiSet.cs" />
+    <Compile Include="MultiSetEqualityComparer.cs" />
+    <Compile Include="Network.cs" />
+    <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuilt.cs" />
+    <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltCompact.cs" />
+    <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltCompressed.cs" />
+    <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltData.cs" />
+    <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltFull.cs" />
+    <Compile Include="TextMining\SimpleTokenizer.cs" />
+    <Compile Include="WebMining\BoilerplateRemover.cs" />
+    <Compile Include="TextMining\CustomStemmer.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\EncodingFoundException.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlAttributeCollection.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlCommentNode.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlConsoleListener.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlElementFlag.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlNameTable.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlNodeCollection.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlNodeType.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlParseError.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlParseErrorCode.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlTextNode.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlWebException.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\IOLibrary.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\MixedCodeDocumentCodeFragment.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\MixedCodeDocumentFragment.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\MixedCodeDocumentFragmentList.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\MixedCodeDocumentFragmentType.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\MixedCodeDocumentTextFragment.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\crc32.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\NameValuePairList.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlAttribute.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlDocument.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlEntity.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlNode.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlNodeNavigator.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlWeb.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\MixedCodeDocument.cs" />
+    <Compile Include="WebMining\HtmlAgilityPack\HtmlCmdLine.cs" />
+    <Compile Include="WebMining\HtmlTokenizer.cs" />
+    <Compile Include="TextMining\SimHash.cs" />
+    <Compile Include="TextMining\StopWords\SerbianStopWordsCyrillic.cs" />
+    <Compile Include="IPair.cs" />
+    <Compile Include="IEnumerableList.cs" />
+    <Compile Include="ICloneable.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="Model\IHierarchicalModel.cs" />
+    <Compile Include="Model\UnlabeledDataset.cs" />
+    <Compile Include="Model\IUnlabeledDataset.cs" />
+    <Compile Include="Model\IUnlabeledExampleCollection.cs" />
+    <Compile Include="Model\IncrementalKMeansClustering.cs" />
+    <Compile Include="Model\FuzzyKMeans.cs" />
+    <Compile Include="Model\IDistance.cs" />
+    <Compile Include="Model\IClustering.cs" />
+    <Compile Include="Model\ILabeledDataset.cs" />
+    <Compile Include="Model\ILabeledExampleCollection.cs" />
+    <Compile Include="Model\IModel.cs" />
+    <Compile Include="Model\ISimilarity.cs" />
+    <Compile Include="Model\MaxEnt.cs" />
+    <Compile Include="BinarySerializer.cs" />
+    <Compile Include="ArrayList.cs" />
+    <Compile Include="DescSort.cs" />
+    <Compile Include="GenericEqualityComparer.cs" />
+    <Compile Include="IContentEquatable.cs" />
+    <Compile Include="IDeeplyCloneable.cs" />
+    <Compile Include="IdxDat.cs" />
+    <Compile Include="IReadOnlyAdapter.cs" />
+    <Compile Include="ISerializable.cs" />
+    <Compile Include="KeyDat.cs" />
+    <Compile Include="ListEnum.cs" />
+    <Compile Include="Model\Prediction.cs" />
+    <Compile Include="Model\Cluster.cs" />
+    <Compile Include="Model\ClusteringResult.cs" />
+    <Compile Include="Model\CosineSimilarity.cs" />
+    <Compile Include="Model\LabeledDataset.cs" />
+    <Compile Include="Model\KMeansClustering.cs" />
+    <Compile Include="Model\KMeansClusteringFast.cs" />
+    <Compile Include="Model\KnnClassifier.cs" />
+    <Compile Include="Model\LabeledExample.cs" />
+    <Compile Include="Model\LSqrDotNet.cs" />
+    <Compile Include="Model\LSqrModel.cs" />
+    <Compile Include="Model\MaximumEntropyClassifier.cs" />
+    <Compile Include="Model\ModelUtils.cs" />
+    <Compile Include="Model\DotProductSimilarity.cs" />
+    <Compile Include="Pair.cs" />
+    <Compile Include="Ref.cs" />
+    <Compile Include="SetEqualityComparer.cs" />
+    <Compile Include="SparseMatrix.cs" />
+    <Compile Include="TextMining\LanguageDetector.cs" />
+    <Compile Include="TextMining\StopWords\SerbianStopWordsLatin.cs" />
+    <Compile Include="TextMining\StopWords\SloveneStopWords.cs" />
+    <Compile Include="TextMining\TextMiningUtils.cs" />
+    <Compile Include="TextMining\IncrementalBowSpace.cs" />
+    <Compile Include="TextMining\Lemmatizer.cs" />
+    <Compile Include="TextMining\IStemmer.cs" />
+    <Compile Include="TextMining\Snowball\ISnowballStemmer.cs" />
+    <Compile Include="TextMining\Stemmer.cs" />
+    <Compile Include="TextMining\StopWords\BulgarianStopWords.cs" />
+    <Compile Include="TextMining\StopWords\CzechStopWords.cs" />
+    <Compile Include="TextMining\StopWords\RomanianStopWords.cs" />
+    <Compile Include="TextMining\StopWords\HungarianStopWords.cs" />
+    <Compile Include="TextMining\StopWords\RussianStopWords.cs" />
+    <Compile Include="TextMining\Language.cs" />
+    <Compile Include="TextMining\StopWords\SwedishStopWords.cs" />
+    <Compile Include="TextMining\StopWords\PortogueseStopWords.cs" />
+    <Compile Include="TextMining\StopWords\NorwegianStopWords.cs" />
+    <Compile Include="TextMining\StopWords\ItalianStopWords.cs" />
+    <Compile Include="TextMining\StopWords\FinnishStopWords.cs" />
+    <Compile Include="TextMining\StopWords\DutchStopWords.cs" />
+    <Compile Include="TextMining\StopWords\DanishStopWords.cs" />
+    <Compile Include="TextMining\StopWords\EnglishStopWords.cs" />
+    <Compile Include="TextMining\StopWords\FrenchStopWords.cs" />
+    <Compile Include="TextMining\StopWords\GermanStopWords.cs" />
+    <Compile Include="TextMining\ITokenizer.cs" />
+    <Compile Include="TextMining\LemmaSharp\ExampleList.cs" />
+    <Compile Include="TextMining\LemmaSharp\ILemmatizer.cs" />
+    <Compile Include="TextMining\LemmaSharp\ILemmatizerModel.cs" />
+    <Compile Include="TextMining\LemmaSharp\ILemmatizerTrainable.cs" />
+    <Compile Include="TextMining\LemmaSharp\LemmaExample.cs" />
+    <Compile Include="TextMining\LemmaSharp\LemmaRule.cs" />
+    <Compile Include="TextMining\LemmaSharp\Lemmatizer.cs" />
+    <Compile Include="TextMining\LemmaSharp\LemmatizerSettings.cs" />
+    <Compile Include="TextMining\LemmaSharp\LemmaTreeNode.cs" />
+    <Compile Include="TextMining\LemmaSharp\RuleList.cs" />
+    <Compile Include="TextMining\LemmaSharp\RuleWeighted.cs" />
+    <Compile Include="TextMining\StopWords\SpanishStopWords.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Set.cs" />
+    <Compile Include="SparseVector.cs" />
+    <Compile Include="TextMining\BowSpace.cs" />
+    <Compile Include="TextMining\RegexTokenizer.cs" />
+    <Compile Include="TextMining\Snowball\Among.cs" />
+    <Compile Include="TextMining\Snowball\DanishStemmer.cs" />
+    <Compile Include="TextMining\Snowball\DutchStemmer.cs" />
+    <Compile Include="TextMining\Snowball\EnglishStemmer.cs" />
+    <Compile Include="TextMining\Snowball\FinnishStemmer.cs" />
+    <Compile Include="TextMining\Snowball\FrenchStemmer.cs" />
+    <Compile Include="TextMining\Snowball\German2Stemmer.cs" />
+    <Compile Include="TextMining\Snowball\GermanStemmer.cs" />
+    <Compile Include="TextMining\Snowball\ItalianStemmer.cs" />
+    <Compile Include="TextMining\Snowball\KpStemmer.cs" />
+    <Compile Include="TextMining\Snowball\LovinsStemmer.cs" />
+    <Compile Include="TextMining\Snowball\NorwegianStemmer.cs" />
+    <Compile Include="TextMining\Snowball\PorterStemmer.cs" />
+    <Compile Include="TextMining\Snowball\PortugueseStemmer.cs" />
+    <Compile Include="TextMining\Snowball\RussianStemmer.cs" />
+    <Compile Include="TextMining\Snowball\SnowballProgram.cs" />
+    <Compile Include="TextMining\Snowball\SpanishStemmer.cs" />
+    <Compile Include="TextMining\Snowball\SwedishStemmer.cs" />
+    <Compile Include="TextMining\PorterStemmer.cs" />
+    <Compile Include="TextMining\UnicodeTokenizer.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="WebMining\UrlNormalizer.cs" />
+    <Compile Include="WebMining\UrlTree.cs" />
+    <Compile Include="Web\OAuth.cs" />
+    <Compile Include="Web\WebUtils.cs" />
+    <Compile Include="WeightedNetwork.cs" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Turkish.ldp" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebMining\Resources\BoilerplateRemover\2ClassAllFeatures.tree" />
+    <EmbeddedResource Include="WebMining\Resources\BoilerplateRemover\6ClassAllFeatures.tree" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Bulgarian.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Czech.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Danish.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Dutch.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\English.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Estonian.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Finnish.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\French.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\German.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Hungarian.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Italian.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Portuguese.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Romanian.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Russian.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Serbian.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Slovene.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Spanish.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Swedish.ldp" />
+    <EmbeddedResource Include="TextMining\Resources\CharRanges.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebMining\Resources\UrlNormalizer\EffectiveTldNames.dat" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+</Project>
