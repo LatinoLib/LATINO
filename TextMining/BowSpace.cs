@@ -678,7 +678,7 @@ namespace Latino.TextMining
                 {
                     docCount = 0;
                     mLogger.Info("Initialize", "Pass {0} of {1} ...", n, mMaxNGramLen);
-                    foreach (ITokenizer document in documents)
+                    foreach (ITokenizerEnumerable document in documents)
                     {
                         docCount++;
                         mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
@@ -789,7 +789,7 @@ namespace Latino.TextMining
             // compute bag-of-words vectors
             mLogger.Info("Initialize", "Computing bag-of-words vectors ...");
             int docNum = 1;
-            foreach (ITokenizer document in documents)
+            foreach (ITokenizerEnumerable document in documents)
             {
                 mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
@@ -970,7 +970,7 @@ namespace Latino.TextMining
         }
 
         // TODO: merge with ProcessDocument
-        public SparseVector<double> ProcessDocumentTokenized(ITokenizer document, IStemmer stemmer)
+        public SparseVector<double> ProcessDocumentTokenized(ITokenizerEnumerable document, IStemmer stemmer)
         {
             Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Dictionary<int, int> tfVec = new Dictionary<int, int>();
