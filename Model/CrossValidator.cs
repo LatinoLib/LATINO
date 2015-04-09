@@ -177,7 +177,9 @@ namespace Latino.Model.Eval
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, ILabeledDataset<LblT, InputExT> trainSet);
         public delegate ILabeledDataset<LblT, ModelExT> TestSetFunc(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, ILabeledDataset<LblT, InputExT> testSet);
-        public delegate void FoldPhaseHandler(
+        public delegate ILabeledDataset<LblT, ModelExT> BeforeFoldPhaseHandler(
+            AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> dataset);
+        public delegate void AfterFoldPhaseHandler(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> dataset);
         public delegate void AfterPredictHandler(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int fondN, IModel<LblT, ModelExT> model, 
@@ -187,10 +189,10 @@ namespace Latino.Model.Eval
 
         public TrainSetFunc OnTrainSetMap { get; set; }
         public TestSetFunc OnTestSetMap { get; set; }
-        public FoldPhaseHandler OnBeforeTrain { get; set; }
-        public FoldPhaseHandler OnAfterTrain { get; set; }
-        public FoldPhaseHandler OnBeforeTest { get; set; }
-        public FoldPhaseHandler OnAfterTest { get; set; }
+        public BeforeFoldPhaseHandler OnBeforeTrain { get; set; }
+        public AfterFoldPhaseHandler OnAfterTrain { get; set; }
+        public BeforeFoldPhaseHandler OnBeforeTest { get; set; }
+        public AfterFoldPhaseHandler OnAfterTest { get; set; }
         public AfterPredictHandler OnAfterPrediction { get; set; }
         public FoldHandler OnBeforeFold { get; set; }
         public FoldHandler OnAfterFold { get; set; }
@@ -268,31 +270,29 @@ namespace Latino.Model.Eval
             LabeledDataset<LblT, InputExT> testSet, ILabeledDataset<LblT, ModelExT> mappedTestSet, CrossValidationTimeProfile modelProfile)
         {
             // train
-            BeforeTrain(foldN, model, mappedTrainSet);
-            model.Train(mappedTrainSet);
-            AfterTrain(foldN, model, mappedTrainSet);
+            ILabeledDataset<LblT, ModelExT> usedTrainSet = BeforeTrain(foldN, model, mappedTrainSet);
+            model.Train(usedTrainSet);
+            AfterTrain(foldN, model, usedTrainSet);
             modelProfile.TrainEndTime = DateTime.Now;
 
             // test
             modelProfile.TestStartTime = DateTime.Now;
-            BeforeTest(foldN, model, mappedTestSet);
+            ILabeledDataset<LblT, ModelExT> usedTestSet = BeforeTest(foldN, model, mappedTestSet);
             PerfMatrix<LblT> foldMatrix = GetPerfMatrix(GetModelName(model), foldN);
-            var foldPredictions = new List<Pair<LabeledExample<LblT, ModelExT>, Prediction<LblT>>>();
-            for (int i = 0; i < mappedTestSet.Count; i++)
+            for (int i = 0; i < usedTestSet.Count; i++)
             {
-                LabeledExample<LblT, ModelExT> le = mappedTestSet[i];
+                LabeledExample<LblT, ModelExT> le = usedTestSet[i];
 
                 Prediction<LblT> prediction = model.Predict(le.Example);
                 if (prediction.Any())
                 {
                     foldMatrix.AddCount(le.Label, prediction.BestClassLabel);
                 }
-                foldPredictions.Add(new Pair<LabeledExample<LblT, ModelExT>, Prediction<LblT>>(le, prediction));
                 AfterPrediction(foldN, model, testSet[i].Example, le, prediction);
             }
 
             modelProfile.TestEndTime = DateTime.Now;
-            AfterTest(foldN, model, mappedTestSet);
+            AfterTest(foldN, model, usedTestSet);
         }
 
 
@@ -351,12 +351,9 @@ namespace Latino.Model.Eval
             return OnTestSetMap != null ? OnTestSetMap(this, foldN, testSet) : (ILabeledDataset<LblT, ModelExT>)testSet;
         }
 
-        protected virtual void BeforeTrain(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainSet)
+        protected virtual ILabeledDataset<LblT, ModelExT> BeforeTrain(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainSet)
         {
-            if (OnBeforeTrain != null)
-            {
-                OnBeforeTrain(this, foldN, model, trainSet);
-            }
+            return OnBeforeTrain != null ? OnBeforeTrain(this, foldN, model, trainSet) : trainSet;
         }
 
         protected virtual void AfterTrain(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainSet)
@@ -367,12 +364,9 @@ namespace Latino.Model.Eval
             }
         }
 
-        protected virtual void BeforeTest(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> testSet)
+        protected virtual ILabeledDataset<LblT, ModelExT> BeforeTest(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> testSet)
         {
-            if (OnBeforeTest != null)
-            {
-                OnBeforeTest(this, foldN, model, testSet);
-            }
+            return OnBeforeTest != null ? OnBeforeTest(this, foldN, model, testSet) : testSet;
         }
 
         protected virtual void AfterTest(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> testSet)
