@@ -97,6 +97,11 @@ namespace Latino.Model.Eval
             mData.Clear();
         }
 
+        public Tuple<string, string>[] GetDataKeys()
+        {
+            return mData.SelectMany(kv => kv.Value.Keys.Select(k => new Tuple<string, string>(kv.Key, k))).ToArray();
+        } 
+
         public PerfMatrix<LblT> GetPerfMatrix(string expName, string algoName, int foldNum)
         {
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
@@ -591,19 +596,19 @@ namespace Latino.Model.Eval
 
         public double GetMicroPrecision()
         {
-            double result = mLabels.Sum(lbl => GetActual(lbl)*GetPrecision(lbl));
+            double result = mLabels.Sum(lbl => GetActual(lbl) * GetPrecision(lbl));
             return result / SumAll();
         }
 
         public double GetMicroRecall()
         {
-            double result = mLabels.Sum(lbl => GetActual(lbl)*GetRecall(lbl));
+            double result = mLabels.Sum(lbl => GetActual(lbl) * GetRecall(lbl));
             return result / SumAll();
         }
 
         public double GetMicroF1()
         {
-            double result = mLabels.Sum(lbl => GetActual(lbl)*GetF1(lbl));
+            double result = mLabels.Sum(lbl => GetActual(lbl) * GetF1(lbl));
             return result / SumAll();
         }
 
@@ -749,7 +754,7 @@ namespace Latino.Model.Eval
             return str.ToString().TrimEnd();
         }
 
-        //General metrices
+        // General metrices
         public string ToString(IEnumerable<PerfMetric> perfMetrics) // empty for all metrics
         {
             PerfMetric[] metrics = perfMetrics as PerfMetric[] ?? Preconditions.CheckNotNullArgument(perfMetrics.ToArray());
@@ -764,7 +769,7 @@ namespace Latino.Model.Eval
             foreach (var perfMetric in metrics)
             {                
                 str.Append(perfMetric.ToString().PadLeft(30));
-                str.AppendLine(GetScore(perfMetric).ToString("n2").PadLeft(6));                
+                str.AppendLine(GetScore(perfMetric).ToString("n3").PadLeft(6));                
             }
             return str.ToString();
         }
@@ -816,7 +821,7 @@ namespace Latino.Model.Eval
             foreach (OrdinalPerfMetric metric in metrics)
             {
                 str.Append(metric.ToString().PadLeft(30));
-                str.AppendLine(GetScore(metric, labels).ToString("n2").PadLeft(6));
+                str.AppendLine(GetScore(metric, labels).ToString("n3").PadLeft(6));
             }
             return str.ToString();
         }

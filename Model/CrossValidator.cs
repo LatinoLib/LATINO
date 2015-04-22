@@ -169,7 +169,7 @@ namespace Latino.Model.Eval
         public bool IsShuffleStratified { get; set; }
         public string ExpName { get; set; }
 
-        public PerfData<LblT> PerfData { get; private set; }
+        public PerfData<LblT> PerfData { get; set; }
         public abstract List<IModel<LblT, ModelExT>> Models { get; }
 
 
@@ -186,7 +186,13 @@ namespace Latino.Model.Eval
             InputExT example, LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction);
         public delegate void FoldHandler(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, ILabeledDataset<LblT, InputExT> trainSet, ILabeledDataset<LblT, InputExT> testSet);
+        public delegate void TrainHandler(AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender,
+            int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainDataset);
+        public delegate Prediction<LblT> PredictHandler(AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender,
+            int foldN, IModel<LblT, ModelExT> model, LabeledExample<LblT, ModelExT> le);
 
+        public TrainHandler OnTrain { get; set; }
+        public PredictHandler OnPredict { get; set; }
         public TrainSetFunc OnTrainSetMap { get; set; }
         public TestSetFunc OnTestSetMap { get; set; }
         public BeforeFoldPhaseHandler OnBeforeTrain { get; set; }
@@ -207,7 +213,15 @@ namespace Latino.Model.Eval
 
             if (IsStratified) { Dataset.GroupLabels(IsShuffleStratified); } else { Dataset.Shuffle(new Random(1)); }
 
-            PerfData = new PerfData<LblT>();
+            if (PerfData == null)
+            {
+                PerfData = new PerfData<LblT>();
+            }
+            else
+            {
+                Preconditions.CheckArgument(PerfData.GetDataKeys().All(t => t.Item1 != ExpName), 
+                    "PerfData object already contains data for '{0}' experiment", ExpName);
+            }
             mFoldModelTimes.Clear();
             for (int i = 0; i < NumFolds; i++)
             {
@@ -271,7 +285,7 @@ namespace Latino.Model.Eval
         {
             // train
             ILabeledDataset<LblT, ModelExT> usedTrainSet = BeforeTrain(foldN, model, mappedTrainSet);
-            model.Train(usedTrainSet);
+            Train(foldN, model, usedTrainSet);
             AfterTrain(foldN, model, usedTrainSet);
             modelProfile.TrainEndTime = DateTime.Now;
 
@@ -283,7 +297,7 @@ namespace Latino.Model.Eval
             {
                 LabeledExample<LblT, ModelExT> le = usedTestSet[i];
 
-                Prediction<LblT> prediction = model.Predict(le.Example);
+                Prediction<LblT> prediction = Predict(foldN, model, le);
                 if (prediction.Any())
                 {
                     foldMatrix.AddCount(le.Label, prediction.BestClassLabel);
@@ -295,6 +309,22 @@ namespace Latino.Model.Eval
             AfterTest(foldN, model, usedTestSet);
         }
 
+        protected virtual void Train(int foldN, IModel<LblT, ModelExT> model, ILabeledDataset<LblT, ModelExT> trainDataset)
+        {
+            if (OnTrain != null)
+            {
+                OnTrain(this, foldN, model, trainDataset);
+            }
+            else
+            {
+                model.Train(trainDataset);
+            }
+        }
+
+        protected virtual Prediction<LblT> Predict(int foldN, IModel<LblT, ModelExT> model, LabeledExample<LblT, ModelExT> le)
+        {
+            return OnPredict != null ? OnPredict(this, foldN, model, le) : model.Predict(le.Example);
+        }
 
         protected virtual PerfMatrix<LblT> GetPerfMatrix(string algName, int foldN)
         {
