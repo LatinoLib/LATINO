@@ -3,19 +3,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Latino.TextMining
 {
 
-    public abstract class TextProcessing
+    public static class Emoticons
     {
-        
-    }
 
-    public static class SocialMediaProcessing
-    {
         // punctuation emoticons
         // source: http://en.wikipedia.org/wiki/List_of_emoticons Feb., 2015
         public static readonly string[] SmileyOrHappyFace =
@@ -41,11 +38,11 @@ namespace Latino.TextMining
                 ">:O", ":-O", ":O", ":-o", ":o", "8-0", "O_O", "o-o", "O_o", "o_O", "o_o", "O-O"
             };
         public static readonly string[] Kiss = { ":*", ":^*", "('}{')" };
-        public static readonly string[] WinkSmirk = { ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)", ":-" };
+        public static readonly string[] WinkSmirk = { ";-)", ";)", "*-)", "*)", ";-]", ";]", ";D", ";^)", ":-" };
         public static readonly string[] TongueStickingOutCheekyPlayful =
             {
                 ">:P", ":-P", ":P", "X-P", "x-p", "xp", "XP", ":-p", ":p", "=p", ":-Þ", ":Þ", ":þ", ":-þ", ":-b", ":b", "d:"
-            };        
+            };
         public static readonly string[] SkepticalAnnoyedUndecidedUneasyHesitant =
             {
                 @">:\", ">:/", ":-/", ":-.", ":/", @":\", "=/", @"=\ :L", "=L :S", ">.<", "-_-", "-.-"
@@ -80,34 +77,37 @@ namespace Latino.TextMining
         public static readonly string[] Heart = { "<3" };
         public static readonly string[] BrokenHeart = { "</3" };
         public static readonly string[] LennyFace = { "( ͡° ͜ʖ ͡°)" };
+    }
 
 
-        // punctuation emoticon sets and features
+    public static class SocialMediaProcessing
+    {
 
         public static readonly Strings BasicHappyEmoticons = new Strings(
-                SmileyOrHappyFace, Rose, Heart
-            );
+            Emoticons.SmileyOrHappyFace, Emoticons.Rose, Emoticons.Heart
+        );
 
         public static readonly Strings HappyEmoticons = new Strings(
-                SmileyOrHappyFace, LaughingbigGrinlaughWithGlasses, VeryHappyOrDoubleChin, TearsOfHappiness, Kiss,
-                WinkSmirk, TongueStickingOutCheekyPlayful, AngelSaintInnocent, HighFive, Cool, TongueInCheek,
-                DumbDunceLike, Cheer, Cheerleader, Rose, Heart, LennyFace
-            );
+            Emoticons.SmileyOrHappyFace, Emoticons.LaughingbigGrinlaughWithGlasses, 
+            Emoticons.VeryHappyOrDoubleChin, Emoticons.TearsOfHappiness, Emoticons.Kiss,
+            Emoticons.WinkSmirk, Emoticons.TongueStickingOutCheekyPlayful, Emoticons.AngelSaintInnocent, 
+            Emoticons.HighFive, Emoticons.Cool, Emoticons.TongueInCheek, Emoticons.DumbDunceLike, 
+            Emoticons.Cheer, Emoticons.Cheerleader, Emoticons.Rose, Emoticons.Heart, Emoticons.LennyFace
+        );
 
         public static readonly Strings BasicSadEmoticons = new Strings(
-                FrownSad, WinkyFrowny, Angry, StraightFaceNoExpressionIndecision, BrokenHeart
-            );
+            Emoticons.FrownSad, Emoticons.WinkyFrowny, Emoticons.Angry, Emoticons.StraightFaceNoExpressionIndecision, Emoticons.BrokenHeart
+        );
 
         public static readonly Strings SadEmoticons = new Strings(
-                FrownSad, WinkyFrowny, Angry, Crying, HorrorDisgustSadnessGreatDismay, SurpriseShockYawn,
-                SkepticalAnnoyedUndecidedUneasyHesitant, StraightFaceNoExpressionIndecision,
-                SealedLipsOrWearingBraces, BoredYawning, DrunkConfused, BeingSick, LookOfDisapproval,
-                FishSomethingFishy, BrokenHeart
-            );
+            Emoticons.FrownSad, Emoticons.WinkyFrowny, Emoticons.Angry, Emoticons.Crying, Emoticons.HorrorDisgustSadnessGreatDismay, 
+            Emoticons.SurpriseShockYawn, Emoticons.SkepticalAnnoyedUndecidedUneasyHesitant, Emoticons.StraightFaceNoExpressionIndecision,
+            Emoticons.SealedLipsOrWearingBraces, Emoticons.BoredYawning, Emoticons.DrunkConfused, Emoticons.BeingSick, 
+            Emoticons.LookOfDisapproval, Emoticons.FishSomethingFishy, Emoticons.BrokenHeart
+        );
 
 
         // note: emoticon features are to be used after ReplaceUrls
-
         public class BasicHappyEmoticonsFeature : AnyOfTermsTextFeature
         {
             public BasicHappyEmoticonsFeature(string markToken = "__BASIC_HAPPY_EMOTICON__")
@@ -965,6 +965,55 @@ namespace Latino.TextMining
                 }
                 return result.ToString();
             }
+        }
+    }
+
+
+    public static class EmoticonCounter
+    {
+        private static readonly Tuple<string, Regex>[] Emoticons;
+        private static readonly Regex CharRegex;
+
+        static EmoticonCounter()
+        {
+            var chars = new HashSet<char>();
+
+            var emotList = new List<Tuple<string, Regex>>();
+            foreach (FieldInfo field in typeof(Emoticons).GetFields()
+                .Where(f => f.Attributes.HasFlag(FieldAttributes.Static) && f.FieldType == typeof(string[])))
+            {
+                var strings = (string[])field.GetValue(null);
+                string pattern = string.Join("|", strings.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray());
+                var regex = new Regex(pattern, RegexOptions.Compiled);
+                emotList.Add(new Tuple<string, Regex>(field.Name, regex));
+                foreach (char ch in strings.SelectMany(s => s).Where(ch => !chars.Contains(ch))) { chars.Add(ch); }
+            }
+            Emoticons = emotList.ToArray();
+            CharRegex = new Regex(string.Join("|", chars.Select(ch => Regex.Escape(char.ToString(ch))).ToArray()), RegexOptions.Compiled);
+        }
+
+        public static int Count(string text, ref Dictionary<string, int> counts)
+        {
+            if (string.IsNullOrEmpty(text)) { return 0; }
+
+            int total = 0;
+            if (CharRegex.IsMatch(text))
+            {
+                Dictionary<string, int> counts_ = counts;
+                foreach (Tuple<string, Regex> nameRegex in Emoticons)
+                {
+                    Tuple<string, Regex> nameRegex_ = nameRegex;
+                    nameRegex.Item2.Replace(text, match =>
+                    {
+                        int count;
+                        if (counts_.TryGetValue(nameRegex_.Item1, out count)) { count++; } else { count = 1; }
+                        counts_[nameRegex_.Item1] = count;
+                        total++;
+                        return "";
+                    });
+                }
+            }
+            return total;
         }
     }
 }

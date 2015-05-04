@@ -11,6 +11,7 @@
  ***************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using Latino.TextMining;
 
 namespace Tutorial.Case.Data
@@ -139,8 +140,21 @@ namespace Tutorial.Case.Data
                     Output.Flush();
                 }
                 }
-                                
             }
+
+            // counting the emoticons
+            var counts = new Dictionary<string, int>();
+            foreach (string corpu in corpus)
+            {
+                int count = EmoticonCounter.Count(corpu, ref counts);
+                Output.WriteLine("{0} found in - {1}", count, corpu);
+            }
+            Output.WriteLine("\nResults:");
+            foreach (KeyValuePair<string, int> kv in counts)
+            {
+                Output.WriteLine("{0} - {1}", kv.Key, kv.Value);
+            }
+
             Output.Flush();
         }
     }
