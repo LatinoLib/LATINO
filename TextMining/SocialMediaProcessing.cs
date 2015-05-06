@@ -978,18 +978,25 @@ namespace Latino.TextMining
         {
             var chars = new HashSet<char>();
 
-            var emotList = new List<Tuple<string, Regex>>();
+            var emotList = new List<Tuple<int, string, Regex>>();
             foreach (FieldInfo field in typeof(Emoticons).GetFields()
                 .Where(f => f.Attributes.HasFlag(FieldAttributes.Static) && f.FieldType == typeof(string[])))
             {
                 var strings = (string[])field.GetValue(null);
-                string pattern = string.Join("|", strings.OrderByDescending(s => s.Length).Select(Regex.Escape).ToArray());
-                var regex = new Regex(pattern, RegexOptions.Compiled);
-                emotList.Add(new Tuple<string, Regex>(field.Name, regex));
+                foreach (IGrouping<int, string> g in strings.GroupBy(s => s.Length))
+                {
+                    string pattern = string.Join("|", g.Select(Regex.Escape).ToArray());
+                    var regex = new Regex(pattern, RegexOptions.Compiled);
+                    emotList.Add(new Tuple<int, string, Regex>(g.Key, field.Name, regex));
+                }
                 foreach (char ch in strings.SelectMany(s => s).Where(ch => !chars.Contains(ch))) { chars.Add(ch); }
             }
-            Emoticons = emotList.ToArray();
-            CharRegex = new Regex(string.Join("|", chars.Select(ch => Regex.Escape(char.ToString(ch))).ToArray()), RegexOptions.Compiled);
+            // search longer patterns first 
+            Emoticons = emotList.OrderByDescending(e => e.Item1).Select(e => new Tuple<string, Regex>(e.Item2, e.Item3)).ToArray();
+
+            // preliminary char-based filter before going for full search
+            CharRegex = new Regex(string.Join("|", chars.Where(ch => new[] { ' ', '.' }.Contains(ch))
+                .Select(ch => Regex.Escape(char.ToString(ch))).ToArray()), RegexOptions.Compiled);
         }
 
         public static int Count(string text, ref Dictionary<string, int> counts)
@@ -1003,7 +1010,7 @@ namespace Latino.TextMining
                 foreach (Tuple<string, Regex> nameRegex in Emoticons)
                 {
                     Tuple<string, Regex> nameRegex_ = nameRegex;
-                    nameRegex.Item2.Replace(text, match =>
+                    text = nameRegex.Item2.Replace(text, match =>
                     {
                         int count;
                         if (counts_.TryGetValue(nameRegex_.Item1, out count)) { count++; } else { count = 1; }

@@ -93,8 +93,10 @@ namespace Tutorial.Case.Data
                     @",:-) 7:^]	Ronald Reagan[14]",
                     @"<3 </3	Heart and broken-heart (reverse-rotation)[15]",
                     @"( ͡° ͜ʖ ͡°)",
+                    @":-) :-"
                 };
 
+/*
             var processor = new TextFeatureProcessor()
                 .With(new SocialMediaProcessing.NormalizeDiacriticalCharactersFeature())
                 .With(new SocialMediaProcessing.UrlFeature())
@@ -141,13 +143,14 @@ namespace Tutorial.Case.Data
                 }
                 }
             }
+*/
 
             // counting the emoticons
             var counts = new Dictionary<string, int>();
             foreach (string corpu in corpus)
             {
                 int count = EmoticonCounter.Count(corpu, ref counts);
-                Output.WriteLine("{0} found in - {1}", count, corpu);
+                Output.WriteLine("{0} found in  {1}", count, corpu);
             }
             Output.WriteLine("\nResults:");
             foreach (KeyValuePair<string, int> kv in counts)
