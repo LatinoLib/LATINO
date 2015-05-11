@@ -99,8 +99,7 @@ namespace Latino.TextMining
 
             foreach (IdxDat<double> idxDat in bow)
             {
-                IdxDat<double> idat = idxDat;
-                idat.Dat = idat.Dat * mWordDeltas[idat.Idx];
+                bow[idxDat.Idx] = idxDat.Dat * mWordDeltas[idxDat.Idx];
             }
             if (normalizeVectors)
             {
