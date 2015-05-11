@@ -75,15 +75,7 @@ namespace Latino.TextMining
             var bowDataset = new List<SparseVector<double>>();
             foreach (SparseVector<double> bow in bowData)
             {
-                foreach (IdxDat<double> idxDat in bow)
-                {
-                    IdxDat<double> idat = idxDat;
-                    idat.Dat = idat.Dat * mWordDeltas[idat.Idx];
-                }
-                if (normalizeVectors)
-                {
-                    ModelUtils.TryNrmVecL2(bow);
-                }
+                CalcDeltaBow(bow, normalizeVectors);
                 bowDataset.Add(bow);
             }
 
@@ -97,14 +89,7 @@ namespace Latino.TextMining
             SparseVector<double> bow = base.ProcessDocument(document, stemmer);
             NormalizeVectors = normalizeVectors;
 
-            foreach (IdxDat<double> idxDat in bow)
-            {
-                bow[idxDat.Idx] = idxDat.Dat * mWordDeltas[idxDat.Idx];
-            }
-            if (normalizeVectors)
-            {
-                ModelUtils.TryNrmVecL2(bow);
-            }
+            CalcDeltaBow(bow, normalizeVectors);
             return bow;
         }
 
@@ -114,6 +99,18 @@ namespace Latino.TextMining
                 .OrderByDescending(kv => kv.Value).Take(50)
                 .Select(kv => new Tuple<Word, double>(Words.First(w => w.mIdx == kv.Key), kv.Value))
                 .ToArray();
+        }
+
+        private void CalcDeltaBow(SparseVector<double> bow, bool normalizeVectors)
+        {
+            foreach (IdxDat<double> idxDat in bow)
+            {
+                bow[idxDat.Idx] = idxDat.Dat * mWordDeltas[idxDat.Idx];
+            }
+            if (normalizeVectors)
+            {
+                ModelUtils.TryNrmVecL2(bow);
+            }
         }
     }
 }
