@@ -27,7 +27,11 @@ namespace Latino.Model.Eval
         // macro-averaged
         MacroPrecision,
         MacroRecall,
-        MacroF1
+        MacroF1,
+
+        AccStdErrorConf90,
+        AccStdErrorConf95,
+        AccStdErrorConf99
     }
 
     public enum ClassPerfMetric
@@ -165,6 +169,23 @@ namespace Latino.Model.Eval
             return null;
         }
 
+        public int GetFoldCount(string expName, string algoName)
+        {
+            Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
+            Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
+
+            Dictionary<string, FoldData> algoData;
+            if (mData.TryGetValue(expName, out algoData))
+            {
+                FoldData foldData;
+                if (algoData.TryGetValue(algoName, out foldData))
+                {
+                    return foldData.Count;
+                }
+            }
+            return 0;
+        }
+
         public Set<LblT> GetLabels(string expName, string algoName)
         {
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
@@ -248,17 +269,47 @@ namespace Latino.Model.Eval
 
         public double GetAvg(string expName, string algoName, PerfMetric metric, out double stdev)
         {
-            return GetAvg(expName, algoName, (mtx) => mtx.GetScore(metric), out stdev);
+            return GetAvg(expName, algoName, mtx => mtx.GetScore(metric), out stdev);
         }
 
         public double GetAvg(string expName, string algoName, ClassPerfMetric metric, LblT lbl, out double stdev)
         {
-            return GetAvg(expName, algoName, (mtx) => mtx.GetScore(metric, lbl), out stdev);
+            return GetAvg(expName, algoName, mtx => mtx.GetScore(metric, lbl), out stdev);
         }
 
         public double GetAvg(string expName, string algoName, OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels, out double stdev)
         {
-            return GetAvg(expName, algoName, (mtx) => mtx.GetScore(metric, orderedLabels), out stdev);
+            return GetAvg(expName, algoName, mtx => mtx.GetScore(metric, orderedLabels), out stdev);
+        }
+
+        public double GetAvgStdErr(string expName, string algoName, PerfMetric metric, out double stderr, double confidenceLevel = 0.95)
+        {
+            double zval;
+            Preconditions.CheckArgument(PerfMatrix<LblT>.StdErrProbZValues.TryGetValue(confidenceLevel, out zval));
+            double stddev;
+            double avg = GetAvg(expName, algoName, metric, out stddev);
+            stderr = zval * stddev / Math.Sqrt(GetFoldCount(expName, algoName));
+            return avg;
+        }
+
+        public double GetAvgStdErr(string expName, string algoName, ClassPerfMetric metric, LblT lbl, out double stderr, double confidenceLevel = 0.95)
+        {
+            double zval;
+            Preconditions.CheckArgument(PerfMatrix<LblT>.StdErrProbZValues.TryGetValue(confidenceLevel, out zval));
+            double stddev;
+            double avg = GetAvg(expName, algoName, metric, lbl, out stddev);
+            stderr = zval * stddev / Math.Sqrt(GetFoldCount(expName, algoName));
+            return avg;
+        }
+
+        public double GetAvgStdErr(string expName, string algoName, OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels, out double stderr, double confidenceLevel = 0.95)
+        {
+            double zval;
+            Preconditions.CheckArgument(PerfMatrix<LblT>.StdErrProbZValues.TryGetValue(confidenceLevel, out zval));
+            double stddev;
+            double avg = GetAvg(expName, algoName, metric, orderedLabels, out stddev);
+            stderr = zval * stddev / Math.Sqrt(GetFoldCount(expName, algoName));
+            return avg;
         }
 
         private double GetAvg(string expName, string algoName, Func<PerfMatrix<LblT>, double> scoreFunc, out double stdev) // TODO: test if stdev is correct
@@ -406,6 +457,11 @@ namespace Latino.Model.Eval
 
     public class PerfMatrix<LblT>
     {
+        public static Dictionary<double, double> StdErrProbZValues = new Dictionary<double, double>
+            {
+                { 0.9, 1.64 }, { 0.95, 1.96 }, { 0.99, 2.58 }, 
+            };
+
         private Dictionary<LblT, Dictionary<LblT, int>> mMtx
             = new Dictionary<LblT, Dictionary<LblT, int>>(); // TODO: set lbl equality comparer
 
@@ -581,6 +637,7 @@ namespace Latino.Model.Eval
             return GetF(1, lbl);
         }
 
+
         // *** Micro-averaging (over examples) ***
 
         public double GetAccuracy()
@@ -592,7 +649,6 @@ namespace Latino.Model.Eval
         {
             return 1 - GetAccuracy();
         }
-
 
         public double GetMicroPrecision()
         {
@@ -678,6 +734,12 @@ namespace Latino.Model.Eval
                     return GetError();
                 case PerfMetric.Kappa:
                     return GetKappa();
+                case PerfMetric.AccStdErrorConf90:
+                    return GetAccStdError(0.9);
+                case PerfMetric.AccStdErrorConf95:
+                    return GetAccStdError(0.95);
+                case PerfMetric.AccStdErrorConf99:
+                    return GetAccStdError(0.99);
                 default:
                     throw new ArgumentValueException("metric");
             }
@@ -783,7 +845,7 @@ namespace Latino.Model.Eval
                 metrics = Enum.GetValues(typeof(ClassPerfMetric)).Cast<ClassPerfMetric>().ToArray();
             }
 
-            ArrayList<LblT> labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
+            var labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
 
             var str = new StringBuilder();
             str.AppendLine("\nClass-specific metrices:");
@@ -810,13 +872,13 @@ namespace Latino.Model.Eval
         public string ToString(IEnumerable<LblT> orderedLabels, IEnumerable<OrdinalPerfMetric> ordinalMetrics)
         {
             LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNullArgument(orderedLabels).ToArray();
-            OrdinalPerfMetric[] metrics = ordinalMetrics as OrdinalPerfMetric[] ?? Preconditions.CheckNotNullArgument(ordinalMetrics.ToArray());
-            if (!metrics.Any())
+            OrdinalPerfMetric[] metrics = ordinalMetrics as OrdinalPerfMetric[] ?? (ordinalMetrics == null ? null : ordinalMetrics.ToArray());
+            if (metrics == null || !metrics.Any())
             {
                 metrics = Enum.GetValues(typeof(OrdinalPerfMetric)).Cast<OrdinalPerfMetric>().ToArray();
             }
 
-            StringBuilder str = new StringBuilder();
+            var str = new StringBuilder();
             str.AppendLine("\nOrdinal metrices:");
             foreach (OrdinalPerfMetric metric in metrics)
             {
@@ -852,6 +914,14 @@ namespace Latino.Model.Eval
         }
 
 
+        public double GetAccStdError(double confidenceLevel = 0.95)
+        {
+            double z;
+            Preconditions.CheckArgument(StdErrProbZValues.TryGetValue(confidenceLevel, out z));
+            double acc = GetAccuracy();
+            return z * Math.Sqrt(acc * (1 - acc) / SumAll());
+        }
+
         // implementation of http://vassarstats.net/kappaexp.html and http://vassarstats.net/kappa.html
 
         public double GetWeightedKappa(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
@@ -874,14 +944,13 @@ namespace Latino.Model.Eval
             }
 
             // the matrix of expected values
-            
             var expected = new Dictionary<LblT, Dictionary<LblT, double>>();
             foreach (LblT actual in labels)
             {
                 var row = new Dictionary<LblT, double>();
                 foreach (LblT predicted in labels)
                 {
-                    row.Add(predicted, GetActual(actual) / s * GetPredicted(predicted)/s);  //a[i]*p[j]/s/s
+                    row.Add(predicted, GetActual(actual) / s * GetPredicted(predicted)/s);  // a[i] * p[j] / s / s
                 }
                 expected.Add(actual, row);
             }
@@ -906,18 +975,16 @@ namespace Latino.Model.Eval
             }
             double kappa = 1 - (1 - s1) / (1 - s2);            
             return kappa;
-         }
-
+        }
 
         public double GetF1AvgExtremeClasses(IEnumerable<LblT> orderedLabels) 
-        {            
-            LblT label1 = orderedLabels.First<LblT>();
-            LblT label2 = orderedLabels.Last<LblT>();
+        {
+            LblT[] labels = orderedLabels as LblT[] ?? orderedLabels.ToArray();
+            LblT label1 = labels.First();
+            LblT label2 = labels.Last();
 
             return (GetF1(label1) + GetF1(label2)) / 2;
         }
-        
-
 
         public double GetScore(OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels)
         {
@@ -945,7 +1012,7 @@ namespace Latino.Model.Eval
             }
         }
 
-        // weight metrices
+        // weight matrices
 
         public static Dictionary<LblT, Dictionary<LblT, double>> GetZeroMatrix(Set<LblT> labels)
         {
@@ -994,7 +1061,7 @@ namespace Latino.Model.Eval
             {
                 foreach (var lblPred in labels)
                 {
-                    weights[lblAct][lblPred] = weights[lblAct][lblPred]*weights[lblAct][lblPred];
+                    weights[lblAct][lblPred] = weights[lblAct][lblPred] * weights[lblAct][lblPred];
                 }
             }
             return weights;
