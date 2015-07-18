@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
@@ -70,9 +71,14 @@ namespace Latino.Model.Eval
         */
         private class FoldData : ArrayList<PerfMatrix<LblT>>
         {
+            private readonly object mLock = new object();
+
             public void Resize(int n)
             {
-                while (Count < n) { Add(null); }
+                lock (mLock)
+                {
+                    while (Count < n) { Add(null); }                    
+                }
             }
 
             public void Put(int foldNum, PerfMatrix<LblT> mtx)
@@ -82,8 +88,8 @@ namespace Latino.Model.Eval
             }
         }
 
-        private readonly Dictionary<string, Dictionary<string, FoldData>> mData
-            = new Dictionary<string, Dictionary<string, FoldData>>();
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, FoldData>> mData
+            = new ConcurrentDictionary<string, ConcurrentDictionary<string, FoldData>>();
         private readonly IEqualityComparer<LblT> mLblEqCmp
             = null;
 
@@ -111,19 +117,18 @@ namespace Latino.Model.Eval
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
             Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
-            Dictionary<string, FoldData> algoData;
+            ConcurrentDictionary<string, FoldData> algoData;
             if (mData.TryGetValue(expName, out algoData))
             {
                 FoldData foldData;
                 if (algoData.TryGetValue(algoName, out foldData))
                 {
                     foldData.Resize(foldNum);
-                    if (foldData[foldNum - 1] == null) { foldData[foldNum - 1] = new PerfMatrix<LblT>(mLblEqCmp); }
-                    return foldData[foldNum - 1];
+                    return foldData[foldNum - 1] ?? (foldData[foldNum - 1] = new PerfMatrix<LblT>(mLblEqCmp));
                 }
                 else
                 {
-                    algoData.Add(algoName, foldData = new FoldData());
+                    if (!algoData.TryAdd(algoName, foldData = new FoldData())) { foldData = algoData[algoName]; }
                     PerfMatrix<LblT> mtx = new PerfMatrix<LblT>(mLblEqCmp);
                     foldData.Put(foldNum, mtx);
                     return mtx;
@@ -132,11 +137,40 @@ namespace Latino.Model.Eval
             else
             {
                 FoldData foldData = new FoldData();
-                mData.Add(expName, algoData = new Dictionary<string, FoldData>());
-                algoData.Add(algoName, foldData);
+                if (!mData.TryAdd(expName, algoData = new ConcurrentDictionary<string, FoldData>())) { algoData = mData[expName]; }
+                algoData.TryAdd(algoName, foldData);
                 PerfMatrix<LblT> mtx = new PerfMatrix<LblT>(mLblEqCmp);
                 foldData.Put(foldNum, mtx);
                 return mtx;
+            }
+        }
+
+        public void SetPerfMatrix(string expName, string algoName, int foldNum, PerfMatrix<LblT> matrix)
+        {
+            Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
+            Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
+            Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
+            ConcurrentDictionary<string, FoldData> algoData;
+            if (mData.TryGetValue(expName, out algoData))
+            {
+                FoldData foldData;
+                if (algoData.TryGetValue(algoName, out foldData))
+                {
+                    foldData.Resize(foldNum);
+                    foldData[foldNum - 1] = matrix;
+                }
+                else
+                {
+                    if (!algoData.TryAdd(algoName, foldData = new FoldData())) { foldData = algoData[algoName]; }
+                    foldData.Put(foldNum, matrix);
+                }
+            }
+            else
+            {
+                FoldData foldData = new FoldData();
+                if (!mData.TryAdd(expName, algoData = new ConcurrentDictionary<string, FoldData>())) { algoData = mData[expName]; }
+                algoData.TryAdd(algoName, foldData);
+                foldData.Put(foldNum, matrix);
             }
         }
 
@@ -145,7 +179,7 @@ namespace Latino.Model.Eval
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
 
-            Dictionary<string, FoldData> algoData;
+            ConcurrentDictionary<string, FoldData> algoData;
             if (mData.TryGetValue(expName, out algoData))
             {
                 FoldData foldData;
@@ -174,7 +208,7 @@ namespace Latino.Model.Eval
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
 
-            Dictionary<string, FoldData> algoData;
+            ConcurrentDictionary<string, FoldData> algoData;
             if (mData.TryGetValue(expName, out algoData))
             {
                 FoldData foldData;
@@ -192,7 +226,7 @@ namespace Latino.Model.Eval
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
 
             var labels = new Set<LblT>();
-            Dictionary<string, FoldData> algoData;
+            ConcurrentDictionary<string, FoldData> algoData;
             if (mData.TryGetValue(expName, out algoData))
             {
                 FoldData foldData;
@@ -212,7 +246,7 @@ namespace Latino.Model.Eval
             Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
-            Dictionary<string, FoldData> algoData;
+            ConcurrentDictionary<string, FoldData> algoData;
             if (mData.TryGetValue(expName, out algoData))
             {
                 FoldData foldData;
@@ -232,7 +266,7 @@ namespace Latino.Model.Eval
             Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
-            Dictionary<string, FoldData> algoData;
+            ConcurrentDictionary<string, FoldData> algoData;
             if (mData.TryGetValue(expName, out algoData))
             {
                 FoldData foldData;
@@ -252,7 +286,7 @@ namespace Latino.Model.Eval
             Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
-            Dictionary<string, FoldData> algoData;
+            ConcurrentDictionary<string, FoldData> algoData;
             if (mData.TryGetValue(expName, out algoData))
             {
                 FoldData foldData;
@@ -318,7 +352,7 @@ namespace Latino.Model.Eval
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
             stdev = double.NaN;
-            Dictionary<string, FoldData> algoData;
+            ConcurrentDictionary<string, FoldData> algoData;
             if (mData.TryGetValue(expName, out algoData))
             {
                 FoldData foldData;
@@ -357,7 +391,7 @@ namespace Latino.Model.Eval
             ArrayList<string> expList = new ArrayList<string>(mData.Keys);
             expList.Sort();
             Set<string> tmp = new Set<string>();
-            foreach (Dictionary<string, FoldData> item in mData.Values) { tmp.AddRange(item.Keys); }
+            foreach (ConcurrentDictionary<string, FoldData> item in mData.Values) { tmp.AddRange(item.Keys); }
             ArrayList<string> algoList = new ArrayList<string>(tmp);
             algoList.Sort();
             StringBuilder sb = new StringBuilder();
@@ -404,7 +438,7 @@ namespace Latino.Model.Eval
             ArrayList<string> expList = new ArrayList<string>(mData.Keys);
             expList.Sort();
             Set<string> tmp = new Set<string>();
-            foreach (Dictionary<string, FoldData> item in mData.Values) { tmp.AddRange(item.Keys); }
+            foreach (ConcurrentDictionary<string, FoldData> item in mData.Values) { tmp.AddRange(item.Keys); }
             ArrayList<string> algoList = new ArrayList<string>(tmp);
             algoList.Sort();
             StringBuilder sb = new StringBuilder();
