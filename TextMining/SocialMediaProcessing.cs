@@ -845,11 +845,6 @@ namespace Latino.TextMining
             }
         }
 
-
-
-
-
-
         // if there is more then 3 consecutive identical characters, truncate to threee
         public class RepetitionFeature : TextFeature
         {
@@ -966,6 +961,33 @@ namespace Latino.TextMining
                 return result.ToString();
             }
         }
+
+
+        public class SowalabsTweetNormalizationFeature : TextFeature
+        {
+            private static readonly Regex mUrlRegex = new Regex(@"http\S*", RegexOptions.IgnoreCase);
+            private static readonly Regex mStockRefRegex = new Regex(@"\$\w+", RegexOptions.IgnoreCase);
+            private static readonly Regex mUserRefRegex = new Regex(@"@\w+", RegexOptions.IgnoreCase);
+            private static Regex hashtagRegex = new Regex(@"#\w+", RegexOptions.IgnoreCase);
+            private static readonly Regex mLetterRepetitionRegex = new Regex(@"(.)\1{2,}", RegexOptions.IgnoreCase);
+
+            public SowalabsTweetNormalizationFeature() : base("")
+            {
+                Operation = TextFeatureOperation.Custom;
+            }
+
+            protected internal override string PerformCustomOperation(string text)
+            {
+                text = mUrlRegex.Replace(text, ""); // rmv URLs
+                text = mStockRefRegex.Replace(text, ""); // rmv stock refs
+                text = mUserRefRegex.Replace(text, ""); // rmv user refs
+                //text = mHashtagRegex.Replace(text, ""); // rmv hashtags
+                text = mLetterRepetitionRegex.Replace(text, "$1$1"); // collapse letter repetitions
+                text = text.Replace("'", ""); // rmv apos
+                return text;
+            }
+        }
+
     }
 
 
