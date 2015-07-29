@@ -39,7 +39,12 @@ namespace Latino.Model.Eval
     {
         Precision,
         Recall,
-        F1
+        F1,
+
+        ActualCount, 
+        ActualRatio,
+        PredictedCount, 
+        PredictedRatio
     }
 
 
@@ -186,7 +191,7 @@ namespace Latino.Model.Eval
                 if (algoData.TryGetValue(algoName, out foldData))
                 {
                     PerfMatrix<LblT> sumMtx = new PerfMatrix<LblT>(mLblEqCmp);
-                    foreach (PerfMatrix<LblT> foldMtx in foldData)
+                    foreach (PerfMatrix<LblT> foldMtx in foldData.Where(m => m != null))
                     {
                         Set<LblT> labels = foldMtx.GetLabels();
                         foreach (LblT actual in labels)
@@ -214,7 +219,7 @@ namespace Latino.Model.Eval
                 FoldData foldData;
                 if (algoData.TryGetValue(algoName, out foldData))
                 {
-                    return foldData.Count;
+                    return foldData.Count(m => m != null);
                 }
             }
             return 0;
@@ -232,7 +237,7 @@ namespace Latino.Model.Eval
                 FoldData foldData;
                 if (algoData.TryGetValue(algoName, out foldData))
                 {
-                    foreach (PerfMatrix<LblT> foldMtx in foldData)
+                    foreach (PerfMatrix<LblT> foldMtx in foldData.Where(m => m != null))
                     {
                         labels.AddRange(foldMtx.GetLabels());
                     }
@@ -359,19 +364,19 @@ namespace Latino.Model.Eval
                 if (algoData.TryGetValue(algoName, out foldData))
                 {
                     double sum = 0;
-                    foreach (PerfMatrix<LblT> mtx in foldData)
+                    PerfMatrix<LblT>[] perfMatrices = foldData.Where(m => m != null).ToArray();
+                    foreach (PerfMatrix<LblT> mtx in perfMatrices)
                     {
-                        if (mtx == null) { throw new InvalidOperationException(); }
                         sum += scoreFunc(mtx);
                     }
-                    double avg = sum / foldData.Count;
+                    double avg = sum / perfMatrices.Length;
                     sum = 0;
-                    foreach (PerfMatrix<LblT> mtx in foldData)
+                    foreach (PerfMatrix<LblT> mtx in perfMatrices)
                     {
                         double val = scoreFunc(mtx) - avg;
                         sum += val * val;
                     }
-                    stdev = Math.Sqrt(sum / foldData.Count);
+                    stdev = Math.Sqrt(sum / perfMatrices.Length);
                     return avg;
                 }
             }
@@ -496,8 +501,8 @@ namespace Latino.Model.Eval
                 { 0.9, 1.64 }, { 0.95, 1.96 }, { 0.99, 2.58 }, 
             };
 
-        private Dictionary<LblT, Dictionary<LblT, int>> mMtx
-            = new Dictionary<LblT, Dictionary<LblT, int>>(); // TODO: set lbl equality comparer
+        private ConcurrentDictionary<LblT, ConcurrentDictionary<LblT, int>> mMtx
+            = new ConcurrentDictionary<LblT, ConcurrentDictionary<LblT, int>>(); // TODO: set lbl equality comparer
 
         private Set<LblT> mLabels
             = new Set<LblT>(); // TODO: set lbl equality comparer
@@ -517,7 +522,7 @@ namespace Latino.Model.Eval
         public void AddCount(LblT actual, LblT predicted, int count)
         {
             mLabels.AddRange(new[] { actual, predicted });
-            Dictionary<LblT, int> row;
+            ConcurrentDictionary<LblT, int> row;
             if (mMtx.TryGetValue(actual, out row))
             {
                 int oldCount;
@@ -527,13 +532,22 @@ namespace Latino.Model.Eval
                 }
                 else
                 {
-                    row.Add(predicted, count);
+                    if (!row.TryAdd(predicted, count))
+                    {
+                        row[predicted] += count;
+                    }
                 }
             }
             else
             {
-                mMtx.Add(actual, row = new Dictionary<LblT, int>());
-                row.Add(predicted, count);
+                if (!mMtx.TryAdd(actual, row = new ConcurrentDictionary<LblT, int>())) 
+                {
+                    row = mMtx[actual];
+                }
+                if (!row.TryAdd(predicted, count))
+                {
+                    row[predicted] += count;
+                }
             }
         }
 
@@ -549,7 +563,7 @@ namespace Latino.Model.Eval
 
         public int Get(LblT actual, LblT predicted)
         {
-            Dictionary<LblT, int> row;
+            ConcurrentDictionary<LblT, int> row;
             if (mMtx.TryGetValue(actual, out row))
             {
                 int c;
@@ -579,7 +593,7 @@ namespace Latino.Model.Eval
 
         private int SumRow(LblT lbl)
         {
-            Dictionary<LblT, int> row;
+            ConcurrentDictionary<LblT, int> row;
             if (mMtx.TryGetValue(lbl, out row))
             {
                 int sum = 0;
@@ -595,7 +609,7 @@ namespace Latino.Model.Eval
         private int SumCol(LblT lbl)
         {
             int sum = 0;
-            foreach (Dictionary<LblT, int> row in mMtx.Values)
+            foreach (ConcurrentDictionary<LblT, int> row in mMtx.Values)
             {
                 int c;
                 if (row.TryGetValue(lbl, out c))
@@ -609,7 +623,7 @@ namespace Latino.Model.Eval
         private int SumAll()
         {
             int sum = 0;
-            foreach (Dictionary<LblT, int> row in mMtx.Values)
+            foreach (ConcurrentDictionary<LblT, int> row in mMtx.Values)
             {
                 foreach (int val in row.Values)
                 {
@@ -622,7 +636,7 @@ namespace Latino.Model.Eval
         private int SumDiag()
         {
             int sum = 0;
-            foreach (KeyValuePair<LblT, Dictionary<LblT, int>> row in mMtx)
+            foreach (KeyValuePair<LblT, ConcurrentDictionary<LblT, int>> row in mMtx)
             {
                 int c;
                 if (row.Value.TryGetValue(row.Key, out c))
@@ -669,6 +683,26 @@ namespace Latino.Model.Eval
         public double GetF1(LblT lbl)
         {
             return GetF(1, lbl);
+        }
+
+        public int GetActualSum(LblT lbl)
+        {
+            return SumRow(lbl);
+        }
+
+        public double GetActualRatio(LblT lbl)
+        {
+            return (double)GetActualSum(lbl) / SumAll();
+        }
+
+        public int GetPredictedSum(LblT lbl)
+        {
+            return SumCol(lbl);
+        }
+
+        public double GetPredictedRatio(LblT lbl)
+        {
+            return (double)GetPredictedSum(lbl) / SumAll();
         }
 
 
@@ -789,7 +823,15 @@ namespace Latino.Model.Eval
                 case ClassPerfMetric.Recall:
                     return GetRecall(lbl);
                 case ClassPerfMetric.F1:
-                    return GetF1(lbl);                
+                    return GetF1(lbl);    
+                case ClassPerfMetric.PredictedCount:
+                    return GetPredictedSum(lbl);
+                case ClassPerfMetric.PredictedRatio:
+                    return GetPredictedRatio(lbl);
+                case ClassPerfMetric.ActualCount:
+                    return GetActualSum(lbl);
+                case ClassPerfMetric.ActualRatio:
+                    return GetActualRatio(lbl);
                 default:
                     throw new ArgumentValueException("metric");
             }
