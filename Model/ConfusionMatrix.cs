@@ -519,6 +519,11 @@ namespace Latino.Model.Eval
             mLabels.AddRange(labels);
         }
 
+        public bool RemoveLabel(LblT label)
+        {
+            return mLabels.Remove(label);
+        }
+
         public void AddCount(LblT actual, LblT predicted, int count)
         {
             mLabels.AddRange(new[] { actual, predicted });
