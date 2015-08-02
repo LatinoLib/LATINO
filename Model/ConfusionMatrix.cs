@@ -1002,7 +1002,7 @@ namespace Latino.Model.Eval
 
         public double GetWeightedKappa(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
         {
-            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
+            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNullArgument(orderedLabels).ToArray();
             Preconditions.CheckArgument(!mLabels.Except(labels).Any());
             Preconditions.CheckArgument(!labels.Except(mLabels).Any());
 
@@ -1011,11 +1011,7 @@ namespace Latino.Model.Eval
             var observed = new Dictionary<LblT, Dictionary<LblT, double>>();
             foreach (LblT actual in labels)
             {
-                var row = new Dictionary<LblT, double>();
-                foreach (LblT predicted in labels)
-                {
-                    row.Add(predicted, Get(actual, predicted)/s);
-                }
+                Dictionary<LblT, double> row = labels.ToDictionary(predicted => predicted, predicted => Get(actual, predicted) / s);
                 observed.Add(actual, row);
             }
 
@@ -1023,11 +1019,7 @@ namespace Latino.Model.Eval
             var expected = new Dictionary<LblT, Dictionary<LblT, double>>();
             foreach (LblT actual in labels)
             {
-                var row = new Dictionary<LblT, double>();
-                foreach (LblT predicted in labels)
-                {
-                    row.Add(predicted, GetActual(actual) / s * GetPredicted(predicted)/s);  // a[i] * p[j] / s / s
-                }
+                var row = labels.ToDictionary(predicted => predicted, predicted => GetActual(actual) / s * GetPredicted(predicted) / s); // a[i] * p[j] / s / s
                 expected.Add(actual, row);
             }
 
