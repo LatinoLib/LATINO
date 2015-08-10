@@ -383,7 +383,7 @@ namespace Latino.TextMining
             return Initialize(documents, /*largeScale=*/false);
         }
 
-        public ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale)
+        public virtual ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale)
         {
             Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);            
             mWordInfo.Clear();

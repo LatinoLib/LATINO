@@ -14,11 +14,16 @@ namespace Latino.TextMining
             return Initialize(labeledDataset, false);
         }
 
+        public override ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale)
+        {
+            throw new NotSupportedException("call of invalid method for this class");
+        }
+
         public List<SparseVector<double>> Initialize(ILabeledDataset<LabelT, string> labeledDataset, bool largeScale)
         {
             bool normalizeVectors = NormalizeVectors;
             NormalizeVectors = false;
-            List<SparseVector<double>> bowData = Initialize(labeledDataset.Select(d => d.Example), largeScale);
+            List<SparseVector<double>> bowData = base.Initialize(labeledDataset.Select(d => d.Example), largeScale);
             NormalizeVectors = normalizeVectors;
 
             // count word label frequencies
