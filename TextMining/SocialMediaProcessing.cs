@@ -976,6 +976,10 @@ namespace Latino.TextMining
                 Operation = TextFeatureOperation.Custom;
             }
 
+            public SowalabsTweetNormalizationFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
             protected internal override string PerformCustomOperation(string text)
             {
                 text = mUrlRegex.Replace(text, ""); // rmv URLs

@@ -1059,9 +1059,21 @@ namespace Latino.Model.Eval
             return (GetF1(label1) + GetF1(label2)) / 2;
         }
 
-        public double GetScore(OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels)
+        public double GetScore(OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels = null)
         {
-            LblT[] labels = orderedLabels as LblT[] ?? orderedLabels.ToArray();
+            LblT[] labels = null;
+            if (orderedLabels == null)
+            {
+                if (typeof(LblT).IsEnum) // take label order from the enum type definition
+                {
+                    labels = Enum.GetValues(typeof(LblT)).Cast<LblT>().ToArray();
+                }
+            }
+            else
+            {
+                labels = orderedLabels as LblT[] ?? orderedLabels.ToArray();
+            }
+
             switch (metric)
             {
                 case OrdinalPerfMetric.MeanAbsoluteError:
