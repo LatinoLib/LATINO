@@ -615,7 +615,7 @@ namespace Latino.TextMining
                 return @"\?{2,}";
             }
 
-            protected internal override string PerformCustomOperation(string input)
+            protected internal override string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
             {
                 input = Regex.Replace(input, " " + MarkToken);
                 return input;
@@ -863,7 +863,7 @@ namespace Latino.TextMining
                 return @"(.)(?<=\1\1\1)";
             }
 
-            protected internal override string PerformCustomOperation(string input)
+            protected internal override string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
             {
                 if (Regex.IsMatch(input))
                 {
@@ -889,7 +889,7 @@ namespace Latino.TextMining
             {
             }
 
-            protected internal override string PerformCustomOperation(string input)
+            protected internal override string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
             {
                 int strLen = input.Length;
                 var tokens = new List<string>();
@@ -927,7 +927,7 @@ namespace Latino.TextMining
             {
             }
 
-            protected internal override string PerformCustomOperation(string input)
+            protected internal override string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
             {
                 return TextMiningUtils.NormalizeDiacriticalCharacters(input);
             }
@@ -944,7 +944,7 @@ namespace Latino.TextMining
             {
             }
 
-            protected internal override string PerformCustomOperation(string input)
+            protected internal override string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
             {
                 var result = new StringBuilder();
                 for (int i = 0; i < input.Length; i++)
@@ -980,7 +980,7 @@ namespace Latino.TextMining
             {
             }
 
-            protected internal override string PerformCustomOperation(string text)
+            protected internal override string PerformCustomOperation(string text, Dictionary<string, object> namedValues)
             {
                 text = mUrlRegex.Replace(text, ""); // rmv URLs
                 text = mStockRefRegex.Replace(text, ""); // rmv stock refs

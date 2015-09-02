@@ -46,7 +46,7 @@ namespace Latino.TextMining
             }
         }
 
-        public string Run(string text)
+        public string Run(string text, Dictionary<string, object> namedValues = null)
         {
             mAppends.Clear();
             mDistinctAppends.Clear();
@@ -60,7 +60,7 @@ namespace Latino.TextMining
                         break;
 
                     case TextFeatureOperation.Custom:
-                        text = feature.PerformCustomOperation(text);
+                        text = feature.PerformCustomOperation(text, namedValues);
                         break;
 
                     case TextFeatureOperation.Append:
@@ -190,7 +190,7 @@ namespace Latino.TextMining
             throw new NotImplementedException();
         }
 
-        protected internal virtual string PerformCustomOperation(string input)
+        protected internal virtual string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
         {
             throw new NotImplementedException();
         }
@@ -234,7 +234,7 @@ namespace Latino.TextMining
 
         public TextFeature[] Features { get; protected set; }
 
-        protected internal override string PerformCustomOperation(string input)
+        protected internal override string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
         {
             throw new InvalidOperationException();
         }
