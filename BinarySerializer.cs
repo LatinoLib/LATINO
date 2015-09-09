@@ -85,6 +85,11 @@ namespace Latino
             mStream = new FileStream(fileName, fileMode); // throws ArgumentException, NotSupportedException, ArgumentNullException, SecurityException, FileNotFoundException, IOException, DirectoryNotFoundException, PathTooLongException, ArgumentOutOfRangeException
         }
 
+        public BinarySerializer(string fileName, FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
+        {
+            mStream = new FileStream(fileName, fileMode, fileAccess, fileShare); 
+        }
+
         // *** Reading ***
 
         private byte[] Read<T>() // Read<T>() is directly or indirectly called from several methods thus exceptions thrown here can also be thrown in all those methods
