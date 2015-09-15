@@ -18,7 +18,7 @@ namespace Latino.Model.Eval
         Accuracy,
         Error,
          // special
-        Kappa,
+        KAlphaNominal,
 
         // micro-averaged
         MicroPrecision,
@@ -55,8 +55,8 @@ namespace Latino.Model.Eval
         ErrorTolerance1,
         MeanSquaredErrorNormalized1,
         MeanAbsoluteErrorNormalized1,        
-        WeightedKappaLinear,
-        WeightedKappaSquared,
+        KAlphaLinear,
+        KAlphaInterval,
         F1AvgExtremeClasses
     }
 
@@ -805,8 +805,8 @@ namespace Latino.Model.Eval
                     return GetMacroF1();
                 case PerfMetric.Error:
                     return GetError();
-                case PerfMetric.Kappa:
-                    return GetKappa();
+                case PerfMetric.KAlphaNominal:
+                    return GetKAlpha();
                 case PerfMetric.AccStdErrorConf90:
                     return GetAccStdError(0.9);
                 case PerfMetric.AccStdErrorConf95:
@@ -989,9 +989,9 @@ namespace Latino.Model.Eval
             return sum / SumAll();
         }
 
-        public double GetKappa()
+        public double GetKAlpha()
         {
-            return GetWeightedKappa(mLabels, GetErrorXWeights(mLabels));
+            return GetKrippendorffsAlpha(mLabels, GetErrorXWeights(mLabels));
         }
 
 
@@ -1004,8 +1004,9 @@ namespace Latino.Model.Eval
         }
 
         // implementation of http://vassarstats.net/kappaexp.html and http://vassarstats.net/kappa.html
+        // correction from wikipedia Krippendorff's Alpha
 
-        public double GetWeightedKappa(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
+        public double GetKrippendorffsAlpha(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
         {
             LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNullArgument(orderedLabels).ToArray();
             Preconditions.CheckArgument(!mLabels.Except(labels).Any());
@@ -1024,11 +1025,11 @@ namespace Latino.Model.Eval
             var expected = new Dictionary<LblT, Dictionary<LblT, double>>();
             foreach (LblT actual in labels)
             {
-                var row = labels.ToDictionary(predicted => predicted, predicted => GetActual(actual) / s * GetPredicted(predicted) / s); // a[i] * p[j] / s / s
+                var row = labels.ToDictionary(predicted => predicted, predicted => GetActual(actual) / s * GetPredicted(predicted) / (s - 1)); // a[i] * p[j] / s / (s - 1)
                 expected.Add(actual, row);
             }
 
-            // the weights matrix            
+            // the weights matrix
             foreach (LblT actual in labels)
             {
                 foreach (LblT predicted in labels)
@@ -1046,8 +1047,8 @@ namespace Latino.Model.Eval
                     s2 += weights[actual][predicted] * expected[actual][predicted];
                 }
             }
-            double kappa = 1 - (1 - s1) / (1 - s2);            
-            return kappa;
+            double alpha = 1 - (1 - s1) / (1 - s2);            
+            return alpha;
         }
 
         public double GetF1AvgExtremeClasses(IEnumerable<LblT> orderedLabels) 
@@ -1086,10 +1087,10 @@ namespace Latino.Model.Eval
                     return GetError(labels, GetLinearWeights(labels, normalize: true));
                 case OrdinalPerfMetric.MeanSquaredErrorNormalized1:
                     return GetError(labels, GetSquareWeights(labels, normalize: true));
-                case OrdinalPerfMetric.WeightedKappaLinear:
-                    return GetWeightedKappa(labels, GetLinearWeights(labels, normalize: true));
-                case OrdinalPerfMetric.WeightedKappaSquared:
-                    return GetWeightedKappa(labels, GetSquareWeights(labels, normalize: true));
+                case OrdinalPerfMetric.KAlphaLinear:
+                    return GetKrippendorffsAlpha(labels, GetLinearWeights(labels, normalize: true));
+                case OrdinalPerfMetric.KAlphaInterval:
+                    return GetKrippendorffsAlpha(labels, GetSquareWeights(labels, normalize: true));
                 case OrdinalPerfMetric.F1AvgExtremeClasses:
                     return GetF1AvgExtremeClasses(labels);
                 default:
