@@ -625,7 +625,7 @@ namespace Latino.Model.Eval
             return sum;
         }
 
-        private int SumAll()
+        public int GetSumAll()
         {
             int sum = 0;
             foreach (ConcurrentDictionary<LblT, int> row in mMtx.Values)
@@ -638,7 +638,7 @@ namespace Latino.Model.Eval
             return sum;
         }
 
-        private int SumDiag()
+        public int GetSumDiag()
         {
             int sum = 0;
             foreach (KeyValuePair<LblT, ConcurrentDictionary<LblT, int>> row in mMtx)
@@ -697,7 +697,7 @@ namespace Latino.Model.Eval
 
         public double GetActualRatio(LblT lbl)
         {
-            return (double)GetActualSum(lbl) / SumAll();
+            return (double)GetActualSum(lbl) / GetSumAll();
         }
 
         public int GetPredictedSum(LblT lbl)
@@ -707,7 +707,7 @@ namespace Latino.Model.Eval
 
         public double GetPredictedRatio(LblT lbl)
         {
-            return (double)GetPredictedSum(lbl) / SumAll();
+            return (double)GetPredictedSum(lbl) / GetSumAll();
         }
 
 
@@ -715,7 +715,7 @@ namespace Latino.Model.Eval
 
         public double GetAccuracy()
         {
-            return (double) SumDiag() / SumAll();
+            return (double) GetSumDiag() / GetSumAll();
         }
 
         public double GetError()
@@ -726,19 +726,19 @@ namespace Latino.Model.Eval
         public double GetMicroPrecision()
         {
             double result = mLabels.Sum(lbl => GetActual(lbl) * GetPrecision(lbl));
-            return result / SumAll();
+            return result / GetSumAll();
         }
 
         public double GetMicroRecall()
         {
             double result = mLabels.Sum(lbl => GetActual(lbl) * GetRecall(lbl));
-            return result / SumAll();
+            return result / GetSumAll();
         }
 
         public double GetMicroF1()
         {
             double result = mLabels.Sum(lbl => GetActual(lbl) * GetF1(lbl));
-            return result / SumAll();
+            return result / GetSumAll();
         }
 
 
@@ -846,7 +846,7 @@ namespace Latino.Model.Eval
         {
             StringBuilder str = new StringBuilder();
             ArrayList<LblT> labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
-            var all = SumAll();
+            var all = GetSumAll();
             int len = Math.Max(labels.Max(l => l.ToString().Length), 
                 Math.Max(all.ToString(CultureInfo.InvariantCulture).Length, 11)) + 2;
 
@@ -986,7 +986,7 @@ namespace Latino.Model.Eval
                     sum += Get(actual, predicted) * weights[actual][predicted];
                 }
             }
-            return sum / SumAll();
+            return sum / GetSumAll();
         }
 
         public double GetKAlpha()
@@ -1000,7 +1000,7 @@ namespace Latino.Model.Eval
             double z;
             Preconditions.CheckArgument(StdErrProbZValues.TryGetValue(confidenceLevel, out z));
             double acc = GetAccuracy();
-            return z * Math.Sqrt(acc * (1 - acc) / SumAll());
+            return z * Math.Sqrt(acc * (1 - acc) / GetSumAll());
         }
 
         // implementation of http://vassarstats.net/kappaexp.html and http://vassarstats.net/kappa.html
@@ -1013,7 +1013,7 @@ namespace Latino.Model.Eval
             Preconditions.CheckArgument(!labels.Except(mLabels).Any());
 
             // the observed matrix            
-            double s = SumAll();
+            double s = GetSumAll();
             var observed = new Dictionary<LblT, Dictionary<LblT, double>>();
             foreach (LblT actual in labels)
             {
