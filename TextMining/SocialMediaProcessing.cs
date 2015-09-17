@@ -203,7 +203,7 @@ namespace Latino.TextMining
         public class HappySadEmoticonsFeature : TextFeatureGroup
         {
 
-            public HappySadEmoticonsFeature(string markToken = "") : base(GetFeatures(markToken))
+            public HappySadEmoticonsFeature(string markToken = null) : base(GetFeatures(markToken))
             {
             }
 
@@ -213,7 +213,7 @@ namespace Latino.TextMining
 
             private static TextFeature[] GetFeatures(string markToken)
             {
-                if (markToken == "")
+                if (markToken == null)
                 {
                     return new TextFeature[] {
                         new HappyEmoticonsLenOverTwoFeature(),
