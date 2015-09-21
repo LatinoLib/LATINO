@@ -191,7 +191,7 @@ namespace Latino.Model
 
         public void LoadModel(string fileName)
         {
-            Utils.ThrowException(typeof(LblT) != typeof(int) ? new InvalidOperationException() : null);
+            Utils.ThrowException(typeof(LblT) != typeof(int) && !typeof(LblT).IsEnum ? new InvalidOperationException() : null);
             Utils.ThrowException(!Utils.VerifyFileNameOpen(fileName) ? new ArgumentValueException("fileName") : null);
             Dispose();
             mIdxToLbl.Add((LblT)(object)1);
