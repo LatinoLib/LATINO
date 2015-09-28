@@ -1126,7 +1126,7 @@ namespace Latino.TextMining
             }
         }
 
-        public void Save(BinarySerializer writer)
+        public virtual void Save(BinarySerializer writer)
         {
             // the following statements throw serialization-related exceptions
             SaveVocabulary(writer); // throws ArgumentNullException

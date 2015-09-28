@@ -7,7 +7,16 @@ namespace Latino.TextMining
 {
     public class DeltaBowSpace<LabelT> : BowSpace
     {
-        private readonly Dictionary<int, double> mWordDeltas = new Dictionary<int, double>();
+        private Dictionary<int, double> mWordDeltas = new Dictionary<int, double>();
+
+        public DeltaBowSpace()
+        {
+        }
+
+        public DeltaBowSpace(BinarySerializer reader) 
+        {
+            Load(reader);
+        }
 
         public List<SparseVector<double>> Initialize(ILabeledDataset<LabelT, string> labeledDataset)
         {
@@ -96,6 +105,18 @@ namespace Latino.TextMining
 
             CalcDeltaBow(bow, normalizeVectors);
             return bow;
+        }
+
+        public override void Save(BinarySerializer writer)
+        {
+            base.Save(writer);
+            mWordDeltas.SaveDictionary(writer);
+        }
+
+        public new void Load(BinarySerializer reader)
+        {
+            base.Load(reader);
+            mWordDeltas = reader.LoadDictionary<int, double>();
         }
 
         public Tuple<Word, double>[] GetFreqWords(int count = 50)
