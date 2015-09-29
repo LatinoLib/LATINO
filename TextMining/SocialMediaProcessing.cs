@@ -887,6 +887,13 @@ namespace Latino.TextMining
 
             public MessageLengthFeature(BinarySerializer reader) : base(reader)
             {
+                mMaxLength = reader.ReadInt();
+            }
+
+            public override void Save(BinarySerializer writer)
+            {
+                base.Save(writer);
+                writer.WriteInt(mMaxLength);
             }
 
             protected internal override string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
