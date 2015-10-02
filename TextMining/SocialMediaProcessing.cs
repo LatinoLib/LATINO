@@ -451,6 +451,56 @@ namespace Latino.TextMining
             }
         }
 
+        public class HashTagCounterFeature : HashTagFeature
+        {
+            public HashTagCounterFeature(string markToken = "__HASH__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Custom;
+            }
+
+            public HashTagCounterFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
+            protected internal override string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
+            {
+                MatchCollection matches = Regex.Matches(input);
+                foreach (Match match in matches)
+                {
+                    if (match.Success)
+                    {
+                        string val = match.Groups[1].Value;
+                        if (!namedValues.ContainsKey(val))
+                        {
+                            namedValues.Add(val, 1);
+                        }
+                        else
+                        {
+                            namedValues[val] = (int)namedValues[val] + 1;
+                        }
+                    }
+                }
+                return Regex.Replace(input, MarkToken);
+            }
+        }
+
+        public class RetweetFeature : TextFeature
+        {
+            public RetweetFeature(string markToken = "__RETWEET__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+            }
+
+            public RetweetFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"^(RT )";
+            }
+        }
+
         public class PunctuationFeature : TextFeatureGroup
         {
             public PunctuationFeature() : base(GetFeatures())
