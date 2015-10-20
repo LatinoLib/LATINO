@@ -363,20 +363,14 @@ namespace Latino.Model.Eval
                 FoldData foldData;
                 if (algoData.TryGetValue(algoName, out foldData))
                 {
-                    double sum = 0;
-                    PerfMatrix<LblT>[] perfMatrices = foldData.Where(m => m != null).ToArray();
-                    foreach (PerfMatrix<LblT> mtx in perfMatrices)
-                    {
-                        sum += scoreFunc(mtx);
-                    }
-                    double avg = sum / perfMatrices.Length;
-                    sum = 0;
-                    foreach (PerfMatrix<LblT> mtx in perfMatrices)
-                    {
-                        double val = scoreFunc(mtx) - avg;
-                        sum += val * val;
-                    }
-                    stdev = Math.Sqrt(sum / perfMatrices.Length);
+                    double[] results = foldData
+                        .Where(m => m != null)
+                        .Select(scoreFunc)
+                        .Where(r => !double.IsNaN(r) && !double.IsInfinity(r)).ToArray();
+                    if (!results.Any()) { return double.NaN; }
+
+                    double avg = results.Average();
+                    stdev = Math.Sqrt(results.Select(r => (r - avg) * (r - avg)).Sum() / results.Length);
                     return avg;
                 }
             }
