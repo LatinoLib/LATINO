@@ -57,7 +57,8 @@ namespace Latino.Model.Eval
         MeanAbsoluteErrorNormalized1,        
         KAlphaLinear,
         KAlphaInterval,
-        F1AvgExtremeClasses
+        F1AvgExtremeClasses,
+        AccuracyTolerance1
     }
 
     /* .-----------------------------------------------------------------------
@@ -1076,15 +1077,17 @@ namespace Latino.Model.Eval
                 case OrdinalPerfMetric.MeanSquaredError:
                     return GetError(labels, GetSquareWeights(labels));
                 case OrdinalPerfMetric.ErrorTolerance1:
-                    return GetError(labels, GetErrorXWeights(labels, tolerance: 1));
+                    return GetError(labels, GetErrorXWeights(labels, 1));
+                case OrdinalPerfMetric.AccuracyTolerance1:
+                    return 1 - GetError(labels, GetErrorXWeights(labels, 1));
                 case OrdinalPerfMetric.MeanAbsoluteErrorNormalized1:
-                    return GetError(labels, GetLinearWeights(labels, normalize: true));
+                    return GetError(labels, GetLinearWeights(labels, true));
                 case OrdinalPerfMetric.MeanSquaredErrorNormalized1:
-                    return GetError(labels, GetSquareWeights(labels, normalize: true));
+                    return GetError(labels, GetSquareWeights(labels, true));
                 case OrdinalPerfMetric.KAlphaLinear:
-                    return GetKrippendorffsAlpha(labels, GetLinearWeights(labels, normalize: true));
+                    return GetKrippendorffsAlpha(labels, GetLinearWeights(labels, true));
                 case OrdinalPerfMetric.KAlphaInterval:
-                    return GetKrippendorffsAlpha(labels, GetSquareWeights(labels, normalize: true));
+                    return GetKrippendorffsAlpha(labels, GetSquareWeights(labels, true));
                 case OrdinalPerfMetric.F1AvgExtremeClasses:
                     return GetF1AvgExtremeClasses(labels);
                 default:
