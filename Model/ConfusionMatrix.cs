@@ -741,41 +741,25 @@ namespace Latino.Model.Eval
 
         public double GetMacroPrecision()
         {
-            double sum = 0;
-            foreach (LblT lbl in mLabels)
-            {
-                sum += GetPrecision(lbl);
-            }
+            double sum = mLabels.Sum(lbl => GetPrecision(lbl));
             return sum / mLabels.Count;
         }
 
         public double GetMacroRecall()
         {
-            double sum = 0;
-            foreach (LblT lbl in mLabels)
-            {
-                sum += GetRecall(lbl);
-            }
+            double sum = mLabels.Sum(lbl => GetRecall(lbl));
             return sum / mLabels.Count;
         }
 
         public double GetMacroF(double w)
         {
-            double sum = 0;
-            foreach (LblT lbl in mLabels)
-            {
-                sum += GetF(w, lbl);
-            }
+            double sum = mLabels.Sum(lbl => GetF(w, lbl));
             return sum / mLabels.Count;
         }
 
         public double GetMacroF1()
         {
-            double sum = 0;
-            foreach (LblT lbl in mLabels)
-            {
-                sum += GetF1(lbl);
-            }
+            double sum = mLabels.Sum(lbl => GetF1(lbl));
             return sum / mLabels.Count;
         }
 

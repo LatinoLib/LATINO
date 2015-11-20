@@ -858,7 +858,7 @@ namespace Latino.TextMining
         {
             private readonly Language mLanguage;
 
-            public NegativeWordFeature(Language language, string markToken = "__POSITIVE_WORD__")
+            public NegativeWordFeature(Language language, string markToken = "__NEGATIVE_WORD__")
                 : base(markToken)
             {
                 mLanguage = language;
