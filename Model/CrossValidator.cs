@@ -239,7 +239,7 @@ namespace Latino.Model.Eval
         public delegate void AfterFoldPhaseHandler(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int foldN, IModel<LblT, ModelExT> model, 
             ILabeledDataset<LblT, ModelExT> dataset);
-        public delegate void AfterPredictHandler(
+        public delegate bool AfterPredictHandler(
             AbstractMappingCrossValidator<LblT, InputExT, ModelExT> sender, int fondN, IModel<LblT, ModelExT> model, 
             InputExT example, LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction);
         public delegate void FoldHandler(
@@ -366,11 +366,10 @@ namespace Latino.Model.Eval
                 LabeledExample<LblT, ModelExT> le = usedTestSet[i];
 
                 Prediction<LblT> prediction = Predict(foldN, model, le);
-                if (prediction.Any())
+                if (AfterPrediction(foldN, model, testSet[i].Example, le, prediction) && prediction.Any())
                 {
                     foldMatrix.AddCount(le.Label, prediction.BestClassLabel);
                 }
-                AfterPrediction(foldN, model, testSet[i].Example, le, prediction);
             }
 
             modelProfile.TestEndTime = DateTime.Now;
@@ -477,13 +476,10 @@ namespace Latino.Model.Eval
             }
         }
 
-        protected virtual void AfterPrediction(int foldN, IModel<LblT, ModelExT> model, InputExT example, 
+        protected virtual bool AfterPrediction(int foldN, IModel<LblT, ModelExT> model, InputExT example, 
             LabeledExample<LblT, ModelExT> labeledExample, Prediction<LblT> prediction)
         {
-            if (OnAfterPrediction != null)
-            {
-                OnAfterPrediction(this, foldN, model, example, labeledExample, prediction);
-            }
+            return OnAfterPrediction == null || OnAfterPrediction(this, foldN, model, example, labeledExample, prediction);
         }
 
         protected virtual void BeforeFold(int foldN, ILabeledDataset<LblT, InputExT> trainSet, ILabeledDataset<LblT, InputExT> testSet)
