@@ -44,7 +44,10 @@ namespace Tutorial.Case.Validation
                     // do stuff after model is trained for a fold...
                 },
                 OnAfterPrediction = (sender, foldN, model, ex, le, prediction) =>
-                    Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", le.Label, prediction.BestClassLabel, prediction.BestScore),
+                {
+                    Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", le.Label, prediction.BestClassLabel, prediction.BestScore);
+                    return true;
+                },
                 OnAfterFold = (sender, foldN, trainSet, foldPredictions) =>
                 {
                     PerfMatrix<string> foldMatrix = sender.PerfData.GetPerfMatrix(sender.ExpName, sender.GetModelName(0), foldN);

@@ -130,7 +130,7 @@ namespace LatinoTest.Model
                     AssertSetEquality(trainSet.Concat(testSet), ld);
                     aggTestSet.AddRange(testSet);
 
-                    List<double> test = new List<double>();
+                    var test = new List<double>();
                     foreach (IGrouping<int, LabeledExample<int, int>> group in testSet.GroupBy(le => le.Label))
                     {
                         double distr = (double)group.Count() / testSet.Count;
@@ -141,7 +141,7 @@ namespace LatinoTest.Model
                         test.Add((double)group.Count() / testSet.Count);
                     }
 
-                    List<double> train = new List<double>();
+                    var train = new List<double>();
                     foreach (IGrouping<int, LabeledExample<int, int>> group in trainSet.GroupBy(le => le.Label))
                     {
                         double distr = (double)group.Count() / trainSet.Count;

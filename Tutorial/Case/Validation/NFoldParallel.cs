@@ -52,6 +52,7 @@ namespace Tutorial.Case.Validation
                 OnAfterPrediction = (sender, foldN, model, ex, le, prediction) =>
                 {
                     lock (Output) Output.WriteLine("actual: {0} \tpredicted: {1}\t score: {2:0.0000}", le.Label, prediction.BestClassLabel, prediction.BestScore);
+                    return true;
                 }
             };
 

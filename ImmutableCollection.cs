@@ -5,17 +5,17 @@ using System.Linq;
 
 namespace Latino
 {
-    public class NiceReadOnlyCollection<T> : ReadOnlyCollection<T>, ISerializable
+    public class ImmutableCollection<T> : ReadOnlyCollection<T>, ISerializable
     {
-        public NiceReadOnlyCollection(params T[] items) : base(items)
+        public ImmutableCollection(params T[] items) : base(items)
         {
         }
 
-        public NiceReadOnlyCollection(params IEnumerable<T>[] items) : base(items.SelectMany(list => list).ToList())
+        public ImmutableCollection(params IEnumerable<T>[] items) : base(items.SelectMany(list => list).ToList())
         {
         }
 
-        public NiceReadOnlyCollection(BinarySerializer reader) : base(Load(reader))
+        public ImmutableCollection(BinarySerializer reader) : base(Load(reader))
         {
         }
 
@@ -41,7 +41,7 @@ namespace Latino
     }
 
 
-    public class Strings : NiceReadOnlyCollection<string>
+    public class Strings : ImmutableCollection<string>
     {
         public Strings(params string[] items) : base(items)
         {
@@ -51,7 +51,7 @@ namespace Latino
         {
         }
 
-        public Strings(params NiceReadOnlyCollection<string>[] colls) : base(colls)
+        public Strings(params ImmutableCollection<string>[] colls) : base(colls)
         {
         }
 

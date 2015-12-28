@@ -2,7 +2,7 @@
  *
  *  This file is part of LATINO. See http://latino.sf.net
  *
- *  File:    Sateful.cs
+ *  File:    Stateful.cs
  *  Desc:    Tutorial 3.1: Read-only adapters
  *  Created: Dec-2009
  *
@@ -15,12 +15,12 @@ using Latino;
 
 namespace Tutorial.Case.Data
 {
-    public class Sateful : Tutorial<Sateful>
+    public class Stateful : Tutorial<Stateful>
     {
         class StatefulObject
         {
-            private ArrayList<int> mState
-                = new ArrayList<int>(new int[] { 2, 4, 6, 8 });
+            private readonly ArrayList<int> mState
+                = new ArrayList<int>(new[] { 2, 4, 6, 8 });
 
             // The user can read the state but is not allowed to modify 
             // it, hence the ReadOnly "modifier".

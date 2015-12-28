@@ -96,7 +96,6 @@ namespace Tutorial.Case.Data
                     @":-) :-"
                 };
 
-/*
             var processor = new TextFeatureProcessor()
                 .With(new SocialMediaProcessing.NormalizeDiacriticalCharactersFeature())
                 .With(new SocialMediaProcessing.UrlFeature())
@@ -143,7 +142,6 @@ namespace Tutorial.Case.Data
                 }
                 }
             }
-*/
 
             // counting the emoticons
             var counts = new Dictionary<string, int>();

@@ -26,7 +26,7 @@ namespace Tutorial
             //DataStructures.RunInstanceWr(sw, args);
             //SparseVector.RunInstanceWr(sw, args);
             //SparseMatrix.RunInstanceWr(sw, args);
-            //Sateful.RunInstanceWr(sw, args);
+            //Stateful.RunInstanceWr(sw, args);
             //Cloning.RunInstanceWr(sw, args);
             //Serialization.RunInstanceWr(sw, args);
 
@@ -56,7 +56,7 @@ namespace Tutorial
             DataStructures.RunInstanceNull(args);
             SparseVector.RunInstanceNull(args);
             SparseMatrix.RunInstanceNull(args);
-            Sateful.RunInstanceNull(args);
+            Stateful.RunInstanceNull(args);
             Cloning.RunInstanceNull(args);
             Serialization.RunInstanceNull(args);
 
