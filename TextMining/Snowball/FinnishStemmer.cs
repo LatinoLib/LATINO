@@ -29,7 +29,7 @@ namespace SF.Snowball.Ext
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private void InitBlock()
 		{
 			a0 = new Among[]{new Among("pa", - 1, 1, "", this), new Among("sti", - 1, 2, "", this), new Among("kaan", - 1, 1, "", this), new Among("han", - 1, 1, "", this), new Among("kin", - 1, 1, "", this), new Among("h\u00E4n", - 1, 1, "", this), new Among("k\u00E4\u00E4n", - 1, 1, "", this), new Among("ko", - 1, 1, "", this), new Among("p\u00E4", - 1, 1, "", this), new Among("k\u00F6", - 1, 1, "", this)};
 			a1 = new Among[]{new Among("lla", - 1, - 1, "", this), new Among("na", - 1, - 1, "", this), new Among("ssa", - 1, - 1, "", this), new Among("ta", - 1, - 1, "", this), new Among("lta", 3, - 1, "", this), new Among("sta", 3, - 1, "", this)};
@@ -43,16 +43,16 @@ namespace SF.Snowball.Ext
 			a9 = new Among[]{new Among("mma", - 1, 1, "", this), new Among("imma", 0, - 1, "", this)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
-		private Among[] a5;
-		private Among[] a6;
-		private Among[] a7;
-		private Among[] a8;
-		private Among[] a9;
+		private static Among[] a0;
+		private static Among[] a1;
+		private static Among[] a2;
+		private static Among[] a3;
+		private static Among[] a4;
+		private static Among[] a5;
+		private static Among[] a6;
+		private static Among[] a7;
+		private static Among[] a8;
+		private static Among[] a9;
 
         private static readonly char[] g_AEI = new char[]{(char) (17), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8)};
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8), (char) (0), (char) (32)};

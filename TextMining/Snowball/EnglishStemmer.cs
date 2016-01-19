@@ -25,11 +25,11 @@ namespace SF.Snowball.Ext
     public class EnglishStemmer : SnowballProgram, ISnowballStemmer
     {
 
-		public EnglishStemmer()
+		static EnglishStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
             // TODO: make these static?
 			a0 = new MyAmong[]{new MyAmong("gener", - 1, - 1)};
@@ -44,16 +44,16 @@ namespace SF.Snowball.Ext
 			a9 = new MyAmong[]{new MyAmong("andes", - 1, - 1), new MyAmong("atlas", - 1, - 1), new MyAmong("bias", - 1, - 1), new MyAmong("cosmos", - 1, - 1), new MyAmong("dying", - 1, 3), new MyAmong("early", - 1, 9), new MyAmong("gently", - 1, 7), new MyAmong("howe", - 1, - 1), new MyAmong("idly", - 1, 6), new MyAmong("lying", - 1, 4), new MyAmong("news", - 1, - 1), new MyAmong("only", - 1, 10), new MyAmong("singly", - 1, 11), new MyAmong("skies", - 1, 2), new MyAmong("skis", - 1, 1), new MyAmong("sky", - 1, - 1), new MyAmong("tying", - 1, 5), new MyAmong("ugly", - 1, 8)};
 		}
 		
-		private MyAmong[] a0;
-		private MyAmong[] a1;
-		private MyAmong[] a2;
-		private MyAmong[] a3;
-		private MyAmong[] a4;
-		private MyAmong[] a5;
-		private MyAmong[] a6;
-		private MyAmong[] a7;
-		private MyAmong[] a8;
-		private MyAmong[] a9;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
+		private static MyAmong[] a6;
+		private static MyAmong[] a7;
+		private static MyAmong[] a8;
+		private static MyAmong[] a9;
 
         private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1)};
 		private static readonly char[] g_v_WXY = new char[]{(char) (1), (char) (17), (char) (65), (char) (208), (char) (1)};

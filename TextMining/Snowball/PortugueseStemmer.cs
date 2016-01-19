@@ -25,11 +25,11 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class PortugueseStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public PortugueseStemmer()
+		static PortugueseStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
 			a0 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("\u00E3", 0, 1), new MyAmong("\u00F5", 0, 2)};
 			a1 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("a~", 0, 1), new MyAmong("o~", 0, 2)};
@@ -44,15 +44,15 @@ namespace SF.Snowball.Ext
 			a8 = new MyAmong[]{new MyAmong("e", - 1, 1), new MyAmong("\u00E7", - 1, 2), new MyAmong("\u00E9", - 1, 1), new MyAmong("\u00EA", - 1, 1)};
 		}
 		
-		private MyAmong[] a0;
-		private MyAmong[] a1;
-		private MyAmong[] a2;
-		private MyAmong[] a3;
-		private MyAmong[] a4;
-		private MyAmong[] a5;
-		private MyAmong[] a6;
-		private MyAmong[] a7;
-		private MyAmong[] a8;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
+		private static MyAmong[] a6;
+		private static MyAmong[] a7;
+		private static MyAmong[] a8;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (3), (char) (19), (char) (12), (char) (2)};
 		
 		private int I_p2;

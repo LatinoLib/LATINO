@@ -25,11 +25,11 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class SpanishStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public SpanishStemmer()
+		static SpanishStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
 			a0 = new MyAmong[]{new MyAmong("", - 1, 6), new MyAmong("\u00E1", 0, 1), new MyAmong("\u00E9", 0, 2), new MyAmong("\u00ED", 0, 3), new MyAmong("\u00F3", 0, 4), new MyAmong("\u00FA", 0, 5)};
 			a1 = new MyAmong[]{new MyAmong("la", - 1, - 1), new MyAmong("sela", 0, - 1), new MyAmong("le", - 1, - 1), new MyAmong("me", - 1, - 1), new MyAmong("se", - 1, - 1), new MyAmong("lo", - 1, - 1), new MyAmong("selo", 5, - 1), new MyAmong("las", - 1, - 1), new MyAmong("selas", 7, - 1), new MyAmong("les", - 1, - 1), new MyAmong("los", - 1, - 1), new MyAmong("selos", 10, - 1), new MyAmong("nos", - 1, - 1)};
@@ -44,16 +44,16 @@ namespace SF.Snowball.Ext
 			a9 = new MyAmong[]{new MyAmong("a", - 1, 1), new MyAmong("e", - 1, 2), new MyAmong("o", - 1, 1), new MyAmong("os", - 1, 1), new MyAmong("\u00E1", - 1, 1), new MyAmong("\u00E9", - 1, 2), new MyAmong("\u00ED", - 1, 1), new MyAmong("\u00F3", - 1, 1)};
 		}
 		
-		private MyAmong[] a0;
-		private MyAmong[] a1;
-		private MyAmong[] a2;
-		private MyAmong[] a3;
-		private MyAmong[] a4;
-		private MyAmong[] a5;
-		private MyAmong[] a6;
-		private MyAmong[] a7;
-		private MyAmong[] a8;
-		private MyAmong[] a9;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
+		private static MyAmong[] a6;
+		private static MyAmong[] a7;
+		private static MyAmong[] a8;
+		private static MyAmong[] a9;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (1), (char) (17), (char) (4), (char) (10)};
 		
 		private int I_p2;

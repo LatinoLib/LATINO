@@ -25,11 +25,11 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class ItalianStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public ItalianStemmer()
+		static ItalianStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
 			a0 = new MyAmong[]{new MyAmong("", - 1, 7), new MyAmong("qu", 0, 6), new MyAmong("\u00E1", 0, 1), new MyAmong("\u00E9", 0, 2), new MyAmong("\u00ED", 0, 3), new MyAmong("\u00F3", 0, 4), new MyAmong("\u00FA", 0, 5)};
 			a1 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("I", 0, 1), new MyAmong("U", 0, 2)};
@@ -42,14 +42,14 @@ namespace SF.Snowball.Ext
 				"emmo", - 1, 1), new MyAmong("eremmo", 54, 1), new MyAmong("iremmo", 54, 1), new MyAmong("immo", - 1, 1), new MyAmong("ano", - 1, 1), new MyAmong("iscano", 58, 1), new MyAmong("avano", 58, 1), new MyAmong("evano", 58, 1), new MyAmong("ivano", 58, 1), new MyAmong("eranno", - 1, 1), new MyAmong("iranno", - 1, 1), new MyAmong("ono", - 1, 1), new MyAmong("iscono", 65, 1), new MyAmong("arono", 65, 1), new MyAmong("erono", 65, 1), new MyAmong("irono", 65, 1), new MyAmong("erebbero", - 1, 1), new MyAmong("irebbero", - 1, 1), new MyAmong("assero", - 1, 1), new MyAmong("essero", - 1, 1), new MyAmong("issero", - 1, 1), new MyAmong("ato", - 1, 1), new MyAmong("ito", - 1, 1), new MyAmong("uto", - 1, 1), new MyAmong("avo", - 1, 1), new MyAmong("evo", - 1, 1), new MyAmong("ivo", - 1, 1), new MyAmong("ar", - 1, 1), new MyAmong("ir", - 1, 1), new MyAmong("er\u00E0", - 1, 1), new MyAmong("ir\u00E0", - 1, 1), new MyAmong("er\u00F2", - 1, 1), new MyAmong("ir\u00F2", - 1, 1)};
 		}
 		
-		private MyAmong[] a0;
-		private MyAmong[] a1;
-		private MyAmong[] a2;
-		private MyAmong[] a3;
-		private MyAmong[] a4;
-		private MyAmong[] a5;
-		private MyAmong[] a6;
-		private MyAmong[] a7;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
+		private static MyAmong[] a6;
+		private static MyAmong[] a7;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128), (char) (128), (char) (8), (char) (2), (char) (1)};
 		private static readonly char[] g_AEIO = new char[]{(char) (17), (char) (65), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128), (char) (128), (char) (8), (char) (2)};
 		private static readonly char[] g_CG = new char[]{(char) (17)};

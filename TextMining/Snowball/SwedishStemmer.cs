@@ -25,20 +25,20 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class SwedishStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public SwedishStemmer()
+		static SwedishStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
 			a0 = new MyAmong[]{new MyAmong("a", - 1, 1), new MyAmong("arna", 0, 1), new MyAmong("erna", 0, 1), new MyAmong("heterna", 2, 1), new MyAmong("orna", 0, 1), new MyAmong("ad", - 1, 1), new MyAmong("e", - 1, 1), new MyAmong("ade", 6, 1), new MyAmong("ande", 6, 1), new MyAmong("arne", 6, 1), new MyAmong("are", 6, 1), new MyAmong("aste", 6, 1), new MyAmong("en", - 1, 1), new MyAmong("anden", 12, 1), new MyAmong("aren", 12, 1), new MyAmong("heten", 12, 1), new MyAmong("ern", - 1, 1), new MyAmong("ar", - 1, 1), new MyAmong("er", - 1, 1), new MyAmong("heter", 18, 1), new MyAmong("or", - 1, 1), new MyAmong("s", - 1, 2), new MyAmong("as", 21, 1), new MyAmong("arnas", 22, 1), new MyAmong("ernas", 22, 1), new MyAmong("ornas", 22, 1), new MyAmong("es", 21, 1), new MyAmong("ades", 26, 1), new MyAmong("andes", 26, 1), new MyAmong("ens", 21, 1), new MyAmong("arens", 29, 1), new MyAmong("hetens", 29, 1), new MyAmong("erns", 21, 1), new MyAmong("at", - 1, 1), new MyAmong("andet", - 1, 1), new MyAmong("het", - 1, 1), new MyAmong("ast", - 1, 1)};
 			a1 = new MyAmong[]{new MyAmong("dd", - 1, - 1), new MyAmong("gd", - 1, - 1), new MyAmong("nn", - 1, - 1), new MyAmong("dt", - 1, - 1), new MyAmong("gt", - 1, - 1), new MyAmong("kt", - 1, - 1), new MyAmong("tt", - 1, - 1)};
 			a2 = new MyAmong[]{new MyAmong("ig", - 1, 1), new MyAmong("lig", 0, 1), new MyAmong("els", - 1, 1), new MyAmong("fullt", - 1, 3), new MyAmong("l\u00F6st", - 1, 2)};
 		}
 		
-		private MyAmong[] a0;
-		private MyAmong[] a1;
-		private MyAmong[] a2;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (24), (char) (0), (char) (32)};
 		private static readonly char[] gSEnding = new char[]{(char) (119), (char) (127), (char) (149)};
 		

@@ -25,11 +25,11 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class RussianStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public RussianStemmer()
+		static RussianStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
 			a0 = new MyAmong[]{new MyAmong("\u00D7\u00DB\u00C9", - 1, 1), new MyAmong("\u00C9\u00D7\u00DB\u00C9", 0, 2), new MyAmong("\u00D9\u00D7\u00DB\u00C9", 0, 2), new MyAmong("\u00D7", - 1, 1), new MyAmong("\u00C9\u00D7", 3, 2), new MyAmong("\u00D9\u00D7", 3, 2), new MyAmong("\u00D7\u00DB\u00C9\u00D3\u00D8", - 1, 1), new MyAmong("\u00C9\u00D7\u00DB\u00C9\u00D3\u00D8", 6, 2), new MyAmong("\u00D9\u00D7\u00DB\u00C9\u00D3\u00D8", 6, 2)};
 			a1 = new MyAmong[]{new MyAmong("\u00C0\u00C0", - 1, 1), new MyAmong("\u00C5\u00C0", - 1, 1), new MyAmong("\u00CF\u00C0", - 1, 1), new MyAmong("\u00D5\u00C0", - 1, 1), new MyAmong("\u00C5\u00C5", - 1, 1), new MyAmong("\u00C9\u00C5", - 1, 1), new MyAmong("\u00CF\u00C5", - 1, 1), new MyAmong("\u00D9\u00C5", - 1, 1), new MyAmong("\u00C9\u00C8", - 1, 1), new MyAmong("\u00D9\u00C8", - 1, 1), new MyAmong("\u00C9\u00CD\u00C9", - 1, 1), new MyAmong("\u00D9\u00CD\u00C9", - 1, 1), new MyAmong("\u00C5\u00CA", - 1, 1), new MyAmong("\u00C9\u00CA", - 1, 1), new MyAmong("\u00CF\u00CA", - 1, 1), new MyAmong("\u00D9\u00CA", - 1, 1), new MyAmong("\u00C5\u00CD", - 1, 1), new MyAmong("\u00C9\u00CD", - 1, 1), new MyAmong("\u00CF\u00CD", - 1, 1), new MyAmong("\u00D9\u00CD", - 1, 1), new MyAmong("\u00C5\u00C7\u00CF", - 1, 1), new MyAmong("\u00CF\u00C7\u00CF", - 1, 1), new MyAmong("\u00C1\u00D1", - 1, 1), new MyAmong("\u00D1\u00D1", - 1, 1), new MyAmong("\u00C5\u00CD\u00D5", - 1, 1), new MyAmong("\u00CF\u00CD\u00D5", - 1, 1)};
@@ -42,14 +42,14 @@ namespace SF.Snowball.Ext
 			a7 = new MyAmong[]{new MyAmong("\u00C5\u00CA\u00DB\u00C5", - 1, 1), new MyAmong("\u00CE", - 1, 2), new MyAmong("\u00D8", - 1, 3), new MyAmong("\u00C5\u00CA\u00DB", - 1, 1)};
 		}
 		
-		private MyAmong[] a0;
-		private MyAmong[] a1;
-		private MyAmong[] a2;
-		private MyAmong[] a3;
-		private MyAmong[] a4;
-		private MyAmong[] a5;
-		private MyAmong[] a6;
-		private MyAmong[] a7;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
+		private static MyAmong[] a6;
+		private static MyAmong[] a7;
 		private static readonly char[] gV = new char[]{(char) (35), (char) (130), (char) (34), (char) (18)};
 		
 		private int I_p2;

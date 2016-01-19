@@ -25,11 +25,11 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class DutchStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public DutchStemmer()
+		static DutchStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
 			a0 = new MyAmong[]{new MyAmong("", - 1, 6), new MyAmong("\u00E1", 0, 1), new MyAmong("\u00E4", 0, 1), new MyAmong("\u00E9", 0, 2), new MyAmong("\u00EB", 0, 2), new MyAmong("\u00ED", 0, 3), new MyAmong("\u00EF", 0, 3), new MyAmong("\u00F3", 0, 4), new MyAmong("\u00F6", 0, 4), new MyAmong("\u00FA", 0, 5), new MyAmong("\u00FC", 0, 5)};
 			a1 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("I", 0, 2), new MyAmong("Y", 0, 1)};
@@ -39,12 +39,12 @@ namespace SF.Snowball.Ext
 			a5 = new MyAmong[]{new MyAmong("aa", - 1, - 1), new MyAmong("ee", - 1, - 1), new MyAmong("oo", - 1, - 1), new MyAmong("uu", - 1, - 1)};
 		}
 		
-		private MyAmong[] a0;
-		private MyAmong[] a1;
-		private MyAmong[] a2;
-		private MyAmong[] a3;
-		private MyAmong[] a4;
-		private MyAmong[] a5;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
 		private static readonly char[] g_v_I = new char[]{(char) (1), (char) (0), (char) (0), (char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
 		private static readonly char[] gVJ = new char[]{(char) (17), (char) (67), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
