@@ -32,8 +32,6 @@ namespace SF.Snowball
 		public System.String s; /* search string */
 		public int substringI; /* index to longest matching substring */
 		public int result; /* result of the lookup */
-		public System.Reflection.MethodInfo method; /* method to use if substring matches */
-		public SnowballProgram methodobject; /* object to invoke method on */
 	}
 	
 }

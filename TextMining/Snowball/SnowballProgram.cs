@@ -368,32 +368,8 @@ namespace SF.Snowball
                 if (commonI >= w.sSize)
                 {
                     cursor = c + w.sSize;
-                    if (w.method == null)
-                        return w.result;
-                    bool res;
-                    try
-                    {
-                        System.Object resobj = w.method.Invoke(w.methodobject, (System.Object[])new System.Object[0]);
-                        // {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca10433"'
-                        res = resobj.ToString().Equals("true");
-                    }
-                    catch (System.Reflection.TargetInvocationException e)
-                    {
-                        res = false;
-                        // FIXME - debug message
-                    }
-                    catch (System.UnauthorizedAccessException e)
-                    {
-                        res = false;
-                        // FIXME - debug message
-                    }
-                    cursor = c + w.sSize;
-                    if (res)
-                        return w.result;
+                    return w.result;
                 }
-                i = w.substringI;
-                if (i < 0)
-                    return 0;
             }
         }
 		
@@ -546,33 +522,8 @@ namespace SF.Snowball
                 if (commonI >= w.sSize)
                 {
                     cursor = c - w.sSize;
-                    if (w.method == null)
-                        return w.result;
-
-                    bool res;
-                    try
-                    {
-                        System.Object resobj = w.method.Invoke(w.methodobject, (System.Object[])new System.Object[0]);
-                        // {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca10433"'
-                        res = resobj.ToString().Equals("true");
-                    }
-                    catch (System.Reflection.TargetInvocationException e)
-                    {
-                        res = false;
-                        // FIXME - debug message
-                    }
-                    catch (System.UnauthorizedAccessException e)
-                    {
-                        res = false;
-                        // FIXME - debug message
-                    }
-                    cursor = c - w.sSize;
-                    if (res)
-                        return w.result;
+                    return w.result;
                 }
-                i = w.substringI;
-                if (i < 0)
-                    return 0;
             }
         }
 
