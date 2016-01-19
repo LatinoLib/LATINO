@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using Among = SF.Snowball.Among;
+using MyAmong = SF.Snowball.MyAmong;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -31,24 +31,24 @@ namespace SF.Snowball.Ext
 		}
 		private void  InitBlock()
 		{
-			a0 = new Among[]{new Among("nde", - 1, 7, "", this), new Among("en", - 1, 6, "", this), new Among("s", - 1, 2, "", this), new Among("'s", 2, 1, "", this), new Among("es", 2, 4, "", this), new Among("ies", 4, 3, "", this), new Among("aus", 2, 5, "", this)};
-			a1 = new Among[]{new Among("de", - 1, 5, "", this), new Among("ge", - 1, 2, "", this), new Among("ische", - 1, 4, "", this), new Among("je", - 1, 1, "", this), new Among("lijke", - 1, 3, "", this), new Among("le", - 1, 9, "", this), new Among("ene", - 1, 10, "", this), new Among("re", - 1, 8, "", this), new Among("se", - 1, 7, "", this), new Among("te", - 1, 6, "", this), new Among("ieve", - 1, 11, "", this)};
-			a2 = new Among[]{new Among("heid", - 1, 3, "", this), new Among("fie", - 1, 7, "", this), new Among("gie", - 1, 8, "", this), new Among("atie", - 1, 1, "", this), new Among("isme", - 1, 5, "", this), new Among("ing", - 1, 5, "", this), new Among("arij", - 1, 6, "", this), new Among("erij", - 1, 5, "", this), new Among("sel", - 1, 3, "", this), new Among("rder", - 1, 4, "", this), new Among("ster", - 1, 3, "", this), new Among("iteit", - 1, 2, "", this), new Among("dst", - 1, 10, "", this), new Among("tst", - 1, 9, "", this)};
-			a3 = new Among[]{new Among("end", - 1, 10, "", this), new Among("atief", - 1, 2, "", this), new Among("erig", - 1, 10, "", this), new Among("achtig", - 1, 9, "", this), new Among("ioneel", - 1, 1, "", this), new Among("baar", - 1, 3, "", this), new Among("laar", - 1, 5, "", this), new Among("naar", - 1, 4, "", this), new Among("raar", - 1, 6, "", this), new Among("eriger", - 1, 10, "", this), new Among("achtiger", - 1, 9, "", this), new Among("lijker", - 1, 8, "", this), new Among("tant", - 1, 7, "", this), new Among("erigst", - 1, 10, "", this), new Among("achtigst", - 1, 9, "", this), new Among("lijkst", - 1, 8, "", this)};
-			a4 = new Among[]{new Among("ig", - 1, 1, "", this), new Among("iger", - 1, 1, "", this), new Among("igst", - 1, 1, "", this)};
-			a5 = new Among[]{new Among("ft", - 1, 2, "", this), new Among("kt", - 1, 1, "", this), new Among("pt", - 1, 3, "", this)};
-			a6 = new Among[]{new Among("bb", - 1, 1, "", this), new Among("cc", - 1, 2, "", this), new Among("dd", - 1, 3, "", this), new Among("ff", - 1, 4, "", this), new Among("gg", - 1, 5, "", this), new Among("hh", - 1, 6, "", this), new Among("jj", - 1, 7, "", this), new Among("kk", - 1, 8, "", this), new Among("ll", - 1, 9, "", this), new Among("mm", - 1, 10, "", this), new Among("nn", - 1, 11, "", this), new Among("pp", - 1, 12, "", this), new Among("qq", - 1, 13, "", this), new Among("rr", - 1, 14, "", this), new Among("ss", - 1, 15, "", this), new Among("tt", - 1, 16, "", this), new Among("v", - 1, 21, "", this), new Among("vv", 16, 17, "", this), new Among("ww", - 1, 18, "", this), new Among("xx", - 1, 19, "", this), new Among("z", - 1, 22, "", this), new Among("zz", 20, 20, "", this)};
-			a7 = new Among[]{new Among("d", - 1, 1, "", this), new Among("t", - 1, 2, "", this)};
+			a0 = new MyAmong[]{new MyAmong("nde", - 1, 7), new MyAmong("en", - 1, 6), new MyAmong("s", - 1, 2), new MyAmong("'s", 2, 1), new MyAmong("es", 2, 4), new MyAmong("ies", 4, 3), new MyAmong("aus", 2, 5)};
+			a1 = new MyAmong[]{new MyAmong("de", - 1, 5), new MyAmong("ge", - 1, 2), new MyAmong("ische", - 1, 4), new MyAmong("je", - 1, 1), new MyAmong("lijke", - 1, 3), new MyAmong("le", - 1, 9), new MyAmong("ene", - 1, 10), new MyAmong("re", - 1, 8), new MyAmong("se", - 1, 7), new MyAmong("te", - 1, 6), new MyAmong("ieve", - 1, 11)};
+			a2 = new MyAmong[]{new MyAmong("heid", - 1, 3), new MyAmong("fie", - 1, 7), new MyAmong("gie", - 1, 8), new MyAmong("atie", - 1, 1), new MyAmong("isme", - 1, 5), new MyAmong("ing", - 1, 5), new MyAmong("arij", - 1, 6), new MyAmong("erij", - 1, 5), new MyAmong("sel", - 1, 3), new MyAmong("rder", - 1, 4), new MyAmong("ster", - 1, 3), new MyAmong("iteit", - 1, 2), new MyAmong("dst", - 1, 10), new MyAmong("tst", - 1, 9)};
+			a3 = new MyAmong[]{new MyAmong("end", - 1, 10), new MyAmong("atief", - 1, 2), new MyAmong("erig", - 1, 10), new MyAmong("achtig", - 1, 9), new MyAmong("ioneel", - 1, 1), new MyAmong("baar", - 1, 3), new MyAmong("laar", - 1, 5), new MyAmong("naar", - 1, 4), new MyAmong("raar", - 1, 6), new MyAmong("eriger", - 1, 10), new MyAmong("achtiger", - 1, 9), new MyAmong("lijker", - 1, 8), new MyAmong("tant", - 1, 7), new MyAmong("erigst", - 1, 10), new MyAmong("achtigst", - 1, 9), new MyAmong("lijkst", - 1, 8)};
+			a4 = new MyAmong[]{new MyAmong("ig", - 1, 1), new MyAmong("iger", - 1, 1), new MyAmong("igst", - 1, 1)};
+			a5 = new MyAmong[]{new MyAmong("ft", - 1, 2), new MyAmong("kt", - 1, 1), new MyAmong("pt", - 1, 3)};
+			a6 = new MyAmong[]{new MyAmong("bb", - 1, 1), new MyAmong("cc", - 1, 2), new MyAmong("dd", - 1, 3), new MyAmong("ff", - 1, 4), new MyAmong("gg", - 1, 5), new MyAmong("hh", - 1, 6), new MyAmong("jj", - 1, 7), new MyAmong("kk", - 1, 8), new MyAmong("ll", - 1, 9), new MyAmong("mm", - 1, 10), new MyAmong("nn", - 1, 11), new MyAmong("pp", - 1, 12), new MyAmong("qq", - 1, 13), new MyAmong("rr", - 1, 14), new MyAmong("ss", - 1, 15), new MyAmong("tt", - 1, 16), new MyAmong("v", - 1, 21), new MyAmong("vv", 16, 17), new MyAmong("ww", - 1, 18), new MyAmong("xx", - 1, 19), new MyAmong("z", - 1, 22), new MyAmong("zz", 20, 20)};
+			a7 = new MyAmong[]{new MyAmong("d", - 1, 1), new MyAmong("t", - 1, 2)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
-		private Among[] a5;
-		private Among[] a6;
-		private Among[] a7;
+		private MyAmong[] a0;
+		private MyAmong[] a1;
+		private MyAmong[] a2;
+		private MyAmong[] a3;
+		private MyAmong[] a4;
+		private MyAmong[] a5;
+		private MyAmong[] a6;
+		private MyAmong[] a7;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1)};
 		private static readonly char[] g_v_WX = new char[]{(char) (17), (char) (65), (char) (208), (char) (1)};
 		private static readonly char[] g_AOU = new char[]{(char) (1), (char) (64), (char) (16)};
@@ -392,7 +392,7 @@ lab0Brk: ;
 		
 		private bool r_Step1()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -400,16 +400,16 @@ lab0Brk: ;
 			// (, line 48
 			// [, line 49
 			ket = cursor;
-			// among, line 49
-			amongVar = findAmongB(a0, 7);
-			if (amongVar == 0)
+			// MyAmong, line 49
+			MyAmongVar = findAmongB(a0, 7);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// (, line 49
 			// ], line 49
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -734,21 +734,21 @@ lab4Brk: ;
 		
 		private bool r_Step2()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// (, line 70
 			// [, line 71
 			ket = cursor;
-			// among, line 71
-			amongVar = findAmongB(a1, 11);
-			if (amongVar == 0)
+			// MyAmong, line 71
+			MyAmongVar = findAmongB(a1, 11);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// (, line 71
 			// ], line 71
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -1084,20 +1084,20 @@ lab0Brk: ;
 		
 		private bool r_Step3()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 94
 			// [, line 95
 			ket = cursor;
-			// among, line 95
-			amongVar = findAmongB(a2, 14);
-			if (amongVar == 0)
+			// MyAmong, line 95
+			MyAmongVar = findAmongB(a2, 14);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// (, line 95
 			// ], line 95
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -1252,7 +1252,7 @@ lab0Brk: ;
 		
 		private bool r_Step4()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// (, line 114
 			// or, line 134
@@ -1266,16 +1266,16 @@ lab11:
 					// (, line 115
 					// [, line 115
 					ket = cursor;
-					// among, line 115
-					amongVar = findAmongB(a3, 16);
-					if (amongVar == 0)
+					// MyAmong, line 115
+					MyAmongVar = findAmongB(a3, 16);
+					if (MyAmongVar == 0)
 					{
 						goto lab11Brk;
 					}
 					// (, line 115
 					// ], line 115
 					bra = cursor;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -1426,16 +1426,16 @@ lab11Brk: ;
 				// (, line 135
 				// [, line 135
 				ket = cursor;
-				// among, line 135
-				amongVar = findAmongB(a4, 3);
-				if (amongVar == 0)
+				// MyAmong, line 135
+				MyAmongVar = findAmongB(a4, 3);
+				if (MyAmongVar == 0)
 				{
 					return false;
 				}
 				// (, line 135
 				// ], line 135
 				bra = cursor;
-				switch (amongVar)
+				switch (MyAmongVar)
 				{
 					
 					case 0: 
@@ -1469,20 +1469,20 @@ lab11Brk: ;
 		
 		private bool r_Step7()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 144
 			// [, line 145
 			ket = cursor;
-			// among, line 145
-			amongVar = findAmongB(a5, 3);
-			if (amongVar == 0)
+			// MyAmong, line 145
+			MyAmongVar = findAmongB(a5, 3);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// (, line 145
 			// ], line 145
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -1511,20 +1511,20 @@ lab11Brk: ;
 		
 		private bool r_Step6()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 153
 			// [, line 154
 			ket = cursor;
-			// among, line 154
-			amongVar = findAmongB(a6, 22);
-			if (amongVar == 0)
+			// MyAmong, line 154
+			MyAmongVar = findAmongB(a6, 22);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// (, line 154
 			// ], line 154
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -1667,15 +1667,15 @@ lab11Brk: ;
 		
 		private bool r_Step1c()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			// (, line 181
 			// [, line 182
 			ket = cursor;
-			// among, line 182
-			amongVar = findAmongB(a7, 2);
-			if (amongVar == 0)
+			// MyAmong, line 182
+			MyAmongVar = findAmongB(a7, 2);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
@@ -1692,7 +1692,7 @@ lab11Brk: ;
 			{
 				return false;
 			}
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 

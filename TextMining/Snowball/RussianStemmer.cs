@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using Among = SF.Snowball.Among;
+using MyAmong = SF.Snowball.MyAmong;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -31,25 +31,25 @@ namespace SF.Snowball.Ext
 		}
 		private void  InitBlock()
 		{
-			a0 = new Among[]{new Among("\u00D7\u00DB\u00C9", - 1, 1, "", this), new Among("\u00C9\u00D7\u00DB\u00C9", 0, 2, "", this), new Among("\u00D9\u00D7\u00DB\u00C9", 0, 2, "", this), new Among("\u00D7", - 1, 1, "", this), new Among("\u00C9\u00D7", 3, 2, "", this), new Among("\u00D9\u00D7", 3, 2, "", this), new Among("\u00D7\u00DB\u00C9\u00D3\u00D8", - 1, 1, "", this), new Among("\u00C9\u00D7\u00DB\u00C9\u00D3\u00D8", 6, 2, "", this), new Among("\u00D9\u00D7\u00DB\u00C9\u00D3\u00D8", 6, 2, "", this)};
-			a1 = new Among[]{new Among("\u00C0\u00C0", - 1, 1, "", this), new Among("\u00C5\u00C0", - 1, 1, "", this), new Among("\u00CF\u00C0", - 1, 1, "", this), new Among("\u00D5\u00C0", - 1, 1, "", this), new Among("\u00C5\u00C5", - 1, 1, "", this), new Among("\u00C9\u00C5", - 1, 1, "", this), new Among("\u00CF\u00C5", - 1, 1, "", this), new Among("\u00D9\u00C5", - 1, 1, "", this), new Among("\u00C9\u00C8", - 1, 1, "", this), new Among("\u00D9\u00C8", - 1, 1, "", this), new Among("\u00C9\u00CD\u00C9", - 1, 1, "", this), new Among("\u00D9\u00CD\u00C9", - 1, 1, "", this), new Among("\u00C5\u00CA", - 1, 1, "", this), new Among("\u00C9\u00CA", - 1, 1, "", this), new Among("\u00CF\u00CA", - 1, 1, "", this), new Among("\u00D9\u00CA", - 1, 1, "", this), new Among("\u00C5\u00CD", - 1, 1, "", this), new Among("\u00C9\u00CD", - 1, 1, "", this), new Among("\u00CF\u00CD", - 1, 1, "", this), new Among("\u00D9\u00CD", - 1, 1, "", this), new Among("\u00C5\u00C7\u00CF", - 1, 1, "", this), new Among("\u00CF\u00C7\u00CF", - 1, 1, "", this), new Among("\u00C1\u00D1", - 1, 1, "", this), new Among("\u00D1\u00D1", - 1, 1, "", this), new Among("\u00C5\u00CD\u00D5", - 1, 1, "", this), new Among("\u00CF\u00CD\u00D5", - 1, 1, "", this)};
-			a2 = new Among[]{new Among("\u00C5\u00CD", - 1, 1, "", this), new Among("\u00CE\u00CE", - 1, 1, "", this), new Among("\u00D7\u00DB", - 1, 1, "", this), new Among("\u00C9\u00D7\u00DB", 2, 2, "", this), new Among("\u00D9\u00D7\u00DB", 2, 2, "", this), new Among("\u00DD", - 1, 1, "", this), new Among("\u00C0\u00DD", 5, 1, "", this), new Among("\u00D5\u00C0\u00DD", 6, 2, "", this)};
-			a3 = new Among[]{new Among("\u00D3\u00D1", - 1, 1, "", this), new Among("\u00D3\u00D8", - 1, 1, "", this)};
-			a4 = new Among[]{new Among("\u00C0", - 1, 2, "", this), new Among("\u00D5\u00C0", 0, 2, "", this), new Among("\u00CC\u00C1", - 1, 1, "", this), new Among("\u00C9\u00CC\u00C1", 2, 2, "", this), new Among("\u00D9\u00CC\u00C1", 2, 2, "", this), new Among("\u00CE\u00C1", - 1, 1, "", this), new Among("\u00C5\u00CE\u00C1", 5, 2, "", this), new Among("\u00C5\u00D4\u00C5", - 1, 1, "", this), new Among("\u00C9\u00D4\u00C5", - 1, 2, "", this), new Among("\u00CA\u00D4\u00C5", - 1, 1, "", this), new Among("\u00C5\u00CA\u00D4\u00C5", 9, 2, "", this), new Among("\u00D5\u00CA\u00D4\u00C5", 9, 2, "", this), new Among("\u00CC\u00C9", - 1, 1, "", this), new Among("\u00C9\u00CC\u00C9", 12, 2, "", this), new Among("\u00D9\u00CC\u00C9", 12, 2, "", this), new Among("\u00CA", - 1, 1, "", this), new Among("\u00C5\u00CA", 15, 2, "", this), new Among("\u00D5\u00CA", 15, 2, "", this), new Among("\u00CC", - 1, 1, "", this), new Among("\u00C9\u00CC", 18, 2, "", this), new Among("\u00D9\u00CC", 18, 2, "", this), new Among("\u00C5\u00CD", - 1, 1, "", this), new Among("\u00C9\u00CD", - 1, 2, "", this), new Among("\u00D9\u00CD", - 1, 2, "", this), new Among("\u00CE", - 1, 1, "", this), new Among("\u00C5\u00CE", 24, 2, "", this), new Among("\u00CC\u00CF", - 1, 1, "", this), new Among("\u00C9\u00CC\u00CF", 26, 2, "", this), new Among("\u00D9\u00CC\u00CF", 26, 2, "", this), new Among("\u00CE\u00CF", - 1, 1, "", this), new Among("\u00C5\u00CE\u00CF", 29, 2, "", this), new Among("\u00CE\u00CE\u00CF", 29, 1, "", this), new Among("\u00C0\u00D4", - 1, 1, "", this), new Among("\u00D5\u00C0\u00D4", 32, 2, "", this), new Among("\u00C5\u00D4", - 1, 1, "", this), new Among("\u00D5\u00C5\u00D4", 34, 2, "", this), new Among("\u00C9\u00D4", - 1, 2, "", this), new Among("\u00D1\u00D4", - 1, 2, "", this), new Among("\u00D9\u00D4", - 1, 2, "", this), new Among("\u00D4\u00D8", - 1, 1, "", this), new Among("\u00C9\u00D4\u00D8", 39, 2, "", this), new Among("\u00D9\u00D4\u00D8", 39, 2, "", this), new Among("\u00C5\u00DB\u00D8", - 1, 1, "", this), 
-				new Among("\u00C9\u00DB\u00D8", - 1, 2, "", this), new Among("\u00CE\u00D9", - 1, 1, "", this), new Among("\u00C5\u00CE\u00D9", 44, 2, "", this)};
-			a5 = new Among[]{new Among("\u00C0", - 1, 1, "", this), new Among("\u00C9\u00C0", 0, 1, "", this), new Among("\u00D8\u00C0", 0, 1, "", this), new Among("\u00C1", - 1, 1, "", this), new Among("\u00C5", - 1, 1, "", this), new Among("\u00C9\u00C5", 4, 1, "", this), new Among("\u00D8\u00C5", 4, 1, "", this), new Among("\u00C1\u00C8", - 1, 1, "", this), new Among("\u00D1\u00C8", - 1, 1, "", this), new Among("\u00C9\u00D1\u00C8", 8, 1, "", this), new Among("\u00C9", - 1, 1, "", this), new Among("\u00C5\u00C9", 10, 1, "", this), new Among("\u00C9\u00C9", 10, 1, "", this), new Among("\u00C1\u00CD\u00C9", 10, 1, "", this), new Among("\u00D1\u00CD\u00C9", 10, 1, "", this), new Among("\u00C9\u00D1\u00CD\u00C9", 14, 1, "", this), new Among("\u00CA", - 1, 1, "", this), new Among("\u00C5\u00CA", 16, 1, "", this), new Among("\u00C9\u00C5\u00CA", 17, 1, "", this), new Among("\u00C9\u00CA", 16, 1, "", this), new Among("\u00CF\u00CA", 16, 1, "", this), new Among("\u00C1\u00CD", - 1, 1, "", this), new Among("\u00C5\u00CD", - 1, 1, "", this), new Among("\u00C9\u00C5\u00CD", 22, 1, "", this), new Among("\u00CF\u00CD", - 1, 1, "", this), new Among("\u00D1\u00CD", - 1, 1, "", this), new Among("\u00C9\u00D1\u00CD", 25, 1, "", this), new Among("\u00CF", - 1, 1, "", this), new Among("\u00D1", - 1, 1, "", this), new Among("\u00C9\u00D1", 28, 1, "", this), new Among("\u00D8\u00D1", 28, 1, "", this), new Among("\u00D5", - 1, 1, "", this), new Among("\u00C5\u00D7", - 1, 1, "", this), new Among("\u00CF\u00D7", - 1, 1, "", this), new Among("\u00D8", - 1, 1, "", this), new Among("\u00D9", - 1, 1, "", this)};
-			a6 = new Among[]{new Among("\u00CF\u00D3\u00D4", - 1, 1, "", this), new Among("\u00CF\u00D3\u00D4\u00D8", - 1, 1, "", this)};
-			a7 = new Among[]{new Among("\u00C5\u00CA\u00DB\u00C5", - 1, 1, "", this), new Among("\u00CE", - 1, 2, "", this), new Among("\u00D8", - 1, 3, "", this), new Among("\u00C5\u00CA\u00DB", - 1, 1, "", this)};
+			a0 = new MyAmong[]{new MyAmong("\u00D7\u00DB\u00C9", - 1, 1), new MyAmong("\u00C9\u00D7\u00DB\u00C9", 0, 2), new MyAmong("\u00D9\u00D7\u00DB\u00C9", 0, 2), new MyAmong("\u00D7", - 1, 1), new MyAmong("\u00C9\u00D7", 3, 2), new MyAmong("\u00D9\u00D7", 3, 2), new MyAmong("\u00D7\u00DB\u00C9\u00D3\u00D8", - 1, 1), new MyAmong("\u00C9\u00D7\u00DB\u00C9\u00D3\u00D8", 6, 2), new MyAmong("\u00D9\u00D7\u00DB\u00C9\u00D3\u00D8", 6, 2)};
+			a1 = new MyAmong[]{new MyAmong("\u00C0\u00C0", - 1, 1), new MyAmong("\u00C5\u00C0", - 1, 1), new MyAmong("\u00CF\u00C0", - 1, 1), new MyAmong("\u00D5\u00C0", - 1, 1), new MyAmong("\u00C5\u00C5", - 1, 1), new MyAmong("\u00C9\u00C5", - 1, 1), new MyAmong("\u00CF\u00C5", - 1, 1), new MyAmong("\u00D9\u00C5", - 1, 1), new MyAmong("\u00C9\u00C8", - 1, 1), new MyAmong("\u00D9\u00C8", - 1, 1), new MyAmong("\u00C9\u00CD\u00C9", - 1, 1), new MyAmong("\u00D9\u00CD\u00C9", - 1, 1), new MyAmong("\u00C5\u00CA", - 1, 1), new MyAmong("\u00C9\u00CA", - 1, 1), new MyAmong("\u00CF\u00CA", - 1, 1), new MyAmong("\u00D9\u00CA", - 1, 1), new MyAmong("\u00C5\u00CD", - 1, 1), new MyAmong("\u00C9\u00CD", - 1, 1), new MyAmong("\u00CF\u00CD", - 1, 1), new MyAmong("\u00D9\u00CD", - 1, 1), new MyAmong("\u00C5\u00C7\u00CF", - 1, 1), new MyAmong("\u00CF\u00C7\u00CF", - 1, 1), new MyAmong("\u00C1\u00D1", - 1, 1), new MyAmong("\u00D1\u00D1", - 1, 1), new MyAmong("\u00C5\u00CD\u00D5", - 1, 1), new MyAmong("\u00CF\u00CD\u00D5", - 1, 1)};
+			a2 = new MyAmong[]{new MyAmong("\u00C5\u00CD", - 1, 1), new MyAmong("\u00CE\u00CE", - 1, 1), new MyAmong("\u00D7\u00DB", - 1, 1), new MyAmong("\u00C9\u00D7\u00DB", 2, 2), new MyAmong("\u00D9\u00D7\u00DB", 2, 2), new MyAmong("\u00DD", - 1, 1), new MyAmong("\u00C0\u00DD", 5, 1), new MyAmong("\u00D5\u00C0\u00DD", 6, 2)};
+			a3 = new MyAmong[]{new MyAmong("\u00D3\u00D1", - 1, 1), new MyAmong("\u00D3\u00D8", - 1, 1)};
+			a4 = new MyAmong[]{new MyAmong("\u00C0", - 1, 2), new MyAmong("\u00D5\u00C0", 0, 2), new MyAmong("\u00CC\u00C1", - 1, 1), new MyAmong("\u00C9\u00CC\u00C1", 2, 2), new MyAmong("\u00D9\u00CC\u00C1", 2, 2), new MyAmong("\u00CE\u00C1", - 1, 1), new MyAmong("\u00C5\u00CE\u00C1", 5, 2), new MyAmong("\u00C5\u00D4\u00C5", - 1, 1), new MyAmong("\u00C9\u00D4\u00C5", - 1, 2), new MyAmong("\u00CA\u00D4\u00C5", - 1, 1), new MyAmong("\u00C5\u00CA\u00D4\u00C5", 9, 2), new MyAmong("\u00D5\u00CA\u00D4\u00C5", 9, 2), new MyAmong("\u00CC\u00C9", - 1, 1), new MyAmong("\u00C9\u00CC\u00C9", 12, 2), new MyAmong("\u00D9\u00CC\u00C9", 12, 2), new MyAmong("\u00CA", - 1, 1), new MyAmong("\u00C5\u00CA", 15, 2), new MyAmong("\u00D5\u00CA", 15, 2), new MyAmong("\u00CC", - 1, 1), new MyAmong("\u00C9\u00CC", 18, 2), new MyAmong("\u00D9\u00CC", 18, 2), new MyAmong("\u00C5\u00CD", - 1, 1), new MyAmong("\u00C9\u00CD", - 1, 2), new MyAmong("\u00D9\u00CD", - 1, 2), new MyAmong("\u00CE", - 1, 1), new MyAmong("\u00C5\u00CE", 24, 2), new MyAmong("\u00CC\u00CF", - 1, 1), new MyAmong("\u00C9\u00CC\u00CF", 26, 2), new MyAmong("\u00D9\u00CC\u00CF", 26, 2), new MyAmong("\u00CE\u00CF", - 1, 1), new MyAmong("\u00C5\u00CE\u00CF", 29, 2), new MyAmong("\u00CE\u00CE\u00CF", 29, 1), new MyAmong("\u00C0\u00D4", - 1, 1), new MyAmong("\u00D5\u00C0\u00D4", 32, 2), new MyAmong("\u00C5\u00D4", - 1, 1), new MyAmong("\u00D5\u00C5\u00D4", 34, 2), new MyAmong("\u00C9\u00D4", - 1, 2), new MyAmong("\u00D1\u00D4", - 1, 2), new MyAmong("\u00D9\u00D4", - 1, 2), new MyAmong("\u00D4\u00D8", - 1, 1), new MyAmong("\u00C9\u00D4\u00D8", 39, 2), new MyAmong("\u00D9\u00D4\u00D8", 39, 2), new MyAmong("\u00C5\u00DB\u00D8", - 1, 1), 
+				new MyAmong("\u00C9\u00DB\u00D8", - 1, 2), new MyAmong("\u00CE\u00D9", - 1, 1), new MyAmong("\u00C5\u00CE\u00D9", 44, 2)};
+			a5 = new MyAmong[]{new MyAmong("\u00C0", - 1, 1), new MyAmong("\u00C9\u00C0", 0, 1), new MyAmong("\u00D8\u00C0", 0, 1), new MyAmong("\u00C1", - 1, 1), new MyAmong("\u00C5", - 1, 1), new MyAmong("\u00C9\u00C5", 4, 1), new MyAmong("\u00D8\u00C5", 4, 1), new MyAmong("\u00C1\u00C8", - 1, 1), new MyAmong("\u00D1\u00C8", - 1, 1), new MyAmong("\u00C9\u00D1\u00C8", 8, 1), new MyAmong("\u00C9", - 1, 1), new MyAmong("\u00C5\u00C9", 10, 1), new MyAmong("\u00C9\u00C9", 10, 1), new MyAmong("\u00C1\u00CD\u00C9", 10, 1), new MyAmong("\u00D1\u00CD\u00C9", 10, 1), new MyAmong("\u00C9\u00D1\u00CD\u00C9", 14, 1), new MyAmong("\u00CA", - 1, 1), new MyAmong("\u00C5\u00CA", 16, 1), new MyAmong("\u00C9\u00C5\u00CA", 17, 1), new MyAmong("\u00C9\u00CA", 16, 1), new MyAmong("\u00CF\u00CA", 16, 1), new MyAmong("\u00C1\u00CD", - 1, 1), new MyAmong("\u00C5\u00CD", - 1, 1), new MyAmong("\u00C9\u00C5\u00CD", 22, 1), new MyAmong("\u00CF\u00CD", - 1, 1), new MyAmong("\u00D1\u00CD", - 1, 1), new MyAmong("\u00C9\u00D1\u00CD", 25, 1), new MyAmong("\u00CF", - 1, 1), new MyAmong("\u00D1", - 1, 1), new MyAmong("\u00C9\u00D1", 28, 1), new MyAmong("\u00D8\u00D1", 28, 1), new MyAmong("\u00D5", - 1, 1), new MyAmong("\u00C5\u00D7", - 1, 1), new MyAmong("\u00CF\u00D7", - 1, 1), new MyAmong("\u00D8", - 1, 1), new MyAmong("\u00D9", - 1, 1)};
+			a6 = new MyAmong[]{new MyAmong("\u00CF\u00D3\u00D4", - 1, 1), new MyAmong("\u00CF\u00D3\u00D4\u00D8", - 1, 1)};
+			a7 = new MyAmong[]{new MyAmong("\u00C5\u00CA\u00DB\u00C5", - 1, 1), new MyAmong("\u00CE", - 1, 2), new MyAmong("\u00D8", - 1, 3), new MyAmong("\u00C5\u00CA\u00DB", - 1, 1)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
-		private Among[] a5;
-		private Among[] a6;
-		private Among[] a7;
+		private MyAmong[] a0;
+		private MyAmong[] a1;
+		private MyAmong[] a2;
+		private MyAmong[] a3;
+		private MyAmong[] a4;
+		private MyAmong[] a5;
+		private MyAmong[] a6;
+		private MyAmong[] a7;
 		private static readonly char[] gV = new char[]{(char) (35), (char) (130), (char) (34), (char) (18)};
 		
 		private int I_p2;
@@ -193,20 +193,20 @@ lab0Brk: ;
 		
 		private bool rPerfectiveGerund()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// (, line 110
 			// [, line 111
 			ket = cursor;
 			// substring, line 111
-			amongVar = findAmongB(a0, 9);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a0, 9);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 111
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -256,19 +256,19 @@ lab1Brk: ;
 		
 		private bool rAdjective()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 126
 			// [, line 127
 			ket = cursor;
 			// substring, line 127
-			amongVar = findAmongB(a1, 26);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a1, 26);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 127
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -285,7 +285,7 @@ lab1Brk: ;
 		
 		private bool rAdjectival()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			// (, line 140
@@ -302,15 +302,15 @@ lab1Brk: ;
 				// [, line 149
 				ket = cursor;
 				// substring, line 149
-				amongVar = findAmongB(a2, 8);
-				if (amongVar == 0)
+				MyAmongVar = findAmongB(a2, 8);
+				if (MyAmongVar == 0)
 				{
 					cursor = limit - v1;
 					goto lab0Brk;
 				}
 				// ], line 149
 				bra = cursor;
-				switch (amongVar)
+				switch (MyAmongVar)
 				{
 					
 					case 0: 
@@ -368,19 +368,19 @@ lab0Brk: ;
 		
 		private bool rReflexive()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 167
 			// [, line 168
 			ket = cursor;
 			// substring, line 168
-			amongVar = findAmongB(a3, 2);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a3, 2);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 168
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -397,20 +397,20 @@ lab0Brk: ;
 		
 		private bool rVerb()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// (, line 175
 			// [, line 176
 			ket = cursor;
 			// substring, line 176
-			amongVar = findAmongB(a4, 46);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a4, 46);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 176
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -460,19 +460,19 @@ lab3Brk: ;
 		
 		private bool rNoun()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 198
 			// [, line 199
 			ket = cursor;
 			// substring, line 199
-			amongVar = findAmongB(a5, 36);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a5, 36);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 199
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -489,13 +489,13 @@ lab3Brk: ;
 		
 		private bool rDerivational()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 214
 			// [, line 215
 			ket = cursor;
 			// substring, line 215
-			amongVar = findAmongB(a6, 2);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a6, 2);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
@@ -506,7 +506,7 @@ lab3Brk: ;
 			{
 				return false;
 			}
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -523,19 +523,19 @@ lab3Brk: ;
 		
 		private bool rTidyUp()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 222
 			// [, line 223
 			ket = cursor;
 			// substring, line 223
-			amongVar = findAmongB(a7, 4);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a7, 4);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 223
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 

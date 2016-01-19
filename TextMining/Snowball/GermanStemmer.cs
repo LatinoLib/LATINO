@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using Among = SF.Snowball.Among;
+using MyAmong = SF.Snowball.MyAmong;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -31,18 +31,18 @@ namespace SF.Snowball.Ext
 		}
 		private void  InitBlock()
 		{
-			a0 = new Among[]{new Among("", - 1, 6, "", this), new Among("U", 0, 2, "", this), new Among("Y", 0, 1, "", this), new Among("\u00E4", 0, 3, "", this), new Among("\u00F6", 0, 4, "", this), new Among("\u00FC", 0, 5, "", this)};
-			a1 = new Among[]{new Among("e", - 1, 1, "", this), new Among("em", - 1, 1, "", this), new Among("en", - 1, 1, "", this), new Among("ern", - 1, 1, "", this), new Among("er", - 1, 1, "", this), new Among("s", - 1, 2, "", this), new Among("es", 5, 1, "", this)};
-			a2 = new Among[]{new Among("en", - 1, 1, "", this), new Among("er", - 1, 1, "", this), new Among("st", - 1, 2, "", this), new Among("est", 2, 1, "", this)};
-			a3 = new Among[]{new Among("ig", - 1, 1, "", this), new Among("lich", - 1, 1, "", this)};
-			a4 = new Among[]{new Among("end", - 1, 1, "", this), new Among("ig", - 1, 2, "", this), new Among("ung", - 1, 1, "", this), new Among("lich", - 1, 3, "", this), new Among("isch", - 1, 2, "", this), new Among("ik", - 1, 2, "", this), new Among("heit", - 1, 3, "", this), new Among("keit", - 1, 4, "", this)};
+			a0 = new MyAmong[]{new MyAmong("", - 1, 6), new MyAmong("U", 0, 2), new MyAmong("Y", 0, 1), new MyAmong("\u00E4", 0, 3), new MyAmong("\u00F6", 0, 4), new MyAmong("\u00FC", 0, 5)};
+			a1 = new MyAmong[]{new MyAmong("e", - 1, 1), new MyAmong("em", - 1, 1), new MyAmong("en", - 1, 1), new MyAmong("ern", - 1, 1), new MyAmong("er", - 1, 1), new MyAmong("s", - 1, 2), new MyAmong("es", 5, 1)};
+			a2 = new MyAmong[]{new MyAmong("en", - 1, 1), new MyAmong("er", - 1, 1), new MyAmong("st", - 1, 2), new MyAmong("est", 2, 1)};
+			a3 = new MyAmong[]{new MyAmong("ig", - 1, 1), new MyAmong("lich", - 1, 1)};
+			a4 = new MyAmong[]{new MyAmong("end", - 1, 1), new MyAmong("ig", - 1, 2), new MyAmong("ung", - 1, 1), new MyAmong("lich", - 1, 3), new MyAmong("isch", - 1, 2), new MyAmong("ik", - 1, 2), new MyAmong("heit", - 1, 3), new MyAmong("keit", - 1, 4)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
+		private MyAmong[] a0;
+		private MyAmong[] a1;
+		private MyAmong[] a2;
+		private MyAmong[] a3;
+		private MyAmong[] a4;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8), (char) (0), (char) (32), (char) (8)};
 		private static readonly char[] gSEnding = new char[]{(char) (117), (char) (30), (char) (5)};
 		private static readonly char[] gStEnding = new char[]{(char) (117), (char) (30), (char) (4)};
@@ -349,7 +349,7 @@ golab7Brk: ;
 		
 		private bool rPostlude()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// repeat, line 53
 			while (true)
@@ -361,14 +361,14 @@ golab7Brk: ;
 					// [, line 55
 					bra = cursor;
 					// substring, line 55
-					amongVar = findAmong(a0, 6);
-					if (amongVar == 0)
+					MyAmongVar = findAmong(a0, 6);
+					if (MyAmongVar == 0)
 					{
 						goto lab10Brk;
 					}
 					// ], line 55
 					ket = cursor;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -451,7 +451,7 @@ replab1Brk: ;
 		
 		private bool rStandardSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -470,8 +470,8 @@ replab1Brk: ;
 				// [, line 73
 				ket = cursor;
 				// substring, line 73
-				amongVar = findAmongB(a1, 7);
-				if (amongVar == 0)
+				MyAmongVar = findAmongB(a1, 7);
+				if (MyAmongVar == 0)
 				{
 					goto lab0Brk;
 				}
@@ -482,7 +482,7 @@ replab1Brk: ;
 				{
 					goto lab0Brk;
 				}
-				switch (amongVar)
+				switch (MyAmongVar)
 				{
 					
 					case 0: 
@@ -518,8 +518,8 @@ lab0Brk: ;
 				// [, line 83
 				ket = cursor;
 				// substring, line 83
-				amongVar = findAmongB(a2, 4);
-				if (amongVar == 0)
+				MyAmongVar = findAmongB(a2, 4);
+				if (MyAmongVar == 0)
 				{
 					goto lab1Brk;
 				}
@@ -530,7 +530,7 @@ lab0Brk: ;
 				{
 					goto lab1Brk;
 				}
-				switch (amongVar)
+				switch (MyAmongVar)
 				{
 					
 					case 0: 
@@ -575,8 +575,8 @@ lab1Brk: ;
 				// [, line 93
 				ket = cursor;
 				// substring, line 93
-				amongVar = findAmongB(a4, 8);
-				if (amongVar == 0)
+				MyAmongVar = findAmongB(a4, 8);
+				if (MyAmongVar == 0)
 				{
 					goto lab2Brk;
 				}
@@ -587,7 +587,7 @@ lab1Brk: ;
 				{
 					goto lab2Brk;
 				}
-				switch (amongVar)
+				switch (MyAmongVar)
 				{
 					
 					case 0: 
@@ -740,8 +740,8 @@ lab6Brk: ;
 							// [, line 110
 							ket = cursor;
 							// substring, line 110
-							amongVar = findAmongB(a3, 2);
-							if (amongVar == 0)
+							MyAmongVar = findAmongB(a3, 2);
+							if (MyAmongVar == 0)
 							{
 								cursor = limit - v9;
 								goto lab9Brk;
@@ -754,7 +754,7 @@ lab6Brk: ;
 								cursor = limit - v9;
 								goto lab9Brk;
 							}
-							switch (amongVar)
+							switch (MyAmongVar)
 							{
 								
 								case 0: 

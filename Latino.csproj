@@ -100,6 +100,7 @@
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltData.cs" />
     <Compile Include="TextMining\LemmaSharp\LemmatizerPrebuiltFull.cs" />
     <Compile Include="TextMining\SimpleTokenizer.cs" />
+    <Compile Include="TextMining\Snowball\MyAmong.cs" />
     <Compile Include="WebMining\BoilerplateRemover.cs" />
     <Compile Include="TextMining\CustomStemmer.cs" />
     <Compile Include="WebMining\HtmlAgilityPack\EncodingFoundException.cs" />
@@ -226,13 +227,12 @@
     <Compile Include="TextMining\Snowball\DanishStemmer.cs" />
     <Compile Include="TextMining\Snowball\DutchStemmer.cs" />
     <Compile Include="TextMining\Snowball\EnglishStemmer.cs" />
-    <Compile Include="TextMining\Snowball\FinnishStemmer.cs" />
+    <None Include="TextMining\Snowball\FinnishStemmer.cs" />
     <Compile Include="TextMining\Snowball\FrenchStemmer.cs" />
     <Compile Include="TextMining\Snowball\German2Stemmer.cs" />
     <Compile Include="TextMining\Snowball\GermanStemmer.cs" />
     <Compile Include="TextMining\Snowball\ItalianStemmer.cs" />
     <Compile Include="TextMining\Snowball\KpStemmer.cs" />
-    <Compile Include="TextMining\Snowball\LovinsStemmer.cs" />
     <Compile Include="TextMining\Snowball\NorwegianStemmer.cs" />
     <Compile Include="TextMining\Snowball\PorterStemmer.cs" />
     <Compile Include="TextMining\Snowball\PortugueseStemmer.cs" />

@@ -56,8 +56,8 @@ namespace Latino.TextMining
                     return new DanishStemmer();
                 case Language.Dutch:
                     return new DutchStemmer();
-                case Language.Finnish:
-                    return new FinnishStemmer();
+                //case Language.Finnish:
+                //    return new FinnishStemmer();
                 case Language.Norwegian:
                     return new NorwegianStemmer();
                 case Language.Russian:
