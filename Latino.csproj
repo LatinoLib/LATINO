@@ -227,7 +227,7 @@
     <Compile Include="TextMining\Snowball\DanishStemmer.cs" />
     <Compile Include="TextMining\Snowball\DutchStemmer.cs" />
     <Compile Include="TextMining\Snowball\EnglishStemmer.cs" />
-    <None Include="TextMining\Snowball\FinnishStemmer.cs" />
+    <Compile Include="TextMining\Snowball\FinnishStemmer.cs" />
     <Compile Include="TextMining\Snowball\FrenchStemmer.cs" />
     <Compile Include="TextMining\Snowball\German2Stemmer.cs" />
     <Compile Include="TextMining\Snowball\GermanStemmer.cs" />

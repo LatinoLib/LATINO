@@ -31,28 +31,28 @@ namespace SF.Snowball.Ext
 		}
 		private void  InitBlock()
 		{
-			a0 = new MyAmong[]{new MyAmong("pa", - 1, 1), new MyAmong("sti", - 1, 2), new MyAmong("kaan", - 1, 1), new MyAmong("han", - 1, 1), new MyAmong("kin", - 1, 1), new MyAmong("h\u00E4n", - 1, 1), new MyAmong("k\u00E4\u00E4n", - 1, 1), new MyAmong("ko", - 1, 1), new MyAmong("p\u00E4", - 1, 1), new MyAmong("k\u00F6", - 1, 1)};
-			a1 = new MyAmong[]{new MyAmong("lla", - 1, - 1), new MyAmong("na", - 1, - 1), new MyAmong("ssa", - 1, - 1), new MyAmong("ta", - 1, - 1), new MyAmong("lta", 3, - 1), new MyAmong("sta", 3, - 1)};
-			a2 = new MyAmong[]{new MyAmong("ll\u00E4", - 1, - 1), new MyAmong("n\u00E4", - 1, - 1), new MyAmong("ss\u00E4", - 1, - 1), new MyAmong("t\u00E4", - 1, - 1), new MyAmong("lt\u00E4", 3, - 1), new MyAmong("st\u00E4", 3, - 1)};
-			a3 = new MyAmong[]{new MyAmong("lle", - 1, - 1), new MyAmong("ine", - 1, - 1)};
-			a4 = new MyAmong[]{new MyAmong("nsa", - 1, 3), new MyAmong("mme", - 1, 3), new MyAmong("nne", - 1, 3), new MyAmong("ni", - 1, 2), new MyAmong("si", - 1, 1), new MyAmong("an", - 1, 4), new MyAmong("en", - 1, 6), new MyAmong("\u00E4n", - 1, 5), new MyAmong("ns\u00E4", - 1, 3)};
-			a5 = new MyAmong[]{new MyAmong("aa", - 1, - 1), new MyAmong("ee", - 1, - 1), new MyAmong("ii", - 1, - 1), new MyAmong("oo", - 1, - 1), new MyAmong("uu", - 1, - 1), new MyAmong("\u00E4\u00E4", - 1, - 1), new MyAmong("\u00F6\u00F6", - 1, - 1)};
-			a6 = new MyAmong[]{new MyAmong("a", - 1, 8), new MyAmong("lla", 0, - 1), new MyAmong("na", 0, - 1), new MyAmong("ssa", 0, - 1), new MyAmong("ta", 0, - 1), new MyAmong("lta", 4, - 1), new MyAmong("sta", 4, - 1), new MyAmong("tta", 4, 9), new MyAmong("lle", - 1, - 1), new MyAmong("ine", - 1, - 1), new MyAmong("ksi", - 1, - 1), new MyAmong("n", - 1, 7), new MyAmong("han", 11, 1), new MyAmong("den", 11, - 1, "r_VI", this), new MyAmong("seen", 11, - 1, "r_LONG", this), new MyAmong("hen", 11, 2), new MyAmong("tten", 11, - 1, "r_VI", this), new MyAmong("hin", 11, 3), new MyAmong("siin", 11, - 1, "r_VI", this), new MyAmong("hon", 11, 4), new MyAmong("h\u00E4n", 11, 5), new MyAmong("h\u00F6n", 11, 6), new MyAmong("\u00E4", - 1, 8), new MyAmong("ll\u00E4", 22, - 1), new MyAmong("n\u00E4", 22, - 1), new MyAmong("ss\u00E4", 22, - 1), new MyAmong("t\u00E4", 22, - 1), new MyAmong("lt\u00E4", 26, - 1), new MyAmong("st\u00E4", 26, - 1), new MyAmong("tt\u00E4", 26, 9)};
-			a7 = new MyAmong[]{new MyAmong("eja", - 1, - 1), new MyAmong("mma", - 1, 1), new MyAmong("imma", 1, - 1), new MyAmong("mpa", - 1, 1), new MyAmong("impa", 3, - 1), new MyAmong("mmi", - 1, 1), new MyAmong("immi", 5, - 1), new MyAmong("mpi", - 1, 1), new MyAmong("impi", 7, - 1), new MyAmong("ej\u00E4", - 1, - 1), new MyAmong("mm\u00E4", - 1, 1), new MyAmong("imm\u00E4", 10, - 1), new MyAmong("mp\u00E4", - 1, 1), new MyAmong("imp\u00E4", 12, - 1)};
-			a8 = new MyAmong[]{new MyAmong("i", - 1, - 1), new MyAmong("j", - 1, - 1)};
-			a9 = new MyAmong[]{new MyAmong("mma", - 1, 1), new MyAmong("imma", 0, - 1)};
+			a0 = new Among[]{new Among("pa", - 1, 1, "", this), new Among("sti", - 1, 2, "", this), new Among("kaan", - 1, 1, "", this), new Among("han", - 1, 1, "", this), new Among("kin", - 1, 1, "", this), new Among("h\u00E4n", - 1, 1, "", this), new Among("k\u00E4\u00E4n", - 1, 1, "", this), new Among("ko", - 1, 1, "", this), new Among("p\u00E4", - 1, 1, "", this), new Among("k\u00F6", - 1, 1, "", this)};
+			a1 = new Among[]{new Among("lla", - 1, - 1, "", this), new Among("na", - 1, - 1, "", this), new Among("ssa", - 1, - 1, "", this), new Among("ta", - 1, - 1, "", this), new Among("lta", 3, - 1, "", this), new Among("sta", 3, - 1, "", this)};
+			a2 = new Among[]{new Among("ll\u00E4", - 1, - 1, "", this), new Among("n\u00E4", - 1, - 1, "", this), new Among("ss\u00E4", - 1, - 1, "", this), new Among("t\u00E4", - 1, - 1, "", this), new Among("lt\u00E4", 3, - 1, "", this), new Among("st\u00E4", 3, - 1, "", this)};
+			a3 = new Among[]{new Among("lle", - 1, - 1, "", this), new Among("ine", - 1, - 1, "", this)};
+			a4 = new Among[]{new Among("nsa", - 1, 3, "", this), new Among("mme", - 1, 3, "", this), new Among("nne", - 1, 3, "", this), new Among("ni", - 1, 2, "", this), new Among("si", - 1, 1, "", this), new Among("an", - 1, 4, "", this), new Among("en", - 1, 6, "", this), new Among("\u00E4n", - 1, 5, "", this), new Among("ns\u00E4", - 1, 3, "", this)};
+			a5 = new Among[]{new Among("aa", - 1, - 1, "", this), new Among("ee", - 1, - 1, "", this), new Among("ii", - 1, - 1, "", this), new Among("oo", - 1, - 1, "", this), new Among("uu", - 1, - 1, "", this), new Among("\u00E4\u00E4", - 1, - 1, "", this), new Among("\u00F6\u00F6", - 1, - 1, "", this)};
+			a6 = new Among[]{new Among("a", - 1, 8, "", this), new Among("lla", 0, - 1, "", this), new Among("na", 0, - 1, "", this), new Among("ssa", 0, - 1, "", this), new Among("ta", 0, - 1, "", this), new Among("lta", 4, - 1, "", this), new Among("sta", 4, - 1, "", this), new Among("tta", 4, 9, "", this), new Among("lle", - 1, - 1, "", this), new Among("ine", - 1, - 1, "", this), new Among("ksi", - 1, - 1, "", this), new Among("n", - 1, 7, "", this), new Among("han", 11, 1, "", this), new Among("den", 11, - 1, "r_VI", this), new Among("seen", 11, - 1, "r_LONG", this), new Among("hen", 11, 2, "", this), new Among("tten", 11, - 1, "r_VI", this), new Among("hin", 11, 3, "", this), new Among("siin", 11, - 1, "r_VI", this), new Among("hon", 11, 4, "", this), new Among("h\u00E4n", 11, 5, "", this), new Among("h\u00F6n", 11, 6, "", this), new Among("\u00E4", - 1, 8, "", this), new Among("ll\u00E4", 22, - 1, "", this), new Among("n\u00E4", 22, - 1, "", this), new Among("ss\u00E4", 22, - 1, "", this), new Among("t\u00E4", 22, - 1, "", this), new Among("lt\u00E4", 26, - 1, "", this), new Among("st\u00E4", 26, - 1, "", this), new Among("tt\u00E4", 26, 9, "", this)};
+			a7 = new Among[]{new Among("eja", - 1, - 1, "", this), new Among("mma", - 1, 1, "", this), new Among("imma", 1, - 1, "", this), new Among("mpa", - 1, 1, "", this), new Among("impa", 3, - 1, "", this), new Among("mmi", - 1, 1, "", this), new Among("immi", 5, - 1, "", this), new Among("mpi", - 1, 1, "", this), new Among("impi", 7, - 1, "", this), new Among("ej\u00E4", - 1, - 1, "", this), new Among("mm\u00E4", - 1, 1, "", this), new Among("imm\u00E4", 10, - 1, "", this), new Among("mp\u00E4", - 1, 1, "", this), new Among("imp\u00E4", 12, - 1, "", this)};
+			a8 = new Among[]{new Among("i", - 1, - 1, "", this), new Among("j", - 1, - 1, "", this)};
+			a9 = new Among[]{new Among("mma", - 1, 1, "", this), new Among("imma", 0, - 1, "", this)};
 		}
-
-        private MyAmong[] a0;
-        private MyAmong[] a1;
-        private MyAmong[] a2;
-        private MyAmong[] a3;
-        private MyAmong[] a4;
-        private MyAmong[] a5;
-        private MyAmong[] a6;
-        private MyAmong[] a7;
-        private MyAmong[] a8;
-        private MyAmong[] a9;
+		
+		private Among[] a0;
+		private Among[] a1;
+		private Among[] a2;
+		private Among[] a3;
+		private Among[] a4;
+		private Among[] a5;
+		private Among[] a6;
+		private Among[] a7;
+		private Among[] a8;
+		private Among[] a9;
 
         private static readonly char[] g_AEI = new char[]{(char) (17), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8)};
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8), (char) (0), (char) (32)};
