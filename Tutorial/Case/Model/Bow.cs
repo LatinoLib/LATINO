@@ -43,8 +43,7 @@ namespace Tutorial.Case.Model
 
             // Test the tokenizer.
 
-            tokenizer.Text = "one 1 two 2 three 3 one_1 two_2 three_3";
-            foreach (string token in tokenizer)
+            foreach (string token in tokenizer.GetTokens("one 1 two 2 three 3 one_1 two_2 three_3"))
             {
                 Console.Write("\"{0}\" ", token);
             }
