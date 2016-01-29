@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using Among = SF.Snowball.Among;
+using MyAmong = SF.Snowball.MyAmong;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -25,34 +25,35 @@ namespace SF.Snowball.Ext
     public class EnglishStemmer : SnowballProgram, ISnowballStemmer
     {
 
-		public EnglishStemmer()
+		static EnglishStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
-			a0 = new Among[]{new Among("gener", - 1, - 1, "", this)};
-			a1 = new Among[]{new Among("ied", - 1, 2, "", this), new Among("s", - 1, 3, "", this), new Among("ies", 1, 2, "", this), new Among("sses", 1, 1, "", this), new Among("ss", 1, - 1, "", this), new Among("us", 1, - 1, "", this)};
-			a2 = new Among[]{new Among("", - 1, 3, "", this), new Among("bb", 0, 2, "", this), new Among("dd", 0, 2, "", this), new Among("ff", 0, 2, "", this), new Among("gg", 0, 2, "", this), new Among("bl", 0, 1, "", this), new Among("mm", 0, 2, "", this), new Among("nn", 0, 2, "", this), new Among("pp", 0, 2, "", this), new Among("rr", 0, 2, "", this), new Among("at", 0, 1, "", this), new Among("tt", 0, 2, "", this), new Among("iz", 0, 1, "", this)};
-			a3 = new Among[]{new Among("ed", - 1, 2, "", this), new Among("eed", 0, 1, "", this), new Among("ing", - 1, 2, "", this), new Among("edly", - 1, 2, "", this), new Among("eedly", 3, 1, "", this), new Among("ingly", - 1, 2, "", this)};
-			a4 = new Among[]{new Among("anci", - 1, 3, "", this), new Among("enci", - 1, 2, "", this), new Among("ogi", - 1, 13, "", this), new Among("li", - 1, 16, "", this), new Among("bli", 3, 12, "", this), new Among("abli", 4, 4, "", this), new Among("alli", 3, 8, "", this), new Among("fulli", 3, 14, "", this), new Among("lessli", 3, 15, "", this), new Among("ousli", 3, 10, "", this), new Among("entli", 3, 5, "", this), new Among("aliti", - 1, 8, "", this), new Among("biliti", - 1, 12, "", this), new Among("iviti", - 1, 11, "", this), new Among("tional", - 1, 1, "", this), new Among("ational", 14, 7, "", this), new Among("alism", - 1, 8, "", this), new Among("ation", - 1, 7, "", this), new Among("ization", 17, 6, "", this), new Among("izer", - 1, 6, "", this), new Among("ator", - 1, 7, "", this), new Among("iveness", - 1, 11, "", this), new Among("fulness", - 1, 9, "", this), new Among("ousness", - 1, 10, "", this)};
-			a5 = new Among[]{new Among("icate", - 1, 4, "", this), new Among("ative", - 1, 6, "", this), new Among("alize", - 1, 3, "", this), new Among("iciti", - 1, 4, "", this), new Among("ical", - 1, 4, "", this), new Among("tional", - 1, 1, "", this), new Among("ational", 5, 2, "", this), new Among("ful", - 1, 5, "", this), new Among("ness", - 1, 5, "", this)};
-			a6 = new Among[]{new Among("ic", - 1, 1, "", this), new Among("ance", - 1, 1, "", this), new Among("ence", - 1, 1, "", this), new Among("able", - 1, 1, "", this), new Among("ible", - 1, 1, "", this), new Among("ate", - 1, 1, "", this), new Among("ive", - 1, 1, "", this), new Among("ize", - 1, 1, "", this), new Among("iti", - 1, 1, "", this), new Among("al", - 1, 1, "", this), new Among("ism", - 1, 1, "", this), new Among("ion", - 1, 2, "", this), new Among("er", - 1, 1, "", this), new Among("ous", - 1, 1, "", this), new Among("ant", - 1, 1, "", this), new Among("ent", - 1, 1, "", this), new Among("ment", 15, 1, "", this), new Among("ement", 16, 1, "", this)};
-			a7 = new Among[]{new Among("e", - 1, 1, "", this), new Among("l", - 1, 2, "", this)};
-			a8 = new Among[]{new Among("succeed", - 1, - 1, "", this), new Among("proceed", - 1, - 1, "", this), new Among("exceed", - 1, - 1, "", this), new Among("canning", - 1, - 1, "", this), new Among("inning", - 1, - 1, "", this), new Among("earring", - 1, - 1, "", this), new Among("herring", - 1, - 1, "", this), new Among("outing", - 1, - 1, "", this)};
-			a9 = new Among[]{new Among("andes", - 1, - 1, "", this), new Among("atlas", - 1, - 1, "", this), new Among("bias", - 1, - 1, "", this), new Among("cosmos", - 1, - 1, "", this), new Among("dying", - 1, 3, "", this), new Among("early", - 1, 9, "", this), new Among("gently", - 1, 7, "", this), new Among("howe", - 1, - 1, "", this), new Among("idly", - 1, 6, "", this), new Among("lying", - 1, 4, "", this), new Among("news", - 1, - 1, "", this), new Among("only", - 1, 10, "", this), new Among("singly", - 1, 11, "", this), new Among("skies", - 1, 2, "", this), new Among("skis", - 1, 1, "", this), new Among("sky", - 1, - 1, "", this), new Among("tying", - 1, 5, "", this), new Among("ugly", - 1, 8, "", this)};
+            // TODO: make these static?
+			a0 = new MyAmong[]{new MyAmong("gener", - 1, - 1)};
+			a1 = new MyAmong[]{new MyAmong("ied", - 1, 2), new MyAmong("s", - 1, 3), new MyAmong("ies", 1, 2), new MyAmong("sses", 1, 1), new MyAmong("ss", 1, - 1), new MyAmong("us", 1, - 1)};
+			a2 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("bb", 0, 2), new MyAmong("dd", 0, 2), new MyAmong("ff", 0, 2), new MyAmong("gg", 0, 2), new MyAmong("bl", 0, 1), new MyAmong("mm", 0, 2), new MyAmong("nn", 0, 2), new MyAmong("pp", 0, 2), new MyAmong("rr", 0, 2), new MyAmong("at", 0, 1), new MyAmong("tt", 0, 2), new MyAmong("iz", 0, 1)};
+			a3 = new MyAmong[]{new MyAmong("ed", - 1, 2), new MyAmong("eed", 0, 1), new MyAmong("ing", - 1, 2), new MyAmong("edly", - 1, 2), new MyAmong("eedly", 3, 1), new MyAmong("ingly", - 1, 2)};
+			a4 = new MyAmong[]{new MyAmong("anci", - 1, 3), new MyAmong("enci", - 1, 2), new MyAmong("ogi", - 1, 13), new MyAmong("li", - 1, 16), new MyAmong("bli", 3, 12), new MyAmong("abli", 4, 4), new MyAmong("alli", 3, 8), new MyAmong("fulli", 3, 14), new MyAmong("lessli", 3, 15), new MyAmong("ousli", 3, 10), new MyAmong("entli", 3, 5), new MyAmong("aliti", - 1, 8), new MyAmong("biliti", - 1, 12), new MyAmong("iviti", - 1, 11), new MyAmong("tional", - 1, 1), new MyAmong("ational", 14, 7), new MyAmong("alism", - 1, 8), new MyAmong("ation", - 1, 7), new MyAmong("ization", 17, 6), new MyAmong("izer", - 1, 6), new MyAmong("ator", - 1, 7), new MyAmong("iveness", - 1, 11), new MyAmong("fulness", - 1, 9), new MyAmong("ousness", - 1, 10)};
+			a5 = new MyAmong[]{new MyAmong("icate", - 1, 4), new MyAmong("ative", - 1, 6), new MyAmong("alize", - 1, 3), new MyAmong("iciti", - 1, 4), new MyAmong("ical", - 1, 4), new MyAmong("tional", - 1, 1), new MyAmong("ational", 5, 2), new MyAmong("ful", - 1, 5), new MyAmong("ness", - 1, 5)};
+			a6 = new MyAmong[]{new MyAmong("ic", - 1, 1), new MyAmong("ance", - 1, 1), new MyAmong("ence", - 1, 1), new MyAmong("able", - 1, 1), new MyAmong("ible", - 1, 1), new MyAmong("ate", - 1, 1), new MyAmong("ive", - 1, 1), new MyAmong("ize", - 1, 1), new MyAmong("iti", - 1, 1), new MyAmong("al", - 1, 1), new MyAmong("ism", - 1, 1), new MyAmong("ion", - 1, 2), new MyAmong("er", - 1, 1), new MyAmong("ous", - 1, 1), new MyAmong("ant", - 1, 1), new MyAmong("ent", - 1, 1), new MyAmong("ment", 15, 1), new MyAmong("ement", 16, 1)};
+			a7 = new MyAmong[]{new MyAmong("e", - 1, 1), new MyAmong("l", - 1, 2)};
+			a8 = new MyAmong[]{new MyAmong("succeed", - 1, - 1), new MyAmong("proceed", - 1, - 1), new MyAmong("exceed", - 1, - 1), new MyAmong("canning", - 1, - 1), new MyAmong("inning", - 1, - 1), new MyAmong("earring", - 1, - 1), new MyAmong("herring", - 1, - 1), new MyAmong("outing", - 1, - 1)};
+			a9 = new MyAmong[]{new MyAmong("andes", - 1, - 1), new MyAmong("atlas", - 1, - 1), new MyAmong("bias", - 1, - 1), new MyAmong("cosmos", - 1, - 1), new MyAmong("dying", - 1, 3), new MyAmong("early", - 1, 9), new MyAmong("gently", - 1, 7), new MyAmong("howe", - 1, - 1), new MyAmong("idly", - 1, 6), new MyAmong("lying", - 1, 4), new MyAmong("news", - 1, - 1), new MyAmong("only", - 1, 10), new MyAmong("singly", - 1, 11), new MyAmong("skies", - 1, 2), new MyAmong("skis", - 1, 1), new MyAmong("sky", - 1, - 1), new MyAmong("tying", - 1, 5), new MyAmong("ugly", - 1, 8)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
-		private Among[] a5;
-		private Among[] a6;
-		private Among[] a7;
-		private Among[] a8;
-		private Among[] a9;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
+		private static MyAmong[] a6;
+		private static MyAmong[] a7;
+		private static MyAmong[] a8;
+		private static MyAmong[] a9;
 
         private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1)};
 		private static readonly char[] g_v_WXY = new char[]{(char) (1), (char) (17), (char) (65), (char) (208), (char) (1)};
@@ -201,7 +202,7 @@ lab1Brk: ;
 					v2 = cursor;
 					do 
 					{
-						// among, line 33
+						// MyAmong, line 33
 						if (findAmong(a0, 1) == 0)
 						{
 							goto lab2Brk;
@@ -401,20 +402,20 @@ lab0Brk: ;
 		
 		private bool r_Step1a()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// (, line 53
 			// [, line 54
 			ket = cursor;
 			// substring, line 54
-			amongVar = findAmongB(a1, 6);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a1, 6);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 54
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -506,7 +507,7 @@ golab2Brk: ;
 		
 		private bool r_Step1b()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v3;
 			int v4;
@@ -514,14 +515,14 @@ golab2Brk: ;
 			// [, line 64
 			ket = cursor;
 			// substring, line 64
-			amongVar = findAmongB(a3, 6);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a3, 6);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 64
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -572,13 +573,13 @@ golab0Brk: ;
 					// test, line 70
 					v3 = limit - cursor;
 					// substring, line 70
-					amongVar = findAmongB(a2, 13);
-					if (amongVar == 0)
+					MyAmongVar = findAmongB(a2, 13);
+					if (MyAmongVar == 0)
 					{
 						return false;
 					}
 					cursor = limit - v3;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -705,13 +706,13 @@ lab2Brk: ;
 		
 		private bool r_Step2()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 88
 			// [, line 89
 			ket = cursor;
 			// substring, line 89
-			amongVar = findAmongB(a4, 24);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a4, 24);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
@@ -722,7 +723,7 @@ lab2Brk: ;
 			{
 				return false;
 			}
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -838,13 +839,13 @@ lab2Brk: ;
 		
 		private bool r_Step3()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 115
 			// [, line 116
 			ket = cursor;
 			// substring, line 116
-			amongVar = findAmongB(a5, 9);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a5, 9);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
@@ -855,7 +856,7 @@ lab2Brk: ;
 			{
 				return false;
 			}
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -907,14 +908,14 @@ lab2Brk: ;
 		
 		private bool r_Step4()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// (, line 129
 			// [, line 130
 			ket = cursor;
 			// substring, line 130
-			amongVar = findAmongB(a6, 18);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a6, 18);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
@@ -925,7 +926,7 @@ lab2Brk: ;
 			{
 				return false;
 			}
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -977,21 +978,21 @@ lab0Brk: ;
 		
 		private bool r_Step5()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			// (, line 138
 			// [, line 139
 			ket = cursor;
 			// substring, line 139
-			amongVar = findAmongB(a7, 2);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a7, 2);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 139
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -1090,13 +1091,13 @@ lab0Brk: ;
 		
 		private bool rException1()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 157
 			// [, line 159
 			bra = cursor;
 			// substring, line 159
-			amongVar = findAmong(a9, 18);
-			if (amongVar == 0)
+			MyAmongVar = findAmong(a9, 18);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
@@ -1107,7 +1108,7 @@ lab0Brk: ;
 			{
 				return false;
 			}
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 

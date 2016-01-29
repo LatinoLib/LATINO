@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using Among = SF.Snowball.Among;
+using MyAmong = SF.Snowball.MyAmong;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -25,31 +25,31 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class ItalianStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public ItalianStemmer()
+		static ItalianStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
-			a0 = new Among[]{new Among("", - 1, 7, "", this), new Among("qu", 0, 6, "", this), new Among("\u00E1", 0, 1, "", this), new Among("\u00E9", 0, 2, "", this), new Among("\u00ED", 0, 3, "", this), new Among("\u00F3", 0, 4, "", this), new Among("\u00FA", 0, 5, "", this)};
-			a1 = new Among[]{new Among("", - 1, 3, "", this), new Among("I", 0, 1, "", this), new Among("U", 0, 2, "", this)};
-			a2 = new Among[]{new Among("la", - 1, - 1, "", this), new Among("cela", 0, - 1, "", this), new Among("gliela", 0, - 1, "", this), new Among("mela", 0, - 1, "", this), new Among("tela", 0, - 1, "", this), new Among("vela", 0, - 1, "", this), new Among("le", - 1, - 1, "", this), new Among("cele", 6, - 1, "", this), new Among("gliele", 6, - 1, "", this), new Among("mele", 6, - 1, "", this), new Among("tele", 6, - 1, "", this), new Among("vele", 6, - 1, "", this), new Among("ne", - 1, - 1, "", this), new Among("cene", 12, - 1, "", this), new Among("gliene", 12, - 1, "", this), new Among("mene", 12, - 1, "", this), new Among("sene", 12, - 1, "", this), new Among("tene", 12, - 1, "", this), new Among("vene", 12, - 1, "", this), new Among("ci", - 1, - 1, "", this), new Among("li", - 1, - 1, "", this), new Among("celi", 20, - 1, "", this), new Among("glieli", 20, - 1, "", this), new Among("meli", 20, - 1, "", this), new Among("teli", 20, - 1, "", this), new Among("veli", 20, - 1, "", this), new Among("gli", 20, - 1, "", this), new Among("mi", - 1, - 1, "", this), new Among("si", - 1, - 1, "", this), new Among("ti", - 1, - 1, "", this), new Among("vi", - 1, - 1, "", this), new Among("lo", - 1, - 1, "", this), new Among("celo", 31, - 1, "", this), new Among("glielo", 31, - 1, "", this), new Among("melo", 31, - 1, "", this), new Among("telo", 31, - 1, "", this), new Among("velo", 31, - 1, "", this)};
-			a3 = new Among[]{new Among("ando", - 1, 1, "", this), new Among("endo", - 1, 1, "", this), new Among("ar", - 1, 2, "", this), new Among("er", - 1, 2, "", this), new Among("ir", - 1, 2, "", this)};
-			a4 = new Among[]{new Among("ic", - 1, - 1, "", this), new Among("abil", - 1, - 1, "", this), new Among("os", - 1, - 1, "", this), new Among("iv", - 1, 1, "", this)};
-			a5 = new Among[]{new Among("ic", - 1, 1, "", this), new Among("abil", - 1, 1, "", this), new Among("iv", - 1, 1, "", this)};
-			a6 = new Among[]{new Among("ica", - 1, 1, "", this), new Among("logia", - 1, 3, "", this), new Among("osa", - 1, 1, "", this), new Among("ista", - 1, 1, "", this), new Among("iva", - 1, 9, "", this), new Among("anza", - 1, 1, "", this), new Among("enza", - 1, 5, "", this), new Among("ice", - 1, 1, "", this), new Among("atrice", 7, 1, "", this), new Among("iche", - 1, 1, "", this), new Among("logie", - 1, 3, "", this), new Among("abile", - 1, 1, "", this), new Among("ibile", - 1, 1, "", this), new Among("usione", - 1, 4, "", this), new Among("azione", - 1, 2, "", this), new Among("uzione", - 1, 4, "", this), new Among("atore", - 1, 2, "", this), new Among("ose", - 1, 1, "", this), new Among("mente", - 1, 1, "", this), new Among("amente", 18, 7, "", this), new Among("iste", - 1, 1, "", this), new Among("ive", - 1, 9, "", this), new Among("anze", - 1, 1, "", this), new Among("enze", - 1, 5, "", this), new Among("ici", - 1, 1, "", this), new Among("atrici", 24, 1, "", this), new Among("ichi", - 1, 1, "", this), new Among("abili", - 1, 1, "", this), new Among("ibili", - 1, 1, "", this), new Among("ismi", - 1, 1, "", this), new Among("usioni", - 1, 4, "", this), new Among("azioni", - 1, 2, "", this), new Among("uzioni", - 1, 4, "", this), new Among("atori", - 1, 2, "", this), new Among("osi", - 1, 1, "", this), new Among("amenti", - 1, 6, "", this), new Among("imenti", - 1, 6, "", this), new Among("isti", - 1, 1, "", this), new Among("ivi", - 1, 9, "", this), new Among("ico", - 1, 1, "", this), new Among("ismo", - 1, 1, "", this), new Among("oso", - 1, 1, "", this), new Among("amento", - 1, 6, "", this), new Among("imento", - 1, 6, "", this), new Among("ivo", - 1, 9, "", this), new Among("it\u00E0", - 1, 8, "", this), new Among("ist\u00E0", - 1, 1, "", this), new Among("ist\u00E8", - 1, 1, "", this), new Among("ist\u00EC", - 1, 1, "", this)};
-			a7 = new Among[]{new Among("isca", - 1, 1, "", this), new Among("enda", - 1, 1, "", this), new Among("ata", - 1, 1, "", this), new Among("ita", - 1, 1, "", this), new Among("uta", - 1, 1, "", this), new Among("ava", - 1, 1, "", this), new Among("eva", - 1, 1, "", this), new Among("iva", - 1, 1, "", this), new Among("erebbe", - 1, 1, "", this), new Among("irebbe", - 1, 1, "", this), new Among("isce", - 1, 1, "", this), new Among("ende", - 1, 1, "", this), new Among("are", - 1, 1, "", this), new Among("ere", - 1, 1, "", this), new Among("ire", - 1, 1, "", this), new Among("asse", - 1, 1, "", this), new Among("ate", - 1, 1, "", this), new Among("avate", 16, 1, "", this), new Among("evate", 16, 1, "", this), new Among("ivate", 16, 1, "", this), new Among("ete", - 1, 1, "", this), new Among("erete", 20, 1, "", this), new Among("irete", 20, 1, "", this), new Among("ite", - 1, 1, "", this), new Among("ereste", - 1, 1, "", this), new Among("ireste", - 1, 1, "", this), new Among("ute", - 1, 1, "", this), new Among("erai", - 1, 1, "", this), new Among("irai", - 1, 1, "", this), new Among("isci", - 1, 1, "", this), new Among("endi", - 1, 1, "", this), new Among("erei", - 1, 1, "", this), new Among("irei", - 1, 1, "", this), new Among("assi", - 1, 1, "", this), new Among("ati", - 1, 1, "", this), new Among("iti", - 1, 1, "", this), new Among("eresti", - 1, 1, "", this), new Among("iresti", - 1, 1, "", this), new Among("uti", - 1, 1, "", this), new Among("avi", - 1, 1, "", this), new Among("evi", - 1, 1, "", this), new Among("ivi", - 1, 1, "", this), new Among("isco", - 1, 1, "", this), new Among("ando", - 1, 1, "", this), new Among("endo", - 1, 1, "", this), new Among("Yamo", - 1, 1, "", this), new Among("iamo", - 1, 1, "", this), new Among("avamo", - 1, 1, "", this), new Among("evamo", - 1, 1, "", this), new Among("ivamo", - 1, 1, "", this), new Among("eremo", - 1, 1, "", this), new Among("iremo", - 1, 1, "", this), new Among("assimo", - 1, 1, "", this), new Among("ammo", - 1, 1, "", this), new Among(
-				"emmo", - 1, 1, "", this), new Among("eremmo", 54, 1, "", this), new Among("iremmo", 54, 1, "", this), new Among("immo", - 1, 1, "", this), new Among("ano", - 1, 1, "", this), new Among("iscano", 58, 1, "", this), new Among("avano", 58, 1, "", this), new Among("evano", 58, 1, "", this), new Among("ivano", 58, 1, "", this), new Among("eranno", - 1, 1, "", this), new Among("iranno", - 1, 1, "", this), new Among("ono", - 1, 1, "", this), new Among("iscono", 65, 1, "", this), new Among("arono", 65, 1, "", this), new Among("erono", 65, 1, "", this), new Among("irono", 65, 1, "", this), new Among("erebbero", - 1, 1, "", this), new Among("irebbero", - 1, 1, "", this), new Among("assero", - 1, 1, "", this), new Among("essero", - 1, 1, "", this), new Among("issero", - 1, 1, "", this), new Among("ato", - 1, 1, "", this), new Among("ito", - 1, 1, "", this), new Among("uto", - 1, 1, "", this), new Among("avo", - 1, 1, "", this), new Among("evo", - 1, 1, "", this), new Among("ivo", - 1, 1, "", this), new Among("ar", - 1, 1, "", this), new Among("ir", - 1, 1, "", this), new Among("er\u00E0", - 1, 1, "", this), new Among("ir\u00E0", - 1, 1, "", this), new Among("er\u00F2", - 1, 1, "", this), new Among("ir\u00F2", - 1, 1, "", this)};
+			a0 = new MyAmong[]{new MyAmong("", - 1, 7), new MyAmong("qu", 0, 6), new MyAmong("\u00E1", 0, 1), new MyAmong("\u00E9", 0, 2), new MyAmong("\u00ED", 0, 3), new MyAmong("\u00F3", 0, 4), new MyAmong("\u00FA", 0, 5)};
+			a1 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("I", 0, 1), new MyAmong("U", 0, 2)};
+			a2 = new MyAmong[]{new MyAmong("la", - 1, - 1), new MyAmong("cela", 0, - 1), new MyAmong("gliela", 0, - 1), new MyAmong("mela", 0, - 1), new MyAmong("tela", 0, - 1), new MyAmong("vela", 0, - 1), new MyAmong("le", - 1, - 1), new MyAmong("cele", 6, - 1), new MyAmong("gliele", 6, - 1), new MyAmong("mele", 6, - 1), new MyAmong("tele", 6, - 1), new MyAmong("vele", 6, - 1), new MyAmong("ne", - 1, - 1), new MyAmong("cene", 12, - 1), new MyAmong("gliene", 12, - 1), new MyAmong("mene", 12, - 1), new MyAmong("sene", 12, - 1), new MyAmong("tene", 12, - 1), new MyAmong("vene", 12, - 1), new MyAmong("ci", - 1, - 1), new MyAmong("li", - 1, - 1), new MyAmong("celi", 20, - 1), new MyAmong("glieli", 20, - 1), new MyAmong("meli", 20, - 1), new MyAmong("teli", 20, - 1), new MyAmong("veli", 20, - 1), new MyAmong("gli", 20, - 1), new MyAmong("mi", - 1, - 1), new MyAmong("si", - 1, - 1), new MyAmong("ti", - 1, - 1), new MyAmong("vi", - 1, - 1), new MyAmong("lo", - 1, - 1), new MyAmong("celo", 31, - 1), new MyAmong("glielo", 31, - 1), new MyAmong("melo", 31, - 1), new MyAmong("telo", 31, - 1), new MyAmong("velo", 31, - 1)};
+			a3 = new MyAmong[]{new MyAmong("ando", - 1, 1), new MyAmong("endo", - 1, 1), new MyAmong("ar", - 1, 2), new MyAmong("er", - 1, 2), new MyAmong("ir", - 1, 2)};
+			a4 = new MyAmong[]{new MyAmong("ic", - 1, - 1), new MyAmong("abil", - 1, - 1), new MyAmong("os", - 1, - 1), new MyAmong("iv", - 1, 1)};
+			a5 = new MyAmong[]{new MyAmong("ic", - 1, 1), new MyAmong("abil", - 1, 1), new MyAmong("iv", - 1, 1)};
+			a6 = new MyAmong[]{new MyAmong("ica", - 1, 1), new MyAmong("logia", - 1, 3), new MyAmong("osa", - 1, 1), new MyAmong("ista", - 1, 1), new MyAmong("iva", - 1, 9), new MyAmong("anza", - 1, 1), new MyAmong("enza", - 1, 5), new MyAmong("ice", - 1, 1), new MyAmong("atrice", 7, 1), new MyAmong("iche", - 1, 1), new MyAmong("logie", - 1, 3), new MyAmong("abile", - 1, 1), new MyAmong("ibile", - 1, 1), new MyAmong("usione", - 1, 4), new MyAmong("azione", - 1, 2), new MyAmong("uzione", - 1, 4), new MyAmong("atore", - 1, 2), new MyAmong("ose", - 1, 1), new MyAmong("mente", - 1, 1), new MyAmong("amente", 18, 7), new MyAmong("iste", - 1, 1), new MyAmong("ive", - 1, 9), new MyAmong("anze", - 1, 1), new MyAmong("enze", - 1, 5), new MyAmong("ici", - 1, 1), new MyAmong("atrici", 24, 1), new MyAmong("ichi", - 1, 1), new MyAmong("abili", - 1, 1), new MyAmong("ibili", - 1, 1), new MyAmong("ismi", - 1, 1), new MyAmong("usioni", - 1, 4), new MyAmong("azioni", - 1, 2), new MyAmong("uzioni", - 1, 4), new MyAmong("atori", - 1, 2), new MyAmong("osi", - 1, 1), new MyAmong("amenti", - 1, 6), new MyAmong("imenti", - 1, 6), new MyAmong("isti", - 1, 1), new MyAmong("ivi", - 1, 9), new MyAmong("ico", - 1, 1), new MyAmong("ismo", - 1, 1), new MyAmong("oso", - 1, 1), new MyAmong("amento", - 1, 6), new MyAmong("imento", - 1, 6), new MyAmong("ivo", - 1, 9), new MyAmong("it\u00E0", - 1, 8), new MyAmong("ist\u00E0", - 1, 1), new MyAmong("ist\u00E8", - 1, 1), new MyAmong("ist\u00EC", - 1, 1)};
+			a7 = new MyAmong[]{new MyAmong("isca", - 1, 1), new MyAmong("enda", - 1, 1), new MyAmong("ata", - 1, 1), new MyAmong("ita", - 1, 1), new MyAmong("uta", - 1, 1), new MyAmong("ava", - 1, 1), new MyAmong("eva", - 1, 1), new MyAmong("iva", - 1, 1), new MyAmong("erebbe", - 1, 1), new MyAmong("irebbe", - 1, 1), new MyAmong("isce", - 1, 1), new MyAmong("ende", - 1, 1), new MyAmong("are", - 1, 1), new MyAmong("ere", - 1, 1), new MyAmong("ire", - 1, 1), new MyAmong("asse", - 1, 1), new MyAmong("ate", - 1, 1), new MyAmong("avate", 16, 1), new MyAmong("evate", 16, 1), new MyAmong("ivate", 16, 1), new MyAmong("ete", - 1, 1), new MyAmong("erete", 20, 1), new MyAmong("irete", 20, 1), new MyAmong("ite", - 1, 1), new MyAmong("ereste", - 1, 1), new MyAmong("ireste", - 1, 1), new MyAmong("ute", - 1, 1), new MyAmong("erai", - 1, 1), new MyAmong("irai", - 1, 1), new MyAmong("isci", - 1, 1), new MyAmong("endi", - 1, 1), new MyAmong("erei", - 1, 1), new MyAmong("irei", - 1, 1), new MyAmong("assi", - 1, 1), new MyAmong("ati", - 1, 1), new MyAmong("iti", - 1, 1), new MyAmong("eresti", - 1, 1), new MyAmong("iresti", - 1, 1), new MyAmong("uti", - 1, 1), new MyAmong("avi", - 1, 1), new MyAmong("evi", - 1, 1), new MyAmong("ivi", - 1, 1), new MyAmong("isco", - 1, 1), new MyAmong("ando", - 1, 1), new MyAmong("endo", - 1, 1), new MyAmong("Yamo", - 1, 1), new MyAmong("iamo", - 1, 1), new MyAmong("avamo", - 1, 1), new MyAmong("evamo", - 1, 1), new MyAmong("ivamo", - 1, 1), new MyAmong("eremo", - 1, 1), new MyAmong("iremo", - 1, 1), new MyAmong("assimo", - 1, 1), new MyAmong("ammo", - 1, 1), new MyAmong(
+				"emmo", - 1, 1), new MyAmong("eremmo", 54, 1), new MyAmong("iremmo", 54, 1), new MyAmong("immo", - 1, 1), new MyAmong("ano", - 1, 1), new MyAmong("iscano", 58, 1), new MyAmong("avano", 58, 1), new MyAmong("evano", 58, 1), new MyAmong("ivano", 58, 1), new MyAmong("eranno", - 1, 1), new MyAmong("iranno", - 1, 1), new MyAmong("ono", - 1, 1), new MyAmong("iscono", 65, 1), new MyAmong("arono", 65, 1), new MyAmong("erono", 65, 1), new MyAmong("irono", 65, 1), new MyAmong("erebbero", - 1, 1), new MyAmong("irebbero", - 1, 1), new MyAmong("assero", - 1, 1), new MyAmong("essero", - 1, 1), new MyAmong("issero", - 1, 1), new MyAmong("ato", - 1, 1), new MyAmong("ito", - 1, 1), new MyAmong("uto", - 1, 1), new MyAmong("avo", - 1, 1), new MyAmong("evo", - 1, 1), new MyAmong("ivo", - 1, 1), new MyAmong("ar", - 1, 1), new MyAmong("ir", - 1, 1), new MyAmong("er\u00E0", - 1, 1), new MyAmong("ir\u00E0", - 1, 1), new MyAmong("er\u00F2", - 1, 1), new MyAmong("ir\u00F2", - 1, 1)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
-		private Among[] a5;
-		private Among[] a6;
-		private Among[] a7;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
+		private static MyAmong[] a6;
+		private static MyAmong[] a7;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128), (char) (128), (char) (8), (char) (2), (char) (1)};
 		private static readonly char[] g_AEIO = new char[]{(char) (17), (char) (65), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128), (char) (128), (char) (8), (char) (2)};
 		private static readonly char[] g_CG = new char[]{(char) (17)};
@@ -68,7 +68,7 @@ namespace SF.Snowball.Ext
 		
 		private bool rPrelude()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -87,14 +87,14 @@ namespace SF.Snowball.Ext
 					// [, line 36
 					bra = cursor;
 					// substring, line 36
-					amongVar = findAmong(a0, 7);
-					if (amongVar == 0)
+					MyAmongVar = findAmong(a0, 7);
+					if (MyAmongVar == 0)
 					{
 						goto lab1Brk;
 					}
 					// ], line 36
 					ket = cursor;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -560,7 +560,7 @@ lab13Brk: ;
 		
 		private bool rPostlude()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// repeat, line 70
 			while (true)
@@ -572,14 +572,14 @@ lab13Brk: ;
 					// [, line 72
 					bra = cursor;
 					// substring, line 72
-					amongVar = findAmong(a1, 3);
-					if (amongVar == 0)
+					MyAmongVar = findAmong(a1, 3);
+					if (MyAmongVar == 0)
 					{
 						goto lab11Brk;
 					}
 					// ], line 72
 					ket = cursor;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -653,7 +653,7 @@ replab1Brk: ;
 		
 		private bool rAttachedPronoun()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 86
 			// [, line 87
 			ket = cursor;
@@ -664,9 +664,9 @@ replab1Brk: ;
 			}
 			// ], line 87
 			bra = cursor;
-			// among, line 97
-			amongVar = findAmongB(a3, 5);
-			if (amongVar == 0)
+			// MyAmong, line 97
+			MyAmongVar = findAmongB(a3, 5);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
@@ -676,7 +676,7 @@ replab1Brk: ;
 			{
 				return false;
 			}
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -699,7 +699,7 @@ replab1Brk: ;
 		
 		private bool rStandardSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -708,14 +708,14 @@ replab1Brk: ;
 			// [, line 104
 			ket = cursor;
 			// substring, line 104
-			amongVar = findAmongB(a6, 49);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a6, 49);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 104
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -832,8 +832,8 @@ lab0Brk: ;
 						// [, line 126
 						ket = cursor;
 						// substring, line 126
-						amongVar = findAmongB(a4, 4);
-						if (amongVar == 0)
+						MyAmongVar = findAmongB(a4, 4);
+						if (MyAmongVar == 0)
 						{
 							cursor = limit - v2;
 							goto lab1Brk;
@@ -848,7 +848,7 @@ lab0Brk: ;
 						}
 						// delete, line 126
 						sliceDel();
-						switch (amongVar)
+						switch (MyAmongVar)
 						{
 							
 							case 0: 
@@ -901,15 +901,15 @@ lab1Brk: ;
 						// [, line 135
 						ket = cursor;
 						// substring, line 135
-						amongVar = findAmongB(a5, 3);
-						if (amongVar == 0)
+						MyAmongVar = findAmongB(a5, 3);
+						if (MyAmongVar == 0)
 						{
 							cursor = limit - v3;
 							goto lab2Brk;
 						}
 						// ], line 135
 						bra = cursor;
-						switch (amongVar)
+						switch (MyAmongVar)
 						{
 							
 							case 0: 
@@ -997,7 +997,7 @@ lab3Brk: ;
 		
 		private bool rVerbSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			// setlimit, line 147
@@ -1015,15 +1015,15 @@ lab3Brk: ;
 			// [, line 148
 			ket = cursor;
 			// substring, line 148
-			amongVar = findAmongB(a7, 87);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a7, 87);
+			if (MyAmongVar == 0)
 			{
 				limitBackward = v2;
 				return false;
 			}
 			// ], line 148
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 

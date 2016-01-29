@@ -40,8 +40,6 @@ namespace Latino.TextMining
     // This tokenizer (partially) follows the rules defined at http://www.unicode.org/reports/tr29/#Word_Boundaries
     public class UnicodeTokenizer : ITokenizer 
     {
-        private string mText
-            = "";
         private TokenizerFilter mFilter
             = TokenizerFilter.None;    
         private int mMinTokenLen
@@ -49,12 +47,6 @@ namespace Latino.TextMining
 
         public UnicodeTokenizer()
         {
-        }
-
-        public UnicodeTokenizer(string text)
-        {
-            Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
-            mText = text;
         }
 
         public UnicodeTokenizer(BinarySerializer reader)
@@ -80,29 +72,9 @@ namespace Latino.TextMining
 
         // *** ITokenizer interface implementation ***
 
-        public string Text
+        public ITokenizerEnumerable GetTokens(string text)
         {
-            get { return mText; }
-            set
-            {
-                Utils.ThrowException(value == null ? new ArgumentNullException("Text") : null);
-                mText = value;
-            }
-        }
-
-        public ITokenizerEnumerator GetEnumerator() 
-		{
-            return new Enumerator(mText, mFilter, mMinTokenLen);
-        }
-
-        IEnumerator<string> IEnumerable<string>.GetEnumerator()
-        {
-            return new Enumerator(mText, mFilter, mMinTokenLen);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new Enumerator(mText, mFilter, mMinTokenLen);
+            return new TokenizerEnumerable(new Enumerator(text, mFilter, mMinTokenLen));
         }
 
         // *** ISerializable interface implementation ***

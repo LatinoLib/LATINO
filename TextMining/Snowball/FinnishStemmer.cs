@@ -25,11 +25,14 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class FinnishStemmer : SnowballProgram, ISnowballStemmer
 	{
+        public static readonly FinnishStemmer Instance
+            = new FinnishStemmer();
+
 		public FinnishStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private void InitBlock()
 		{
 			a0 = new Among[]{new Among("pa", - 1, 1, "", this), new Among("sti", - 1, 2, "", this), new Among("kaan", - 1, 1, "", this), new Among("han", - 1, 1, "", this), new Among("kin", - 1, 1, "", this), new Among("h\u00E4n", - 1, 1, "", this), new Among("k\u00E4\u00E4n", - 1, 1, "", this), new Among("ko", - 1, 1, "", this), new Among("p\u00E4", - 1, 1, "", this), new Among("k\u00F6", - 1, 1, "", this)};
 			a1 = new Among[]{new Among("lla", - 1, - 1, "", this), new Among("na", - 1, - 1, "", this), new Among("ssa", - 1, - 1, "", this), new Among("ta", - 1, - 1, "", this), new Among("lta", 3, - 1, "", this), new Among("sta", 3, - 1, "", this)};
@@ -43,43 +46,37 @@ namespace SF.Snowball.Ext
 			a9 = new Among[]{new Among("mma", - 1, 1, "", this), new Among("imma", 0, - 1, "", this)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
-		private Among[] a5;
-		private Among[] a6;
-		private Among[] a7;
-		private Among[] a8;
-		private Among[] a9;
+		private static Among[] a0;
+		private static Among[] a1;
+		private static Among[] a2;
+		private static Among[] a3;
+		private static Among[] a4;
+		private static Among[] a5;
+		private static Among[] a6;
+		private static Among[] a7;
+		private static Among[] a8;
+		private static Among[] a9;
 
         private static readonly char[] g_AEI = new char[]{(char) (17), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8)};
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8), (char) (0), (char) (32)};
 		private static readonly char[] g_V = new char[]{(char) (17), (char) (65), (char) (16), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8), (char) (0), (char) (32)};
 		private static readonly char[] gParticleEnd = new char[]{(char) (17), (char) (97), (char) (24), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8), (char) (0), (char) (32)};
+
+        private class State
+        {
+            public bool B_ending_removed;
+            public System.Text.StringBuilder S_x = new System.Text.StringBuilder();
+            public int I_p2;
+            public int I_p1;
+        }
 		
-		private bool B_ending_removed;
-		private System.Text.StringBuilder S_x = new System.Text.StringBuilder();
-		private int I_p2;
-		private int I_p1;
-		
-		protected internal virtual void  copyFrom(FinnishStemmer other)
-		{
-			B_ending_removed = other.B_ending_removed;
-			S_x = other.S_x;
-			I_p2 = other.I_p2;
-			I_p1 = other.I_p1;
-			base.copyFrom(other);
-		}
-		
-		private bool rMarkRegions()
+		private bool rMarkRegions(State s)
 		{
 			int v1;
 			int v3;
 			// (, line 41
-			I_p1 = limit;
-			I_p2 = limit;
+			s.I_p1 = limit;
+			s.I_p2 = limit;
 			// goto, line 46
 			while (true)
 			{
@@ -132,7 +129,7 @@ lab3Brk: ;
 golab2Brk: ;
 			
 			// setmark p1, line 46
-			I_p1 = cursor;
+			s.I_p1 = cursor;
 			// goto, line 47
 			while (true)
 			{
@@ -185,20 +182,20 @@ lab7Brk: ;
 golab6Brk: ;
 			
 			// setmark p2, line 47
-			I_p2 = cursor;
+			s.I_p2 = cursor;
 			return true;
 		}
 		
-		private bool r_R2()
+		private bool r_R2(State s)
 		{
-			if (!(I_p2 <= cursor))
+			if (!(s.I_p2 <= cursor))
 			{
 				return false;
 			}
 			return true;
 		}
 		
-		private bool rParticleEtc()
+		private bool rParticleEtc(State s)
 		{
 			int amongVar;
 			int v1;
@@ -207,11 +204,11 @@ golab6Brk: ;
 			// setlimit, line 55
 			v1 = limit - cursor;
 			// tomark, line 55
-			if (cursor < I_p1)
+			if (cursor < s.I_p1)
 			{
 				return false;
 			}
-			cursor = I_p1;
+			cursor = s.I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -245,7 +242,7 @@ golab6Brk: ;
 				case 2: 
 					// (, line 64
 					// call R2, line 64
-					if (!r_R2())
+					if (!r_R2(s))
 					{
 						return false;
 					}
@@ -256,7 +253,7 @@ golab6Brk: ;
 			return true;
 		}
 		
-		private bool rPossessive()
+		private bool rPossessive(State s)
 		{
 			int amongVar;
 			int v1;
@@ -266,11 +263,11 @@ golab6Brk: ;
 			// setlimit, line 69
 			v1 = limit - cursor;
 			// tomark, line 69
-			if (cursor < I_p1)
+			if (cursor < s.I_p1)
 			{
 				return false;
 			}
-			cursor = I_p1;
+			cursor = s.I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -401,7 +398,7 @@ lab0Brk: ;
 			return true;
 		}
 		
-		private bool rCase()
+		private bool rCase(State s)
 		{
 			int amongVar;
 			int v1;
@@ -413,11 +410,11 @@ lab0Brk: ;
 			// setlimit, line 96
 			v1 = limit - cursor;
 			// tomark, line 96
-			if (cursor < I_p1)
+			if (cursor < s.I_p1)
 			{
 				return false;
 			}
-			cursor = I_p1;
+			cursor = s.I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -573,11 +570,11 @@ lab0Brk: ;
 			// delete, line 138
 			sliceDel();
 			// set endingRemoved, line 139
-			B_ending_removed = true;
+			s.B_ending_removed = true;
 			return true;
 		}
 		
-		private bool rOtherEndings()
+		private bool rOtherEndings(State s)
 		{
 			int amongVar;
 			int v1;
@@ -587,11 +584,11 @@ lab0Brk: ;
 			// setlimit, line 142
 			v1 = limit - cursor;
 			// tomark, line 142
-			if (cursor < I_p2)
+			if (cursor < s.I_p2)
 			{
 				return false;
 			}
-			cursor = I_p2;
+			cursor = s.I_p2;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -641,7 +638,7 @@ lab4Brk: ;
 			return true;
 		}
 		
-		private bool rIPlural()
+		private bool rIPlural(State s)
 		{
 			int v1;
 			int v2;
@@ -649,11 +646,11 @@ lab4Brk: ;
 			// setlimit, line 154
 			v1 = limit - cursor;
 			// tomark, line 154
-			if (cursor < I_p1)
+			if (cursor < s.I_p1)
 			{
 				return false;
 			}
-			cursor = I_p1;
+			cursor = s.I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -674,7 +671,7 @@ lab4Brk: ;
 			return true;
 		}
 		
-		private bool rTPlural()
+		private bool rTPlural(State s)
 		{
 			int amongVar;
 			int v1;
@@ -687,11 +684,11 @@ lab4Brk: ;
 			// setlimit, line 161
 			v1 = limit - cursor;
 			// tomark, line 161
-			if (cursor < I_p1)
+			if (cursor < s.I_p1)
 			{
 				return false;
 			}
-			cursor = I_p1;
+			cursor = s.I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -720,11 +717,11 @@ lab4Brk: ;
 			// setlimit, line 165
 			v4 = limit - cursor;
 			// tomark, line 165
-			if (cursor < I_p2)
+			if (cursor < s.I_p2)
 			{
 				return false;
 			}
-			cursor = I_p2;
+			cursor = s.I_p2;
 			v5 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v4;
@@ -774,7 +771,7 @@ lab4Brk: ;
 			return true;
 		}
 		
-		private bool rTidy()
+		private bool rTidy(State s)
 		{
 			int v1;
 			int v2;
@@ -789,11 +786,11 @@ lab4Brk: ;
 			// setlimit, line 173
 			v1 = limit - cursor;
 			// tomark, line 173
-			if (cursor < I_p1)
+			if (cursor < s.I_p1)
 			{
 				return false;
 			}
-			cursor = I_p1;
+			cursor = s.I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -971,9 +968,9 @@ golab6Brk: ;
 			// ], line 179
 			bra = cursor;
 			// -> x, line 179
-			S_x = sliceTo(S_x);
+			s.S_x = sliceTo(s.S_x);
 			// name x, line 179
-			if (!(eqVB(S_x)))
+			if (!(eqVB(s.S_x)))
 			{
 				return false;
 			}
@@ -996,10 +993,13 @@ golab6Brk: ;
 			// (, line 183
 			// do, line 185
 			v1 = cursor;
+
+            State s = new State();
+
 			do 
 			{
 				// call markRegions, line 185
-				if (!rMarkRegions())
+				if (!rMarkRegions(s))
 				{
 					goto lab0Brk;
 				}
@@ -1010,7 +1010,7 @@ lab0Brk: ;
 			
 			cursor = v1;
 			// unset endingRemoved, line 186
-			B_ending_removed = false;
+			s.B_ending_removed = false;
 			// backwards, line 187
 			limitBackward = cursor; cursor = limit;
 			// (, line 187
@@ -1019,7 +1019,7 @@ lab0Brk: ;
 			do 
 			{
 				// call particleEtc, line 188
-				if (!rParticleEtc())
+				if (!rParticleEtc(s))
 				{
 					goto lab1Brk;
 				}
@@ -1034,7 +1034,7 @@ lab1Brk: ;
 			do 
 			{
 				// call possessive, line 189
-				if (!rPossessive())
+				if (!rPossessive(s))
 				{
 					goto lab2Brk;
 				}
@@ -1049,7 +1049,7 @@ lab2Brk: ;
 			do 
 			{
 				// call case, line 190
-				if (!rCase())
+				if (!rCase(s))
 				{
 					goto lab3Brk;
 				}
@@ -1064,7 +1064,7 @@ lab3Brk: ;
 			do 
 			{
 				// call otherEndings, line 191
-				if (!rOtherEndings())
+				if (!rOtherEndings(s))
 				{
 					goto lab4Brk;
 				}
@@ -1083,7 +1083,7 @@ lab4Brk: ;
 				{
 					// (, line 192
 					// Boolean test endingRemoved, line 192
-					if (!(B_ending_removed))
+					if (!(s.B_ending_removed))
 					{
 						goto lab6Brk;
 					}
@@ -1092,7 +1092,7 @@ lab4Brk: ;
 					do 
 					{
 						// call iPlural, line 192
-						if (!rIPlural())
+						if (!rIPlural(s))
 						{
 							goto lab7Brk;
 						}
@@ -1114,7 +1114,7 @@ lab6Brk: ;
 				do 
 				{
 					// call tPlural, line 192
-					if (!rTPlural())
+					if (!rTPlural(s))
 					{
 						goto lab8Brk;
 					}
@@ -1134,7 +1134,7 @@ lab5Brk: ;
 			do 
 			{
 				// call tidy, line 193
-				if (!rTidy())
+				if (!rTidy(s))
 				{
 					goto lab9Brk;
 				}

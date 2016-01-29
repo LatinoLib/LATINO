@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using Among = SF.Snowball.Among;
+using MyAmong = SF.Snowball.MyAmong;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -25,34 +25,34 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class PortugueseStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public PortugueseStemmer()
+		static PortugueseStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
-			a0 = new Among[]{new Among("", - 1, 3, "", this), new Among("\u00E3", 0, 1, "", this), new Among("\u00F5", 0, 2, "", this)};
-			a1 = new Among[]{new Among("", - 1, 3, "", this), new Among("a~", 0, 1, "", this), new Among("o~", 0, 2, "", this)};
-			a2 = new Among[]{new Among("ic", - 1, - 1, "", this), new Among("ad", - 1, - 1, "", this), new Among("os", - 1, - 1, "", this), new Among("iv", - 1, 1, "", this)};
-			a3 = new Among[]{new Among("avel", - 1, 1, "", this), new Among("\u00EDvel", - 1, 1, "", this)};
-			a4 = new Among[]{new Among("ic", - 1, 1, "", this), new Among("abil", - 1, 1, "", this), new Among("iv", - 1, 1, "", this)};
-			a5 = new Among[]{new Among("ica", - 1, 1, "", this), new Among("\u00EAncia", - 1, 4, "", this), new Among("ira", - 1, 9, "", this), new Among("adora", - 1, 1, "", this), new Among("osa", - 1, 1, "", this), new Among("ista", - 1, 1, "", this), new Among("iva", - 1, 8, "", this), new Among("eza", - 1, 1, "", this), new Among("log\u00EDa", - 1, 2, "", this), new Among("idade", - 1, 7, "", this), new Among("mente", - 1, 6, "", this), new Among("amente", 10, 5, "", this), new Among("\u00E1vel", - 1, 1, "", this), new Among("\u00EDvel", - 1, 1, "", this), new Among("uci\u00F3n", - 1, 3, "", this), new Among("ico", - 1, 1, "", this), new Among("ismo", - 1, 1, "", this), new Among("oso", - 1, 1, "", this), new Among("amento", - 1, 1, "", this), new Among("imento", - 1, 1, "", this), new Among("ivo", - 1, 8, "", this), new Among("a\u00E7a~o", - 1, 1, "", this), new Among("ador", - 1, 1, "", this), new Among("icas", - 1, 1, "", this), new Among("\u00EAncias", - 1, 4, "", this), new Among("iras", - 1, 9, "", this), new Among("adoras", - 1, 1, "", this), new Among("osas", - 1, 1, "", this), new Among("istas", - 1, 1, "", this), new Among("ivas", - 1, 8, "", this), new Among("ezas", - 1, 1, "", this), new Among("log\u00EDas", - 1, 2, "", this), new Among("idades", - 1, 7, "", this), new Among("uciones", - 1, 3, "", this), new Among("adores", - 1, 1, "", this), new Among("a\u00E7o~es", - 1, 1, "", this), new Among("icos", - 1, 1, "", this), new Among("ismos", - 1, 1, "", this), new Among("osos", - 1, 1, "", this), new Among("amentos", - 1, 1, "", this), new Among("imentos", - 1, 1, "", this), new Among("ivos", - 1, 8, "", this)};
-			a6 = new Among[]{new Among("ada", - 1, 1, "", this), new Among("ida", - 1, 1, "", this), new Among("ia", - 1, 1, "", this), new Among("aria", 2, 1, "", this), new Among("eria", 2, 1, "", this), new Among("iria", 2, 1, "", this), new Among("ara", - 1, 1, "", this), new Among("era", - 1, 1, "", this), new Among("ira", - 1, 1, "", this), new Among("ava", - 1, 1, "", this), new Among("asse", - 1, 1, "", this), new Among("esse", - 1, 1, "", this), new Among("isse", - 1, 1, "", this), new Among("aste", - 1, 1, "", this), new Among("este", - 1, 1, "", this), new Among("iste", - 1, 1, "", this), new Among("ei", - 1, 1, "", this), new Among("arei", 16, 1, "", this), new Among("erei", 16, 1, "", this), new Among("irei", 16, 1, "", this), new Among("am", - 1, 1, "", this), new Among("iam", 20, 1, "", this), new Among("ariam", 21, 1, "", this), new Among("eriam", 21, 1, "", this), new Among("iriam", 21, 1, "", this), new Among("aram", 20, 1, "", this), new Among("eram", 20, 1, "", this), new Among("iram", 20, 1, "", this), new Among("avam", 20, 1, "", this), new Among("em", - 1, 1, "", this), new Among("arem", 29, 1, "", this), new Among("erem", 29, 1, "", this), new Among("irem", 29, 1, "", this), new Among("assem", 29, 1, "", this), new Among("essem", 29, 1, "", this), new Among("issem", 29, 1, "", this), new Among("ado", - 1, 1, "", this), new Among("ido", - 1, 1, "", this), new Among("ando", - 1, 1, "", this), new Among("endo", - 1, 1, "", this), new Among("indo", - 1, 1, "", this), new Among("ara~o", - 1, 1, "", this), new Among("era~o", - 1, 1, "", this), new Among("ira~o", - 1, 1, "", this), new Among("ar", - 1, 1, "", this), new Among("er", - 1, 1, "", this), new Among("ir", - 1, 1, "", this), new Among("as", - 1, 1, "", this), new Among("adas", 47, 1, "", this), new Among("idas", 47, 1, "", this), new Among("ias", 47, 1, "", this), new Among("arias", 50, 1, "", this), new Among("erias", 50, 1, "", this), new Among("irias", 50, 1, "", this), new Among("aras", 47, 1, "", this), new Among("eras", 47, 
-				1, "", this), new Among("iras", 47, 1, "", this), new Among("avas", 47, 1, "", this), new Among("es", - 1, 1, "", this), new Among("ardes", 58, 1, "", this), new Among("erdes", 58, 1, "", this), new Among("irdes", 58, 1, "", this), new Among("ares", 58, 1, "", this), new Among("eres", 58, 1, "", this), new Among("ires", 58, 1, "", this), new Among("asses", 58, 1, "", this), new Among("esses", 58, 1, "", this), new Among("isses", 58, 1, "", this), new Among("astes", 58, 1, "", this), new Among("estes", 58, 1, "", this), new Among("istes", 58, 1, "", this), new Among("is", - 1, 1, "", this), new Among("ais", 71, 1, "", this), new Among("eis", 71, 1, "", this), new Among("areis", 73, 1, "", this), new Among("ereis", 73, 1, "", this), new Among("ireis", 73, 1, "", this), new Among("\u00E1reis", 73, 1, "", this), new Among("\u00E9reis", 73, 1, "", this), new Among("\u00EDreis", 73, 1, "", this), new Among("\u00E1sseis", 73, 1, "", this), new Among("\u00E9sseis", 73, 1, "", this), new Among("\u00EDsseis", 73, 1, "", this), new Among("\u00E1veis", 73, 1, "", this), new Among("\u00EDeis", 73, 1, "", this), new Among("ar\u00EDeis", 84, 1, "", this), new Among("er\u00EDeis", 84, 1, "", this), new Among("ir\u00EDeis", 84, 1, "", this), new Among("ados", - 1, 1, "", this), new Among("idos", - 1, 1, "", this), new Among("amos", - 1, 1, "", this), new Among("\u00E1ramos", 90, 1, "", this), new Among("\u00E9ramos", 90, 1, "", this), new Among("\u00EDramos", 90, 1, "", this), new Among("\u00E1vamos", 90, 1, "", this), new Among("\u00EDamos", 90, 1, "", this), new Among("ar\u00EDamos", 95, 1, "", this), new Among("er\u00EDamos", 95, 1, "", this), new Among("ir\u00EDamos", 95, 1, "", this), new Among("emos", - 1, 1, "", this), new Among("aremos", 99, 1, "", this), new Among("eremos", 99, 1, "", this), new Among("iremos", 99, 1, "", this), new Among("\u00E1ssemos", 99, 1, "", this), new Among("\u00EAssemos", 99, 1, "", this), new Among("\u00EDssemos", 99, 1, "", this), new Among("imos", - 1, 1, "", this), new 
-				Among("armos", - 1, 1, "", this), new Among("ermos", - 1, 1, "", this), new Among("irmos", - 1, 1, "", this), new Among("\u00E1mos", - 1, 1, "", this), new Among("ar\u00E1s", - 1, 1, "", this), new Among("er\u00E1s", - 1, 1, "", this), new Among("ir\u00E1s", - 1, 1, "", this), new Among("eu", - 1, 1, "", this), new Among("iu", - 1, 1, "", this), new Among("ou", - 1, 1, "", this), new Among("ar\u00E1", - 1, 1, "", this), new Among("er\u00E1", - 1, 1, "", this), new Among("ir\u00E1", - 1, 1, "", this)};
-			a7 = new Among[]{new Among("a", - 1, 1, "", this), new Among("i", - 1, 1, "", this), new Among("o", - 1, 1, "", this), new Among("os", - 1, 1, "", this), new Among("\u00E1", - 1, 1, "", this), new Among("\u00ED", - 1, 1, "", this), new Among("\u00F3", - 1, 1, "", this)};
-			a8 = new Among[]{new Among("e", - 1, 1, "", this), new Among("\u00E7", - 1, 2, "", this), new Among("\u00E9", - 1, 1, "", this), new Among("\u00EA", - 1, 1, "", this)};
+			a0 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("\u00E3", 0, 1), new MyAmong("\u00F5", 0, 2)};
+			a1 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("a~", 0, 1), new MyAmong("o~", 0, 2)};
+			a2 = new MyAmong[]{new MyAmong("ic", - 1, - 1), new MyAmong("ad", - 1, - 1), new MyAmong("os", - 1, - 1), new MyAmong("iv", - 1, 1)};
+			a3 = new MyAmong[]{new MyAmong("avel", - 1, 1), new MyAmong("\u00EDvel", - 1, 1)};
+			a4 = new MyAmong[]{new MyAmong("ic", - 1, 1), new MyAmong("abil", - 1, 1), new MyAmong("iv", - 1, 1)};
+			a5 = new MyAmong[]{new MyAmong("ica", - 1, 1), new MyAmong("\u00EAncia", - 1, 4), new MyAmong("ira", - 1, 9), new MyAmong("adora", - 1, 1), new MyAmong("osa", - 1, 1), new MyAmong("ista", - 1, 1), new MyAmong("iva", - 1, 8), new MyAmong("eza", - 1, 1), new MyAmong("log\u00EDa", - 1, 2), new MyAmong("idade", - 1, 7), new MyAmong("mente", - 1, 6), new MyAmong("amente", 10, 5), new MyAmong("\u00E1vel", - 1, 1), new MyAmong("\u00EDvel", - 1, 1), new MyAmong("uci\u00F3n", - 1, 3), new MyAmong("ico", - 1, 1), new MyAmong("ismo", - 1, 1), new MyAmong("oso", - 1, 1), new MyAmong("amento", - 1, 1), new MyAmong("imento", - 1, 1), new MyAmong("ivo", - 1, 8), new MyAmong("a\u00E7a~o", - 1, 1), new MyAmong("ador", - 1, 1), new MyAmong("icas", - 1, 1), new MyAmong("\u00EAncias", - 1, 4), new MyAmong("iras", - 1, 9), new MyAmong("adoras", - 1, 1), new MyAmong("osas", - 1, 1), new MyAmong("istas", - 1, 1), new MyAmong("ivas", - 1, 8), new MyAmong("ezas", - 1, 1), new MyAmong("log\u00EDas", - 1, 2), new MyAmong("idades", - 1, 7), new MyAmong("uciones", - 1, 3), new MyAmong("adores", - 1, 1), new MyAmong("a\u00E7o~es", - 1, 1), new MyAmong("icos", - 1, 1), new MyAmong("ismos", - 1, 1), new MyAmong("osos", - 1, 1), new MyAmong("amentos", - 1, 1), new MyAmong("imentos", - 1, 1), new MyAmong("ivos", - 1, 8)};
+			a6 = new MyAmong[]{new MyAmong("ada", - 1, 1), new MyAmong("ida", - 1, 1), new MyAmong("ia", - 1, 1), new MyAmong("aria", 2, 1), new MyAmong("eria", 2, 1), new MyAmong("iria", 2, 1), new MyAmong("ara", - 1, 1), new MyAmong("era", - 1, 1), new MyAmong("ira", - 1, 1), new MyAmong("ava", - 1, 1), new MyAmong("asse", - 1, 1), new MyAmong("esse", - 1, 1), new MyAmong("isse", - 1, 1), new MyAmong("aste", - 1, 1), new MyAmong("este", - 1, 1), new MyAmong("iste", - 1, 1), new MyAmong("ei", - 1, 1), new MyAmong("arei", 16, 1), new MyAmong("erei", 16, 1), new MyAmong("irei", 16, 1), new MyAmong("am", - 1, 1), new MyAmong("iam", 20, 1), new MyAmong("ariam", 21, 1), new MyAmong("eriam", 21, 1), new MyAmong("iriam", 21, 1), new MyAmong("aram", 20, 1), new MyAmong("eram", 20, 1), new MyAmong("iram", 20, 1), new MyAmong("avam", 20, 1), new MyAmong("em", - 1, 1), new MyAmong("arem", 29, 1), new MyAmong("erem", 29, 1), new MyAmong("irem", 29, 1), new MyAmong("assem", 29, 1), new MyAmong("essem", 29, 1), new MyAmong("issem", 29, 1), new MyAmong("ado", - 1, 1), new MyAmong("ido", - 1, 1), new MyAmong("ando", - 1, 1), new MyAmong("endo", - 1, 1), new MyAmong("indo", - 1, 1), new MyAmong("ara~o", - 1, 1), new MyAmong("era~o", - 1, 1), new MyAmong("ira~o", - 1, 1), new MyAmong("ar", - 1, 1), new MyAmong("er", - 1, 1), new MyAmong("ir", - 1, 1), new MyAmong("as", - 1, 1), new MyAmong("adas", 47, 1), new MyAmong("idas", 47, 1), new MyAmong("ias", 47, 1), new MyAmong("arias", 50, 1), new MyAmong("erias", 50, 1), new MyAmong("irias", 50, 1), new MyAmong("aras", 47, 1), new MyAmong("eras", 47, 
+				1), new MyAmong("iras", 47, 1), new MyAmong("avas", 47, 1), new MyAmong("es", - 1, 1), new MyAmong("ardes", 58, 1), new MyAmong("erdes", 58, 1), new MyAmong("irdes", 58, 1), new MyAmong("ares", 58, 1), new MyAmong("eres", 58, 1), new MyAmong("ires", 58, 1), new MyAmong("asses", 58, 1), new MyAmong("esses", 58, 1), new MyAmong("isses", 58, 1), new MyAmong("astes", 58, 1), new MyAmong("estes", 58, 1), new MyAmong("istes", 58, 1), new MyAmong("is", - 1, 1), new MyAmong("ais", 71, 1), new MyAmong("eis", 71, 1), new MyAmong("areis", 73, 1), new MyAmong("ereis", 73, 1), new MyAmong("ireis", 73, 1), new MyAmong("\u00E1reis", 73, 1), new MyAmong("\u00E9reis", 73, 1), new MyAmong("\u00EDreis", 73, 1), new MyAmong("\u00E1sseis", 73, 1), new MyAmong("\u00E9sseis", 73, 1), new MyAmong("\u00EDsseis", 73, 1), new MyAmong("\u00E1veis", 73, 1), new MyAmong("\u00EDeis", 73, 1), new MyAmong("ar\u00EDeis", 84, 1), new MyAmong("er\u00EDeis", 84, 1), new MyAmong("ir\u00EDeis", 84, 1), new MyAmong("ados", - 1, 1), new MyAmong("idos", - 1, 1), new MyAmong("amos", - 1, 1), new MyAmong("\u00E1ramos", 90, 1), new MyAmong("\u00E9ramos", 90, 1), new MyAmong("\u00EDramos", 90, 1), new MyAmong("\u00E1vamos", 90, 1), new MyAmong("\u00EDamos", 90, 1), new MyAmong("ar\u00EDamos", 95, 1), new MyAmong("er\u00EDamos", 95, 1), new MyAmong("ir\u00EDamos", 95, 1), new MyAmong("emos", - 1, 1), new MyAmong("aremos", 99, 1), new MyAmong("eremos", 99, 1), new MyAmong("iremos", 99, 1), new MyAmong("\u00E1ssemos", 99, 1), new MyAmong("\u00EAssemos", 99, 1), new MyAmong("\u00EDssemos", 99, 1), new MyAmong("imos", - 1, 1), new 
+				MyAmong("armos", - 1, 1), new MyAmong("ermos", - 1, 1), new MyAmong("irmos", - 1, 1), new MyAmong("\u00E1mos", - 1, 1), new MyAmong("ar\u00E1s", - 1, 1), new MyAmong("er\u00E1s", - 1, 1), new MyAmong("ir\u00E1s", - 1, 1), new MyAmong("eu", - 1, 1), new MyAmong("iu", - 1, 1), new MyAmong("ou", - 1, 1), new MyAmong("ar\u00E1", - 1, 1), new MyAmong("er\u00E1", - 1, 1), new MyAmong("ir\u00E1", - 1, 1)};
+			a7 = new MyAmong[]{new MyAmong("a", - 1, 1), new MyAmong("i", - 1, 1), new MyAmong("o", - 1, 1), new MyAmong("os", - 1, 1), new MyAmong("\u00E1", - 1, 1), new MyAmong("\u00ED", - 1, 1), new MyAmong("\u00F3", - 1, 1)};
+			a8 = new MyAmong[]{new MyAmong("e", - 1, 1), new MyAmong("\u00E7", - 1, 2), new MyAmong("\u00E9", - 1, 1), new MyAmong("\u00EA", - 1, 1)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
-		private Among[] a5;
-		private Among[] a6;
-		private Among[] a7;
-		private Among[] a8;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
+		private static MyAmong[] a6;
+		private static MyAmong[] a7;
+		private static MyAmong[] a8;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (3), (char) (19), (char) (12), (char) (2)};
 		
 		private int I_p2;
@@ -69,7 +69,7 @@ namespace SF.Snowball.Ext
 		
 		private bool rPrelude()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// repeat, line 36
 			while (true)
@@ -81,14 +81,14 @@ namespace SF.Snowball.Ext
 					// [, line 37
 					bra = cursor;
 					// substring, line 37
-					amongVar = findAmong(a0, 3);
-					if (amongVar == 0)
+					MyAmongVar = findAmong(a0, 3);
+					if (MyAmongVar == 0)
 					{
 						goto lab1Brk;
 					}
 					// ], line 37
 					ket = cursor;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -434,7 +434,7 @@ lab13Brk: ;
 		
 		private bool rPostlude()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// repeat, line 62
 			while (true)
@@ -446,14 +446,14 @@ lab13Brk: ;
 					// [, line 63
 					bra = cursor;
 					// substring, line 63
-					amongVar = findAmong(a1, 3);
-					if (amongVar == 0)
+					MyAmongVar = findAmong(a1, 3);
+					if (MyAmongVar == 0)
 					{
 						goto lab5Brk;
 					}
 					// ], line 63
 					ket = cursor;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -527,7 +527,7 @@ replab1Brk: ;
 		
 		private bool rStandardSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -536,14 +536,14 @@ replab1Brk: ;
 			// [, line 77
 			ket = cursor;
 			// substring, line 77
-			amongVar = findAmongB(a5, 42);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a5, 42);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 77
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -610,8 +610,8 @@ replab1Brk: ;
 						// [, line 111
 						ket = cursor;
 						// substring, line 111
-						amongVar = findAmongB(a2, 4);
-						if (amongVar == 0)
+						MyAmongVar = findAmongB(a2, 4);
+						if (MyAmongVar == 0)
 						{
 							cursor = limit - v1;
 							goto lab0Brk;
@@ -626,7 +626,7 @@ replab1Brk: ;
 						}
 						// delete, line 111
 						sliceDel();
-						switch (amongVar)
+						switch (MyAmongVar)
 						{
 							
 							case 0: 
@@ -679,15 +679,15 @@ lab0Brk: ;
 						// [, line 123
 						ket = cursor;
 						// substring, line 123
-						amongVar = findAmongB(a3, 2);
-						if (amongVar == 0)
+						MyAmongVar = findAmongB(a3, 2);
+						if (MyAmongVar == 0)
 						{
 							cursor = limit - v2;
 							goto lab1Brk;
 						}
 						// ], line 123
 						bra = cursor;
-						switch (amongVar)
+						switch (MyAmongVar)
 						{
 							
 							case 0: 
@@ -730,15 +730,15 @@ lab1Brk: ;
 						// [, line 134
 						ket = cursor;
 						// substring, line 134
-						amongVar = findAmongB(a4, 3);
-						if (amongVar == 0)
+						MyAmongVar = findAmongB(a4, 3);
+						if (MyAmongVar == 0)
 						{
 							cursor = limit - v3;
 							goto lab2Brk;
 						}
 						// ], line 134
 						bra = cursor;
-						switch (amongVar)
+						switch (MyAmongVar)
 						{
 							
 							case 0: 
@@ -824,7 +824,7 @@ lab3Brk: ;
 		
 		private bool rVerbSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			// setlimit, line 157
@@ -842,15 +842,15 @@ lab3Brk: ;
 			// [, line 158
 			ket = cursor;
 			// substring, line 158
-			amongVar = findAmongB(a6, 120);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a6, 120);
+			if (MyAmongVar == 0)
 			{
 				limitBackward = v2;
 				return false;
 			}
 			// ], line 158
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -869,19 +869,19 @@ lab3Brk: ;
 		
 		private bool rResidualSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			// (, line 181
 			// [, line 182
 			ket = cursor;
 			// substring, line 182
-			amongVar = findAmongB(a7, 7);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a7, 7);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 182
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -903,7 +903,7 @@ lab3Brk: ;
 		
 		private bool rResidualForm()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -911,14 +911,14 @@ lab3Brk: ;
 			// [, line 190
 			ket = cursor;
 			// substring, line 190
-			amongVar = findAmongB(a8, 4);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a8, 4);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 190
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 

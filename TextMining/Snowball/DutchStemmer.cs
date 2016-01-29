@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using Among = SF.Snowball.Among;
+using MyAmong = SF.Snowball.MyAmong;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -25,26 +25,26 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class DutchStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public DutchStemmer()
+		static DutchStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
-			a0 = new Among[]{new Among("", - 1, 6, "", this), new Among("\u00E1", 0, 1, "", this), new Among("\u00E4", 0, 1, "", this), new Among("\u00E9", 0, 2, "", this), new Among("\u00EB", 0, 2, "", this), new Among("\u00ED", 0, 3, "", this), new Among("\u00EF", 0, 3, "", this), new Among("\u00F3", 0, 4, "", this), new Among("\u00F6", 0, 4, "", this), new Among("\u00FA", 0, 5, "", this), new Among("\u00FC", 0, 5, "", this)};
-			a1 = new Among[]{new Among("", - 1, 3, "", this), new Among("I", 0, 2, "", this), new Among("Y", 0, 1, "", this)};
-			a2 = new Among[]{new Among("dd", - 1, - 1, "", this), new Among("kk", - 1, - 1, "", this), new Among("tt", - 1, - 1, "", this)};
-			a3 = new Among[]{new Among("ene", - 1, 2, "", this), new Among("se", - 1, 3, "", this), new Among("en", - 1, 2, "", this), new Among("heden", 2, 1, "", this), new Among("s", - 1, 3, "", this)};
-			a4 = new Among[]{new Among("end", - 1, 1, "", this), new Among("ig", - 1, 2, "", this), new Among("ing", - 1, 1, "", this), new Among("lijk", - 1, 3, "", this), new Among("baar", - 1, 4, "", this), new Among("bar", - 1, 5, "", this)};
-			a5 = new Among[]{new Among("aa", - 1, - 1, "", this), new Among("ee", - 1, - 1, "", this), new Among("oo", - 1, - 1, "", this), new Among("uu", - 1, - 1, "", this)};
+			a0 = new MyAmong[]{new MyAmong("", - 1, 6), new MyAmong("\u00E1", 0, 1), new MyAmong("\u00E4", 0, 1), new MyAmong("\u00E9", 0, 2), new MyAmong("\u00EB", 0, 2), new MyAmong("\u00ED", 0, 3), new MyAmong("\u00EF", 0, 3), new MyAmong("\u00F3", 0, 4), new MyAmong("\u00F6", 0, 4), new MyAmong("\u00FA", 0, 5), new MyAmong("\u00FC", 0, 5)};
+			a1 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("I", 0, 2), new MyAmong("Y", 0, 1)};
+			a2 = new MyAmong[]{new MyAmong("dd", - 1, - 1), new MyAmong("kk", - 1, - 1), new MyAmong("tt", - 1, - 1)};
+			a3 = new MyAmong[]{new MyAmong("ene", - 1, 2), new MyAmong("se", - 1, 3), new MyAmong("en", - 1, 2), new MyAmong("heden", 2, 1), new MyAmong("s", - 1, 3)};
+			a4 = new MyAmong[]{new MyAmong("end", - 1, 1), new MyAmong("ig", - 1, 2), new MyAmong("ing", - 1, 1), new MyAmong("lijk", - 1, 3), new MyAmong("baar", - 1, 4), new MyAmong("bar", - 1, 5)};
+			a5 = new MyAmong[]{new MyAmong("aa", - 1, - 1), new MyAmong("ee", - 1, - 1), new MyAmong("oo", - 1, - 1), new MyAmong("uu", - 1, - 1)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
-		private Among[] a5;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
 		private static readonly char[] g_v_I = new char[]{(char) (1), (char) (0), (char) (0), (char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
 		private static readonly char[] gVJ = new char[]{(char) (17), (char) (67), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
@@ -63,7 +63,7 @@ namespace SF.Snowball.Ext
 		
 		private bool rPrelude()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -83,14 +83,14 @@ namespace SF.Snowball.Ext
 					// [, line 43
 					bra = cursor;
 					// substring, line 43
-					amongVar = findAmong(a0, 11);
-					if (amongVar == 0)
+					MyAmongVar = findAmong(a0, 11);
+					if (MyAmongVar == 0)
 					{
 						goto lab1Brk;
 					}
 					// ], line 43
 					ket = cursor;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -392,7 +392,7 @@ golab7Brk: ;
 		
 		private bool rPostlude()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// repeat, line 75
 			while (true)
@@ -404,14 +404,14 @@ golab7Brk: ;
 					// [, line 77
 					bra = cursor;
 					// substring, line 77
-					amongVar = findAmong(a1, 3);
-					if (amongVar == 0)
+					MyAmongVar = findAmong(a1, 3);
+					if (MyAmongVar == 0)
 					{
 						goto lab5Brk;
 					}
 					// ], line 77
 					ket = cursor;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -480,7 +480,7 @@ replab1Brk: ;
 			// (, line 90
 			// test, line 91
 			v1 = limit - cursor;
-			// among, line 91
+			// MyAmong, line 91
 			if (findAmongB(a2, 3) == 0)
 			{
 				return false;
@@ -587,7 +587,7 @@ lab0Brk: ;
 		
 		private bool rStandardSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -607,14 +607,14 @@ lab0Brk: ;
 				// [, line 108
 				ket = cursor;
 				// substring, line 108
-				amongVar = findAmongB(a3, 5);
-				if (amongVar == 0)
+				MyAmongVar = findAmongB(a3, 5);
+				if (MyAmongVar == 0)
 				{
 					goto lab0Brk;
 				}
 				// ], line 108
 				bra = cursor;
-				switch (amongVar)
+				switch (MyAmongVar)
 				{
 					
 					case 0: 
@@ -743,14 +743,14 @@ lab2Brk: ;
 				// [, line 127
 				ket = cursor;
 				// substring, line 127
-				amongVar = findAmongB(a4, 6);
-				if (amongVar == 0)
+				MyAmongVar = findAmongB(a4, 6);
+				if (MyAmongVar == 0)
 				{
 					goto lab4Brk;
 				}
 				// ], line 127
 				bra = cursor;
-				switch (amongVar)
+				switch (MyAmongVar)
 				{
 					
 					case 0: 
@@ -915,7 +915,7 @@ lab4Brk: ;
 				// test, line 148
 				v10 = limit - cursor;
 				// (, line 148
-				// among, line 149
+				// MyAmong, line 149
 				if (findAmongB(a5, 4) == 0)
 				{
 					goto lab9Brk;

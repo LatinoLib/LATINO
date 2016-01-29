@@ -23,7 +23,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -274,20 +274,6 @@
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Spanish.ldp" />
     <EmbeddedResource Include="TextMining\Resources\LanguageDetector\Swedish.ldp" />
     <EmbeddedResource Include="TextMining\Resources\CharRanges.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-m-en.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-m-fr.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-m-ge.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-m-it.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-m-sp.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-me-bg.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-me-cs.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-me-et.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-me-hu.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-me-ro.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-me-sl.lem" />
-    <EmbeddedResource Include="TextMining\Resources\LemmaSharp\compressed-me-sr.lem" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="WebMining\Resources\UrlNormalizer\EffectiveTldNames.dat" />

@@ -26,56 +26,29 @@ namespace Latino.TextMining
     // This stemmer is for English and is faster than the Snowball equivalent for English.
     public class PorterStemmer : IStemmer
     {
-        private char[] b;
-        private int i, iEnd, j, k; 
-        private const int INC = 200;
-
-        public PorterStemmer()
+        private class PorterAlgorithm
         {
-            b = new char[INC];
-            i = 0;
-            iEnd = 0;
-        }
+            private char[] b;
+            private int i, iEnd, j, k;
 
-        public PorterStemmer(BinarySerializer reader) : this()
-        { 
-        }
-
-        private bool Cons(int i)
-        {
-            switch (b[i])
+            private bool Cons(int i)
             {
-                case 'a':
-                case 'e':
-                case 'i':
-                case 'o':
-                case 'u': return false;
-                case 'y': return (i == 0) ? true : !Cons(i - 1);
-                default: return true;
-            }
-        }
-
-        private int MeasConsSeq()
-        {
-            int n = 0;
-            int i = 0;
-            while (true)
-            {
-                if (i > j) { return n; }
-                if (!Cons(i)) { break; }
-                i++; 
-            }
-            i++;
-            while (true)
-            {
-                while (true)
+                switch (b[i])
                 {
-                    if (i > j) { return n; }
-                    if (Cons(i)) { break; }
-                    i++;
+                    case 'a':
+                    case 'e':
+                    case 'i':
+                    case 'o':
+                    case 'u': return false;
+                    case 'y': return (i == 0) ? true : !Cons(i - 1);
+                    default: return true;
                 }
-                i++;
-                n++;
+            }
+
+            private int MeasConsSeq()
+            {
+                int n = 0;
+                int i = 0;
                 while (true)
                 {
                     if (i > j) { return n; }
@@ -83,246 +56,280 @@ namespace Latino.TextMining
                     i++;
                 }
                 i++;
-            }
-        }
-
-        private bool VowelInStem()
-        {
-            int i;
-            for (i = 0; i <= j; i++)
-            {
-                if (!Cons(i)) { return true; }
-            }
-            return false;
-        }
-
-        private bool DoubleC(int j)
-        {
-            if (j < 1) { return false; }
-            if (b[j] != b[j - 1]) { return false; }
-            return Cons(j);
-        }
-
-        private bool ConsVowCons(int i)
-        {
-            if (i < 2 || !Cons(i) || Cons(i - 1) || !Cons(i - 2)) { return false; }
-            int ch = b[i];
-            if (ch == 'w' || ch == 'x' || ch == 'y') { return false; }
-            return true;
-        }
-
-        private bool Ends(string s)
-        {
-            int l = s.Length;
-            int o = k - l + 1;
-            if (o < 0) { return false; }
-            char[] sc = s.ToCharArray();
-            for (int i = 0; i < l; i++)
-            {
-                if (b[o + i] != sc[i]) { return false; }
-            }
-            j = k - l;
-            return true;
-        }
-
-        private void SetTo(string s)
-        {
-            int l = s.Length;
-            int o = j + 1;
-            char[] sc = s.ToCharArray();
-            for (int i = 0; i < l; i++)
-            {
-                b[o + i] = sc[i];
-            }
-            k = j + l;
-        }
-
-        private void CondSetTo(string s)
-        {
-            if (MeasConsSeq() > 0) { SetTo(s); }
-        }
-
-        private void Step1()
-        {
-            if (b[k] == 's')
-            {
-                if (Ends("sses")) { k -= 2; }
-                else if (Ends("ies")) { SetTo("i"); }
-                else if (b[k - 1] != 's') { k--; }
-            }
-            if (Ends("eed"))
-            {
-                if (MeasConsSeq() > 0) { k--; }
-            }
-            else if ((Ends("ed") || Ends("ing")) && VowelInStem())
-            {
-                k = j; // *** j is computed by one of the two Ends calls
-                if (Ends("at")) { SetTo("ate"); }
-                else if (Ends("bl")) { SetTo("ble"); }
-                else if (Ends("iz")) { SetTo("ize"); }
-                else if (DoubleC(k))
+                while (true)
                 {
-                    k--;
-                    int ch = b[k];
-                    if (ch == 'l' || ch == 's' || ch == 'z') { k++; }
+                    while (true)
+                    {
+                        if (i > j) { return n; }
+                        if (Cons(i)) { break; }
+                        i++;
+                    }
+                    i++;
+                    n++;
+                    while (true)
+                    {
+                        if (i > j) { return n; }
+                        if (!Cons(i)) { break; }
+                        i++;
+                    }
+                    i++;
                 }
-                else if (MeasConsSeq() == 1 && ConsVowCons(k)) { SetTo("e"); }
             }
-        }
 
-        private void Step2()
-        {
-            if (Ends("y") && VowelInStem()) { b[k] = 'i'; }
-        }
-
-        private void Step3()
-        {
-            if (k == 0) { return; }
-            switch (b[k - 1])
+            private bool VowelInStem()
             {
-                case 'a':
-                    if (Ends("ational")) { CondSetTo("ate"); break; }
-                    if (Ends("tional")) { CondSetTo("tion"); break; }
-                    break;
-                case 'c':
-                    if (Ends("enci")) { CondSetTo("ence"); break; }
-                    if (Ends("anci")) { CondSetTo("ance"); break; }
-                    break;
-                case 'e':
-                    if (Ends("izer")) { CondSetTo("ize"); break; }
-                    break;
-                case 'l':
-                    if (Ends("bli")) { CondSetTo("ble"); break; }
-                    if (Ends("alli")) { CondSetTo("al"); break; }
-                    if (Ends("entli")) { CondSetTo("ent"); break; }
-                    if (Ends("eli")) { CondSetTo("e"); break; }
-                    if (Ends("ousli")) { CondSetTo("ous"); break; }
-                    break;
-                case 'o':
-                    if (Ends("ization")) { CondSetTo("ize"); break; }
-                    if (Ends("ation")) { CondSetTo("ate"); break; }
-                    if (Ends("ator")) { CondSetTo("ate"); break; }
-                    break;
-                case 's':
-                    if (Ends("alism")) { CondSetTo("al"); break; }
-                    if (Ends("iveness")) { CondSetTo("ive"); break; }
-                    if (Ends("fulness")) { CondSetTo("ful"); break; }
-                    if (Ends("ousness")) { CondSetTo("ous"); break; }
-                    break;
-                case 't':
-                    if (Ends("aliti")) { CondSetTo("al"); break; }
-                    if (Ends("iviti")) { CondSetTo("ive"); break; }
-                    if (Ends("biliti")) { CondSetTo("ble"); break; }
-                    break;
-                case 'g':
-                    if (Ends("logi")) { CondSetTo("log"); break; }
-                    break;
-                default:
-                    break;
+                int i;
+                for (i = 0; i <= j; i++)
+                {
+                    if (!Cons(i)) { return true; }
+                }
+                return false;
+            }
+
+            private bool DoubleC(int j)
+            {
+                if (j < 1) { return false; }
+                if (b[j] != b[j - 1]) { return false; }
+                return Cons(j);
+            }
+
+            private bool ConsVowCons(int i)
+            {
+                if (i < 2 || !Cons(i) || Cons(i - 1) || !Cons(i - 2)) { return false; }
+                int ch = b[i];
+                if (ch == 'w' || ch == 'x' || ch == 'y') { return false; }
+                return true;
+            }
+
+            private bool Ends(string s)
+            {
+                int l = s.Length;
+                int o = k - l + 1;
+                if (o < 0) { return false; }
+                char[] sc = s.ToCharArray();
+                for (int i = 0; i < l; i++)
+                {
+                    if (b[o + i] != sc[i]) { return false; }
+                }
+                j = k - l;
+                return true;
+            }
+
+            private void SetTo(string s)
+            {
+                int l = s.Length;
+                int o = j + 1;
+                char[] sc = s.ToCharArray();
+                for (int i = 0; i < l; i++)
+                {
+                    b[o + i] = sc[i];
+                }
+                k = j + l;
+            }
+
+            private void CondSetTo(string s)
+            {
+                if (MeasConsSeq() > 0) { SetTo(s); }
+            }
+
+            private void Step1()
+            {
+                if (b[k] == 's')
+                {
+                    if (Ends("sses")) { k -= 2; }
+                    else if (Ends("ies")) { SetTo("i"); }
+                    else if (b[k - 1] != 's') { k--; }
+                }
+                if (Ends("eed"))
+                {
+                    if (MeasConsSeq() > 0) { k--; }
+                }
+                else if ((Ends("ed") || Ends("ing")) && VowelInStem())
+                {
+                    k = j; // *** j is computed by one of the two Ends calls
+                    if (Ends("at")) { SetTo("ate"); }
+                    else if (Ends("bl")) { SetTo("ble"); }
+                    else if (Ends("iz")) { SetTo("ize"); }
+                    else if (DoubleC(k))
+                    {
+                        k--;
+                        int ch = b[k];
+                        if (ch == 'l' || ch == 's' || ch == 'z') { k++; }
+                    }
+                    else if (MeasConsSeq() == 1 && ConsVowCons(k)) { SetTo("e"); }
+                }
+            }
+
+            private void Step2()
+            {
+                if (Ends("y") && VowelInStem()) { b[k] = 'i'; }
+            }
+
+            private void Step3()
+            {
+                if (k == 0) { return; }
+                switch (b[k - 1])
+                {
+                    case 'a':
+                        if (Ends("ational")) { CondSetTo("ate"); break; }
+                        if (Ends("tional")) { CondSetTo("tion"); break; }
+                        break;
+                    case 'c':
+                        if (Ends("enci")) { CondSetTo("ence"); break; }
+                        if (Ends("anci")) { CondSetTo("ance"); break; }
+                        break;
+                    case 'e':
+                        if (Ends("izer")) { CondSetTo("ize"); break; }
+                        break;
+                    case 'l':
+                        if (Ends("bli")) { CondSetTo("ble"); break; }
+                        if (Ends("alli")) { CondSetTo("al"); break; }
+                        if (Ends("entli")) { CondSetTo("ent"); break; }
+                        if (Ends("eli")) { CondSetTo("e"); break; }
+                        if (Ends("ousli")) { CondSetTo("ous"); break; }
+                        break;
+                    case 'o':
+                        if (Ends("ization")) { CondSetTo("ize"); break; }
+                        if (Ends("ation")) { CondSetTo("ate"); break; }
+                        if (Ends("ator")) { CondSetTo("ate"); break; }
+                        break;
+                    case 's':
+                        if (Ends("alism")) { CondSetTo("al"); break; }
+                        if (Ends("iveness")) { CondSetTo("ive"); break; }
+                        if (Ends("fulness")) { CondSetTo("ful"); break; }
+                        if (Ends("ousness")) { CondSetTo("ous"); break; }
+                        break;
+                    case 't':
+                        if (Ends("aliti")) { CondSetTo("al"); break; }
+                        if (Ends("iviti")) { CondSetTo("ive"); break; }
+                        if (Ends("biliti")) { CondSetTo("ble"); break; }
+                        break;
+                    case 'g':
+                        if (Ends("logi")) { CondSetTo("log"); break; }
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            private void Step4()
+            {
+                switch (b[k])
+                {
+                    case 'e':
+                        if (Ends("icate")) { CondSetTo("ic"); break; }
+                        if (Ends("ative")) { CondSetTo(""); break; }
+                        if (Ends("alize")) { CondSetTo("al"); break; }
+                        break;
+                    case 'i':
+                        if (Ends("iciti")) { CondSetTo("ic"); break; }
+                        break;
+                    case 'l':
+                        if (Ends("ical")) { CondSetTo("ic"); break; }
+                        if (Ends("ful")) { CondSetTo(""); break; }
+                        break;
+                    case 's':
+                        if (Ends("ness")) { CondSetTo(""); break; }
+                        break;
+                }
+            }
+
+            private void Step5()
+            {
+                if (k == 0) { return; }
+                switch (b[k - 1])
+                {
+                    case 'a':
+                        if (Ends("al")) { break; }
+                        return;
+                    case 'c':
+                        if (Ends("ance")) { break; }
+                        if (Ends("ence")) { break; }
+                        return;
+                    case 'e':
+                        if (Ends("er")) { break; }
+                        return;
+                    case 'i':
+                        if (Ends("ic")) { break; }
+                        return;
+                    case 'l':
+                        if (Ends("able")) { break; }
+                        if (Ends("ible")) { break; }
+                        return;
+                    case 'n':
+                        if (Ends("ant")) { break; }
+                        if (Ends("ement")) { break; }
+                        if (Ends("ment")) { break; }
+                        if (Ends("ent")) { break; }
+                        return;
+                    case 'o':
+                        if (Ends("ion") && j >= 0 && (b[j] == 's' || b[j] == 't')) { break; }
+                        if (Ends("ou")) { break; }
+                        return;
+                    case 's':
+                        if (Ends("ism")) { break; }
+                        return;
+                    case 't':
+                        if (Ends("ate")) { break; }
+                        if (Ends("iti")) { break; }
+                        return;
+                    case 'u':
+                        if (Ends("ous")) { break; }
+                        return;
+                    case 'v':
+                        if (Ends("ive")) { break; }
+                        return;
+                    case 'z':
+                        if (Ends("ize")) { break; }
+                        return;
+                    default:
+                        return;
+                }
+                if (MeasConsSeq() > 1) { k = j; }
+            }
+
+            private void Step6()
+            {
+                j = k;
+                if (b[k] == 'e')
+                {
+                    int a = MeasConsSeq();
+                    if (a > 1 || a == 1 && !ConsVowCons(k - 1)) { k--; }
+                }
+                if (b[k] == 'l' && DoubleC(k) && MeasConsSeq() > 1) { k--; }
+            }
+
+            private void Stem()
+            {
+                k = i - 1;
+                if (k > 1)
+                {
+                    Step1();
+                    Step2();
+                    Step3();
+                    Step4();
+                    Step5();
+                    Step6();
+                }
+                iEnd = k + 1;
+                i = 0;
+            }
+
+            public string GetStem(string word)
+            {
+                i = word.Length;
+                b = word.ToCharArray();
+                Stem();
+                return new string(b, 0, iEnd);
             }
         }
 
-        private void Step4()
-        {
-            switch (b[k])
-            {
-                case 'e':
-                    if (Ends("icate")) { CondSetTo("ic"); break; }
-                    if (Ends("ative")) { CondSetTo(""); break; }
-                    if (Ends("alize")) { CondSetTo("al"); break; }
-                    break;
-                case 'i':
-                    if (Ends("iciti")) { CondSetTo("ic"); break; }
-                    break;
-                case 'l':
-                    if (Ends("ical")) { CondSetTo("ic"); break; }
-                    if (Ends("ful")) { CondSetTo(""); break; }
-                    break;
-                case 's':
-                    if (Ends("ness")) { CondSetTo(""); break; }
-                    break;
-            }
+        public PorterStemmer()
+        { 
         }
 
-        private void Step5()
-        {
-            if (k == 0) { return; }
-            switch (b[k - 1])
-            {
-                case 'a':
-                    if (Ends("al")) { break; } 
-                    return;
-                case 'c':
-                    if (Ends("ance")) { break; }
-                    if (Ends("ence")) { break; }
-                    return;
-                case 'e':
-                    if (Ends("er")) { break; } 
-                    return;
-                case 'i':
-                    if (Ends("ic")) { break; } 
-                    return;
-                case 'l':
-                    if (Ends("able")) { break; }
-                    if (Ends("ible")) { break; } 
-                    return;
-                case 'n':
-                    if (Ends("ant")) { break; }
-                    if (Ends("ement")) { break; }
-                    if (Ends("ment")) { break; }
-                    if (Ends("ent")) { break; } 
-                    return;
-                case 'o':
-                    if (Ends("ion") && j >= 0 && (b[j] == 's' || b[j] == 't')) { break; }
-                    if (Ends("ou")) { break; } 
-                    return;
-                case 's':
-                    if (Ends("ism")) { break; } 
-                    return;
-                case 't':
-                    if (Ends("ate")) { break; }
-                    if (Ends("iti")) { break; } 
-                    return;
-                case 'u':
-                    if (Ends("ous")) { break; } 
-                    return;
-                case 'v':
-                    if (Ends("ive")) { break; } 
-                    return;
-                case 'z':
-                    if (Ends("ize")) { break; } 
-                    return;
-                default:
-                    return;
-            }
-            if (MeasConsSeq() > 1) { k = j; }
-        }
-
-        private void Step6()
-        {
-            j = k;
-            if (b[k] == 'e')
-            {
-                int a = MeasConsSeq();
-                if (a > 1 || a == 1 && !ConsVowCons(k - 1)) { k--; }
-            }
-            if (b[k] == 'l' && DoubleC(k) && MeasConsSeq() > 1) { k--; }
-        }
-
-        private void Stem()
-        {
-            k = i - 1;
-            if (k > 1)
-            {
-                Step1();
-                Step2();
-                Step3();
-                Step4();
-                Step5();
-                Step6();
-            }
-            iEnd = k + 1;
-            i = 0;
+        public PorterStemmer(BinarySerializer reader)
+        { 
         }
 
         // *** IStemmer interface implementation ***
@@ -330,15 +337,7 @@ namespace Latino.TextMining
         public string GetStem(string word)
         {
             Utils.ThrowException(word == null ? new ArgumentNullException("word") : null);
-            i = word.Length;
-            char[] newB = new char[i];
-            for (int c = 0; c < i; c++)
-            {
-                newB[c] = word[c];
-            }
-            b = newB;
-            Stem();
-            return new string(b, 0, iEnd);
+            return new PorterAlgorithm().GetStem(word);
         }
 
         // *** ISerializable interface implementation ***

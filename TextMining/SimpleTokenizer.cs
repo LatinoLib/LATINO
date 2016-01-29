@@ -25,8 +25,6 @@ namespace Latino.TextMining
     */
     public class SimpleTokenizer : ITokenizer
     {
-        private string mText
-            = "";
         private TokenizerType mType
             = TokenizerType.AllChars; 
         private int mMinTokenLen
@@ -34,12 +32,6 @@ namespace Latino.TextMining
 
         public SimpleTokenizer()
         {
-        }
-
-        public SimpleTokenizer(string text)
-        {
-            Utils.ThrowException(text == null ? new ArgumentNullException("text") : null);
-            mText = text;
         }
 
         public SimpleTokenizer(BinarySerializer reader)
@@ -65,29 +57,9 @@ namespace Latino.TextMining
 
         // *** ITokenizer interface implementation ***
 
-        public string Text
+        public ITokenizerEnumerable GetTokens(string text)
         {
-            get { return mText; }
-            set
-            {
-                Utils.ThrowException(value == null ? new ArgumentNullException("Text") : null);
-                mText = value;
-            }
-        }
-
-        public ITokenizerEnumerator GetEnumerator()//TODO: do this "trick" in every tokenizer
-        {
-            return new Enumerator(mText, mType, mMinTokenLen);
-        }
-
-        IEnumerator<string> IEnumerable<string>.GetEnumerator()
-        {
-            return new Enumerator(mText, mType, mMinTokenLen);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new Enumerator(mText, mType, mMinTokenLen);
+            return new TokenizerEnumerable(new Enumerator(text, mType, mMinTokenLen));
         }
 
         // *** ISerializable interface implementation ***

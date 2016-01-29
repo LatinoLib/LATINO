@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using Among = SF.Snowball.Among;
+using MyAmong = SF.Snowball.MyAmong;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -25,30 +25,30 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class FrenchStemmer : SnowballProgram, ISnowballStemmer
 	{
-		public FrenchStemmer()
+		static FrenchStemmer()
 		{
 			InitBlock();
 		}
-		private void  InitBlock()
+		private static void InitBlock()
 		{
-			a0 = new Among[]{new Among("", - 1, 4, "", this), new Among("I", 0, 1, "", this), new Among("U", 0, 2, "", this), new Among("Y", 0, 3, "", this)};
-			a1 = new Among[]{new Among("iqU", - 1, 3, "", this), new Among("abl", - 1, 3, "", this), new Among("I\u00E8r", - 1, 4, "", this), new Among("i\u00E8r", - 1, 4, "", this), new Among("eus", - 1, 2, "", this), new Among("iv", - 1, 1, "", this)};
-			a2 = new Among[]{new Among("ic", - 1, 2, "", this), new Among("abil", - 1, 1, "", this), new Among("iv", - 1, 3, "", this)};
-			a3 = new Among[]{new Among("iqUe", - 1, 1, "", this), new Among("atrice", - 1, 2, "", this), new Among("ance", - 1, 1, "", this), new Among("ence", - 1, 5, "", this), new Among("logie", - 1, 3, "", this), new Among("able", - 1, 1, "", this), new Among("isme", - 1, 1, "", this), new Among("euse", - 1, 11, "", this), new Among("iste", - 1, 1, "", this), new Among("ive", - 1, 8, "", this), new Among("if", - 1, 8, "", this), new Among("usion", - 1, 4, "", this), new Among("ation", - 1, 2, "", this), new Among("ution", - 1, 4, "", this), new Among("ateur", - 1, 2, "", this), new Among("iqUes", - 1, 1, "", this), new Among("atrices", - 1, 2, "", this), new Among("ances", - 1, 1, "", this), new Among("ences", - 1, 5, "", this), new Among("logies", - 1, 3, "", this), new Among("ables", - 1, 1, "", this), new Among("ismes", - 1, 1, "", this), new Among("euses", - 1, 11, "", this), new Among("istes", - 1, 1, "", this), new Among("ives", - 1, 8, "", this), new Among("ifs", - 1, 8, "", this), new Among("usions", - 1, 4, "", this), new Among("ations", - 1, 2, "", this), new Among("utions", - 1, 4, "", this), new Among("ateurs", - 1, 2, "", this), new Among("ments", - 1, 15, "", this), new Among("ements", 30, 6, "", this), new Among("issements", 31, 12, "", this), new Among("it\u00E9s", - 1, 7, "", this), new Among("ment", - 1, 15, "", this), new Among("ement", 34, 6, "", this), new Among("issement", 35, 12, "", this), new Among("amment", 34, 13, "", this), new Among("emment", 34, 14, "", this), new Among("aux", - 1, 10, "", this), new Among("eaux", 39, 9, "", this), new Among("eux", - 1, 1, "", this), new Among("it\u00E9", - 1, 7, "", this)};
-			a4 = new Among[]{new Among("ira", - 1, 1, "", this), new Among("ie", - 1, 1, "", this), new Among("isse", - 1, 1, "", this), new Among("issante", - 1, 1, "", this), new Among("i", - 1, 1, "", this), new Among("irai", 4, 1, "", this), new Among("ir", - 1, 1, "", this), new Among("iras", - 1, 1, "", this), new Among("ies", - 1, 1, "", this), new Among("\u00EEmes", - 1, 1, "", this), new Among("isses", - 1, 1, "", this), new Among("issantes", - 1, 1, "", this), new Among("\u00EEtes", - 1, 1, "", this), new Among("is", - 1, 1, "", this), new Among("irais", 13, 1, "", this), new Among("issais", 13, 1, "", this), new Among("irions", - 1, 1, "", this), new Among("issions", - 1, 1, "", this), new Among("irons", - 1, 1, "", this), new Among("issons", - 1, 1, "", this), new Among("issants", - 1, 1, "", this), new Among("it", - 1, 1, "", this), new Among("irait", 21, 1, "", this), new Among("issait", 21, 1, "", this), new Among("issant", - 1, 1, "", this), new Among("iraIent", - 1, 1, "", this), new Among("issaIent", - 1, 1, "", this), new Among("irent", - 1, 1, "", this), new Among("issent", - 1, 1, "", this), new Among("iront", - 1, 1, "", this), new Among("\u00EEt", - 1, 1, "", this), new Among("iriez", - 1, 1, "", this), new Among("issiez", - 1, 1, "", this), new Among("irez", - 1, 1, "", this), new Among("issez", - 1, 1, "", this)};
-			a5 = new Among[]{new Among("a", - 1, 3, "", this), new Among("era", 0, 2, "", this), new Among("asse", - 1, 3, "", this), new Among("ante", - 1, 3, "", this), new Among("\u00E9e", - 1, 2, "", this), new Among("ai", - 1, 3, "", this), new Among("erai", 5, 2, "", this), new Among("er", - 1, 2, "", this), new Among("as", - 1, 3, "", this), new Among("eras", 8, 2, "", this), new Among("\u00E2mes", - 1, 3, "", this), new Among("asses", - 1, 3, "", this), new Among("antes", - 1, 3, "", this), new Among("\u00E2tes", - 1, 3, "", this), new Among("\u00E9es", - 1, 2, "", this), new Among("ais", - 1, 3, "", this), new Among("erais", 15, 2, "", this), new Among("ions", - 1, 1, "", this), new Among("erions", 17, 2, "", this), new Among("assions", 17, 3, "", this), new Among("erons", - 1, 2, "", this), new Among("ants", - 1, 3, "", this), new Among("\u00E9s", - 1, 2, "", this), new Among("ait", - 1, 3, "", this), new Among("erait", 23, 2, "", this), new Among("ant", - 1, 3, "", this), new Among("aIent", - 1, 3, "", this), new Among("eraIent", 26, 2, "", this), new Among("\u00E8rent", - 1, 2, "", this), new Among("assent", - 1, 3, "", this), new Among("eront", - 1, 2, "", this), new Among("\u00E2t", - 1, 3, "", this), new Among("ez", - 1, 2, "", this), new Among("iez", 32, 2, "", this), new Among("eriez", 33, 2, "", this), new Among("assiez", 33, 3, "", this), new Among("erez", 32, 2, "", this), new Among("\u00E9", - 1, 2, "", this)};
-			a6 = new Among[]{new Among("e", - 1, 3, "", this), new Among("I\u00E8re", 0, 2, "", this), new Among("i\u00E8re", 0, 2, "", this), new Among("ion", - 1, 1, "", this), new Among("Ier", - 1, 2, "", this), new Among("ier", - 1, 2, "", this), new Among("\u00EB", - 1, 4, "", this)};
-			a7 = new Among[]{new Among("ell", - 1, - 1, "", this), new Among("eill", - 1, - 1, "", this), new Among("enn", - 1, - 1, "", this), new Among("onn", - 1, - 1, "", this), new Among("ett", - 1, - 1, "", this)};
+			a0 = new MyAmong[]{new MyAmong("", - 1, 4), new MyAmong("I", 0, 1), new MyAmong("U", 0, 2), new MyAmong("Y", 0, 3)};
+			a1 = new MyAmong[]{new MyAmong("iqU", - 1, 3), new MyAmong("abl", - 1, 3), new MyAmong("I\u00E8r", - 1, 4), new MyAmong("i\u00E8r", - 1, 4), new MyAmong("eus", - 1, 2), new MyAmong("iv", - 1, 1)};
+			a2 = new MyAmong[]{new MyAmong("ic", - 1, 2), new MyAmong("abil", - 1, 1), new MyAmong("iv", - 1, 3)};
+			a3 = new MyAmong[]{new MyAmong("iqUe", - 1, 1), new MyAmong("atrice", - 1, 2), new MyAmong("ance", - 1, 1), new MyAmong("ence", - 1, 5), new MyAmong("logie", - 1, 3), new MyAmong("able", - 1, 1), new MyAmong("isme", - 1, 1), new MyAmong("euse", - 1, 11), new MyAmong("iste", - 1, 1), new MyAmong("ive", - 1, 8), new MyAmong("if", - 1, 8), new MyAmong("usion", - 1, 4), new MyAmong("ation", - 1, 2), new MyAmong("ution", - 1, 4), new MyAmong("ateur", - 1, 2), new MyAmong("iqUes", - 1, 1), new MyAmong("atrices", - 1, 2), new MyAmong("ances", - 1, 1), new MyAmong("ences", - 1, 5), new MyAmong("logies", - 1, 3), new MyAmong("ables", - 1, 1), new MyAmong("ismes", - 1, 1), new MyAmong("euses", - 1, 11), new MyAmong("istes", - 1, 1), new MyAmong("ives", - 1, 8), new MyAmong("ifs", - 1, 8), new MyAmong("usions", - 1, 4), new MyAmong("ations", - 1, 2), new MyAmong("utions", - 1, 4), new MyAmong("ateurs", - 1, 2), new MyAmong("ments", - 1, 15), new MyAmong("ements", 30, 6), new MyAmong("issements", 31, 12), new MyAmong("it\u00E9s", - 1, 7), new MyAmong("ment", - 1, 15), new MyAmong("ement", 34, 6), new MyAmong("issement", 35, 12), new MyAmong("amment", 34, 13), new MyAmong("emment", 34, 14), new MyAmong("aux", - 1, 10), new MyAmong("eaux", 39, 9), new MyAmong("eux", - 1, 1), new MyAmong("it\u00E9", - 1, 7)};
+			a4 = new MyAmong[]{new MyAmong("ira", - 1, 1), new MyAmong("ie", - 1, 1), new MyAmong("isse", - 1, 1), new MyAmong("issante", - 1, 1), new MyAmong("i", - 1, 1), new MyAmong("irai", 4, 1), new MyAmong("ir", - 1, 1), new MyAmong("iras", - 1, 1), new MyAmong("ies", - 1, 1), new MyAmong("\u00EEmes", - 1, 1), new MyAmong("isses", - 1, 1), new MyAmong("issantes", - 1, 1), new MyAmong("\u00EEtes", - 1, 1), new MyAmong("is", - 1, 1), new MyAmong("irais", 13, 1), new MyAmong("issais", 13, 1), new MyAmong("irions", - 1, 1), new MyAmong("issions", - 1, 1), new MyAmong("irons", - 1, 1), new MyAmong("issons", - 1, 1), new MyAmong("issants", - 1, 1), new MyAmong("it", - 1, 1), new MyAmong("irait", 21, 1), new MyAmong("issait", 21, 1), new MyAmong("issant", - 1, 1), new MyAmong("iraIent", - 1, 1), new MyAmong("issaIent", - 1, 1), new MyAmong("irent", - 1, 1), new MyAmong("issent", - 1, 1), new MyAmong("iront", - 1, 1), new MyAmong("\u00EEt", - 1, 1), new MyAmong("iriez", - 1, 1), new MyAmong("issiez", - 1, 1), new MyAmong("irez", - 1, 1), new MyAmong("issez", - 1, 1)};
+			a5 = new MyAmong[]{new MyAmong("a", - 1, 3), new MyAmong("era", 0, 2), new MyAmong("asse", - 1, 3), new MyAmong("ante", - 1, 3), new MyAmong("\u00E9e", - 1, 2), new MyAmong("ai", - 1, 3), new MyAmong("erai", 5, 2), new MyAmong("er", - 1, 2), new MyAmong("as", - 1, 3), new MyAmong("eras", 8, 2), new MyAmong("\u00E2mes", - 1, 3), new MyAmong("asses", - 1, 3), new MyAmong("antes", - 1, 3), new MyAmong("\u00E2tes", - 1, 3), new MyAmong("\u00E9es", - 1, 2), new MyAmong("ais", - 1, 3), new MyAmong("erais", 15, 2), new MyAmong("ions", - 1, 1), new MyAmong("erions", 17, 2), new MyAmong("assions", 17, 3), new MyAmong("erons", - 1, 2), new MyAmong("ants", - 1, 3), new MyAmong("\u00E9s", - 1, 2), new MyAmong("ait", - 1, 3), new MyAmong("erait", 23, 2), new MyAmong("ant", - 1, 3), new MyAmong("aIent", - 1, 3), new MyAmong("eraIent", 26, 2), new MyAmong("\u00E8rent", - 1, 2), new MyAmong("assent", - 1, 3), new MyAmong("eront", - 1, 2), new MyAmong("\u00E2t", - 1, 3), new MyAmong("ez", - 1, 2), new MyAmong("iez", 32, 2), new MyAmong("eriez", 33, 2), new MyAmong("assiez", 33, 3), new MyAmong("erez", 32, 2), new MyAmong("\u00E9", - 1, 2)};
+			a6 = new MyAmong[]{new MyAmong("e", - 1, 3), new MyAmong("I\u00E8re", 0, 2), new MyAmong("i\u00E8re", 0, 2), new MyAmong("ion", - 1, 1), new MyAmong("Ier", - 1, 2), new MyAmong("ier", - 1, 2), new MyAmong("\u00EB", - 1, 4)};
+			a7 = new MyAmong[]{new MyAmong("ell", - 1, - 1), new MyAmong("eill", - 1, - 1), new MyAmong("enn", - 1, - 1), new MyAmong("onn", - 1, - 1), new MyAmong("ett", - 1, - 1)};
 		}
 		
-		private Among[] a0;
-		private Among[] a1;
-		private Among[] a2;
-		private Among[] a3;
-		private Among[] a4;
-		private Among[] a5;
-		private Among[] a6;
-		private Among[] a7;
+		private static MyAmong[] a0;
+		private static MyAmong[] a1;
+		private static MyAmong[] a2;
+		private static MyAmong[] a3;
+		private static MyAmong[] a4;
+		private static MyAmong[] a5;
+		private static MyAmong[] a6;
+		private static MyAmong[] a7;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128), (char) (130), (char) (103), (char) (8), (char) (5)};
 		private static readonly char[] gKeepWithS = new char[]{(char) (1), (char) (65), (char) (20), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
 		
@@ -450,7 +450,7 @@ lab5Brk: ;
 		
 		private bool rPostlude()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			// repeat, line 66
 			while (true)
@@ -462,14 +462,14 @@ lab5Brk: ;
 					// [, line 68
 					bra = cursor;
 					// substring, line 68
-					amongVar = findAmong(a0, 4);
-					if (amongVar == 0)
+					MyAmongVar = findAmong(a0, 4);
+					if (MyAmongVar == 0)
 					{
 						goto lab10Brk;
 					}
 					// ], line 68
 					ket = cursor;
-					switch (amongVar)
+					switch (MyAmongVar)
 					{
 						
 						case 0: 
@@ -549,7 +549,7 @@ replab1Brk: ;
 		
 		private bool rStandardSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -565,14 +565,14 @@ replab1Brk: ;
 			// [, line 83
 			ket = cursor;
 			// substring, line 83
-			amongVar = findAmongB(a3, 43);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a3, 43);
+			if (MyAmongVar == 0)
 			{
 				return false;
 			}
 			// ], line 83
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -697,15 +697,15 @@ lab0Brk: ;
 						// [, line 107
 						ket = cursor;
 						// substring, line 107
-						amongVar = findAmongB(a1, 6);
-						if (amongVar == 0)
+						MyAmongVar = findAmongB(a1, 6);
+						if (MyAmongVar == 0)
 						{
 							cursor = limit - v3;
 							goto lab3Brk;
 						}
 						// ], line 107
 						bra = cursor;
-						switch (amongVar)
+						switch (MyAmongVar)
 						{
 							
 							case 0: 
@@ -829,15 +829,15 @@ lab3Brk: ;
 						// [, line 122
 						ket = cursor;
 						// substring, line 122
-						amongVar = findAmongB(a2, 3);
-						if (amongVar == 0)
+						MyAmongVar = findAmongB(a2, 3);
+						if (MyAmongVar == 0)
 						{
 							cursor = limit - v5;
 							goto lab6Brk;
 						}
 						// ], line 122
 						bra = cursor;
-						switch (amongVar)
+						switch (MyAmongVar)
 						{
 							
 							case 0: 
@@ -1126,7 +1126,7 @@ lab14Brk: ;
 		
 		private bool rIVerbSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			// setlimit, line 154
@@ -1144,15 +1144,15 @@ lab14Brk: ;
 			// [, line 155
 			ket = cursor;
 			// substring, line 155
-			amongVar = findAmongB(a4, 35);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a4, 35);
+			if (MyAmongVar == 0)
 			{
 				limitBackward = v2;
 				return false;
 			}
 			// ], line 155
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -1176,7 +1176,7 @@ lab14Brk: ;
 		
 		private bool rVerbSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -1195,15 +1195,15 @@ lab14Brk: ;
 			// [, line 166
 			ket = cursor;
 			// substring, line 166
-			amongVar = findAmongB(a5, 38);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a5, 38);
+			if (MyAmongVar == 0)
 			{
 				limitBackward = v2;
 				return false;
 			}
 			// ], line 166
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -1262,7 +1262,7 @@ lab16Brk: ;
 		
 		private bool rResidualSuffix()
 		{
-			int amongVar;
+			int MyAmongVar;
 			int v1;
 			int v2;
 			int v3;
@@ -1314,15 +1314,15 @@ lab0Brk: ;
 			// [, line 192
 			ket = cursor;
 			// substring, line 192
-			amongVar = findAmongB(a6, 7);
-			if (amongVar == 0)
+			MyAmongVar = findAmongB(a6, 7);
+			if (MyAmongVar == 0)
 			{
 				limitBackward = v4;
 				return false;
 			}
 			// ], line 192
 			bra = cursor;
-			switch (amongVar)
+			switch (MyAmongVar)
 			{
 				
 				case 0: 
@@ -1404,7 +1404,7 @@ lab1Brk: ;
 			// (, line 202
 			// test, line 203
 			v1 = limit - cursor;
-			// among, line 203
+			// MyAmong, line 203
 			if (findAmongB(a7, 5) == 0)
 			{
 				return false;

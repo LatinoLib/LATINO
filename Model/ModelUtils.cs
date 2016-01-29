@@ -43,6 +43,7 @@ namespace Latino.Model
     {
         Sum,
         Avg,
+        AvgNonZero,
         NrmL2
     }
 
@@ -199,6 +200,7 @@ namespace Latino.Model
         {
             Utils.ThrowException(vecList == null ? new ArgumentNullException("vecList") : null);
             Dictionary<int, double> tmp = new Dictionary<int, double>();
+            Dictionary<int, int> c = new Dictionary<int, int>();
             int vecCount = 0;
             foreach (SparseVector<double> vec in vecList)
             {
@@ -207,15 +209,16 @@ namespace Latino.Model
                     if (tmp.ContainsKey(item.Idx))
                     {
                         tmp[item.Idx] += item.Dat;
+                        c[item.Idx] += 1;
                     }
                     else
                     {
                         tmp.Add(item.Idx, item.Dat);
+                        c.Add(item.Idx, 1);
                     }
                 }
                 vecCount++;
             }
-            //Utils.ThrowException(vecCount == 0 ? new ArgumentValueException("vecList") : null);
             if (vecCount == 0) { return new SparseVector<double>(); }
             SparseVector<double> centroid = new SparseVector<double>();
             switch (type)
@@ -234,13 +237,19 @@ namespace Latino.Model
                         centroid.InnerDat.Add(item.Value / (double)vecCount);
                     }
                     break;
+                case CentroidType.AvgNonZero:
+                    foreach (KeyValuePair<int, double> item in tmp)
+                    {
+                        centroid.InnerIdx.Add(item.Key);
+                        centroid.InnerDat.Add(item.Value / (double)c[item.Key]);
+                    }
+                    break;
                 case CentroidType.NrmL2:
                     double vecLen = 0;
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
                         vecLen += item.Value * item.Value;
                     }
-                    //Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
                     vecLen = Math.Sqrt(vecLen);
                     if (vecLen > 0)
                     {
@@ -365,7 +374,6 @@ namespace Latino.Model
                     {
                         vecLen += item.Value * item.Value;
                     }
-                    //Utils.ThrowException(vecLen == 0 ? new InvalidOperationException() : null);
                     vecLen = Math.Sqrt(vecLen);
                     if (vecLen > 0)
                     {
@@ -376,6 +384,8 @@ namespace Latino.Model
                         }
                     }
                     break;
+                default:
+                    throw new NotImplementedException();
             }
             centroid.Sort();
             return centroid;

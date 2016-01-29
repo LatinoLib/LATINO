@@ -295,9 +295,6 @@ namespace Latino.TextMining
             set { mKeepWordForms = value; }
         }
 
-        public delegate IEnumerable<string> GetTokensHandler(IEnumerable<string> tokens);
-        public GetTokensHandler OnGetTokens { get; set; }
-
         public void OutputStats(StreamWriter writer)
         {
             writer.WriteLine("Word\tStem\tF\tDF");
@@ -403,8 +400,7 @@ namespace Latino.TextMining
                     mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                     Set<string> docWords = new Set<string>();
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                    mTokenizer.Text = document;
-                    foreach (string token in OnGetTokens == null ? mTokenizer : OnGetTokens(mTokenizer))
+                    foreach (string token in mTokenizer.GetTokens(document))
                     {
                         string word = token.Trim().ToLower();
                         if (mStopWords == null || !mStopWords.Contains(word))
@@ -449,8 +445,7 @@ namespace Latino.TextMining
                         mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                         ArrayList<WordStem> nGrams = new ArrayList<WordStem>(n);
                         Set<string> docWords = new Set<string>();
-                        mTokenizer.Text = document;
-                        foreach (string token in (IEnumerable<string>)mTokenizer)
+                        foreach (string token in mTokenizer.GetTokens(document))
                         {
                             string word = token.Trim().ToLower();
                             if (mStopWords == null || !mStopWords.Contains(word))
@@ -560,8 +555,7 @@ namespace Latino.TextMining
                 mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                mTokenizer.Text = document;
-                foreach (string token in OnGetTokens == null ? mTokenizer : OnGetTokens(mTokenizer))
+                foreach (string token in mTokenizer.GetTokens(document))
                 {
                     string word = token.Trim().ToLower();                    
                     if (mStopWords == null || !mStopWords.Contains(word))
@@ -633,7 +627,7 @@ namespace Latino.TextMining
         }
 
         // TODO: merge this with Initialize
-        public ArrayList<SparseVector<double>> InitializeTokenized(IEnumerable<ITokenizer> documents, bool largeScale)
+        public ArrayList<SparseVector<double>> InitializeTokenized(IEnumerable<ITokenizerEnumerable> documents, bool largeScale)
         {
             Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);
             mWordInfo.Clear();
@@ -644,13 +638,13 @@ namespace Latino.TextMining
             int docCount = 0;
             if (!largeScale)
             {
-                foreach (ITokenizer document in documents)
+                foreach (ITokenizerEnumerable document in documents)
                 {
                     docCount++;
                     mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                     Set<string> docWords = new Set<string>();
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                    foreach (string word in (IEnumerable<string>)document)
+                    foreach (string word in document)
                     {
                         //string word = token.Trim().ToLower();
                         if (mStopWords == null || !mStopWords.Contains(word))
@@ -689,7 +683,7 @@ namespace Latino.TextMining
                 {
                     docCount = 0;
                     mLogger.Info("Initialize", "Pass {0} of {1} ...", n, mMaxNGramLen);
-                    foreach (ITokenizer document in documents)
+                    foreach (ITokenizerEnumerable document in documents)
                     {
                         docCount++;
                         mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
@@ -800,7 +794,7 @@ namespace Latino.TextMining
             // compute bag-of-words vectors
             mLogger.Info("Initialize", "Computing bag-of-words vectors ...");
             int docNum = 1;
-            foreach (ITokenizer document in documents)
+            foreach (ITokenizerEnumerable document in documents)
             {
                 mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
@@ -911,8 +905,7 @@ namespace Latino.TextMining
             Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Dictionary<int, int> tfVec = new Dictionary<int, int>();
             ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-            mTokenizer.Text = document;
-            foreach (string token in OnGetTokens == null ? mTokenizer : OnGetTokens(mTokenizer))
+            foreach (string token in mTokenizer.GetTokens(document))
             {
                 string word = token.Trim().ToLower();
                 if (mStopWords == null || !mStopWords.Contains(word))
@@ -982,7 +975,7 @@ namespace Latino.TextMining
         }
 
         // TODO: merge with ProcessDocument
-        public SparseVector<double> ProcessDocumentTokenized(ITokenizer document, IStemmer stemmer)
+        public SparseVector<double> ProcessDocumentTokenized(ITokenizerEnumerable document, IStemmer stemmer)
         {
             Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Dictionary<int, int> tfVec = new Dictionary<int, int>();
