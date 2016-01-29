@@ -49,7 +49,7 @@ If you plan to use any of the SVM models (SvmBinaryClassifier, SvmMulticlassClas
 
 #### Get It
 
-Clone [SvmLightLib](https://github.com/LatinoLib/svmlightlib) from the GIT repository into, for example, C:\Work\SvmLightLib:
+Clone [SvmLightLib](https://github.com/LatinoLib/SvmLightLib) from the GIT repository into, for example, C:\Work\SvmLightLib:
 
 ```
 C:\Work>git clone git@github.com:LatinoLib/svmlightlib.git SvmLightLib
@@ -69,7 +69,7 @@ C:\Work>git clone git@github.com:LatinoLib/svmlightlib.git SvmLightLib
 
 #### Get It
 
-Clone [LSqrLib](https://github.com/LatinoLib/lsqrlib) from the GIT repository into, for example, C:\Work\LSqrLib:
+Clone [LSqrLib](https://github.com/LatinoLib/LSqrLib) from the GIT repository into, for example, C:\Work\LSqrLib:
 
 ```
 C:\Work>git clone git@github.com:LatinoLib/lsqrlib.git LSqrLib
