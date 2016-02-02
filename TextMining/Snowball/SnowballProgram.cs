@@ -370,6 +370,9 @@ namespace SF.Snowball
                     cursor = c + w.sSize;
                     return w.result;
                 }
+                i = w.substringI;
+                if (i < 0)
+                    return 0;
             }
         }
 		
@@ -524,6 +527,9 @@ namespace SF.Snowball
                     cursor = c - w.sSize;
                     return w.result;
                 }
+                i = w.substringI;
+                if (i < 0)
+                    return 0;
             }
         }
 
