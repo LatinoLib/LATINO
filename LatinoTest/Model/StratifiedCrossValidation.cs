@@ -31,7 +31,7 @@ namespace LatinoTest.Model
             ld.GroupLabels();
             ld.SplitForStratifiedCrossValidation(2, 1, out trainSet, out testSet);
 
-            ld = NewData(new[,] { { 1, 10 }, { 2, 1 }, { 1, 1 } });
+            ld = NewData(new[,] { { 1, 10 }, { 2, 1 }, { 1, 1 }, { 2, 10 } });
             ld.GroupLabels();
             ld.SplitForStratifiedCrossValidation(2, 1, out trainSet, out testSet);
         }

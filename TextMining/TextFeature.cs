@@ -91,13 +91,13 @@ namespace Latino.TextMining
 
         public TextFeatureProcessor With(TextFeature feature)
         {
-            mFeatures.Add(Preconditions.CheckNotNullArgument(feature));
+            mFeatures.Add(Preconditions.CheckNotNull(feature));
             return this;
         }
 
         public TextFeatureProcessor With(IEnumerable<TextFeature> features)
         {
-            mFeatures.AddRange(Preconditions.CheckNotNullArgument(features));
+            mFeatures.AddRange(Preconditions.CheckNotNull(features));
             return this;
         }
 
@@ -148,7 +148,7 @@ namespace Latino.TextMining
 
         protected TextFeature(string markToken)
         {
-            mMarkToken = Preconditions.CheckNotNullArgument(markToken);
+            mMarkToken = Preconditions.CheckNotNull(markToken);
             Operation = TextFeatureOperation.Replace;
             IsEncloseMarkTokenWithSpace = false;
         }
@@ -224,7 +224,7 @@ namespace Latino.TextMining
         protected TextFeatureGroup(TextFeature[] features) : base("")
         {
             Operation = TextFeatureOperation.Custom;
-            Features = Preconditions.CheckNotNullArgument(features);
+            Features = Preconditions.CheckNotNull(features);
         }
 
         public TextFeatureGroup(BinarySerializer reader) : base(reader)

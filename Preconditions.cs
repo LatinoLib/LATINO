@@ -16,13 +16,13 @@ namespace Latino
 {
     public static class Preconditions
     {
-        public static T CheckNotNullArgument<T>(T argument) where T : class 
+        public static T CheckNotNull<T>(T argument) where T : class 
         {
             if (argument == null) { throw new ArgumentNullException(); }
             return argument;
         }
 
-        public static T CheckNotNullArgument<T>(T argument, string paramName) where T : class 
+        public static T CheckNotNull<T>(T argument, string paramName) where T : class 
         {
             if (argument == null) { throw new ArgumentNullException(paramName); }
             return argument;

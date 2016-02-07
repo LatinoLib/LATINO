@@ -735,7 +735,7 @@ namespace Latino
 
         public static Dictionary<string, object> GetPropertyValues(object o, params string[] exclude)
         {
-            Preconditions.CheckNotNullArgument(o);
+            Preconditions.CheckNotNull(o);
 
             return o.GetType().GetProperties()
                 .Where(p => p.GetGetMethod() != null && (exclude == null || !exclude.Contains(p.Name)))

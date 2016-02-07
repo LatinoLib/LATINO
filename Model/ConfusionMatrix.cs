@@ -340,9 +340,9 @@ namespace Latino.Model.Eval
             }
             else
             {
-                FoldData foldData = new FoldData();
                 if (!mData.TryAdd(expName, algoData = new ConcurrentDictionary<string, FoldData>())) { algoData = mData[expName]; }
-                algoData.TryAdd(algoName, foldData);
+                FoldData foldData = new FoldData();
+                if (!algoData.TryAdd(algoName, foldData)) { foldData = algoData[algoName]; }
                 PerfMatrix<LblT> mtx = new PerfMatrix<LblT>(mLblEqCmp);
                 foldData.Put(foldNum, mtx);
                 return mtx;
@@ -552,7 +552,7 @@ namespace Latino.Model.Eval
 
         private double GetAvg(string expName, string algoName, Func<PerfMatrix<LblT>, double> scoreFunc, out double stdev) // TODO: test if stdev is correct
         {
-            Preconditions.CheckNotNullArgument(scoreFunc);
+            Preconditions.CheckNotNull(scoreFunc);
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
             Utils.ThrowException(algoName == null ? new ArgumentNullException("algoName") : null);
             stdev = double.NaN;
@@ -576,10 +576,22 @@ namespace Latino.Model.Eval
             return double.NaN;
         }
 
-        public double GetAvg(string expName, string algoName, PerfMetric metric, LblT lbl)
+        public double GetAvg(string expName, string algoName, PerfMetric metric)
         {
             double stdev;
-            return GetAvg(expName, algoName, metric, out stdev); // throws ArgumentNullException, InvalidOperationException
+            return GetAvg(expName, algoName, metric, out stdev); 
+        }
+
+        public double GetAvg(string expName, string algoName, ClassPerfMetric metric, LblT label)
+        {
+            double stdev;
+            return GetAvg(expName, algoName, metric, label, out stdev); 
+        }
+
+        public double GetAvg(string expName, string algoName, OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels)
+        {
+            double stdev;
+            return GetAvg(expName, algoName, metric, orderedLabels, out stdev); 
         }
 
         public string ToString(int foldNum, string expName, PerfMetric metric, LblT lbl, string fmt) // set expName to null to get stats for all experiments
@@ -1080,7 +1092,7 @@ namespace Latino.Model.Eval
         // General metrices
         public string ToString(IEnumerable<PerfMetric> perfMetrics) // empty for all metrics
         {
-            PerfMetric[] metrics = perfMetrics as PerfMetric[] ?? Preconditions.CheckNotNullArgument(perfMetrics.ToArray());
+            PerfMetric[] metrics = perfMetrics as PerfMetric[] ?? Preconditions.CheckNotNull(perfMetrics.ToArray());
             if (!metrics.Any())
             {
                 metrics = Enum.GetValues(typeof (PerfMetric)).Cast<PerfMetric>().ToArray();
@@ -1100,7 +1112,7 @@ namespace Latino.Model.Eval
         // Class-specific metrics
         public string ToString(IEnumerable<ClassPerfMetric> classMetrics) // metrices = empty for all metrics
         {
-            ClassPerfMetric[] metrics = classMetrics as ClassPerfMetric[] ?? Preconditions.CheckNotNullArgument(classMetrics).ToArray();
+            ClassPerfMetric[] metrics = classMetrics as ClassPerfMetric[] ?? Preconditions.CheckNotNull(classMetrics).ToArray();
             if (!metrics.Any())
             {
                 metrics = Enum.GetValues(typeof(ClassPerfMetric)).Cast<ClassPerfMetric>().ToArray();
@@ -1132,7 +1144,7 @@ namespace Latino.Model.Eval
         // Ordinal regression metrics
         public string ToString(IEnumerable<LblT> orderedLabels, IEnumerable<OrdinalPerfMetric> ordinalMetrics)
         {
-            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNullArgument(orderedLabels).ToArray();
+            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNull(orderedLabels).ToArray();
             OrdinalPerfMetric[] metrics = ordinalMetrics as OrdinalPerfMetric[] ?? (ordinalMetrics == null ? null : ordinalMetrics.ToArray());
             if (metrics == null || !metrics.Any())
             {
@@ -1154,7 +1166,7 @@ namespace Latino.Model.Eval
 
         public double GetError(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
         {
-            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNullArgument(orderedLabels).ToArray();
+            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNull(orderedLabels).ToArray();
             Preconditions.CheckArgument(!mLabels.Except(labels).Any());
             Preconditions.CheckArgument(!labels.Except(mLabels).Any());
 
@@ -1185,10 +1197,10 @@ namespace Latino.Model.Eval
 
         // implementation of http://vassarstats.net/kappaexp.html and http://vassarstats.net/kappa.html
         // correction from wikipedia Krippendorff's Alpha
-
         public double GetKrippendorffsAlpha(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
         {
-            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNullArgument(orderedLabels).ToArray();
+            Preconditions.CheckNotNull(weights);
+            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNull(orderedLabels).ToArray();
             Preconditions.CheckArgument(!mLabels.Except(labels).Any());
             Preconditions.CheckArgument(!labels.Except(mLabels).Any());
 
@@ -1210,6 +1222,7 @@ namespace Latino.Model.Eval
             }
 
             // the weights matrix
+            weights = weights.ToDictionary(kv => kv.Key, kv => kv.Value); // modify the copy
             foreach (LblT actual in labels)
             {
                 foreach (LblT predicted in labels)
@@ -1227,8 +1240,7 @@ namespace Latino.Model.Eval
                     s2 += weights[actual][predicted] * expected[actual][predicted];
                 }
             }
-            double alpha = 1 - (1 - s1) / (1 - s2);            
-            return alpha;
+            return 1 - (1 - s1) / (1 - s2);            
         }
 
         public double GetF1AvgExtremeClasses(IEnumerable<LblT> orderedLabels) 
@@ -1289,7 +1301,7 @@ namespace Latino.Model.Eval
 
         public static Dictionary<LblT, Dictionary<LblT, double>> GetErrorXWeights(IEnumerable<LblT> orderedLabels, int tolerance = 0)
         {
-            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
+            List<LblT> labels = Preconditions.CheckNotNull(orderedLabels).ToList();
             Dictionary<LblT, Dictionary<LblT, double>> weights = GetZeroMatrix(new Set<LblT>(labels));
             for (int i = 0; i < labels.Count; i++)
             {
@@ -1303,7 +1315,7 @@ namespace Latino.Model.Eval
         
         public static Dictionary<LblT, Dictionary<LblT, double>> GetLinearWeights(IEnumerable<LblT> orderedLabels, bool normalize = false)
         {
-            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
+            List<LblT> labels = Preconditions.CheckNotNull(orderedLabels).ToList();
             Dictionary<LblT, Dictionary<LblT, double>> weights = GetZeroMatrix(new Set<LblT>(labels));
             double step = 1;
             if (normalize)
@@ -1322,7 +1334,7 @@ namespace Latino.Model.Eval
 
         public static Dictionary<LblT, Dictionary<LblT, double>> GetSquareWeights(IEnumerable<LblT> orderedLabels, bool normalize = false)
         {
-            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNullArgument(orderedLabels.ToArray());
+            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNull(orderedLabels.ToArray());
 
             Dictionary<LblT, Dictionary<LblT, double>> weights = GetLinearWeights(labels, normalize);
             foreach (LblT lblAct in labels)
@@ -1340,7 +1352,7 @@ namespace Latino.Model.Eval
         /*
         public string ToString(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> matrix)
         {          
-            List<LblT> labels = Preconditions.CheckNotNullArgument(orderedLabels).ToList();
+            List<LblT> labels = Preconditions.CheckNotNull(orderedLabels).ToList();
             StringBuilder str = new StringBuilder();
 
             int len = Math.Max(labels.Max(l => l.ToString().Length), 11);

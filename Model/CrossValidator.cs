@@ -171,7 +171,7 @@ namespace Latino.Model.Eval
 
         public MappingCrossValidator(IEnumerable<IModel<LblT, ModelExT>> models)
         {
-            mModels = Preconditions.CheckNotNullArgument(models).ToList();
+            mModels = Preconditions.CheckNotNull(models).ToList();
         }
 
         public override List<IModel<LblT, ModelExT>> Models { get { return mModels; } }
@@ -270,7 +270,7 @@ namespace Latino.Model.Eval
         {
             Preconditions.CheckArgumentRange(NumFolds >= 2 && NumFolds < Dataset.Count);
             Preconditions.CheckArgument(Models.Any());
-            Preconditions.CheckNotNullArgument(Dataset);
+            Preconditions.CheckNotNull(Dataset);
 
             DoBegin();
 
@@ -406,7 +406,7 @@ namespace Latino.Model.Eval
         
         public virtual string GetModelName(IModel<LblT, ModelExT> model)
         {
-            Preconditions.CheckNotNullArgument(model);
+            Preconditions.CheckNotNull(model);
             return ModelNameFunc == null ? model.GetType().Name : ModelNameFunc(this, model);
         }
 

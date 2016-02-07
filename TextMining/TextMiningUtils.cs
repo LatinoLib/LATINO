@@ -328,7 +328,7 @@ namespace Latino.TextMining
 
         public static string NormalizeDiacriticalCharacters(string input)
         {
-            string normalized = Preconditions.CheckNotNullArgument(input).Normalize(NormalizationForm.FormD);
+            string normalized = Preconditions.CheckNotNull(input).Normalize(NormalizationForm.FormD);
             return new string(normalized
                 .Where(c =>
                 {
