@@ -213,8 +213,6 @@ namespace Latino.Model.Eval
         {
 
             NumFolds = 10;
-            IsStratified = true;
-            IsShuffleStratified = false;
             ExpName = "";
         }
 
@@ -222,7 +220,8 @@ namespace Latino.Model.Eval
 
         public int NumFolds { get; set; }
         public bool IsStratified { get; set; }
-        public bool IsShuffleStratified { get; set; }
+        public bool IsShuffle { get; set; }
+        public Random ShuffleRandom { get; set; }
         public string ExpName { get; set; }
 
         public PerfData<LblT> PerfData { get; set; }
@@ -265,7 +264,6 @@ namespace Latino.Model.Eval
         public AfterValidationHandler OnAfterValidation { get; set; }
         public Func<AbstractMappingCrossValidator<LblT, InputExT, ModelExT>, IModel<LblT, ModelExT>, string> ModelNameFunc { get; set; }
 
-
         protected void DoRun()
         {
             Preconditions.CheckArgumentRange(NumFolds >= 2 && NumFolds < Dataset.Count);
@@ -274,7 +272,14 @@ namespace Latino.Model.Eval
 
             DoBegin();
 
-            if (IsStratified) { Dataset.GroupLabels(IsShuffleStratified); } else { Dataset.Shuffle(new Random(1)); }
+            if (IsStratified)
+            {
+                Dataset.GroupLabels(IsShuffle, ShuffleRandom);
+            } 
+            else if (IsShuffle)
+            {
+                Dataset.Shuffle(ShuffleRandom);
+            }
 
             if (PerfData == null)
             {

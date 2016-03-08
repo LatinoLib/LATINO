@@ -88,24 +88,22 @@ namespace Latino.Model
             mItems.Clear();
         }
 
-        public void Shuffle()
+        public void Shuffle(Random random = null)
         {
-            mItems.Shuffle();
+            if (random == null) { mItems.Shuffle(); } else { mItems.Shuffle(random); }
         }
 
-        public void Shuffle(Random rnd)
-        {
-            mItems.Shuffle(rnd); // throws ArgumentNullException
-        }
-
-        public void GroupLabels(bool shuffle = true)
+        public void GroupLabels(bool shuffle, Random random = null)
         {
             mItems = new ArrayList<LabeledExample<LblT, ExT>>(mItems
                 .GroupBy(le => le.Label)
                 .SelectMany(g =>
                 {
                     var list = new ArrayList<LabeledExample<LblT, ExT>>(g);
-                    if (shuffle) { list.Shuffle(); }
+                    if (shuffle)
+                    {
+                        if (random == null) { list.Shuffle(); } else { list.Shuffle(random); }
+                    }
                     return list;
                 }));
         }
