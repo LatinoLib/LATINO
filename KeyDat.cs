@@ -13,6 +13,7 @@
  ***************************************************************************/
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Latino
 {
@@ -106,11 +107,13 @@ namespace Latino
 
         // *** IPair<KeyT, DatT> interface implementation ***
 
+        [IgnoreDataMember]
         public KeyT First
         {
             get { return mKey; }
         }
 
+        [IgnoreDataMember]
         public DatT Second
         {
             get { return mDat; }
