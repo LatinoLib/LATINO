@@ -895,7 +895,7 @@ namespace Latino.TextMining
             }
         }
 
-        // if there is more then 3 consecutive identical characters, truncate to threee
+        // if there is more then 3 consecutive identical characters, truncate to three
         public class RepetitionFeature : TextFeature
         {
             public RepetitionFeature(string markToken = "__EXAGGERATED__") : base(markToken)
@@ -1019,8 +1019,7 @@ namespace Latino.TextMining
             }
         }
 
-
-        public class SowalabsTweetNormalizationFeature : TextFeature
+        public class FinanceTweetNormalizationFeature : TextFeature
         {
             private static readonly Regex mUrlRegex = new Regex(@"http\S*", RegexOptions.IgnoreCase);
             private static readonly Regex mStockRefRegex = new Regex(@"\$\w+", RegexOptions.IgnoreCase);
@@ -1028,12 +1027,12 @@ namespace Latino.TextMining
             private static Regex hashtagRegex = new Regex(@"#\w+", RegexOptions.IgnoreCase);
             private static readonly Regex mLetterRepetitionRegex = new Regex(@"(.)\1{2,}", RegexOptions.IgnoreCase);
 
-            public SowalabsTweetNormalizationFeature() : base("")
+            public FinanceTweetNormalizationFeature() : base("")
             {
                 Operation = TextFeatureOperation.Custom;
             }
 
-            public SowalabsTweetNormalizationFeature(BinarySerializer reader) : base(reader)
+            public FinanceTweetNormalizationFeature(BinarySerializer reader) : base(reader)
             {
             }
 
