@@ -61,25 +61,35 @@ namespace Latino.Model.Eval
         AccuracyTolerance1
     }
 
-    public static class StdErrTables
+    public static class ZScoreTable
     {
-        public static double GetProb_0ToZ(double zScore)
+        public static double GetProb(double zScore)
+        {
+            return GetProbFrom0ToZ(zScore) * 2;
+        }
+
+        public static double GetProbFrom0ToZ(double zScore)
         {
             Preconditions.CheckArgument(zScore >= 0);
             int idx = Math.Abs(mZScoreZeroProbs.BinarySearch(new Tuple<double, double>(zScore, double.NaN), TupleItem1Comparer.Instance));
-            return idx < mZScoreZeroProbs.Count ? mZScoreZeroProbs[idx].Item2 : 0.49999;
+            return mZScoreZeroProbs[Math.Min(idx, mZScoreZeroProbs.Count - 1)].Item2;
         }
 
-        public static double GetZScore(double prob_0ToZ)
+        public static double GetZScore(double probPlusMinusZ)
         {
-            Preconditions.CheckArgument(prob_0ToZ >= 0);
+            return GetZScoreByProbFrom0ToZ(probPlusMinusZ / 2);
+        }
+
+        public static double GetZScoreByProbFrom0ToZ(double probFrom0ToZ)
+        {
+            Preconditions.CheckArgument(probFrom0ToZ >= 0);
             if (mZeroProbsZScores == null)
             {
                 mZeroProbsZScores = mZScoreZeroProbs.Select(t => new Tuple<double, double>(t.Item2, t.Item1)).OrderBy(t => t.Item1).ToList();
             }
 
-            int idx = Math.Abs(mZeroProbsZScores.BinarySearch(new Tuple<double, double>(1.96, double.NaN), TupleItem1Comparer.Instance));
-            return mZeroProbsZScores[idx].Item2;
+            int idx = Math.Abs(mZeroProbsZScores.BinarySearch(new Tuple<double, double>(probFrom0ToZ, double.NaN), TupleItem1Comparer.Instance));
+            return mZeroProbsZScores[Math.Min(idx, mZeroProbsZScores.Count - 1)].Item2;
         }
 
         // probability that a statistic is between 0 (the mean) and Z
@@ -522,8 +532,7 @@ namespace Latino.Model.Eval
 
         public double GetAvgStdErr(string expName, string algoName, PerfMetric metric, out double stderr, double confidenceLevel = 0.95)
         {
-            double zval;
-            Preconditions.CheckArgument(PerfMatrix<LblT>.StdErrProbZValues.TryGetValue(confidenceLevel, out zval));
+            double zval = ZScoreTable.GetZScore(confidenceLevel);
             double stddev;
             double avg = GetAvg(expName, algoName, metric, out stddev);
             stderr = zval * stddev / Math.Sqrt(GetFoldCount(expName, algoName));
@@ -532,8 +541,7 @@ namespace Latino.Model.Eval
 
         public double GetAvgStdErr(string expName, string algoName, ClassPerfMetric metric, LblT lbl, out double stderr, double confidenceLevel = 0.95)
         {
-            double zval;
-            Preconditions.CheckArgument(PerfMatrix<LblT>.StdErrProbZValues.TryGetValue(confidenceLevel, out zval));
+            double zval = ZScoreTable.GetZScore(confidenceLevel);
             double stddev;
             double avg = GetAvg(expName, algoName, metric, lbl, out stddev);
             stderr = zval * stddev / Math.Sqrt(GetFoldCount(expName, algoName));
@@ -542,8 +550,7 @@ namespace Latino.Model.Eval
 
         public double GetAvgStdErr(string expName, string algoName, OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels, out double stderr, double confidenceLevel = 0.95)
         {
-            double zval;
-            Preconditions.CheckArgument(PerfMatrix<LblT>.StdErrProbZValues.TryGetValue(confidenceLevel, out zval));
+            double zval = ZScoreTable.GetZScore(confidenceLevel);
             double stddev;
             double avg = GetAvg(expName, algoName, metric, orderedLabels, out stddev);
             stderr = zval * stddev / Math.Sqrt(GetFoldCount(expName, algoName));
@@ -699,20 +706,12 @@ namespace Latino.Model.Eval
        '-----------------------------------------------------------------------
     */
 
-
-
-
     public class PerfMatrix<LblT>
     {
-        public static Dictionary<double, double> StdErrProbZValues = new Dictionary<double, double>
-            {
-                { 0.9, 1.64 }, { 0.95, 1.96 }, { 0.99, 2.58 }, 
-            };
-
-        private ConcurrentDictionary<LblT, ConcurrentDictionary<LblT, int>> mMtx
+        private readonly ConcurrentDictionary<LblT, ConcurrentDictionary<LblT, int>> mMtx
             = new ConcurrentDictionary<LblT, ConcurrentDictionary<LblT, int>>(); // TODO: set lbl equality comparer
 
-        private Set<LblT> mLabels
+        private readonly Set<LblT> mLabels
             = new Set<LblT>(); // TODO: set lbl equality comparer
 
         private IEqualityComparer<LblT> mLblEqCmp;
@@ -1189,8 +1188,7 @@ namespace Latino.Model.Eval
 
         public double GetAccStdError(double confidenceLevel = 0.95)
         {
-            double z;
-            Preconditions.CheckArgument(StdErrProbZValues.TryGetValue(confidenceLevel, out z));
+            double z = ZScoreTable.GetZScore(confidenceLevel);
             double acc = GetAccuracy();
             return z * Math.Sqrt(acc * (1 - acc) / GetSumAll());
         }
