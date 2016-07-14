@@ -28,11 +28,11 @@ namespace LatinoTest.Model
             ld.SplitForStratifiedCrossValidation(2, 1, out trainSet, out testSet);
 
             ld = NewData(new[,] { { 1, 10 }, { 2, 1 }, { 1, 1 } });
-            ld.GroupLabels();
+            ld.GroupLabels(true);
             ld.SplitForStratifiedCrossValidation(2, 1, out trainSet, out testSet);
 
             ld = NewData(new[,] { { 1, 10 }, { 2, 1 }, { 1, 1 }, { 2, 10 } });
-            ld.GroupLabels();
+            ld.GroupLabels(true);
             ld.SplitForStratifiedCrossValidation(2, 1, out trainSet, out testSet);
         }
 
@@ -179,7 +179,7 @@ namespace LatinoTest.Model
             }
             if (sortShuffled)
             {
-                result.GroupLabels();
+                result.GroupLabels(true);
             }
             return result;
         }
