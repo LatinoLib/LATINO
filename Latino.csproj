@@ -108,7 +108,6 @@
     <Compile Include="TextMining\SimpleTokenizer.cs" />
     <Compile Include="TextMining\SocialMediaProcessing.cs" />
     <Compile Include="TextMining\TextFeature.cs" />
-    <Compile Include="TextMining\Snowball\MyAmong.cs" />
     <Compile Include="WebMining\BoilerplateRemover.cs" />
     <Compile Include="TextMining\CustomStemmer.cs" />
     <Compile Include="WebMining\HtmlAgilityPack\EncodingFoundException.cs" />
@@ -235,7 +234,7 @@
     <Compile Include="TextMining\Snowball\DanishStemmer.cs" />
     <Compile Include="TextMining\Snowball\DutchStemmer.cs" />
     <Compile Include="TextMining\Snowball\EnglishStemmer.cs" />
-    <Compile Include="TextMining\Snowball\FinnishStemmer.cs" />
+    <None Include="TextMining\Snowball\FinnishStemmer.cs" />
     <Compile Include="TextMining\Snowball\FrenchStemmer.cs" />
     <Compile Include="TextMining\Snowball\German2Stemmer.cs" />
     <Compile Include="TextMining\Snowball\GermanStemmer.cs" />
