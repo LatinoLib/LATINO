@@ -1125,6 +1125,18 @@ namespace Latino.TextMining
         public virtual void Save(BinarySerializer writer)
         {
             // the following statements throw serialization-related exceptions
+#if OLD_BOW_FORMAT
+            SaveVocabulary(writer); // throws ArgumentNullException
+            writer.WriteObject(mTokenizer);
+            writer.WriteObject(new Set<string>.ReadOnly(new Set<string>((StopWords)mStopWords)));
+            writer.WriteObject(mStemmer);
+            writer.WriteInt(mMaxNGramLen);
+            writer.WriteInt(mMinWordFreq);
+            writer.WriteInt((int)mWordWeightType);
+            writer.WriteDouble(mCutLowWeightsPerc);
+            writer.WriteBool(mNormalizeVectors);
+            writer.WriteBool(mKeepWordForms);
+#else
             SaveVocabulary(writer); // throws ArgumentNullException
             writer.WriteObject(mTokenizer);
             writer.WriteObject(mStopWords);
@@ -1135,11 +1147,24 @@ namespace Latino.TextMining
             writer.WriteDouble(mCutLowWeightsPerc);
             writer.WriteBool(mNormalizeVectors);
             writer.WriteBool(mKeepWordForms);
+#endif
         }
 
         public void Load(BinarySerializer reader)
         {
             // the following statements throw serialization-related exceptions
+#if OLD_BOW_FORMAT
+            LoadVocabulary(reader); // throws ArgumentNullException
+            mTokenizer = reader.ReadObject<ITokenizer>();
+            mStopWords = new StopWords(reader.ReadObject<Set<string>.ReadOnly>());
+            mStemmer = reader.ReadObject<IStemmer>();
+            mMaxNGramLen = reader.ReadInt();
+            mMinWordFreq = reader.ReadInt();
+            mWordWeightType = (WordWeightType)reader.ReadInt();
+            mCutLowWeightsPerc = reader.ReadDouble();
+            mNormalizeVectors = reader.ReadBool();
+            mKeepWordForms = reader.ReadBool();
+#else
             LoadVocabulary(reader); // throws ArgumentNullException
             mTokenizer = reader.ReadObject<ITokenizer>();
             mStopWords = reader.ReadObject<IStopWords>();
@@ -1150,6 +1175,7 @@ namespace Latino.TextMining
             mCutLowWeightsPerc = reader.ReadDouble();
             mNormalizeVectors = reader.ReadBool();
             mKeepWordForms = reader.ReadBool();
+#endif
         }
     }
 }
