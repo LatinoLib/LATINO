@@ -22,7 +22,13 @@ namespace Latino.Model
        |
        '-----------------------------------------------------------------------
     */
-    public class LabeledExample<LblT, ExT> : ISerializable
+    public interface ILabeledExample<out LblT, out ExT>
+    {
+        LblT Label { get; }
+        ExT Example { get; }
+    }
+
+    public class LabeledExample<LblT, ExT> : ILabeledExample<LblT, ExT>, ISerializable
     {
         private LblT mLbl;
         private ExT mEx;

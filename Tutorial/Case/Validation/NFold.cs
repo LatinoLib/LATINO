@@ -36,7 +36,7 @@ namespace Tutorial.Case.Validation
             // cross validation
             if (stratified)
             {
-                labeledData.GroupLabels();
+                labeledData.GroupLabels(true);
             } else
             {
                 labeledData.Shuffle(new Random(1));
