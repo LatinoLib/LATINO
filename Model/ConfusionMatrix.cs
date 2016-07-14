@@ -18,6 +18,7 @@ namespace Latino.Model.Eval
         Accuracy,
         Error,
          // special
+        Kappa,
         KAlphaNominal,
 
         // micro-averaged
@@ -54,7 +55,9 @@ namespace Latino.Model.Eval
         MeanSquaredError,
         ErrorTolerance1,
         MeanSquaredErrorNormalized1,
-        MeanAbsoluteErrorNormalized1,        
+        MeanAbsoluteErrorNormalized1,
+        WeightedKappaLinear,
+        WeightedKappaSquared,
         KAlphaLinear,
         KAlphaInterval,
         F1AvgExtremeClasses,
@@ -601,13 +604,13 @@ namespace Latino.Model.Eval
         {
             Utils.ThrowException(foldNum < 1 ? new ArgumentOutOfRangeException("foldNum") : null);
             Utils.ThrowException(fmt == null ? new ArgumentNullException("fmt") : null);
-            ArrayList<string> expList = new ArrayList<string>(mData.Keys);
+            var expList = new ArrayList<string>(mData.Keys);
             expList.Sort();
-            Set<string> tmp = new Set<string>();
+            var tmp = new Set<string>();
             foreach (ConcurrentDictionary<string, FoldData> item in mData.Values) { tmp.AddRange(item.Keys); }
-            ArrayList<string> algoList = new ArrayList<string>(tmp);
+            var algoList = new ArrayList<string>(tmp);
             algoList.Sort();
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             // header
             if (expName == null)
             {
@@ -992,6 +995,8 @@ namespace Latino.Model.Eval
                     return GetMacroF1();
                 case PerfMetric.Error:
                     return GetError();
+                case PerfMetric.Kappa:
+                    return GetKappa();
                 case PerfMetric.KAlphaNominal:
                     return GetKAlpha();
                 case PerfMetric.AccStdErrorConf90:
@@ -1031,8 +1036,8 @@ namespace Latino.Model.Eval
 
         public override string ToString()
         {
-            StringBuilder str = new StringBuilder();
-            ArrayList<LblT> labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
+            var str = new StringBuilder();
+            var labels = new ArrayList<LblT>(mLabels.OrderBy(x => x.ToString()));
             var all = GetSumAll();
             int len = Math.Max(labels.DefaultIfEmpty(default(LblT)).Max(l => l.ToString().Length), 
                 Math.Max(all.ToString(CultureInfo.InvariantCulture).Length, 11)) + 2;
@@ -1181,6 +1186,10 @@ namespace Latino.Model.Eval
             return GetKrippendorffsAlpha(mLabels, GetErrorXWeights(mLabels));
         }
 
+        public double GetKappa()
+        {
+            return GetWeightedKappa(mLabels, GetErrorXWeights(mLabels));
+        }
 
         public double GetAccStdError(double confidenceLevel = 0.95)
         {
@@ -1190,10 +1199,8 @@ namespace Latino.Model.Eval
         }
 
         // implementation of http://vassarstats.net/kappaexp.html and http://vassarstats.net/kappa.html
-        // correction from wikipedia Krippendorff's Alpha
-        public double GetKrippendorffsAlpha(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
+        public double GetWeightedKappa(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
         {
-            Preconditions.CheckNotNull(weights);
             LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNull(orderedLabels).ToArray();
             Preconditions.CheckArgument(!mLabels.Except(labels).Any());
             Preconditions.CheckArgument(!labels.Except(mLabels).Any());
@@ -1211,12 +1218,11 @@ namespace Latino.Model.Eval
             var expected = new Dictionary<LblT, Dictionary<LblT, double>>();
             foreach (LblT actual in labels)
             {
-                var row = labels.ToDictionary(predicted => predicted, predicted => GetActual(actual) / s * GetPredicted(predicted) / (s - 1)); // a[i] * p[j] / s / (s - 1)
+                var row = labels.ToDictionary(predicted => predicted, predicted => GetActual(actual) / s * GetPredicted(predicted) / s); // a[i] * p[j] / s / s
                 expected.Add(actual, row);
             }
 
-            // the weights matrix
-            weights = weights.ToDictionary(kv => kv.Key, kv => kv.Value); // modify the copy
+            // the weights matrix            
             foreach (LblT actual in labels)
             {
                 foreach (LblT predicted in labels)
@@ -1234,7 +1240,29 @@ namespace Latino.Model.Eval
                     s2 += weights[actual][predicted] * expected[actual][predicted];
                 }
             }
-            return 1 - (1 - s1) / (1 - s2);            
+            double kappa = 1 - (1 - s1) / (1 - s2);
+            return kappa;
+        }
+
+        // correction from wikipedia Krippendorff's Alpha
+        public double GetKrippendorffsAlpha(IEnumerable<LblT> orderedLabels, Dictionary<LblT, Dictionary<LblT, double>> weights)
+        {
+            Preconditions.CheckNotNull(weights);
+            LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNull(orderedLabels).ToArray();
+            Preconditions.CheckArgument(!mLabels.Except(labels).Any());
+            Preconditions.CheckArgument(!labels.Except(mLabels).Any());
+
+            double denom = 0, numer = 0;
+            for (int i = 0; i < labels.Length; i++)
+            {
+                for (int j = i + 1; j < labels.Length; j++)
+                {
+                    numer += Get(labels[i], labels[j]) * weights[labels[i]][labels[j]];
+                    denom += SumRow(labels[i]) * SumCol(labels[j]) * weights[labels[i]][labels[j]];
+                }
+            }
+
+            return 1 - (GetSumAll() - 1) * numer / denom;
         }
 
         public double GetF1AvgExtremeClasses(IEnumerable<LblT> orderedLabels) 
@@ -1275,6 +1303,10 @@ namespace Latino.Model.Eval
                     return GetError(labels, GetLinearWeights(labels, true));
                 case OrdinalPerfMetric.MeanSquaredErrorNormalized1:
                     return GetError(labels, GetSquareWeights(labels, true));
+                case OrdinalPerfMetric.WeightedKappaLinear:
+                    return GetWeightedKappa(labels, GetLinearWeights(labels, true));
+                case OrdinalPerfMetric.WeightedKappaSquared:
+                    return GetWeightedKappa(labels, GetSquareWeights(labels, true));
                 case OrdinalPerfMetric.KAlphaLinear:
                     return GetKrippendorffsAlpha(labels, GetLinearWeights(labels, true));
                 case OrdinalPerfMetric.KAlphaInterval:
@@ -1373,6 +1405,79 @@ namespace Latino.Model.Eval
         }
         */
 
+        public static PerfMatrix<LblT> GetCoincidenceMatrix<T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
+            AgreementKind kind = AgreementKind.Inter, U observerId = default(U), bool resolveMultiple = false)
+        {
+            int count;
+            return GetCoincidenceMatrix(examples, out count, kind, observerId, resolveMultiple);
+        }
+
+        public static PerfMatrix<LblT> GetCoincidenceMatrix<T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
+            out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U), bool resolveMultiple = false)
+        {
+            ILabeledExample<LblT, IAgreementExample<T, U>>[][] units = Preconditions.CheckNotNull(examples)
+                .GroupBy(e => e.Example.UnitId()).Where(g => g.Count() > 1).Select(g => g.ToArray()).ToArray();
+
+            switch (kind)
+            {
+                case AgreementKind.Self:
+                    units = units
+                        .Select(es => es.Where(e => e.Example.ObserverId().Equals(observerId)).ToArray())
+                        .Where(es => es.Count() > 1).ToArray();
+                    break;
+                case AgreementKind.InterExcludingObserver:
+                    units = units
+                        .Select(es => es.Where(e => !e.Example.ObserverId().Equals(observerId)).ToArray())
+                        .Where(es => es.Count() > 1).ToArray();
+                    break;
+                case AgreementKind.InterIncludingUnits:
+                    units = units
+                        .Where(es => es.Any(e => e.Example.ObserverId().Equals(observerId))).ToArray();
+                    break;
+                case AgreementKind.InterExcludingUnits:
+                    units = units
+                        .Where(es => es.All(e => !e.Example.ObserverId().Equals(observerId))).ToArray();
+                    break;
+            }
+
+            var mtx = new PerfMatrix<LblT>();
+            unitCount = 0;
+            foreach (ILabeledExample<LblT, IAgreementExample<T, U>>[] unit_ in units)
+            {
+                ILabeledExample<LblT, IAgreementExample<T, U>>[] unit = unit_;
+        
+                // resolve multiple labels by the same user
+                if (kind != AgreementKind.Self && resolveMultiple)
+                {
+                    unit = unit.GroupBy(e => e.Example.ObserverId())
+                        .Select(ug => ug.GroupBy(ue => ue.Label)
+                            .OrderByDescending(ulg => ulg.Count())
+                            .First().First()).ToArray();
+                    if (unit.Length <= 1) { continue; }
+                }
+                
+                for (int i = 0; i < unit.Length; i++)
+                {
+                    for (int j = i + 1; j < unit.Length; j++)
+                    {
+                        mtx.AddCount(unit[i].Label, unit[j].Label, 1.0 / (unit.Length - 1));
+                        mtx.AddCount(unit[j].Label, unit[i].Label, 1.0 / (unit.Length - 1));
+                        unitCount++;
+                    }
+                }
+            }
+            return mtx;
+        }
     }
 
+    public interface IAgreementExample<out T, out U>
+    {
+        T UnitId();
+        U ObserverId();
+    }
+
+    public enum AgreementKind
+    {
+        Inter, Self, InterIncludingUnits, InterExcludingUnits, InterExcludingObserver
+    }
 }
