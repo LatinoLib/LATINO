@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/portuguese/stop.txt
-        public static Set<string>.ReadOnly PortugueseStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords PortugueseStopWords
+            = new StopWords(new string[] {
                 // A Portuguese stop word list. 
                 // The following is a ranked list (commonest to rarest) of stopwords
                 // deriving from a large sample of text.
@@ -253,6 +253,6 @@ namespace Latino.TextMining
                 "terão",
                 "teria",
                 "teríamos",
-                "teriam"}));
+                "teriam"});
     }
 }

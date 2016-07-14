@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/english/stop.txt
-        public static Set<string>.ReadOnly EnglishStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords EnglishStopWords
+            = new StopWords(new string[] {
                 // An English stop word list. 
                 // Many of the forms below are quite rare (e.g. "yourselves") but included for
                 // completeness.
@@ -248,6 +248,6 @@ namespace Latino.TextMining
                 "so",
                 "than",
                 "too",
-                "very"}));
+                "very"});
     }
 }

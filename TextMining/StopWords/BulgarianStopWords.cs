@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://members.unine.ch/jacques.savoy/clef/bulgarianST.txt
-        public static Set<string>.ReadOnly BulgarianStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords BulgarianStopWords
+            = new StopWords(new string[] {
                 "а",
                 "автентичен",
                 "аз",
@@ -281,6 +281,6 @@ namespace Latino.TextMining
                 "щом",
                 "юмрук",
                 "я",
-                "як"}));
+                "як"});
     }
 }

@@ -173,7 +173,7 @@ namespace Latino.TextMining
 
         private ITokenizer mTokenizer
             = new UnicodeTokenizer();
-        private Set<string>.ReadOnly mStopWords
+        private IStopWords mStopWords
             = null;
         private IStemmer mStemmer
             = null;
@@ -230,7 +230,7 @@ namespace Latino.TextMining
             }
         }
 
-        public Set<string>.ReadOnly StopWords
+        public IStopWords StopWords
         {
             get { return mStopWords; }
             set { mStopWords = value; }
@@ -1142,7 +1142,7 @@ namespace Latino.TextMining
             // the following statements throw serialization-related exceptions
             LoadVocabulary(reader); // throws ArgumentNullException
             mTokenizer = reader.ReadObject<ITokenizer>();
-            mStopWords = reader.ReadObject<Set<string>.ReadOnly>();
+            mStopWords = reader.ReadObject<IStopWords>();
             mStemmer = reader.ReadObject<IStemmer>();
             mMaxNGramLen = reader.ReadInt();
             mMinWordFreq = reader.ReadInt();

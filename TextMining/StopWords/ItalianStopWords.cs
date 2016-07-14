@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/italian/stop.txt
-        public static Set<string>.ReadOnly ItalianStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords ItalianStopWords
+            = new StopWords(new string[] {
                 // An Italian stop word list. 
                 "ad",             //  a (to) before vowel
                 "al",             //  a + il
@@ -307,6 +307,6 @@ namespace Latino.TextMining
                 "stesse",
                 "stessimo",
                 "stessero",
-                "stando"}));    
+                "stando"});    
     }
 }

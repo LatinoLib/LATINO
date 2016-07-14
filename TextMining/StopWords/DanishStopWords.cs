@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/danish/stop.txt
-        public static Set<string>.ReadOnly DanishStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords DanishStopWords
+            = new StopWords(new string[] {
                 // A Danish stop word list. 
                 // This is a ranked list (commonest to rarest) of stopwords derived from
                 // a large text sample.
@@ -119,6 +119,6 @@ namespace Latino.TextMining
                 "været",        // be
                 "thi",          // for (conj)
                 "jer",          // you
-                "sådan"}));     // such, like this/like that    
+                "sådan"});     // such, like this/like that    
     }
 }

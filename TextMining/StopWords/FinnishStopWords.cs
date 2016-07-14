@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/finnish/stop.txt
-        public static Set<string>.ReadOnly FinnishStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords FinnishStopWords
+            = new StopWords(new string[] {
                 // forms of BE
                 "olla",
                 "olen",
@@ -279,6 +279,6 @@ namespace Latino.TextMining
                 "kun",    // when
                 "niin",   // so
                 "nyt",    // now
-                "itse"}));// self
+                "itse"}); // self
     }
 }

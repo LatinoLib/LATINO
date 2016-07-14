@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/swedish/stop.txt
-        public static Set<string>.ReadOnly SwedishStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords SwedishStopWords
+            = new StopWords(new string[] {
                 // A Swedish stop word list. 
                 // This is a ranked list (commonest to rarest) of stopwords derived from
                 // a large text sample.
@@ -141,6 +141,6 @@ namespace Latino.TextMining
                 "våra",           // our
                 "ert",            // your
                 "era",            // your
-                "vilkas"}));      // whose    
+                "vilkas"});       // whose    
     }
 }

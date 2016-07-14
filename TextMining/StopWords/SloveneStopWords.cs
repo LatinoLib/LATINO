@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://nl.ijs.si/GNUsl/lex/stop/
-        public static Set<string>.ReadOnly SloveneStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords SloveneStopWords
+            = new StopWords(new string[] {
                 "a",
                 "ali",
                 "ampak",
@@ -1807,6 +1807,6 @@ namespace Latino.TextMining
                 "moglo",
                 "moralo",
                 "smelo",
-                "zmoglo"}));
+                "zmoglo"});
     }
 }

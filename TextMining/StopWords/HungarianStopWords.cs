@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://members.unine.ch/jacques.savoy/clef/hungarianST.txt
-        public static Set<string>.ReadOnly HungarianStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords HungarianStopWords
+            = new StopWords(new string[] {
                 "a",
                 "abba",
                 "abban",
@@ -759,6 +759,6 @@ namespace Latino.TextMining
                 "volt",
                 "voltak",
                 "voltam",
-                "voltunk"}));
+                "voltunk"});
     }
 }

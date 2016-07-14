@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://members.unine.ch/jacques.savoy/clef/roumanianST.txt
-        public static Set<string>.ReadOnly RomanianStopWords 
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords RomanianStopWords 
+            = new StopWords(new string[] {
                 "acea",
                 "aceasta",
                 "această",
@@ -304,6 +304,6 @@ namespace Latino.TextMining
                 "zece",
                 "zero",
                 "zi",
-                "zice"}));
+                "zice"});
     }
 }

@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://www.filewatcher.com/p/punbb-1.2.14.tbz.550363/www/punbb/upload/lang/Serbian/stopwords.txt.html
-        public static Set<string>.ReadOnly SerbianStopWordsLatin
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords SerbianStopWordsLatin
+            = new StopWords(new string[] {
                 "baš",
                 "bez",
                 "biće",
@@ -155,6 +155,6 @@ namespace Latino.TextMining
                 "zbog",
                 "želeo",
                 "želi",
-                "znati"}));
+                "znati"});
     }
 }

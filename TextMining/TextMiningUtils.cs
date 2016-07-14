@@ -76,7 +76,7 @@ namespace Latino.TextMining
             stream.Close();
         }
 
-        public static void GetLanguageTools(Language language, out Set<string>.ReadOnly stopWords, out IStemmer stemmer)
+        public static void GetLanguageTools(Language language, out IStopWords stopWords, out IStemmer stemmer)
         {
             switch (language)
             { 
