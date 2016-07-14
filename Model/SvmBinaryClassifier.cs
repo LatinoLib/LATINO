@@ -13,6 +13,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Reflection;
 
 namespace Latino.Model
 {
@@ -559,7 +561,15 @@ namespace Latino.Model
             if (reader.ReadBool())
             {
                 SvmLightLib.ReadByteCallback rb = delegate() { return reader.ReadByte(); };
-                mModelId = SvmLightLib.LoadModelBinCallback(rb);
+                try
+                {
+                    mModelId = SvmLightLib.LoadModelBinCallback(rb);
+                }
+                catch (BadImageFormatException e)
+                {
+                    string assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    throw new BadImageFormatException(e.Message + "\n assembly path: " + assemblyPath, e);
+                }
                 GC.KeepAlive(rb);
             }
         }

@@ -61,29 +61,39 @@ namespace Latino.Model.Eval
         AccuracyTolerance1
     }
 
-    public static class StdErrTables
+    public static class ZScoreTable
     {
-        public static double GetProb_0ToZ(double zScore)
+        public static double GetProb(double zScore)
+        {
+            return GetProbFrom0ToZ(zScore) * 2;
+        }
+
+        public static double GetProbFrom0ToZ(double zScore)
         {
             Preconditions.CheckArgument(zScore >= 0);
             int idx = Math.Abs(mZScoreZeroProbs.BinarySearch(new Tuple<double, double>(zScore, double.NaN), TupleItem1Comparer.Instance));
-            return idx < mZScoreZeroProbs.Count ? mZScoreZeroProbs[idx].Item2 : 0.49999;
+            return mZScoreZeroProbs[Math.Min(idx, mZScoreZeroProbs.Count - 1)].Item2;
         }
 
-        public static double GetZScore(double prob_0ToZ)
+        public static double GetZScore(double probPlusMinusZ)
         {
-            Preconditions.CheckArgument(prob_0ToZ >= 0);
+            return GetZScoreByProbFrom0ToZ(probPlusMinusZ / 2);
+        }
+
+        public static double GetZScoreByProbFrom0ToZ(double probFrom0ToZ)
+        {
+            Preconditions.CheckArgument(probFrom0ToZ >= 0);
             if (mZeroProbsZScores == null)
             {
                 mZeroProbsZScores = mZScoreZeroProbs.Select(t => new Tuple<double, double>(t.Item2, t.Item1)).OrderBy(t => t.Item1).ToList();
             }
 
-            int idx = Math.Abs(mZeroProbsZScores.BinarySearch(new Tuple<double, double>(1.96, double.NaN), TupleItem1Comparer.Instance));
-            return mZeroProbsZScores[idx].Item2;
+            int idx = Math.Abs(mZeroProbsZScores.BinarySearch(new Tuple<double, double>(probFrom0ToZ, double.NaN), TupleItem1Comparer.Instance));
+            return mZeroProbsZScores[Math.Min(idx, mZeroProbsZScores.Count - 1)].Item2;
         }
 
         // probability that a statistic is between 0 (the mean) and Z
-        private static readonly List<Tuple<double, double>> mZScoreZeroProbs = new List<Tuple<double, double>>()
+        private static readonly List<Tuple<double, double>> mZScoreZeroProbs = new List<Tuple<double, double>>
             {
                 new Tuple<double, double>(0, 0.00000), new Tuple<double, double>(0.01, 0.00399),
                 new Tuple<double, double>(0.02, 0.00798), new Tuple<double, double>(0.03, 0.01197),
@@ -294,8 +304,7 @@ namespace Latino.Model.Eval
 
         private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, FoldData>> mData
             = new ConcurrentDictionary<string, ConcurrentDictionary<string, FoldData>>();
-        private readonly IEqualityComparer<LblT> mLblEqCmp
-            = null;
+        private readonly IEqualityComparer<LblT> mLblEqCmp;
 
         public PerfData()
         {
@@ -330,20 +339,17 @@ namespace Latino.Model.Eval
                     foldData.Resize(foldNum);
                     return foldData[foldNum - 1] ?? (foldData[foldNum - 1] = new PerfMatrix<LblT>(mLblEqCmp));
                 }
-                else
-                {
-                    if (!algoData.TryAdd(algoName, foldData = new FoldData())) { foldData = algoData[algoName]; }
-                    PerfMatrix<LblT> mtx = new PerfMatrix<LblT>(mLblEqCmp);
-                    foldData.Put(foldNum, mtx);
-                    return mtx;
-                }
+                if (!algoData.TryAdd(algoName, foldData = new FoldData())) { foldData = algoData[algoName]; }
+                var mtx = new PerfMatrix<LblT>(mLblEqCmp);
+                foldData.Put(foldNum, mtx);
+                return mtx;
             }
             else
             {
                 if (!mData.TryAdd(expName, algoData = new ConcurrentDictionary<string, FoldData>())) { algoData = mData[expName]; }
-                FoldData foldData = new FoldData();
+                var foldData = new FoldData();
                 if (!algoData.TryAdd(algoName, foldData)) { foldData = algoData[algoName]; }
-                PerfMatrix<LblT> mtx = new PerfMatrix<LblT>(mLblEqCmp);
+                var mtx = new PerfMatrix<LblT>(mLblEqCmp);
                 foldData.Put(foldNum, mtx);
                 return mtx;
             }
@@ -522,8 +528,7 @@ namespace Latino.Model.Eval
 
         public double GetAvgStdErr(string expName, string algoName, PerfMetric metric, out double stderr, double confidenceLevel = 0.95)
         {
-            double zval;
-            Preconditions.CheckArgument(PerfMatrix<LblT>.StdErrProbZValues.TryGetValue(confidenceLevel, out zval));
+            double zval = ZScoreTable.GetZScore(confidenceLevel);
             double stddev;
             double avg = GetAvg(expName, algoName, metric, out stddev);
             stderr = zval * stddev / Math.Sqrt(GetFoldCount(expName, algoName));
@@ -532,8 +537,7 @@ namespace Latino.Model.Eval
 
         public double GetAvgStdErr(string expName, string algoName, ClassPerfMetric metric, LblT lbl, out double stderr, double confidenceLevel = 0.95)
         {
-            double zval;
-            Preconditions.CheckArgument(PerfMatrix<LblT>.StdErrProbZValues.TryGetValue(confidenceLevel, out zval));
+            double zval = ZScoreTable.GetZScore(confidenceLevel);
             double stddev;
             double avg = GetAvg(expName, algoName, metric, lbl, out stddev);
             stderr = zval * stddev / Math.Sqrt(GetFoldCount(expName, algoName));
@@ -542,15 +546,14 @@ namespace Latino.Model.Eval
 
         public double GetAvgStdErr(string expName, string algoName, OrdinalPerfMetric metric, IEnumerable<LblT> orderedLabels, out double stderr, double confidenceLevel = 0.95)
         {
-            double zval;
-            Preconditions.CheckArgument(PerfMatrix<LblT>.StdErrProbZValues.TryGetValue(confidenceLevel, out zval));
+            double zval = ZScoreTable.GetZScore(confidenceLevel);
             double stddev;
             double avg = GetAvg(expName, algoName, metric, orderedLabels, out stddev);
             stderr = zval * stddev / Math.Sqrt(GetFoldCount(expName, algoName));
             return avg;
         }
 
-        private double GetAvg(string expName, string algoName, Func<PerfMatrix<LblT>, double> scoreFunc, out double stdev) // TODO: test if stdev is correct
+        private double GetAvg(string expName, string algoName, Func<PerfMatrix<LblT>, double> scoreFunc, out double stdev)
         {
             Preconditions.CheckNotNull(scoreFunc);
             Utils.ThrowException(expName == null ? new ArgumentNullException("expName") : null);
@@ -699,25 +702,17 @@ namespace Latino.Model.Eval
        '-----------------------------------------------------------------------
     */
 
-
-
-
     public class PerfMatrix<LblT>
     {
-        public static Dictionary<double, double> StdErrProbZValues = new Dictionary<double, double>
-            {
-                { 0.9, 1.64 }, { 0.95, 1.96 }, { 0.99, 2.58 }, 
-            };
+        private readonly ConcurrentDictionary<LblT, ConcurrentDictionary<LblT, double>> mMtx
+            = new ConcurrentDictionary<LblT, ConcurrentDictionary<LblT, double>>();
 
-        private ConcurrentDictionary<LblT, ConcurrentDictionary<LblT, int>> mMtx
-            = new ConcurrentDictionary<LblT, ConcurrentDictionary<LblT, int>>(); // TODO: set lbl equality comparer
-
-        private Set<LblT> mLabels
+        private readonly Set<LblT> mLabels
             = new Set<LblT>(); // TODO: set lbl equality comparer
 
         private IEqualityComparer<LblT> mLblEqCmp;
 
-        public PerfMatrix(IEqualityComparer<LblT> lblEqCmp)
+        public PerfMatrix(IEqualityComparer<LblT> lblEqCmp = null)
         {
             mLblEqCmp = lblEqCmp;
         }
@@ -732,13 +727,13 @@ namespace Latino.Model.Eval
             return mLabels.Remove(label);
         }
 
-        public void AddCount(LblT actual, LblT predicted, int count)
+        public void AddCount(LblT actual, LblT predicted, double count)
         {
             mLabels.AddRange(new[] { actual, predicted });
-            ConcurrentDictionary<LblT, int> row;
+            ConcurrentDictionary<LblT, double> row;
             if (mMtx.TryGetValue(actual, out row))
             {
-                int oldCount;
+                double oldCount;
                 if (row.TryGetValue(predicted, out oldCount))
                 {
                     row[predicted] = oldCount + count;
@@ -753,7 +748,7 @@ namespace Latino.Model.Eval
             }
             else
             {
-                if (!mMtx.TryAdd(actual, row = new ConcurrentDictionary<LblT, int>())) 
+                if (!mMtx.TryAdd(actual, row = new ConcurrentDictionary<LblT, double>())) 
                 {
                     row = mMtx[actual];
                 }
@@ -774,12 +769,12 @@ namespace Latino.Model.Eval
             return new Set<LblT>(mLabels);
         }
 
-        public int Get(LblT actual, LblT predicted)
+        public double Get(LblT actual, LblT predicted)
         {
-            ConcurrentDictionary<LblT, int> row;
+            ConcurrentDictionary<LblT, double> row;
             if (mMtx.TryGetValue(actual, out row))
             {
-                int c;
+                double c;
                 if (row.TryGetValue(predicted, out c))
                 {
                     return c;
@@ -788,12 +783,12 @@ namespace Latino.Model.Eval
             return 0;
         }
 
-        public int GetActual(LblT lbl)
+        public double GetActual(LblT lbl)
         {
             return SumRow(lbl);
         }
 
-        public int GetPredicted(LblT lbl)
+        public double GetPredicted(LblT lbl)
         {
             return SumCol(lbl);
         }
@@ -804,13 +799,13 @@ namespace Latino.Model.Eval
             mLabels.Clear();
         }
 
-        private int SumRow(LblT lbl)
+        private double SumRow(LblT lbl)
         {
-            ConcurrentDictionary<LblT, int> row;
+            ConcurrentDictionary<LblT, double> row;
             if (mMtx.TryGetValue(lbl, out row))
             {
-                int sum = 0;
-                foreach (int c in row.Values)
+                double sum = 0;
+                foreach (double c in row.Values)
                 {
                     sum += c;
                 }
@@ -819,12 +814,12 @@ namespace Latino.Model.Eval
             return 0;
         }
 
-        private int SumCol(LblT lbl)
+        private double SumCol(LblT lbl)
         {
-            int sum = 0;
-            foreach (ConcurrentDictionary<LblT, int> row in mMtx.Values)
+            double sum = 0;
+            foreach (ConcurrentDictionary<LblT, double> row in mMtx.Values)
             {
-                int c;
+                double c;
                 if (row.TryGetValue(lbl, out c))
                 {
                     sum += c;
@@ -833,12 +828,12 @@ namespace Latino.Model.Eval
             return sum;
         }
 
-        public int GetSumAll()
+        public double GetSumAll()
         {
-            int sum = 0;
-            foreach (ConcurrentDictionary<LblT, int> row in mMtx.Values)
+            double sum = 0;
+            foreach (ConcurrentDictionary<LblT, double> row in mMtx.Values)
             {
-                foreach (int val in row.Values)
+                foreach (double val in row.Values)
                 {
                     sum += val;
                 }
@@ -846,12 +841,12 @@ namespace Latino.Model.Eval
             return sum;
         }
 
-        public int GetSumDiag()
+        public double GetSumDiag()
         {
-            int sum = 0;
-            foreach (KeyValuePair<LblT, ConcurrentDictionary<LblT, int>> row in mMtx)
+            double sum = 0;
+            foreach (KeyValuePair<LblT, ConcurrentDictionary<LblT, double>> row in mMtx)
             {
-                int c;
+                double c;
                 if (row.Value.TryGetValue(row.Key, out c))
                 {
                     sum += c;
@@ -862,12 +857,12 @@ namespace Latino.Model.Eval
 
         public double GetPrecision(LblT lbl)
         {
-            int all;
-            int precCount = GetPrecisionCount(lbl, out all);
-            return (double) precCount / all;
+            double all;
+            double precCount = GetPrecisionCount(lbl, out all);
+            return precCount / all;
         }
 
-        public int GetPrecisionCount(LblT lbl, out int all)
+        public double GetPrecisionCount(LblT lbl, out double all)
         {
             all = SumCol(lbl);
             return Get(lbl, lbl);
@@ -875,12 +870,12 @@ namespace Latino.Model.Eval
 
         public double GetRecall(LblT lbl)
         {
-            int all;
-            int recallCount = GetRecallCount(lbl, out all);
-            return (double) recallCount / all;
+            double all;
+            double recallCount = GetRecallCount(lbl, out all);
+            return recallCount / all;
         }
 
-        public int GetRecallCount(LblT lbl, out int all)
+        public double GetRecallCount(LblT lbl, out double all)
         {
             all = SumRow(lbl);
             return Get(lbl, lbl);
@@ -898,24 +893,24 @@ namespace Latino.Model.Eval
             return GetF(1, lbl);
         }
 
-        public int GetActualSum(LblT lbl)
+        public double GetActualSum(LblT lbl)
         {
             return SumRow(lbl);
         }
 
         public double GetActualRatio(LblT lbl)
         {
-            return (double)GetActualSum(lbl) / GetSumAll();
+            return GetActualSum(lbl) / GetSumAll();
         }
 
-        public int GetPredictedSum(LblT lbl)
+        public double GetPredictedSum(LblT lbl)
         {
             return SumCol(lbl);
         }
 
         public double GetPredictedRatio(LblT lbl)
         {
-            return (double)GetPredictedSum(lbl) / GetSumAll();
+            return GetPredictedSum(lbl) / GetSumAll();
         }
 
 
@@ -923,7 +918,7 @@ namespace Latino.Model.Eval
 
         public double GetAccuracy()
         {
-            return (double) GetSumDiag() / GetSumAll();
+            return GetSumDiag() / GetSumAll();
         }
 
         public double GetError()
@@ -1002,7 +997,7 @@ namespace Latino.Model.Eval
                 case PerfMetric.AccStdErrorConf90:
                     return GetAccStdError(0.9);
                 case PerfMetric.AccStdErrorConf95:
-                    return GetAccStdError(0.95);
+                    return GetAccStdError();
                 case PerfMetric.AccStdErrorConf99:
                     return GetAccStdError(0.99);
                 default:
@@ -1189,8 +1184,7 @@ namespace Latino.Model.Eval
 
         public double GetAccStdError(double confidenceLevel = 0.95)
         {
-            double z;
-            Preconditions.CheckArgument(StdErrProbZValues.TryGetValue(confidenceLevel, out z));
+            double z = ZScoreTable.GetZScore(confidenceLevel);
             double acc = GetAccuracy();
             return z * Math.Sqrt(acc * (1 - acc) / GetSumAll());
         }
