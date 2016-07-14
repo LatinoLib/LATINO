@@ -74,9 +74,6 @@ namespace Latino
         {
             Utils.ThrowException(items == null ? new ArgumentNullException("items") : null);
             int oldLen = mVec.Count;
-#if THROW_EXCEPTIONS
-            foreach (int item in items) { Utils.ThrowException(item == null ? new ArgumentValueException("items") : null); }
-#endif
             mVec.AddRange(items);
             if (mVec.Count == oldLen) { return; }
             mVec.Sort();
@@ -131,7 +128,6 @@ namespace Latino
 
         public void Add(int item)
         {
-            Utils.ThrowException(item == null ? new ArgumentNullException("item") : null);
             int idx = mVec.BinarySearch(item);
             if (idx < 0) { idx = ~idx; }
             mVec.Insert(idx, item);
@@ -144,7 +140,6 @@ namespace Latino
 
         public bool Contains(int item)
         {
-            Utils.ThrowException(item == null ? new ArgumentNullException("item") : null);
             return mVec.BinarySearch(item) >= 0;
         }
 

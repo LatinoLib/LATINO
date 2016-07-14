@@ -462,12 +462,19 @@ namespace Latino
             string val = GetConfigValue(key, defaultValue); // throws ArgumentNullException, ConfigurationErrorsException
             // the following statements throw ArgumentNullException, FormatException, OverflowException, InvalidCastException
             if (typeof(T) == typeof(int)) { return (T)(object)Convert.ToInt32(val); }
+            else if (typeof(T) == typeof(int?)) { return val != null ? (T)(object)Convert.ToInt32(val) : default(T); }
             else if (typeof(T) == typeof(long)) { return (T)(object)Convert.ToInt64(val); }
+            else if (typeof(T) == typeof(long?)) { return val != null ? (T)(object)Convert.ToInt64(val) : default(T); }
             else if (typeof(T) == typeof(float)) { return (T)(object)Convert.ToSingle(val); }
+            else if (typeof(T) == typeof(float?)) { return val != null ? (T)(object)Convert.ToSingle(val) : default(T); }
             else if (typeof(T) == typeof(double)) { return (T)(object)Convert.ToDouble(val); }
+            else if (typeof(T) == typeof(double?)) { return val != null ? (T)(object)Convert.ToDouble(val) : default(T); }
             else if (typeof(T) == typeof(bool)) { return (T)(object)(val != null && new ArrayList<string>(new string[] { "yes", "on", "true", "y", "1" }).Contains(val.ToLower())); }
+            else if (typeof(T) == typeof(bool?)) { return val != null ? (T)(object)(val != null && new ArrayList<string>(new string[] { "yes", "on", "true", "y", "1" }).Contains(val.ToLower())) : default(T); }
             else if (typeof(T) == typeof(TimeSpan)) { return (T)(object)TimeSpan.Parse(val); }
+            else if (typeof(T) == typeof(TimeSpan?)) { return val != null ? (T)(object)TimeSpan.Parse(val) : default(T); }
             else if (typeof(T) == typeof(DateTime)) { return (T)(object)DateTime.Parse(val); }
+            else if (typeof(T) == typeof(DateTime?)) { return val != null ? (T)(object)DateTime.Parse(val) : default(T); }
             else if (typeof(T).IsEnum) { return (T)Enum.Parse(typeof(T), val, /*ignoreCase=*/true); }
             else return (T)(object)val;
         }
