@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 using System;
+using System.Reflection;
+
 namespace SF.Snowball
 {
 	
@@ -210,6 +212,19 @@ namespace SF.Snowball
 		{
 			return eqSB(s.Length, s.ToString());
 		}
+
+        private MethodInfo GetMethod(string methodname)
+        { 
+            try
+            {
+                return GetType().GetMethod(methodname, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.DeclaredOnly, null, new System.Type[0], null);
+            }
+            catch (System.MethodAccessException e)
+            {
+                // FIXME - debug message
+                return null;
+            }
+        }
 		
 		protected internal virtual int findAmong(Among[] v, int vSize)
 		{
@@ -280,7 +295,7 @@ namespace SF.Snowball
 					bool res;
 					try
 					{
-                        System.Object resobj = null;// w.method.Invoke(w.methodobject, (System.Object[])new System.Object[0]);
+                        System.Object resobj = GetMethod(w.methodname).Invoke(this, (System.Object[])new System.Object[0]);
 						// {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca10433"'
 						res = resobj.ToString().Equals("true");
 					}
@@ -370,7 +385,7 @@ namespace SF.Snowball
 					bool res;
 					try
 					{
-                        System.Object resobj = null; //w.method.Invoke(w.methodobject, (System.Object[]) new System.Object[0]);
+                        System.Object resobj = GetMethod(w.methodname).Invoke(this, (System.Object[]) new System.Object[0]);
 						// {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca10433"'
 						res = resobj.ToString().Equals("true");
 					}
