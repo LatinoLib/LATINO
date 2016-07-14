@@ -25,25 +25,22 @@ namespace SF.Snowball.Ext
 	/// <summary> Generated class implementing code defined by a snowball script.</summary>
     public class FinnishStemmer : SnowballProgram, ISnowballStemmer
 	{
-        public static readonly FinnishStemmer Instance
-            = new FinnishStemmer();
-
-		public FinnishStemmer()
+		static FinnishStemmer()
 		{
 			InitBlock();
 		}
-		private void InitBlock()
+		private static void InitBlock()
 		{
-			a0 = new Among[]{new Among("pa", - 1, 1, "", this), new Among("sti", - 1, 2, "", this), new Among("kaan", - 1, 1, "", this), new Among("han", - 1, 1, "", this), new Among("kin", - 1, 1, "", this), new Among("h\u00E4n", - 1, 1, "", this), new Among("k\u00E4\u00E4n", - 1, 1, "", this), new Among("ko", - 1, 1, "", this), new Among("p\u00E4", - 1, 1, "", this), new Among("k\u00F6", - 1, 1, "", this)};
-			a1 = new Among[]{new Among("lla", - 1, - 1, "", this), new Among("na", - 1, - 1, "", this), new Among("ssa", - 1, - 1, "", this), new Among("ta", - 1, - 1, "", this), new Among("lta", 3, - 1, "", this), new Among("sta", 3, - 1, "", this)};
-			a2 = new Among[]{new Among("ll\u00E4", - 1, - 1, "", this), new Among("n\u00E4", - 1, - 1, "", this), new Among("ss\u00E4", - 1, - 1, "", this), new Among("t\u00E4", - 1, - 1, "", this), new Among("lt\u00E4", 3, - 1, "", this), new Among("st\u00E4", 3, - 1, "", this)};
-			a3 = new Among[]{new Among("lle", - 1, - 1, "", this), new Among("ine", - 1, - 1, "", this)};
-			a4 = new Among[]{new Among("nsa", - 1, 3, "", this), new Among("mme", - 1, 3, "", this), new Among("nne", - 1, 3, "", this), new Among("ni", - 1, 2, "", this), new Among("si", - 1, 1, "", this), new Among("an", - 1, 4, "", this), new Among("en", - 1, 6, "", this), new Among("\u00E4n", - 1, 5, "", this), new Among("ns\u00E4", - 1, 3, "", this)};
-			a5 = new Among[]{new Among("aa", - 1, - 1, "", this), new Among("ee", - 1, - 1, "", this), new Among("ii", - 1, - 1, "", this), new Among("oo", - 1, - 1, "", this), new Among("uu", - 1, - 1, "", this), new Among("\u00E4\u00E4", - 1, - 1, "", this), new Among("\u00F6\u00F6", - 1, - 1, "", this)};
-			a6 = new Among[]{new Among("a", - 1, 8, "", this), new Among("lla", 0, - 1, "", this), new Among("na", 0, - 1, "", this), new Among("ssa", 0, - 1, "", this), new Among("ta", 0, - 1, "", this), new Among("lta", 4, - 1, "", this), new Among("sta", 4, - 1, "", this), new Among("tta", 4, 9, "", this), new Among("lle", - 1, - 1, "", this), new Among("ine", - 1, - 1, "", this), new Among("ksi", - 1, - 1, "", this), new Among("n", - 1, 7, "", this), new Among("han", 11, 1, "", this), new Among("den", 11, - 1, "r_VI", this), new Among("seen", 11, - 1, "r_LONG", this), new Among("hen", 11, 2, "", this), new Among("tten", 11, - 1, "r_VI", this), new Among("hin", 11, 3, "", this), new Among("siin", 11, - 1, "r_VI", this), new Among("hon", 11, 4, "", this), new Among("h\u00E4n", 11, 5, "", this), new Among("h\u00F6n", 11, 6, "", this), new Among("\u00E4", - 1, 8, "", this), new Among("ll\u00E4", 22, - 1, "", this), new Among("n\u00E4", 22, - 1, "", this), new Among("ss\u00E4", 22, - 1, "", this), new Among("t\u00E4", 22, - 1, "", this), new Among("lt\u00E4", 26, - 1, "", this), new Among("st\u00E4", 26, - 1, "", this), new Among("tt\u00E4", 26, 9, "", this)};
-			a7 = new Among[]{new Among("eja", - 1, - 1, "", this), new Among("mma", - 1, 1, "", this), new Among("imma", 1, - 1, "", this), new Among("mpa", - 1, 1, "", this), new Among("impa", 3, - 1, "", this), new Among("mmi", - 1, 1, "", this), new Among("immi", 5, - 1, "", this), new Among("mpi", - 1, 1, "", this), new Among("impi", 7, - 1, "", this), new Among("ej\u00E4", - 1, - 1, "", this), new Among("mm\u00E4", - 1, 1, "", this), new Among("imm\u00E4", 10, - 1, "", this), new Among("mp\u00E4", - 1, 1, "", this), new Among("imp\u00E4", 12, - 1, "", this)};
-			a8 = new Among[]{new Among("i", - 1, - 1, "", this), new Among("j", - 1, - 1, "", this)};
-			a9 = new Among[]{new Among("mma", - 1, 1, "", this), new Among("imma", 0, - 1, "", this)};
+			a0 = new Among[]{new Among("pa", - 1, 1, ""), new Among("sti", - 1, 2, ""), new Among("kaan", - 1, 1, ""), new Among("han", - 1, 1, ""), new Among("kin", - 1, 1, ""), new Among("h\u00E4n", - 1, 1, ""), new Among("k\u00E4\u00E4n", - 1, 1, ""), new Among("ko", - 1, 1, ""), new Among("p\u00E4", - 1, 1, ""), new Among("k\u00F6", - 1, 1, "")};
+			a1 = new Among[]{new Among("lla", - 1, - 1, ""), new Among("na", - 1, - 1, ""), new Among("ssa", - 1, - 1, ""), new Among("ta", - 1, - 1, ""), new Among("lta", 3, - 1, ""), new Among("sta", 3, - 1, "")};
+			a2 = new Among[]{new Among("ll\u00E4", - 1, - 1, ""), new Among("n\u00E4", - 1, - 1, ""), new Among("ss\u00E4", - 1, - 1, ""), new Among("t\u00E4", - 1, - 1, ""), new Among("lt\u00E4", 3, - 1, ""), new Among("st\u00E4", 3, - 1, "")};
+			a3 = new Among[]{new Among("lle", - 1, - 1, ""), new Among("ine", - 1, - 1, "")};
+			a4 = new Among[]{new Among("nsa", - 1, 3, ""), new Among("mme", - 1, 3, ""), new Among("nne", - 1, 3, ""), new Among("ni", - 1, 2, ""), new Among("si", - 1, 1, ""), new Among("an", - 1, 4, ""), new Among("en", - 1, 6, ""), new Among("\u00E4n", - 1, 5, ""), new Among("ns\u00E4", - 1, 3, "")};
+			a5 = new Among[]{new Among("aa", - 1, - 1, ""), new Among("ee", - 1, - 1, ""), new Among("ii", - 1, - 1, ""), new Among("oo", - 1, - 1, ""), new Among("uu", - 1, - 1, ""), new Among("\u00E4\u00E4", - 1, - 1, ""), new Among("\u00F6\u00F6", - 1, - 1, "")};
+			a6 = new Among[]{new Among("a", - 1, 8, ""), new Among("lla", 0, - 1, ""), new Among("na", 0, - 1, ""), new Among("ssa", 0, - 1, ""), new Among("ta", 0, - 1, ""), new Among("lta", 4, - 1, ""), new Among("sta", 4, - 1, ""), new Among("tta", 4, 9, ""), new Among("lle", - 1, - 1, ""), new Among("ine", - 1, - 1, ""), new Among("ksi", - 1, - 1, ""), new Among("n", - 1, 7, ""), new Among("han", 11, 1, ""), new Among("den", 11, - 1, "r_VI"), new Among("seen", 11, - 1, "r_LONG"), new Among("hen", 11, 2, ""), new Among("tten", 11, - 1, "r_VI"), new Among("hin", 11, 3, ""), new Among("siin", 11, - 1, "r_VI"), new Among("hon", 11, 4, ""), new Among("h\u00E4n", 11, 5, ""), new Among("h\u00F6n", 11, 6, ""), new Among("\u00E4", - 1, 8, ""), new Among("ll\u00E4", 22, - 1, ""), new Among("n\u00E4", 22, - 1, ""), new Among("ss\u00E4", 22, - 1, ""), new Among("t\u00E4", 22, - 1, ""), new Among("lt\u00E4", 26, - 1, ""), new Among("st\u00E4", 26, - 1, ""), new Among("tt\u00E4", 26, 9, "")};
+			a7 = new Among[]{new Among("eja", - 1, - 1, ""), new Among("mma", - 1, 1, ""), new Among("imma", 1, - 1, ""), new Among("mpa", - 1, 1, ""), new Among("impa", 3, - 1, ""), new Among("mmi", - 1, 1, ""), new Among("immi", 5, - 1, ""), new Among("mpi", - 1, 1, ""), new Among("impi", 7, - 1, ""), new Among("ej\u00E4", - 1, - 1, ""), new Among("mm\u00E4", - 1, 1, ""), new Among("imm\u00E4", 10, - 1, ""), new Among("mp\u00E4", - 1, 1, ""), new Among("imp\u00E4", 12, - 1, "")};
+			a8 = new Among[]{new Among("i", - 1, - 1, ""), new Among("j", - 1, - 1, "")};
+			a9 = new Among[]{new Among("mma", - 1, 1, ""), new Among("imma", 0, - 1, "")};
 		}
 		
 		private static Among[] a0;
@@ -62,21 +59,27 @@ namespace SF.Snowball.Ext
 		private static readonly char[] g_V = new char[]{(char) (17), (char) (65), (char) (16), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8), (char) (0), (char) (32)};
 		private static readonly char[] gParticleEnd = new char[]{(char) (17), (char) (97), (char) (24), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8), (char) (0), (char) (32)};
 
-        private class State
+        public bool B_ending_removed;
+        public System.Text.StringBuilder S_x = new System.Text.StringBuilder();
+        public int I_p2;
+        public int I_p1;
+
+        protected internal virtual void copyFrom(FinnishStemmer other)
         {
-            public bool B_ending_removed;
-            public System.Text.StringBuilder S_x = new System.Text.StringBuilder();
-            public int I_p2;
-            public int I_p1;
+            B_ending_removed = other.B_ending_removed;
+            S_x = other.S_x;
+            I_p2 = other.I_p2;
+            I_p1 = other.I_p1;
+            base.copyFrom(other);
         }
-		
-		private bool rMarkRegions(State s)
+
+        private bool rMarkRegions()
 		{
 			int v1;
 			int v3;
 			// (, line 41
-			s.I_p1 = limit;
-			s.I_p2 = limit;
+			I_p1 = limit;
+			I_p2 = limit;
 			// goto, line 46
 			while (true)
 			{
@@ -129,7 +132,7 @@ lab3Brk: ;
 golab2Brk: ;
 			
 			// setmark p1, line 46
-			s.I_p1 = cursor;
+			I_p1 = cursor;
 			// goto, line 47
 			while (true)
 			{
@@ -182,20 +185,20 @@ lab7Brk: ;
 golab6Brk: ;
 			
 			// setmark p2, line 47
-			s.I_p2 = cursor;
+			I_p2 = cursor;
 			return true;
 		}
 		
-		private bool r_R2(State s)
+		private bool r_R2()
 		{
-			if (!(s.I_p2 <= cursor))
+			if (!(I_p2 <= cursor))
 			{
 				return false;
 			}
 			return true;
 		}
 		
-		private bool rParticleEtc(State s)
+		private bool rParticleEtc()
 		{
 			int amongVar;
 			int v1;
@@ -204,11 +207,11 @@ golab6Brk: ;
 			// setlimit, line 55
 			v1 = limit - cursor;
 			// tomark, line 55
-			if (cursor < s.I_p1)
+			if (cursor < I_p1)
 			{
 				return false;
 			}
-			cursor = s.I_p1;
+			cursor = I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -242,7 +245,7 @@ golab6Brk: ;
 				case 2: 
 					// (, line 64
 					// call R2, line 64
-					if (!r_R2(s))
+					if (!r_R2())
 					{
 						return false;
 					}
@@ -253,7 +256,7 @@ golab6Brk: ;
 			return true;
 		}
 		
-		private bool rPossessive(State s)
+		private bool rPossessive()
 		{
 			int amongVar;
 			int v1;
@@ -263,11 +266,11 @@ golab6Brk: ;
 			// setlimit, line 69
 			v1 = limit - cursor;
 			// tomark, line 69
-			if (cursor < s.I_p1)
+			if (cursor < I_p1)
 			{
 				return false;
 			}
-			cursor = s.I_p1;
+			cursor = I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -398,7 +401,7 @@ lab0Brk: ;
 			return true;
 		}
 		
-		private bool rCase(State s)
+		private bool rCase()
 		{
 			int amongVar;
 			int v1;
@@ -410,11 +413,11 @@ lab0Brk: ;
 			// setlimit, line 96
 			v1 = limit - cursor;
 			// tomark, line 96
-			if (cursor < s.I_p1)
+			if (cursor < I_p1)
 			{
 				return false;
 			}
-			cursor = s.I_p1;
+			cursor = I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -570,11 +573,11 @@ lab0Brk: ;
 			// delete, line 138
 			sliceDel();
 			// set endingRemoved, line 139
-			s.B_ending_removed = true;
+			B_ending_removed = true;
 			return true;
 		}
 		
-		private bool rOtherEndings(State s)
+		private bool rOtherEndings()
 		{
 			int amongVar;
 			int v1;
@@ -584,11 +587,11 @@ lab0Brk: ;
 			// setlimit, line 142
 			v1 = limit - cursor;
 			// tomark, line 142
-			if (cursor < s.I_p2)
+			if (cursor < I_p2)
 			{
 				return false;
 			}
-			cursor = s.I_p2;
+			cursor = I_p2;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -638,7 +641,7 @@ lab4Brk: ;
 			return true;
 		}
 		
-		private bool rIPlural(State s)
+		private bool rIPlural()
 		{
 			int v1;
 			int v2;
@@ -646,11 +649,11 @@ lab4Brk: ;
 			// setlimit, line 154
 			v1 = limit - cursor;
 			// tomark, line 154
-			if (cursor < s.I_p1)
+			if (cursor < I_p1)
 			{
 				return false;
 			}
-			cursor = s.I_p1;
+			cursor = I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -671,7 +674,7 @@ lab4Brk: ;
 			return true;
 		}
 		
-		private bool rTPlural(State s)
+		private bool rTPlural()
 		{
 			int amongVar;
 			int v1;
@@ -684,11 +687,11 @@ lab4Brk: ;
 			// setlimit, line 161
 			v1 = limit - cursor;
 			// tomark, line 161
-			if (cursor < s.I_p1)
+			if (cursor < I_p1)
 			{
 				return false;
 			}
-			cursor = s.I_p1;
+			cursor = I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -717,11 +720,11 @@ lab4Brk: ;
 			// setlimit, line 165
 			v4 = limit - cursor;
 			// tomark, line 165
-			if (cursor < s.I_p2)
+			if (cursor < I_p2)
 			{
 				return false;
 			}
-			cursor = s.I_p2;
+			cursor = I_p2;
 			v5 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v4;
@@ -771,7 +774,7 @@ lab4Brk: ;
 			return true;
 		}
 		
-		private bool rTidy(State s)
+		private bool rTidy()
 		{
 			int v1;
 			int v2;
@@ -786,11 +789,11 @@ lab4Brk: ;
 			// setlimit, line 173
 			v1 = limit - cursor;
 			// tomark, line 173
-			if (cursor < s.I_p1)
+			if (cursor < I_p1)
 			{
 				return false;
 			}
-			cursor = s.I_p1;
+			cursor = I_p1;
 			v2 = limitBackward;
 			limitBackward = cursor;
 			cursor = limit - v1;
@@ -968,9 +971,9 @@ golab6Brk: ;
 			// ], line 179
 			bra = cursor;
 			// -> x, line 179
-			s.S_x = sliceTo(s.S_x);
+			S_x = sliceTo(S_x);
 			// name x, line 179
-			if (!(eqVB(s.S_x)))
+			if (!(eqVB(S_x)))
 			{
 				return false;
 			}
@@ -994,12 +997,10 @@ golab6Brk: ;
 			// do, line 185
 			v1 = cursor;
 
-            State s = new State();
-
-			do 
+ 		    do 
 			{
 				// call markRegions, line 185
-				if (!rMarkRegions(s))
+				if (!rMarkRegions())
 				{
 					goto lab0Brk;
 				}
@@ -1010,7 +1011,7 @@ lab0Brk: ;
 			
 			cursor = v1;
 			// unset endingRemoved, line 186
-			s.B_ending_removed = false;
+			B_ending_removed = false;
 			// backwards, line 187
 			limitBackward = cursor; cursor = limit;
 			// (, line 187
@@ -1019,7 +1020,7 @@ lab0Brk: ;
 			do 
 			{
 				// call particleEtc, line 188
-				if (!rParticleEtc(s))
+				if (!rParticleEtc())
 				{
 					goto lab1Brk;
 				}
@@ -1034,7 +1035,7 @@ lab1Brk: ;
 			do 
 			{
 				// call possessive, line 189
-				if (!rPossessive(s))
+				if (!rPossessive())
 				{
 					goto lab2Brk;
 				}
@@ -1049,7 +1050,7 @@ lab2Brk: ;
 			do 
 			{
 				// call case, line 190
-				if (!rCase(s))
+				if (!rCase())
 				{
 					goto lab3Brk;
 				}
@@ -1064,7 +1065,7 @@ lab3Brk: ;
 			do 
 			{
 				// call otherEndings, line 191
-				if (!rOtherEndings(s))
+				if (!rOtherEndings())
 				{
 					goto lab4Brk;
 				}
@@ -1083,7 +1084,7 @@ lab4Brk: ;
 				{
 					// (, line 192
 					// Boolean test endingRemoved, line 192
-					if (!(s.B_ending_removed))
+					if (!(B_ending_removed))
 					{
 						goto lab6Brk;
 					}
@@ -1092,7 +1093,7 @@ lab4Brk: ;
 					do 
 					{
 						// call iPlural, line 192
-						if (!rIPlural(s))
+						if (!rIPlural())
 						{
 							goto lab7Brk;
 						}
@@ -1114,7 +1115,7 @@ lab6Brk: ;
 				do 
 				{
 					// call tPlural, line 192
-					if (!rTPlural(s))
+					if (!rTPlural())
 					{
 						goto lab8Brk;
 					}
@@ -1134,7 +1135,7 @@ lab5Brk: ;
 			do 
 			{
 				// call tidy, line 193
-				if (!rTidy(s))
+				if (!rTidy())
 				{
 					goto lab9Brk;
 				}
