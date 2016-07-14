@@ -93,7 +93,7 @@ namespace Latino.Model
             if (random == null) { mItems.Shuffle(); } else { mItems.Shuffle(random); }
         }
 
-        public void GroupLabels(bool shuffle, Random random = null)
+        public void GroupLabels(bool shuffle = true, Random random = null)
         {
             mItems = new ArrayList<LabeledExample<LblT, ExT>>(mItems
                 .GroupBy(le => le.Label)
