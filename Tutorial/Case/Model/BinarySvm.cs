@@ -27,7 +27,7 @@ namespace Tutorial.Case.Model
         {
             // prepare data
             IStemmer stemmer;
-            Set<string>.ReadOnly stopWords;
+            IStopWords stopWords;
             TextMiningUtils.GetLanguageTools(Language.English, out stopWords, out stemmer);
 
             // Create a tokenizer.
