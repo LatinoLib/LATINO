@@ -171,16 +171,18 @@ namespace Latino.TextMining
                 = null;
         }
 
-        private ITokenizer mTokenizer
-            = new UnicodeTokenizer();
-        private IStopWords mStopWords
-            = null;
-        private IStemmer mStemmer
-            = null;
         private Dictionary<string, Word> mWordInfo
             = new Dictionary<string, Word>();
         private ArrayList<Word> mIdxInfo
             = new ArrayList<Word>();
+
+#if OLD_BOWSPACE
+        private ITokenizer mTokenizer
+            = new UnicodeTokenizer { MinTokenLen = 2, Filter = TokenizerFilter.AlphanumLoose };
+        private IStopWords mStopWords
+            = null;
+        private IStemmer mStemmer
+            = null;
         private int mMaxNGramLen
             = 2;
         private int mMinWordFreq
@@ -193,16 +195,32 @@ namespace Latino.TextMining
             = true;
         private bool mKeepWordForms
             = false;
+#else
+        private ITokenizer mTokenizer
+            = new SimpleTokenizer { MinTokenLen = 2, Type = TokenizerType.AlphaOnly };
+        private IStopWords mStopWords
+            = null;
+        private IStemmer mStemmer
+            = null;
+        private int mMaxNGramLen
+            = 2;
+        private int mMinWordFreq
+            = 3;
+        private WordWeightType mWordWeightType
+            = WordWeightType.TfIdf;
+        private double mCutLowWeightsPerc
+            = 0.2;
+        private bool mNormalizeVectors
+            = true;
+        private bool mKeepWordForms
+            = false;
+#endif
 
         private Logger mLogger
             = Logger.GetInstanceLogger(typeof(BowSpace));
 
         public BowSpace()
         {
-            // configure tokenizer
-            UnicodeTokenizer tokenizer = (UnicodeTokenizer)mTokenizer;
-            tokenizer.Filter = TokenizerFilter.AlphanumLoose;
-            tokenizer.MinTokenLen = 2;
         }
 
         public BowSpace(BinarySerializer reader)
@@ -1125,7 +1143,7 @@ namespace Latino.TextMining
         public virtual void Save(BinarySerializer writer)
         {
             // the following statements throw serialization-related exceptions
-#if OLD_BOW_FORMAT
+#if OLD_BOWSPACE
             SaveVocabulary(writer); // throws ArgumentNullException
             writer.WriteObject(mTokenizer);
             writer.WriteObject(new Set<string>.ReadOnly(new Set<string>((StopWords)mStopWords)));
@@ -1153,7 +1171,7 @@ namespace Latino.TextMining
         public void Load(BinarySerializer reader)
         {
             // the following statements throw serialization-related exceptions
-#if OLD_BOW_FORMAT
+#if OLD_BOWSPACE
             LoadVocabulary(reader); // throws ArgumentNullException
             mTokenizer = reader.ReadObject<ITokenizer>();
             mStopWords = new StopWords(reader.ReadObject<Set<string>.ReadOnly>());
