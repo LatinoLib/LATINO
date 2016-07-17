@@ -161,7 +161,7 @@ namespace Latino.WebMining
             {
                 textBlockTokenizer = new RegexTokenizer();
                 textBlockTokenizer.TokenRegex = string.Format("({0})|({1})", mWordRegexStr, mNumberRegexStr);
-                textBlockTokenizer.IgnoreUnknownTokens = true;
+                textBlockTokenizer.IgnoreUnmatchedTokens = true;
             }
             CreateTokens(nodes, textBlockTokenizer);
         }
@@ -356,7 +356,7 @@ namespace Latino.WebMining
                 {
                     textBlockTokenizer = new RegexTokenizer();
                     textBlockTokenizer.TokenRegex = string.Format("({0})|({1})", mWordRegexStr, mNumberRegexStr);
-                    textBlockTokenizer.IgnoreUnknownTokens = true;
+                    textBlockTokenizer.IgnoreUnmatchedTokens = true;
                 }
                 CreateTokens(nodes, textBlockTokenizer);                
             }

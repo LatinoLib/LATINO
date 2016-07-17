@@ -28,8 +28,8 @@ namespace Latino.TextMining
         private Regex mTokenRegex
             = new Regex(@"\p{L}+(-\p{L}+)*", RegexOptions.Compiled);
         private Regex mDelimRegex
-            = new Regex(@"\s+|$", RegexOptions.Compiled); // *** this is not (yet?) publicly accessible
-        private bool mIgnoreUnknownTokens
+            = new Regex(@"\s+|$", RegexOptions.Compiled); 
+        private bool mIgnoreUnmatchedTokens
             = false;
         private RegexOptions mRegexOptions
             = RegexOptions.Compiled;
@@ -49,10 +49,10 @@ namespace Latino.TextMining
             set { mTokenRegex = new Regex(value, mRegexOptions); } // throws ArgumentNullException, ArgumentException
         }
 
-        public bool IgnoreUnknownTokens
+        public bool IgnoreUnmatchedTokens
         {
-            get { return mIgnoreUnknownTokens; }
-            set { mIgnoreUnknownTokens = value; }
+            get { return mIgnoreUnmatchedTokens; }
+            set { mIgnoreUnmatchedTokens = value; }
         }
 
         public RegexOptions TokenRegexOptions
@@ -69,7 +69,7 @@ namespace Latino.TextMining
 
         public ITokenizerEnumerable GetTokens(string text)
         {
-            return new TokenizerEnumerable(new Enumerator(text, mTokenRegex, mDelimRegex, mIgnoreUnknownTokens));
+            return new TokenizerEnumerable(new Enumerator(text, mTokenRegex, mDelimRegex, mIgnoreUnmatchedTokens));
         }
 
         // *** ISerializable interface implementation ***
@@ -81,7 +81,7 @@ namespace Latino.TextMining
             writer.WriteInt((int)mRegexOptions);
             writer.WriteString(mTokenRegex.ToString());
             writer.WriteString(mDelimRegex.ToString());
-            writer.WriteBool(mIgnoreUnknownTokens);
+            writer.WriteBool(mIgnoreUnmatchedTokens);
         }
 
         public void Load(BinarySerializer reader)
@@ -91,7 +91,7 @@ namespace Latino.TextMining
             mRegexOptions = (RegexOptions)reader.ReadInt();
             mTokenRegex = new Regex(reader.ReadString(), mRegexOptions);
             mDelimRegex = new Regex(reader.ReadString(), mRegexOptions);
-            mIgnoreUnknownTokens = reader.ReadBool();
+            mIgnoreUnmatchedTokens = reader.ReadBool();
         }
 
         /* .-----------------------------------------------------------------------
@@ -105,18 +105,18 @@ namespace Latino.TextMining
             private string mText;
             private Regex mTokenRegex;
             private Regex mDelimRegex;
-            private bool mIgnoreUnknownTokens;
+            private bool mIgnoreUnmatchedTokens;
             private Queue<Pair<int, string>> mTokens
                 = new Queue<Pair<int, string>>();
             private Match mTokenMatch
                 = null;
 
-            internal Enumerator(string text, Regex tokenRegex, Regex delimRegex, bool ignoreUnknownTokens)
+            internal Enumerator(string text, Regex tokenRegex, Regex delimRegex, bool ignoreUnmatchedTokens)
             {
                 mText = text;
                 mTokenRegex = tokenRegex;
                 mDelimRegex = delimRegex;
-                mIgnoreUnknownTokens = ignoreUnknownTokens;
+                mIgnoreUnmatchedTokens = ignoreUnmatchedTokens;
             }
 
             private void GetMoreTokens()
@@ -133,7 +133,7 @@ namespace Latino.TextMining
                 }
                 if (mTokenMatch.Success)
                 {
-                    if (!mIgnoreUnknownTokens)
+                    if (!mIgnoreUnmatchedTokens)
                     {
                         int len = mTokenMatch.Index - startIdx;
                         if (len > 0)
@@ -154,7 +154,7 @@ namespace Latino.TextMining
                         }
                     }
                     mTokens.Enqueue(new Pair<int, string>(mTokenMatch.Index, mTokenMatch.Value));
-                    if (!mIgnoreUnknownTokens && !mTokenMatch.NextMatch().Success) // tokenize tail
+                    if (!mIgnoreUnmatchedTokens && !mTokenMatch.NextMatch().Success) // tokenize tail
                     {
                         startIdx = mTokenMatch.Index + mTokenMatch.Value.Length;
                         int len = mText.Length - startIdx;

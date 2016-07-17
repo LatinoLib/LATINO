@@ -18,11 +18,11 @@ namespace Latino.TextMining
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Enum TokenizerFilter
+       |  Enum TokenFilter
        |
        '-----------------------------------------------------------------------
     */
-    public enum TokenizerFilter
+    public enum TokenFilter
     {
         AlphanumLoose,  // accept tokens that contain at least one alphanumeric character
         AlphanumStrict, // accept tokens that contain alphanumeric characters only
@@ -40,8 +40,8 @@ namespace Latino.TextMining
     // This tokenizer (partially) follows the rules defined at http://www.unicode.org/reports/tr29/#Word_Boundaries
     public class UnicodeTokenizer : ITokenizer 
     {
-        private TokenizerFilter mFilter
-            = TokenizerFilter.None;    
+        private TokenFilter mTokenFilter
+            = TokenFilter.None;    
         private int mMinTokenLen
             = 1;
 
@@ -54,10 +54,10 @@ namespace Latino.TextMining
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        public TokenizerFilter Filter
+        public TokenFilter TokenFilter
         {
-            get { return mFilter; }
-            set { mFilter = value; }
+            get { return mTokenFilter; }
+            set { mTokenFilter = value; }
         }
 
         public int MinTokenLen
@@ -74,7 +74,7 @@ namespace Latino.TextMining
 
         public ITokenizerEnumerable GetTokens(string text)
         {
-            return new TokenizerEnumerable(new Enumerator(text, mFilter, mMinTokenLen));
+            return new TokenizerEnumerable(new Enumerator(text, mTokenFilter, mMinTokenLen));
         }
 
         // *** ISerializable interface implementation ***
@@ -83,7 +83,7 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteInt((int)mFilter);
+            writer.WriteInt((int)mTokenFilter);
             writer.WriteInt(mMinTokenLen);
         }
 
@@ -91,7 +91,7 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            mFilter = (TokenizerFilter)reader.ReadInt();
+            mTokenFilter = (TokenFilter)reader.ReadInt();
             mMinTokenLen = reader.ReadInt();
         }
 
@@ -113,14 +113,14 @@ namespace Latino.TextMining
 
             private FilterFlags mFF;
             private string mText;
-            private TokenizerFilter mFilter;            
+            private TokenFilter mFilter;            
             private int mMinTokenLen;
             private int mStartIdx
                 = 0;
             private int mEndIdx
                 = 0;
 
-            internal Enumerator(string text, TokenizerFilter filter, int minTokenLen)
+            internal Enumerator(string text, TokenFilter filter, int minTokenLen)
             {
                 mFilter = filter;
                 mText = text;
@@ -170,11 +170,11 @@ namespace Latino.TextMining
 
             private bool AcceptToken()
             {
-                return ((mFilter == TokenizerFilter.AlphanumLoose && (mFF & (FilterFlags.ContainsAlpha | FilterFlags.ContainsNumeric)) != 0) ||
-                    (mFilter == TokenizerFilter.AlphanumStrict && (mFF & FilterFlags.ContainsOther) == 0) ||
-                    (mFilter == TokenizerFilter.AlphaLoose && (mFF & FilterFlags.ContainsAlpha) != 0) ||
-                    (mFilter == TokenizerFilter.AlphaStrict && mFF == FilterFlags.ContainsAlpha) ||
-                    mFilter == TokenizerFilter.None) && mEndIdx - mStartIdx >= mMinTokenLen;
+                return ((mFilter == TokenFilter.AlphanumLoose && (mFF & (FilterFlags.ContainsAlpha | FilterFlags.ContainsNumeric)) != 0) ||
+                    (mFilter == TokenFilter.AlphanumStrict && (mFF & FilterFlags.ContainsOther) == 0) ||
+                    (mFilter == TokenFilter.AlphaLoose && (mFF & FilterFlags.ContainsAlpha) != 0) ||
+                    (mFilter == TokenFilter.AlphaStrict && mFF == FilterFlags.ContainsAlpha) ||
+                    mFilter == TokenFilter.None) && mEndIdx - mStartIdx >= mMinTokenLen;
             }
 
             private void GetNextToken()

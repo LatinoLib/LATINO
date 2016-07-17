@@ -343,15 +343,15 @@ namespace Latino.TextMining
 
         public void AddTokensFromString(string str)
         {
-            AddTokensFromString(str, TokenizerType.AlphaOnly);
+            AddTokensFromString(str, TokenType.AlphaOnly);
         }
 
-        public void AddTokensFromString(string str, TokenizerType tokType)
+        public void AddTokensFromString(string str, TokenType tokType)
         {
             Utils.ThrowException(str == null ? new ArgumentNullException("str") : null);
             Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
             SimpleTokenizer tokenizer = new SimpleTokenizer();
-            tokenizer.Type = tokType;
+            tokenizer.TokenType = tokType;
             foreach (string token in tokenizer.GetTokens(str))
             {
                 AddToken(token.ToUpper());
@@ -360,16 +360,16 @@ namespace Latino.TextMining
 
         public void AddTokensFromFile(string file, Encoding loadAs)
         {
-            AddTokensFromFile(file, TokenizerType.AlphaOnly, loadAs);
+            AddTokensFromFile(file, TokenType.AlphaOnly, loadAs);
         }
 
-        public void AddTokensFromFile(string file, TokenizerType tokType, Encoding loadAs)
+        public void AddTokensFromFile(string file, TokenType tokType, Encoding loadAs)
         {
             Utils.ThrowException(!Utils.VerifyFileNameOpen(file) ? new ArgumentValueException("file") : null);
             Utils.ThrowException(mIsRanked ? new InvalidOperationException() : null);
             StreamReader reader = new StreamReader(file, loadAs);
             SimpleTokenizer tokenizer = new SimpleTokenizer();
-            tokenizer.Type = tokType;
+            tokenizer.TokenType = tokType;
             string line;
             while ((line = reader.ReadLine()) != null)
             {

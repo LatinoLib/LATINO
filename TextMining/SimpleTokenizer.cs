@@ -6,11 +6,11 @@ namespace Latino.TextMining
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Enum TokenizerType
+       |  Enum TokenType
        |
        '-----------------------------------------------------------------------
     */
-    public enum TokenizerType
+    public enum TokenType
     {
         AllChars,    // equivalent to [^\s]+
         AlphaOnly,   // equivalent to \p{L}+
@@ -25,8 +25,8 @@ namespace Latino.TextMining
     */
     public class SimpleTokenizer : ITokenizer
     {
-        private TokenizerType mType
-            = TokenizerType.AllChars; 
+        private TokenType mTokenType
+            = TokenType.AllChars; 
         private int mMinTokenLen
             = 1;
 
@@ -39,10 +39,10 @@ namespace Latino.TextMining
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
-        public TokenizerType Type
+        public TokenType TokenType
         {
-            get { return mType; }
-            set { mType = value; }
+            get { return mTokenType; }
+            set { mTokenType = value; }
         }
 
         public int MinTokenLen
@@ -59,7 +59,7 @@ namespace Latino.TextMining
 
         public ITokenizerEnumerable GetTokens(string text)
         {
-            return new TokenizerEnumerable(new Enumerator(text, mType, mMinTokenLen));
+            return new TokenizerEnumerable(new Enumerator(text, mTokenType, mMinTokenLen));
         }
 
         // *** ISerializable interface implementation ***
@@ -68,7 +68,7 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
             // the following statements throw serialization-related exceptions
-            writer.WriteInt((int)mType);
+            writer.WriteInt((int)mTokenType);
             writer.WriteInt(mMinTokenLen);
         }
 
@@ -76,7 +76,7 @@ namespace Latino.TextMining
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             // the following statements throw serialization-related exceptions
-            mType = (TokenizerType)reader.ReadInt();
+            mTokenType = (TokenType)reader.ReadInt();
             mMinTokenLen = reader.ReadInt();
         }
 
@@ -89,14 +89,14 @@ namespace Latino.TextMining
         public class Enumerator : ITokenizerEnumerator
         {
             private string mText;
-            private TokenizerType mType;
+            private TokenType mType;
             private int mMinTokenLen;
             private int mStartIdx
                 = -1;
             private int mEndIdx
                 = -1;
 
-            internal Enumerator(string text, TokenizerType type, int minTokenLen)
+            internal Enumerator(string text, TokenType type, int minTokenLen)
             {
                 mType = type;
                 mText = text;
@@ -106,14 +106,14 @@ namespace Latino.TextMining
             private void GetNextToken()
             {
                 mStartIdx = mEndIdx + 1;
-                if (mType == TokenizerType.AlphaOnly)
+                if (mType == TokenType.AlphaOnly)
                 {
                     while (mStartIdx < mText.Length && !char.IsLetter(mText[mStartIdx])) { mStartIdx++; }
                     if (mStartIdx == mText.Length) { mStartIdx = -1; return; }
                     mEndIdx = mStartIdx + 1;
                     while (mEndIdx < mText.Length && char.IsLetter(mText[mEndIdx])) { mEndIdx++; }
                 }
-                else if (mType == TokenizerType.AlphanumOnly)
+                else if (mType == TokenType.AlphanumOnly)
                 {
                     while (mStartIdx < mText.Length && !char.IsLetterOrDigit(mText[mStartIdx])) { mStartIdx++; }
                     if (mStartIdx == mText.Length) { mStartIdx = -1; return; }

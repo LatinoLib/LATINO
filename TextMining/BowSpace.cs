@@ -197,7 +197,7 @@ namespace Latino.TextMining
             = false;
 #else
         private ITokenizer mTokenizer
-            = new SimpleTokenizer { MinTokenLen = 2, Type = TokenizerType.AlphaOnly };
+            = new SimpleTokenizer { MinTokenLen = 2, TokenType = TokenType.AlphaOnly };
         private IStopWords mStopWords
             = null;
         private IStemmer mStemmer
