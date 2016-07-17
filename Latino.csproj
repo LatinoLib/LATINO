@@ -109,6 +109,7 @@
     <Compile Include="TextMining\SimpleTokenizer.cs" />
     <Compile Include="TextMining\SocialMediaProcessing.cs" />
     <Compile Include="TextMining\StopWords.cs" />
+    <Compile Include="TextMining\StopWords\EstonianStopWords.cs" />
     <Compile Include="TextMining\TextFeature.cs" />
     <Compile Include="WebMining\BoilerplateRemover.cs" />
     <Compile Include="TextMining\CustomStemmer.cs" />

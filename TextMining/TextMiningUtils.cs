@@ -101,7 +101,7 @@ namespace Latino.TextMining
                     stemmer = new Stemmer(language);
                     break;
                 case Language.Estonian:
-                    stopWords = null; // *** stop words are missing
+                    stopWords = StopWords.EstonianStopWords;
                     stemmer = new Lemmatizer(language);
                     break;
                 case Language.Finnish:
