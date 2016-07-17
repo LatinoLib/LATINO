@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 using System;
+using System.Reflection;
+
 namespace SF.Snowball
 {
 	
@@ -210,6 +212,19 @@ namespace SF.Snowball
 		{
 			return eqSB(s.Length, s.ToString());
 		}
+
+        private MethodInfo GetMethod(string methodname)
+        { 
+            try
+            {
+                return GetType().GetMethod(methodname, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.DeclaredOnly, null, new System.Type[0], null);
+            }
+            catch (System.MethodAccessException e)
+            {
+                // FIXME - debug message
+                return null;
+            }
+        }
 		
 		protected internal virtual int findAmong(Among[] v, int vSize)
 		{
@@ -275,12 +290,12 @@ namespace SF.Snowball
 				if (commonI >= w.sSize)
 				{
 					cursor = c + w.sSize;
-					if (w.method == null)
+					if (w.methodname == "")
 						return w.result;
 					bool res;
 					try
 					{
-						System.Object resobj = w.method.Invoke(w.methodobject, (System.Object[]) new System.Object[0]);
+                        System.Object resobj = GetMethod(w.methodname).Invoke(this, (System.Object[])new System.Object[0]);
 						// {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca10433"'
 						res = resobj.ToString().Equals("true");
 					}
@@ -304,78 +319,6 @@ namespace SF.Snowball
 			}
 		}
 
-        protected internal virtual int findAmong(MyAmong[] v, int vSize)
-        {
-            int i = 0;
-            int j = vSize;
-
-            int c = cursor;
-            int l = limit;
-
-            int commonI = 0;
-            int commonJ = 0;
-
-            bool firstKeyInspected = false;
-
-            while (true)
-            {
-                int k = i + ((j - i) >> 1);
-                int diff = 0;
-                int common = commonI < commonJ ? commonI : commonJ; // smaller
-                MyAmong w = v[k];
-                int i2;
-                for (i2 = common; i2 < w.sSize; i2++)
-                {
-                    if (c + common == l)
-                    {
-                        diff = -1;
-                        break;
-                    }
-                    diff = current[c + common] - w.s[i2];
-                    if (diff != 0)
-                        break;
-                    common++;
-                }
-                if (diff < 0)
-                {
-                    j = k;
-                    commonJ = common;
-                }
-                else
-                {
-                    i = k;
-                    commonI = common;
-                }
-                if (j - i <= 1)
-                {
-                    if (i > 0)
-                        break; // v->s has been inspected
-                    if (j == i)
-                        break; // only one item in v
-
-                    // - but now we need to go round once more to get
-                    // v->s inspected. This looks messy, but is actually
-                    // the optimal approach.
-
-                    if (firstKeyInspected)
-                        break;
-                    firstKeyInspected = true;
-                }
-            }
-            while (true)
-            {
-                MyAmong w = v[i];
-                if (commonI >= w.sSize)
-                {
-                    cursor = c + w.sSize;
-                    return w.result;
-                }
-                i = w.substringI;
-                if (i < 0)
-                    return 0;
-            }
-        }
-		
 		// findAmongB is for backwards processing. Same comments apply
 		protected internal virtual int findAmongB(Among[] v, int vSize)
 		{
@@ -436,13 +379,13 @@ namespace SF.Snowball
 				if (commonI >= w.sSize)
 				{
 					cursor = c - w.sSize;
-					if (w.method == null)
+					if (w.methodname == "")
 						return w.result;
 					
 					bool res;
 					try
 					{
-						System.Object resobj = w.method.Invoke(w.methodobject, (System.Object[]) new System.Object[0]);
+                        System.Object resobj = GetMethod(w.methodname).Invoke(this, (System.Object[]) new System.Object[0]);
 						// {{Aroush}} UPGRADE_TODO: The equivalent in .NET for method 'java.lang.Object.toString' may return a different value. 'ms-help://MS.VSCC.2003/commoner/redir/redirect.htm?keyword="jlca10433"'
 						res = resobj.ToString().Equals("true");
 					}
@@ -465,73 +408,6 @@ namespace SF.Snowball
 					return 0;
 			}
 		}
-
-        protected internal virtual int findAmongB(MyAmong[] v, int vSize)
-        {
-            int i = 0;
-            int j = vSize;
-
-            int c = cursor;
-            int lb = limitBackward;
-
-            int commonI = 0;
-            int commonJ = 0;
-
-            bool firstKeyInspected = false;
-
-            while (true)
-            {
-                int k = i + ((j - i) >> 1);
-                int diff = 0;
-                int common = commonI < commonJ ? commonI : commonJ;
-                MyAmong w = v[k];
-                int i2;
-                for (i2 = w.sSize - 1 - common; i2 >= 0; i2--)
-                {
-                    if (c - common == lb)
-                    {
-                        diff = -1;
-                        break;
-                    }
-                    diff = current[c - 1 - common] - w.s[i2];
-                    if (diff != 0)
-                        break;
-                    common++;
-                }
-                if (diff < 0)
-                {
-                    j = k;
-                    commonJ = common;
-                }
-                else
-                {
-                    i = k;
-                    commonI = common;
-                }
-                if (j - i <= 1)
-                {
-                    if (i > 0)
-                        break;
-                    if (j == i)
-                        break;
-                    if (firstKeyInspected)
-                        break;
-                    firstKeyInspected = true;
-                }
-            }
-            while (true)
-            {
-                MyAmong w = v[i];
-                if (commonI >= w.sSize)
-                {
-                    cursor = c - w.sSize;
-                    return w.result;
-                }
-                i = w.substringI;
-                if (i < 0)
-                    return 0;
-            }
-        }
 
 		/* to replace chars between cBra and cKet in current by the
 		* chars in s.
