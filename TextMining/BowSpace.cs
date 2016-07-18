@@ -176,26 +176,6 @@ namespace Latino.TextMining
         private ArrayList<Word> mIdxInfo
             = new ArrayList<Word>();
 
-#if OLD_BOWSPACE
-        private ITokenizer mTokenizer
-            = new UnicodeTokenizer { MinTokenLen = 2, Filter = TokenizerFilter.AlphanumLoose };
-        private IStopWords mStopWords
-            = null;
-        private IStemmer mStemmer
-            = null;
-        private int mMaxNGramLen
-            = 2;
-        private int mMinWordFreq
-            = 5;
-        private WordWeightType mWordWeightType
-            = WordWeightType.TermFreq;
-        private double mCutLowWeightsPerc
-            = 0.2;
-        private bool mNormalizeVectors
-            = true;
-        private bool mKeepWordForms
-            = false;
-#else
         private ITokenizer mTokenizer
             = new SimpleTokenizer { MinTokenLen = 2, TokenType = TokenType.AlphaOnly };
         private IStopWords mStopWords
@@ -214,7 +194,6 @@ namespace Latino.TextMining
             = true;
         private bool mKeepWordForms
             = false;
-#endif
 
         private Logger mLogger
             = Logger.GetInstanceLogger(typeof(BowSpace));
@@ -1143,7 +1122,7 @@ namespace Latino.TextMining
         public virtual void Save(BinarySerializer writer)
         {
             // the following statements throw serialization-related exceptions
-#if OLD_BOWSPACE
+#if OLD_BOWSPACE_FORMAT
             SaveVocabulary(writer); // throws ArgumentNullException
             writer.WriteObject(mTokenizer);
             writer.WriteObject(new Set<string>.ReadOnly(new Set<string>((StopWords)mStopWords)));
