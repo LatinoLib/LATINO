@@ -88,6 +88,7 @@
     <Compile Include="Model\CrossValidator.cs" />
     <Compile Include="Model\HierarchicalBisectingClusteringFast.cs" />
     <Compile Include="Model\NearestCentroidClassifier.cs" />
+    <Compile Include="Model\StatsUtils.cs" />
     <Compile Include="Model\SvmBinaryClassifier.cs" />
     <Compile Include="Model\MajorityClassifier.cs" />
     <Compile Include="Model\MaximumEntropyClassifierFast.cs" />
