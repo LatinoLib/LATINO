@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using MyAmong = SF.Snowball.MyAmong;
+using Among = SF.Snowball.Among;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -32,28 +32,28 @@ namespace SF.Snowball.Ext
 		private static void InitBlock()
 		{
             // TODO: make these static?
-			a0 = new MyAmong[]{new MyAmong("gener", - 1, - 1)};
-			a1 = new MyAmong[]{new MyAmong("ied", - 1, 2), new MyAmong("s", - 1, 3), new MyAmong("ies", 1, 2), new MyAmong("sses", 1, 1), new MyAmong("ss", 1, - 1), new MyAmong("us", 1, - 1)};
-			a2 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("bb", 0, 2), new MyAmong("dd", 0, 2), new MyAmong("ff", 0, 2), new MyAmong("gg", 0, 2), new MyAmong("bl", 0, 1), new MyAmong("mm", 0, 2), new MyAmong("nn", 0, 2), new MyAmong("pp", 0, 2), new MyAmong("rr", 0, 2), new MyAmong("at", 0, 1), new MyAmong("tt", 0, 2), new MyAmong("iz", 0, 1)};
-			a3 = new MyAmong[]{new MyAmong("ed", - 1, 2), new MyAmong("eed", 0, 1), new MyAmong("ing", - 1, 2), new MyAmong("edly", - 1, 2), new MyAmong("eedly", 3, 1), new MyAmong("ingly", - 1, 2)};
-			a4 = new MyAmong[]{new MyAmong("anci", - 1, 3), new MyAmong("enci", - 1, 2), new MyAmong("ogi", - 1, 13), new MyAmong("li", - 1, 16), new MyAmong("bli", 3, 12), new MyAmong("abli", 4, 4), new MyAmong("alli", 3, 8), new MyAmong("fulli", 3, 14), new MyAmong("lessli", 3, 15), new MyAmong("ousli", 3, 10), new MyAmong("entli", 3, 5), new MyAmong("aliti", - 1, 8), new MyAmong("biliti", - 1, 12), new MyAmong("iviti", - 1, 11), new MyAmong("tional", - 1, 1), new MyAmong("ational", 14, 7), new MyAmong("alism", - 1, 8), new MyAmong("ation", - 1, 7), new MyAmong("ization", 17, 6), new MyAmong("izer", - 1, 6), new MyAmong("ator", - 1, 7), new MyAmong("iveness", - 1, 11), new MyAmong("fulness", - 1, 9), new MyAmong("ousness", - 1, 10)};
-			a5 = new MyAmong[]{new MyAmong("icate", - 1, 4), new MyAmong("ative", - 1, 6), new MyAmong("alize", - 1, 3), new MyAmong("iciti", - 1, 4), new MyAmong("ical", - 1, 4), new MyAmong("tional", - 1, 1), new MyAmong("ational", 5, 2), new MyAmong("ful", - 1, 5), new MyAmong("ness", - 1, 5)};
-			a6 = new MyAmong[]{new MyAmong("ic", - 1, 1), new MyAmong("ance", - 1, 1), new MyAmong("ence", - 1, 1), new MyAmong("able", - 1, 1), new MyAmong("ible", - 1, 1), new MyAmong("ate", - 1, 1), new MyAmong("ive", - 1, 1), new MyAmong("ize", - 1, 1), new MyAmong("iti", - 1, 1), new MyAmong("al", - 1, 1), new MyAmong("ism", - 1, 1), new MyAmong("ion", - 1, 2), new MyAmong("er", - 1, 1), new MyAmong("ous", - 1, 1), new MyAmong("ant", - 1, 1), new MyAmong("ent", - 1, 1), new MyAmong("ment", 15, 1), new MyAmong("ement", 16, 1)};
-			a7 = new MyAmong[]{new MyAmong("e", - 1, 1), new MyAmong("l", - 1, 2)};
-			a8 = new MyAmong[]{new MyAmong("succeed", - 1, - 1), new MyAmong("proceed", - 1, - 1), new MyAmong("exceed", - 1, - 1), new MyAmong("canning", - 1, - 1), new MyAmong("inning", - 1, - 1), new MyAmong("earring", - 1, - 1), new MyAmong("herring", - 1, - 1), new MyAmong("outing", - 1, - 1)};
-			a9 = new MyAmong[]{new MyAmong("andes", - 1, - 1), new MyAmong("atlas", - 1, - 1), new MyAmong("bias", - 1, - 1), new MyAmong("cosmos", - 1, - 1), new MyAmong("dying", - 1, 3), new MyAmong("early", - 1, 9), new MyAmong("gently", - 1, 7), new MyAmong("howe", - 1, - 1), new MyAmong("idly", - 1, 6), new MyAmong("lying", - 1, 4), new MyAmong("news", - 1, - 1), new MyAmong("only", - 1, 10), new MyAmong("singly", - 1, 11), new MyAmong("skies", - 1, 2), new MyAmong("skis", - 1, 1), new MyAmong("sky", - 1, - 1), new MyAmong("tying", - 1, 5), new MyAmong("ugly", - 1, 8)};
+			a0 = new Among[]{new Among("gener", - 1, - 1)};
+			a1 = new Among[]{new Among("ied", - 1, 2), new Among("s", - 1, 3), new Among("ies", 1, 2), new Among("sses", 1, 1), new Among("ss", 1, - 1), new Among("us", 1, - 1)};
+			a2 = new Among[]{new Among("", - 1, 3), new Among("bb", 0, 2), new Among("dd", 0, 2), new Among("ff", 0, 2), new Among("gg", 0, 2), new Among("bl", 0, 1), new Among("mm", 0, 2), new Among("nn", 0, 2), new Among("pp", 0, 2), new Among("rr", 0, 2), new Among("at", 0, 1), new Among("tt", 0, 2), new Among("iz", 0, 1)};
+			a3 = new Among[]{new Among("ed", - 1, 2), new Among("eed", 0, 1), new Among("ing", - 1, 2), new Among("edly", - 1, 2), new Among("eedly", 3, 1), new Among("ingly", - 1, 2)};
+			a4 = new Among[]{new Among("anci", - 1, 3), new Among("enci", - 1, 2), new Among("ogi", - 1, 13), new Among("li", - 1, 16), new Among("bli", 3, 12), new Among("abli", 4, 4), new Among("alli", 3, 8), new Among("fulli", 3, 14), new Among("lessli", 3, 15), new Among("ousli", 3, 10), new Among("entli", 3, 5), new Among("aliti", - 1, 8), new Among("biliti", - 1, 12), new Among("iviti", - 1, 11), new Among("tional", - 1, 1), new Among("ational", 14, 7), new Among("alism", - 1, 8), new Among("ation", - 1, 7), new Among("ization", 17, 6), new Among("izer", - 1, 6), new Among("ator", - 1, 7), new Among("iveness", - 1, 11), new Among("fulness", - 1, 9), new Among("ousness", - 1, 10)};
+			a5 = new Among[]{new Among("icate", - 1, 4), new Among("ative", - 1, 6), new Among("alize", - 1, 3), new Among("iciti", - 1, 4), new Among("ical", - 1, 4), new Among("tional", - 1, 1), new Among("ational", 5, 2), new Among("ful", - 1, 5), new Among("ness", - 1, 5)};
+			a6 = new Among[]{new Among("ic", - 1, 1), new Among("ance", - 1, 1), new Among("ence", - 1, 1), new Among("able", - 1, 1), new Among("ible", - 1, 1), new Among("ate", - 1, 1), new Among("ive", - 1, 1), new Among("ize", - 1, 1), new Among("iti", - 1, 1), new Among("al", - 1, 1), new Among("ism", - 1, 1), new Among("ion", - 1, 2), new Among("er", - 1, 1), new Among("ous", - 1, 1), new Among("ant", - 1, 1), new Among("ent", - 1, 1), new Among("ment", 15, 1), new Among("ement", 16, 1)};
+			a7 = new Among[]{new Among("e", - 1, 1), new Among("l", - 1, 2)};
+			a8 = new Among[]{new Among("succeed", - 1, - 1), new Among("proceed", - 1, - 1), new Among("exceed", - 1, - 1), new Among("canning", - 1, - 1), new Among("inning", - 1, - 1), new Among("earring", - 1, - 1), new Among("herring", - 1, - 1), new Among("outing", - 1, - 1)};
+			a9 = new Among[]{new Among("andes", - 1, - 1), new Among("atlas", - 1, - 1), new Among("bias", - 1, - 1), new Among("cosmos", - 1, - 1), new Among("dying", - 1, 3), new Among("early", - 1, 9), new Among("gently", - 1, 7), new Among("howe", - 1, - 1), new Among("idly", - 1, 6), new Among("lying", - 1, 4), new Among("news", - 1, - 1), new Among("only", - 1, 10), new Among("singly", - 1, 11), new Among("skies", - 1, 2), new Among("skis", - 1, 1), new Among("sky", - 1, - 1), new Among("tying", - 1, 5), new Among("ugly", - 1, 8)};
 		}
 		
-		private static MyAmong[] a0;
-		private static MyAmong[] a1;
-		private static MyAmong[] a2;
-		private static MyAmong[] a3;
-		private static MyAmong[] a4;
-		private static MyAmong[] a5;
-		private static MyAmong[] a6;
-		private static MyAmong[] a7;
-		private static MyAmong[] a8;
-		private static MyAmong[] a9;
+		private static Among[] a0;
+		private static Among[] a1;
+		private static Among[] a2;
+		private static Among[] a3;
+		private static Among[] a4;
+		private static Among[] a5;
+		private static Among[] a6;
+		private static Among[] a7;
+		private static Among[] a8;
+		private static Among[] a9;
 
         private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1)};
 		private static readonly char[] g_v_WXY = new char[]{(char) (1), (char) (17), (char) (65), (char) (208), (char) (1)};
@@ -202,7 +202,7 @@ lab1Brk: ;
 					v2 = cursor;
 					do 
 					{
-						// MyAmong, line 33
+						// Among, line 33
 						if (findAmong(a0, 1) == 0)
 						{
 							goto lab2Brk;

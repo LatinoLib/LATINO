@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using MyAmong = SF.Snowball.MyAmong;
+using Among = SF.Snowball.Among;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -31,20 +31,20 @@ namespace SF.Snowball.Ext
 		}
 		private static void InitBlock()
 		{
-			a0 = new MyAmong[]{new MyAmong("", - 1, 6), new MyAmong("\u00E1", 0, 1), new MyAmong("\u00E4", 0, 1), new MyAmong("\u00E9", 0, 2), new MyAmong("\u00EB", 0, 2), new MyAmong("\u00ED", 0, 3), new MyAmong("\u00EF", 0, 3), new MyAmong("\u00F3", 0, 4), new MyAmong("\u00F6", 0, 4), new MyAmong("\u00FA", 0, 5), new MyAmong("\u00FC", 0, 5)};
-			a1 = new MyAmong[]{new MyAmong("", - 1, 3), new MyAmong("I", 0, 2), new MyAmong("Y", 0, 1)};
-			a2 = new MyAmong[]{new MyAmong("dd", - 1, - 1), new MyAmong("kk", - 1, - 1), new MyAmong("tt", - 1, - 1)};
-			a3 = new MyAmong[]{new MyAmong("ene", - 1, 2), new MyAmong("se", - 1, 3), new MyAmong("en", - 1, 2), new MyAmong("heden", 2, 1), new MyAmong("s", - 1, 3)};
-			a4 = new MyAmong[]{new MyAmong("end", - 1, 1), new MyAmong("ig", - 1, 2), new MyAmong("ing", - 1, 1), new MyAmong("lijk", - 1, 3), new MyAmong("baar", - 1, 4), new MyAmong("bar", - 1, 5)};
-			a5 = new MyAmong[]{new MyAmong("aa", - 1, - 1), new MyAmong("ee", - 1, - 1), new MyAmong("oo", - 1, - 1), new MyAmong("uu", - 1, - 1)};
+			a0 = new Among[]{new Among("", - 1, 6), new Among("\u00E1", 0, 1), new Among("\u00E4", 0, 1), new Among("\u00E9", 0, 2), new Among("\u00EB", 0, 2), new Among("\u00ED", 0, 3), new Among("\u00EF", 0, 3), new Among("\u00F3", 0, 4), new Among("\u00F6", 0, 4), new Among("\u00FA", 0, 5), new Among("\u00FC", 0, 5)};
+			a1 = new Among[]{new Among("", - 1, 3), new Among("I", 0, 2), new Among("Y", 0, 1)};
+			a2 = new Among[]{new Among("dd", - 1, - 1), new Among("kk", - 1, - 1), new Among("tt", - 1, - 1)};
+			a3 = new Among[]{new Among("ene", - 1, 2), new Among("se", - 1, 3), new Among("en", - 1, 2), new Among("heden", 2, 1), new Among("s", - 1, 3)};
+			a4 = new Among[]{new Among("end", - 1, 1), new Among("ig", - 1, 2), new Among("ing", - 1, 1), new Among("lijk", - 1, 3), new Among("baar", - 1, 4), new Among("bar", - 1, 5)};
+			a5 = new Among[]{new Among("aa", - 1, - 1), new Among("ee", - 1, - 1), new Among("oo", - 1, - 1), new Among("uu", - 1, - 1)};
 		}
 		
-		private static MyAmong[] a0;
-		private static MyAmong[] a1;
-		private static MyAmong[] a2;
-		private static MyAmong[] a3;
-		private static MyAmong[] a4;
-		private static MyAmong[] a5;
+		private static Among[] a0;
+		private static Among[] a1;
+		private static Among[] a2;
+		private static Among[] a3;
+		private static Among[] a4;
+		private static Among[] a5;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
 		private static readonly char[] g_v_I = new char[]{(char) (1), (char) (0), (char) (0), (char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
 		private static readonly char[] gVJ = new char[]{(char) (17), (char) (67), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (128)};
@@ -480,7 +480,7 @@ replab1Brk: ;
 			// (, line 90
 			// test, line 91
 			v1 = limit - cursor;
-			// MyAmong, line 91
+			// Among, line 91
 			if (findAmongB(a2, 3) == 0)
 			{
 				return false;
@@ -915,7 +915,7 @@ lab4Brk: ;
 				// test, line 148
 				v10 = limit - cursor;
 				// (, line 148
-				// MyAmong, line 149
+				// Among, line 149
 				if (findAmongB(a5, 4) == 0)
 				{
 					goto lab9Brk;

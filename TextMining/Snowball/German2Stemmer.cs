@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using MyAmong = SF.Snowball.MyAmong;
+using Among = SF.Snowball.Among;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -31,20 +31,20 @@ namespace SF.Snowball.Ext
 		}
 		private static void InitBlock()
 		{
-			a0 = new MyAmong[]{new MyAmong("", - 1, 6), new MyAmong("ae", 0, 2), new MyAmong("oe", 0, 3), new MyAmong("qu", 0, 5), new MyAmong("ue", 0, 4), new MyAmong("\u00DF", 0, 1)};
-			a1 = new MyAmong[]{new MyAmong("", - 1, 6), new MyAmong("U", 0, 2), new MyAmong("Y", 0, 1), new MyAmong("\u00E4", 0, 3), new MyAmong("\u00F6", 0, 4), new MyAmong("\u00FC", 0, 5)};
-			a2 = new MyAmong[]{new MyAmong("e", - 1, 1), new MyAmong("em", - 1, 1), new MyAmong("en", - 1, 1), new MyAmong("ern", - 1, 1), new MyAmong("er", - 1, 1), new MyAmong("s", - 1, 2), new MyAmong("es", 5, 1)};
-			a3 = new MyAmong[]{new MyAmong("en", - 1, 1), new MyAmong("er", - 1, 1), new MyAmong("st", - 1, 2), new MyAmong("est", 2, 1)};
-			a4 = new MyAmong[]{new MyAmong("ig", - 1, 1), new MyAmong("lich", - 1, 1)};
-			a5 = new MyAmong[]{new MyAmong("end", - 1, 1), new MyAmong("ig", - 1, 2), new MyAmong("ung", - 1, 1), new MyAmong("lich", - 1, 3), new MyAmong("isch", - 1, 2), new MyAmong("ik", - 1, 2), new MyAmong("heit", - 1, 3), new MyAmong("keit", - 1, 4)};
+			a0 = new Among[]{new Among("", - 1, 6), new Among("ae", 0, 2), new Among("oe", 0, 3), new Among("qu", 0, 5), new Among("ue", 0, 4), new Among("\u00DF", 0, 1)};
+			a1 = new Among[]{new Among("", - 1, 6), new Among("U", 0, 2), new Among("Y", 0, 1), new Among("\u00E4", 0, 3), new Among("\u00F6", 0, 4), new Among("\u00FC", 0, 5)};
+			a2 = new Among[]{new Among("e", - 1, 1), new Among("em", - 1, 1), new Among("en", - 1, 1), new Among("ern", - 1, 1), new Among("er", - 1, 1), new Among("s", - 1, 2), new Among("es", 5, 1)};
+			a3 = new Among[]{new Among("en", - 1, 1), new Among("er", - 1, 1), new Among("st", - 1, 2), new Among("est", 2, 1)};
+			a4 = new Among[]{new Among("ig", - 1, 1), new Among("lich", - 1, 1)};
+			a5 = new Among[]{new Among("end", - 1, 1), new Among("ig", - 1, 2), new Among("ung", - 1, 1), new Among("lich", - 1, 3), new Among("isch", - 1, 2), new Among("ik", - 1, 2), new Among("heit", - 1, 3), new Among("keit", - 1, 4)};
 		}
 		
-		private static MyAmong[] a0;
-		private static MyAmong[] a1;
-		private static MyAmong[] a2;
-		private static MyAmong[] a3;
-		private static MyAmong[] a4;
-		private static MyAmong[] a5;
+		private static Among[] a0;
+		private static Among[] a1;
+		private static Among[] a2;
+		private static Among[] a3;
+		private static Among[] a4;
+		private static Among[] a5;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (8), (char) (0), (char) (32), (char) (8)};
 		private static readonly char[] gSEnding = new char[]{(char) (117), (char) (30), (char) (5)};
 		private static readonly char[] gStEnding = new char[]{(char) (117), (char) (30), (char) (4)};

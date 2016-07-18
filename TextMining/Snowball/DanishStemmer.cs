@@ -17,7 +17,7 @@
 
 // This file was generated automatically by the Snowball to Java compiler
 using System;
-using MyAmong = SF.Snowball.MyAmong;
+using Among = SF.Snowball.Among;
 using SnowballProgram = SF.Snowball.SnowballProgram;
 namespace SF.Snowball.Ext
 {
@@ -31,15 +31,15 @@ namespace SF.Snowball.Ext
 		}
 		private static void InitBlock()
 		{
-			a0 = new MyAmong[]{new MyAmong("hed", - 1, 1), new MyAmong("ethed", 0, 1), new MyAmong("ered", - 1, 1), new MyAmong("e", - 1, 1), new MyAmong("erede", 3, 1), new MyAmong("ende", 3, 1), new MyAmong("erende", 5, 1), new MyAmong("ene", 3, 1), new MyAmong("erne", 3, 1), new MyAmong("ere", 3, 1), new MyAmong("en", - 1, 1), new MyAmong("heden", 10, 1), new MyAmong("eren", 10, 1), new MyAmong("er", - 1, 1), new MyAmong("heder", 13, 1), new MyAmong("erer", 13, 1), new MyAmong("s", - 1, 2), new MyAmong("heds", 16, 1), new MyAmong("es", 16, 1), new MyAmong("endes", 18, 1), new MyAmong("erendes", 19, 1), new MyAmong("enes", 18, 1), new MyAmong("ernes", 18, 1), new MyAmong("eres", 18, 1), new MyAmong("ens", 16, 1), new MyAmong("hedens", 24, 1), new MyAmong("erens", 24, 1), new MyAmong("ers", 16, 1), new MyAmong("ets", 16, 1), new MyAmong("erets", 28, 1), new MyAmong("et", - 1, 1), new MyAmong("eret", 30, 1)};
-			a1 = new MyAmong[]{new MyAmong("gd", - 1, - 1), new MyAmong("dt", - 1, - 1), new MyAmong("gt", - 1, - 1), new MyAmong("kt", - 1, - 1)};
-			a2 = new MyAmong[]{new MyAmong("ig", - 1, 1), new MyAmong("lig", 0, 1), new MyAmong("elig", 1, 1), new MyAmong("els", - 1, 1), new MyAmong("l\u00F8st", - 1, 2)};
+			a0 = new Among[]{new Among("hed", - 1, 1), new Among("ethed", 0, 1), new Among("ered", - 1, 1), new Among("e", - 1, 1), new Among("erede", 3, 1), new Among("ende", 3, 1), new Among("erende", 5, 1), new Among("ene", 3, 1), new Among("erne", 3, 1), new Among("ere", 3, 1), new Among("en", - 1, 1), new Among("heden", 10, 1), new Among("eren", 10, 1), new Among("er", - 1, 1), new Among("heder", 13, 1), new Among("erer", 13, 1), new Among("s", - 1, 2), new Among("heds", 16, 1), new Among("es", 16, 1), new Among("endes", 18, 1), new Among("erendes", 19, 1), new Among("enes", 18, 1), new Among("ernes", 18, 1), new Among("eres", 18, 1), new Among("ens", 16, 1), new Among("hedens", 24, 1), new Among("erens", 24, 1), new Among("ers", 16, 1), new Among("ets", 16, 1), new Among("erets", 28, 1), new Among("et", - 1, 1), new Among("eret", 30, 1)};
+			a1 = new Among[]{new Among("gd", - 1, - 1), new Among("dt", - 1, - 1), new Among("gt", - 1, - 1), new Among("kt", - 1, - 1)};
+			a2 = new Among[]{new Among("ig", - 1, 1), new Among("lig", 0, 1), new Among("elig", 1, 1), new Among("els", - 1, 1), new Among("l\u00F8st", - 1, 2)};
 		}
 		
-		private static MyAmong[] a0;
+		private static Among[] a0;
 		
-		private static MyAmong[] a1;
-		private static MyAmong[] a2;
+		private static Among[] a1;
+		private static Among[] a2;
 		private static readonly char[] gV = new char[]{(char) (17), (char) (65), (char) (16), (char) (1), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (48), (char) (0), (char) (128)};
 		private static readonly char[] gSEnding = new char[]{(char) (239), (char) (254), (char) (42), (char) (3), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (0), (char) (16)};
 		

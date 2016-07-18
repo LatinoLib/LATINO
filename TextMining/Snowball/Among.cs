@@ -17,40 +17,23 @@
 using System;
 namespace SF.Snowball
 {
-	
+
 	public class Among
 	{
-		public Among(System.String s, int substringI, int result, System.String methodname, SnowballProgram methodobject)
+		public Among(System.String s, int substringI, int result, System.String methodname = "")
 		{
 			this.sSize = s.Length;
 			this.s = s;
 			this.substringI = substringI;
 			this.result = result;
-			this.methodobject = methodobject;
-			if (methodname.Length == 0)
-			{
-				this.method = null;
-			}
-			else
-			{
-				try
-				{
-					this.method = methodobject.GetType().GetMethod(methodname, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.DeclaredOnly, null, new System.Type[0], null);
-				}
-				catch (System.MethodAccessException e)
-				{
-					// FIXME - debug message
-					this.method = null;
-				}
-			}
+            this.methodname = methodname;
 		}
 		
 		public int sSize; /* search string */
 		public System.String s; /* search string */
 		public int substringI; /* index to longest matching substring */
 		public int result; /* result of the lookup */
-		public System.Reflection.MethodInfo method; /* method to use if substring matches */
-		public SnowballProgram methodobject; /* object to invoke method on */
+        public string methodname;
 	}
 	
 }
