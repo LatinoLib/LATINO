@@ -1125,7 +1125,7 @@ namespace Latino.TextMining
 #if OLD_BOWSPACE_FORMAT
             SaveVocabulary(writer); // throws ArgumentNullException
             writer.WriteObject(mTokenizer);
-            writer.WriteObject(new Set<string>.ReadOnly(new Set<string>((StopWords)mStopWords)));
+            writer.WriteObject<Set<string>.ReadOnly>(mStopWords == null ? null : new Set<string>((StopWords)mStopWords));
             writer.WriteObject(mStemmer);
             writer.WriteInt(mMaxNGramLen);
             writer.WriteInt(mMinWordFreq);
@@ -1150,10 +1150,11 @@ namespace Latino.TextMining
         public void Load(BinarySerializer reader)
         {
             // the following statements throw serialization-related exceptions
-#if OLD_BOWSPACE
+#if OLD_BOWSPACE_FORMAT
             LoadVocabulary(reader); // throws ArgumentNullException
             mTokenizer = reader.ReadObject<ITokenizer>();
-            mStopWords = new StopWords(reader.ReadObject<Set<string>.ReadOnly>());
+            var stopWords = reader.ReadObject<Set<string>.ReadOnly>();
+            mStopWords = stopWords == null ? null : new StopWords(stopWords);
             mStemmer = reader.ReadObject<IStemmer>();
             mMaxNGramLen = reader.ReadInt();
             mMinWordFreq = reader.ReadInt();
