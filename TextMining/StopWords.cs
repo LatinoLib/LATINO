@@ -10,6 +10,7 @@
  *
  ***************************************************************************/
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -24,23 +25,52 @@ namespace Latino.TextMining
     public partial class StopWords : IStopWords, IEnumerable<string>
     {
         private Set<string> mStopWords;
+        private StringComparison mStrComparison;
 
         public StopWords(BinarySerializer reader)
         {
             Load(reader);
         }
 
-        public StopWords(IEnumerable<string> stopWords)
+        public StopWords(IEnumerable<string> stopWords, StringComparison strComparison = StringComparison.OrdinalIgnoreCase)
         {
-            mStopWords = new Set<string>(stopWords);
+            mStopWords = new Set<string>(stopWords, GetStringComparer(strComparison));
+            mStrComparison = strComparison;
         }
 
-        public StopWords(Language language)
+        public StopWords(Language language, StringComparison strComparison = StringComparison.OrdinalIgnoreCase)
         {
             IStopWords stopWords;
             IStemmer stemmer;
             TextMiningUtils.GetLanguageTools(language, out stopWords, out stemmer);
-            mStopWords = ((StopWords)stopWords).mStopWords;
+            mStopWords = new Set<string>((StopWords)stopWords, GetStringComparer(strComparison));
+            mStrComparison = strComparison;
+        }
+
+        public Set<string> Internal
+        {
+            get { return mStopWords; }
+        }
+
+        private StringComparer GetStringComparer(StringComparison strComparison)
+        {
+            switch (strComparison)
+            {
+                case StringComparison.CurrentCulture:
+                    return StringComparer.CurrentCulture;
+                case StringComparison.CurrentCultureIgnoreCase:
+                    return StringComparer.CurrentCultureIgnoreCase;
+                case StringComparison.InvariantCulture:
+                    return StringComparer.InvariantCulture;
+                case StringComparison.InvariantCultureIgnoreCase:
+                    return StringComparer.InvariantCultureIgnoreCase;
+                case StringComparison.Ordinal:
+                    return StringComparer.Ordinal;
+                case StringComparison.OrdinalIgnoreCase:
+                    return StringComparer.OrdinalIgnoreCase;
+                default:
+                    throw new ArgumentValueException("strComparison");
+            }
         }
 
         // *** IStopWords interface implementation ***
@@ -68,12 +98,14 @@ namespace Latino.TextMining
 
         public void Save(BinarySerializer writer)
         {
+            writer.WriteInt((int)mStrComparison);
             mStopWords.Save(writer);
         }
 
         public void Load(BinarySerializer reader)
         {
-            mStopWords = new Set<string>(reader);
+            mStrComparison = (StringComparison)reader.ReadInt();
+            mStopWords = new Set<string>(reader, GetStringComparer(mStrComparison));
         }
     }
 }

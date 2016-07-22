@@ -399,9 +399,10 @@ namespace Latino.TextMining
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                     foreach (string token in mTokenizer.GetTokens(document))
                     {
-                        string word = token.Trim().ToLower();
+                        string word = token.Trim();
                         if (mStopWords == null || !mStopWords.Contains(word))
                         {
+                            word = word.ToLower();
                             string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
                             if (nGrams.Count < mMaxNGramLen)
                             {
@@ -444,9 +445,10 @@ namespace Latino.TextMining
                         Set<string> docWords = new Set<string>();
                         foreach (string token in mTokenizer.GetTokens(document))
                         {
-                            string word = token.Trim().ToLower();
+                            string word = token.Trim();
                             if (mStopWords == null || !mStopWords.Contains(word))
                             {
+                                word = word.ToLower();
                                 string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
                                 if (nGrams.Count < n)
                                 {
@@ -554,9 +556,10 @@ namespace Latino.TextMining
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 foreach (string token in mTokenizer.GetTokens(document))
                 {
-                    string word = token.Trim().ToLower();                    
+                    string word = token.Trim();
                     if (mStopWords == null || !mStopWords.Contains(word))
                     {
+                        word = word.ToLower();
                         string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
                         if (nGrams.Count < mMaxNGramLen)
                         {
@@ -643,7 +646,6 @@ namespace Latino.TextMining
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                     foreach (string word in document)
                     {
-                        //string word = token.Trim().ToLower();
                         if (mStopWords == null || !mStopWords.Contains(word))
                         {
                             string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
@@ -688,7 +690,6 @@ namespace Latino.TextMining
                         Set<string> docWords = new Set<string>();
                         foreach (string word in (IEnumerable<string>)document)
                         {
-                            //string word = token.Trim().ToLower();
                             if (mStopWords == null || !mStopWords.Contains(word))
                             {
                                 string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
@@ -798,7 +799,6 @@ namespace Latino.TextMining
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 foreach (string word in (IEnumerable<string>)document)
                 {
-                    //string word = token.Trim().ToLower();
                     if (mStopWords == null || !mStopWords.Contains(word))
                     {
                         string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
