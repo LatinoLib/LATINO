@@ -29,11 +29,12 @@ namespace Latino.TextMining
 
         public StopWords(BinarySerializer reader)
         {
-            Load(reader);
+            Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
 
         public StopWords(IEnumerable<string> stopWords, StringComparison strComparison = StringComparison.OrdinalIgnoreCase)
         {
+            Utils.ThrowException(stopWords == null ? new ArgumentNullException("stopWords") : null);
             mStopWords = new Set<string>(stopWords, GetStringComparer(strComparison));
             mStrComparison = strComparison;
         }
@@ -42,7 +43,7 @@ namespace Latino.TextMining
         {
             IStopWords stopWords;
             IStemmer stemmer;
-            TextMiningUtils.GetLanguageTools(language, out stopWords, out stemmer);
+            TextMiningUtils.GetLanguageTools(language, out stopWords, out stemmer); // throws ArgumentNotSupportedException
             mStopWords = new Set<string>((StopWords)stopWords, GetStringComparer(strComparison));
             mStrComparison = strComparison;
         }
@@ -77,6 +78,7 @@ namespace Latino.TextMining
 
         public bool Contains(string word)
         {
+            Utils.ThrowException(word == null ? new ArgumentNullException("word") : null);
             return mStopWords.Contains(word);
         }
 
@@ -98,12 +100,16 @@ namespace Latino.TextMining
 
         public void Save(BinarySerializer writer)
         {
+            Utils.ThrowException(writer == null ? new ArgumentNullException("writer") : null);
+            // the following statements throw serialization-related exceptions
             writer.WriteInt((int)mStrComparison);
             mStopWords.Save(writer);
         }
 
         public void Load(BinarySerializer reader)
         {
+            Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
+            // the following statements throw serialization-related exceptions
             mStrComparison = (StringComparison)reader.ReadInt();
             mStopWords = new Set<string>(reader, GetStringComparer(mStrComparison));
         }
