@@ -26,9 +26,9 @@ namespace Latino.TextMining
     public class SimpleTokenizer : ITokenizer
     {
         private TokenType mTokenType
-            = TokenType.AllChars; 
+            = TokenType.AlphaOnly;
         private int mMinTokenLen
-            = 1;
+            = 2;
 
         public SimpleTokenizer()
         {

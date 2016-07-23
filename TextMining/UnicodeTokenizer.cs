@@ -41,9 +41,9 @@ namespace Latino.TextMining
     public class UnicodeTokenizer : ITokenizer 
     {
         private TokenFilter mTokenFilter
-            = TokenFilter.None;    
+            = TokenFilter.AlphaStrict;
         private int mMinTokenLen
-            = 1;
+            = 2;
 
         public UnicodeTokenizer()
         {
