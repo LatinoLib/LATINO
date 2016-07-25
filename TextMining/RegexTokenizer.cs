@@ -26,11 +26,11 @@ namespace Latino.TextMining
     public class RegexTokenizer : ITokenizer
     {
         private Regex mTokenRegex
-            = new Regex(@"\p{L}+(-\p{L}+)*", RegexOptions.Compiled);
+            = new Regex(@"\p{L}{2,}", RegexOptions.Compiled);
         private Regex mDelimRegex
             = new Regex(@"\s+|$", RegexOptions.Compiled); 
         private bool mIgnoreUnmatchedTokens
-            = false;
+            = true;
         private RegexOptions mRegexOptions
             = RegexOptions.Compiled;
 
