@@ -36,6 +36,36 @@ namespace Latino.Model.Eval
             return result;
         }
 
+        public static bool IsMatrixSymetrical<LblT>(PerfMatrix<LblT> mtx, IEnumerable<LblT> excludeValues = null)
+        {
+            Preconditions.CheckNotNull(mtx);
+            LblT[] values = Enum.GetValues(typeof(LblT)).Cast<LblT>().Where(v => excludeValues == null || !excludeValues.Contains(v)).ToArray();
+            foreach (LblT first in values)
+            {
+                foreach (LblT second in values)
+                {
+                    if (EqualityComparer<LblT>.Default.Equals(first, second)) { continue; }
+                    if (mtx.Get(first, second) != mtx.Get(second, first)) { return false; }
+                }
+            }
+            return true;
+        }
+
+        public static PerfMatrix<LblT> GetCoincidenceMatrix<LblT>(PerfMatrix<LblT> mtx, IEnumerable<LblT> excludeValues = null)
+        {
+            Preconditions.CheckNotNull(mtx);
+            LblT[] values = Enum.GetValues(typeof(LblT)).Cast<LblT>().Where(v => excludeValues == null || !excludeValues.Contains(v)).ToArray();
+            var result = new PerfMatrix<LblT>();
+            foreach (LblT first in values)
+            {
+                foreach (LblT second in values)
+                {
+                    result.AddCount(first, second, mtx.Get(first, second) + mtx.Get(second, first));
+                }
+            }
+            return result;
+        }
+
         public static PerfMatrix<LblT> GetCoincidenceMatrix<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
             AgreementKind kind = AgreementKind.Inter, U observerId = default(U), bool resolveMultiplePerObserver = false)
         {

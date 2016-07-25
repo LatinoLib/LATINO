@@ -1043,6 +1043,7 @@ namespace Latino.Model.Eval
             LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNull(orderedLabels).ToArray();
             Preconditions.CheckArgument(!mLabels.Except(labels).Any());
             Preconditions.CheckArgument(!labels.Except(mLabels).Any());
+            Preconditions.CheckArgument(StatsUtils.IsMatrixSymetrical(this));
 
             double denom = 0, numer = 0;
             for (int i = 0; i < labels.Length; i++)
