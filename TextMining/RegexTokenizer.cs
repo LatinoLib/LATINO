@@ -69,7 +69,7 @@ namespace Latino.TextMining
 
         public ITokenizerEnumerable GetTokens(string text)
         {
-            return new TokenizerEnumerable(new Enumerator(text, mTokenRegex, mDelimRegex, mIgnoreUnmatchedTokens));
+            return new TokenizerEnumerable(() => new Enumerator(text, mTokenRegex, mDelimRegex, mIgnoreUnmatchedTokens));
         }
 
         // *** ISerializable interface implementation ***
