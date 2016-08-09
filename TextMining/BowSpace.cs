@@ -375,12 +375,7 @@ namespace Latino.TextMining
             }
         }
 
-        public ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents)
-        {
-            return Initialize(documents, /*largeScale=*/false);
-        }
-
-        public virtual ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale)
+        public virtual ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale = false, bool vocabularyOnly = false)
         {
             Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);            
             mWordInfo.Clear();
@@ -546,6 +541,16 @@ namespace Latino.TextMining
                 }
                 if (!mKeepWordForms) { wordInfo.mForms.Clear(); } 
             }
+            if (vocabularyOnly)
+            {
+                // *** this could be executed regardless of noBows and then some code could be simplified later on
+                foreach (Word wordInfo in mWordInfo.Values)
+                {
+                    wordInfo.mIdx = mIdxInfo.Count;
+                    mIdxInfo.Add(wordInfo);
+                }
+                return null;
+            }
             // compute bag-of-words vectors
             mLogger.Info("Initialize", "Computing bag-of-words vectors ...");           
             int docNum = 1;
@@ -627,7 +632,7 @@ namespace Latino.TextMining
         }
 
         // TODO: merge this with Initialize
-        public ArrayList<SparseVector<double>> InitializeTokenized(IEnumerable<IEnumerable<string>> documents, bool largeScale)
+        public ArrayList<SparseVector<double>> InitializeTokenized(IEnumerable<IEnumerable<string>> documents, bool largeScale = false, bool vocabularyOnly = false)
         {
             Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);
             mWordInfo.Clear();
@@ -688,7 +693,7 @@ namespace Latino.TextMining
                         mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                         ArrayList<WordStem> nGrams = new ArrayList<WordStem>(n);
                         Set<string> docWords = new Set<string>();
-                        foreach (string word in (IEnumerable<string>)document)
+                        foreach (string word in document)
                         {
                             if (mStopWords == null || !mStopWords.Contains(word))
                             {
@@ -789,6 +794,16 @@ namespace Latino.TextMining
                 }
                 if (!mKeepWordForms) { wordInfo.mForms.Clear(); }
             }
+            if (vocabularyOnly) 
+            {
+                // *** this could be executed regardless of noBows and then some code could be simplified later on
+                foreach (Word wordInfo in mWordInfo.Values)
+                {
+                    wordInfo.mIdx = mIdxInfo.Count;
+                    mIdxInfo.Add(wordInfo);
+                }
+                return null;
+            }
             // compute bag-of-words vectors
             mLogger.Info("Initialize", "Computing bag-of-words vectors ...");
             int docNum = 1;
@@ -797,7 +812,7 @@ namespace Latino.TextMining
                 mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                foreach (string word in (IEnumerable<string>)document)
+                foreach (string word in document)
                 {
                     if (mStopWords == null || !mStopWords.Contains(word))
                     {
@@ -972,17 +987,16 @@ namespace Latino.TextMining
         }
 
         // TODO: merge with ProcessDocument
-        public SparseVector<double> ProcessDocumentTokenized(IEnumerable<string> document, IStemmer stemmer)
+        public SparseVector<double> ProcessDocumentTokenized(IEnumerable<string> document)
         {
             Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Dictionary<int, int> tfVec = new Dictionary<int, int>();
             ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
             foreach (string word in document)
             {
-                //string word = token.Trim().ToLower();
                 if (mStopWords == null || !mStopWords.Contains(word))
                 {
-                    string stem = stemmer == null ? word : stemmer.GetStem(word).Trim().ToLower();
+                    string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
                     if (nGrams.Count < mMaxNGramLen)
                     {
                         WordStem wordStem = new WordStem();
