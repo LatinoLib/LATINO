@@ -330,11 +330,12 @@ namespace Latino.TextMining
         {
             string normalized = Preconditions.CheckNotNull(input).Normalize(NormalizationForm.FormD);
             return new string(normalized
-                .Where(c =>
-                {
+                .Where(c => {
                     UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(c);
                     return category != UnicodeCategory.NonSpacingMark;
-                }).ToArray());
+                })
+                .ToArray()
+            );
         }
     }
 }
