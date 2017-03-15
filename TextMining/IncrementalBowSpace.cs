@@ -58,7 +58,7 @@ namespace Latino.TextMining
         {
             // configure tokenizer
             UnicodeTokenizer tokenizer = (UnicodeTokenizer)mTokenizer;
-            tokenizer.Filter = TokenizerFilter.AlphanumLoose;
+            tokenizer.TokenFilter = TokenFilter.AlphanumLoose;
             tokenizer.MinTokenLen = 2;
         }
 

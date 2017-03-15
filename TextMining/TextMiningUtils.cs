@@ -76,7 +76,7 @@ namespace Latino.TextMining
             stream.Close();
         }
 
-        public static void GetLanguageTools(Language language, out Set<string>.ReadOnly stopWords, out IStemmer stemmer)
+        public static void GetLanguageTools(Language language, out IStopWords stopWords, out IStemmer stemmer)
         {
             switch (language)
             { 
@@ -101,7 +101,7 @@ namespace Latino.TextMining
                     stemmer = new Stemmer(language);
                     break;
                 case Language.Estonian:
-                    stopWords = null; // *** stop words are missing
+                    stopWords = StopWords.EstonianStopWords;
                     stemmer = new Lemmatizer(language);
                     break;
                 case Language.Finnish:
@@ -330,11 +330,12 @@ namespace Latino.TextMining
         {
             string normalized = Preconditions.CheckNotNull(input).Normalize(NormalizationForm.FormD);
             return new string(normalized
-                .Where(c =>
-                {
+                .Where(c => {
                     UnicodeCategory category = CharUnicodeInfo.GetUnicodeCategory(c);
                     return category != UnicodeCategory.NonSpacingMark;
-                }).ToArray());
+                })
+                .ToArray()
+            );
         }
     }
 }

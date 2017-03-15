@@ -171,22 +171,23 @@ namespace Latino.TextMining
                 = null;
         }
 
-        private ITokenizer mTokenizer
-            = new UnicodeTokenizer();
-        private Set<string>.ReadOnly mStopWords
-            = null;
-        private IStemmer mStemmer
-            = null;
         private Dictionary<string, Word> mWordInfo
             = new Dictionary<string, Word>();
         private ArrayList<Word> mIdxInfo
             = new ArrayList<Word>();
+
+        private ITokenizer mTokenizer
+            = new SimpleTokenizer { MinTokenLen = 2, TokenType = TokenType.AlphaOnly };
+        private IStopWords mStopWords
+            = null;
+        private IStemmer mStemmer
+            = null;
         private int mMaxNGramLen
             = 2;
         private int mMinWordFreq
-            = 5;
+            = 3;
         private WordWeightType mWordWeightType
-            = WordWeightType.TermFreq;
+            = WordWeightType.TfIdf;
         private double mCutLowWeightsPerc
             = 0.2;
         private bool mNormalizeVectors
@@ -199,10 +200,6 @@ namespace Latino.TextMining
 
         public BowSpace()
         {
-            // configure tokenizer
-            UnicodeTokenizer tokenizer = (UnicodeTokenizer)mTokenizer;
-            tokenizer.Filter = TokenizerFilter.AlphanumLoose;
-            tokenizer.MinTokenLen = 2;
         }
 
         public BowSpace(BinarySerializer reader)
@@ -230,7 +227,7 @@ namespace Latino.TextMining
             }
         }
 
-        public Set<string>.ReadOnly StopWords
+        public IStopWords StopWords
         {
             get { return mStopWords; }
             set { mStopWords = value; }
@@ -378,12 +375,7 @@ namespace Latino.TextMining
             }
         }
 
-        public ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents)
-        {
-            return Initialize(documents, /*largeScale=*/false);
-        }
-
-        public virtual ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale)
+        public virtual ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale = false, bool vocabularyOnly = false)
         {
             Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);            
             mWordInfo.Clear();
@@ -402,9 +394,10 @@ namespace Latino.TextMining
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                     foreach (string token in mTokenizer.GetTokens(document))
                     {
-                        string word = token.Trim().ToLower();
+                        string word = token.Trim();
                         if (mStopWords == null || !mStopWords.Contains(word))
                         {
+                            word = word.ToLower();
                             string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
                             if (nGrams.Count < mMaxNGramLen)
                             {
@@ -447,9 +440,10 @@ namespace Latino.TextMining
                         Set<string> docWords = new Set<string>();
                         foreach (string token in mTokenizer.GetTokens(document))
                         {
-                            string word = token.Trim().ToLower();
+                            string word = token.Trim();
                             if (mStopWords == null || !mStopWords.Contains(word))
                             {
+                                word = word.ToLower();
                                 string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
                                 if (nGrams.Count < n)
                                 {
@@ -547,6 +541,16 @@ namespace Latino.TextMining
                 }
                 if (!mKeepWordForms) { wordInfo.mForms.Clear(); } 
             }
+            if (vocabularyOnly)
+            {
+                // *** this could be executed regardless of noBows and then some code could be simplified later on
+                foreach (Word wordInfo in mWordInfo.Values)
+                {
+                    wordInfo.mIdx = mIdxInfo.Count;
+                    mIdxInfo.Add(wordInfo);
+                }
+                return null;
+            }
             // compute bag-of-words vectors
             mLogger.Info("Initialize", "Computing bag-of-words vectors ...");           
             int docNum = 1;
@@ -557,9 +561,10 @@ namespace Latino.TextMining
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                 foreach (string token in mTokenizer.GetTokens(document))
                 {
-                    string word = token.Trim().ToLower();                    
+                    string word = token.Trim();
                     if (mStopWords == null || !mStopWords.Contains(word))
                     {
+                        word = word.ToLower();
                         string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
                         if (nGrams.Count < mMaxNGramLen)
                         {
@@ -627,7 +632,7 @@ namespace Latino.TextMining
         }
 
         // TODO: merge this with Initialize
-        public ArrayList<SparseVector<double>> InitializeTokenized(IEnumerable<ITokenizerEnumerable> documents, bool largeScale)
+        public ArrayList<SparseVector<double>> InitializeTokenized(IEnumerable<IEnumerable<string>> documents, bool largeScale = false, bool vocabularyOnly = false)
         {
             Utils.ThrowException(documents == null ? new ArgumentNullException("documents") : null);
             mWordInfo.Clear();
@@ -638,7 +643,7 @@ namespace Latino.TextMining
             int docCount = 0;
             if (!largeScale)
             {
-                foreach (ITokenizerEnumerable document in documents)
+                foreach (IEnumerable<string> document in documents)
                 {
                     docCount++;
                     mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
@@ -646,7 +651,6 @@ namespace Latino.TextMining
                     ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
                     foreach (string word in document)
                     {
-                        //string word = token.Trim().ToLower();
                         if (mStopWords == null || !mStopWords.Contains(word))
                         {
                             string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
@@ -683,15 +687,14 @@ namespace Latino.TextMining
                 {
                     docCount = 0;
                     mLogger.Info("Initialize", "Pass {0} of {1} ...", n, mMaxNGramLen);
-                    foreach (ITokenizerEnumerable document in documents)
+                    foreach (IEnumerable<string> document in documents)
                     {
                         docCount++;
                         mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} ...", docCount, /*numSteps=*/-1);
                         ArrayList<WordStem> nGrams = new ArrayList<WordStem>(n);
                         Set<string> docWords = new Set<string>();
-                        foreach (string word in (IEnumerable<string>)document)
+                        foreach (string word in document)
                         {
-                            //string word = token.Trim().ToLower();
                             if (mStopWords == null || !mStopWords.Contains(word))
                             {
                                 string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
@@ -791,17 +794,26 @@ namespace Latino.TextMining
                 }
                 if (!mKeepWordForms) { wordInfo.mForms.Clear(); }
             }
+            if (vocabularyOnly) 
+            {
+                // *** this could be executed regardless of noBows and then some code could be simplified later on
+                foreach (Word wordInfo in mWordInfo.Values)
+                {
+                    wordInfo.mIdx = mIdxInfo.Count;
+                    mIdxInfo.Add(wordInfo);
+                }
+                return null;
+            }
             // compute bag-of-words vectors
             mLogger.Info("Initialize", "Computing bag-of-words vectors ...");
             int docNum = 1;
-            foreach (ITokenizerEnumerable document in documents)
+            foreach (IEnumerable<string> document in documents)
             {
                 mLogger.ProgressFast(Logger.Level.Info, /*sender=*/this, "Initialize", "Document {0} / {1} ...", docNum++, docCount);
                 Dictionary<int, int> tfVec = new Dictionary<int, int>();
                 ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-                foreach (string word in (IEnumerable<string>)document)
+                foreach (string word in document)
                 {
-                    //string word = token.Trim().ToLower();
                     if (mStopWords == null || !mStopWords.Contains(word))
                     {
                         string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
@@ -975,17 +987,16 @@ namespace Latino.TextMining
         }
 
         // TODO: merge with ProcessDocument
-        public SparseVector<double> ProcessDocumentTokenized(ITokenizerEnumerable document, IStemmer stemmer)
+        public SparseVector<double> ProcessDocumentTokenized(IEnumerable<string> document)
         {
             Utils.ThrowException(document == null ? new ArgumentNullException("document") : null);
             Dictionary<int, int> tfVec = new Dictionary<int, int>();
             ArrayList<WordStem> nGrams = new ArrayList<WordStem>(mMaxNGramLen);
-            foreach (string word in (IEnumerable<string>)document)
+            foreach (string word in document)
             {
-                //string word = token.Trim().ToLower();
                 if (mStopWords == null || !mStopWords.Contains(word))
                 {
-                    string stem = stemmer == null ? word : stemmer.GetStem(word).Trim().ToLower();
+                    string stem = mStemmer == null ? word : mStemmer.GetStem(word).Trim().ToLower();
                     if (nGrams.Count < mMaxNGramLen)
                     {
                         WordStem wordStem = new WordStem();
@@ -1125,6 +1136,18 @@ namespace Latino.TextMining
         public virtual void Save(BinarySerializer writer)
         {
             // the following statements throw serialization-related exceptions
+#if OLD_BOWSPACE_FORMAT
+            SaveVocabulary(writer); // throws ArgumentNullException
+            writer.WriteObject(mTokenizer);
+            writer.WriteObject<Set<string>.ReadOnly>(mStopWords == null ? null : new Set<string>((StopWords)mStopWords));
+            writer.WriteObject(mStemmer);
+            writer.WriteInt(mMaxNGramLen);
+            writer.WriteInt(mMinWordFreq);
+            writer.WriteInt((int)mWordWeightType);
+            writer.WriteDouble(mCutLowWeightsPerc);
+            writer.WriteBool(mNormalizeVectors);
+            writer.WriteBool(mKeepWordForms);
+#else
             SaveVocabulary(writer); // throws ArgumentNullException
             writer.WriteObject(mTokenizer);
             writer.WriteObject(mStopWords);
@@ -1135,14 +1158,17 @@ namespace Latino.TextMining
             writer.WriteDouble(mCutLowWeightsPerc);
             writer.WriteBool(mNormalizeVectors);
             writer.WriteBool(mKeepWordForms);
+#endif
         }
 
         public void Load(BinarySerializer reader)
         {
             // the following statements throw serialization-related exceptions
+#if OLD_BOWSPACE_FORMAT
             LoadVocabulary(reader); // throws ArgumentNullException
             mTokenizer = reader.ReadObject<ITokenizer>();
-            mStopWords = reader.ReadObject<Set<string>.ReadOnly>();
+            var stopWords = reader.ReadObject<Set<string>.ReadOnly>();
+            mStopWords = stopWords == null ? null : new StopWords(stopWords);
             mStemmer = reader.ReadObject<IStemmer>();
             mMaxNGramLen = reader.ReadInt();
             mMinWordFreq = reader.ReadInt();
@@ -1150,6 +1176,18 @@ namespace Latino.TextMining
             mCutLowWeightsPerc = reader.ReadDouble();
             mNormalizeVectors = reader.ReadBool();
             mKeepWordForms = reader.ReadBool();
+#else
+            LoadVocabulary(reader); // throws ArgumentNullException
+            mTokenizer = reader.ReadObject<ITokenizer>();
+            mStopWords = reader.ReadObject<IStopWords>();
+            mStemmer = reader.ReadObject<IStemmer>();
+            mMaxNGramLen = reader.ReadInt();
+            mMinWordFreq = reader.ReadInt();
+            mWordWeightType = (WordWeightType)reader.ReadInt();
+            mCutLowWeightsPerc = reader.ReadDouble();
+            mNormalizeVectors = reader.ReadBool();
+            mKeepWordForms = reader.ReadBool();
+#endif
         }
     }
 }

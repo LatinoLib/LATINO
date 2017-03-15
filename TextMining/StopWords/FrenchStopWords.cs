@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/french/stop.txt
-        public static Set<string>.ReadOnly FrenchStopWords 
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords FrenchStopWords 
+            = new StopWords(new string[] {
                 // A French stop word list. 
                 "au",             //  a + le
                 "aux",            //  a + les
@@ -181,6 +181,6 @@ namespace Latino.TextMining
                 "eût",
                 "eussions",
                 "eussiez",
-                "eussent"}));
+                "eussent"});
     }
 }

@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/german/stop.txt
-        public static Set<string>.ReadOnly GermanStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords GermanStopWords
+            = new StopWords(new string[] {
                 // A German stop word list. 
                 // The number of forms in this list is reduced significantly by passing it
                 // through the German stemmer.
@@ -263,6 +263,6 @@ namespace Latino.TextMining
                 "zum",            //  zu + dem
                 "zur",            //  zu + der
                 "zwar",           //  indeed
-                "zwischen"}));    //  between
+                "zwischen"});     //  between
     }
 }

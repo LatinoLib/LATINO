@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/norwegian/stop.txt
-        public static Set<string>.ReadOnly NorwegianStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords NorwegianStopWords
+            = new StopWords(new string[] {
                 // This stop word list is for the dominant bokmål dialect. Words unique
                 // to nynorsk are marked *.
                 // Revised by Jan Bruusgaard <Jan.Bruusgaard@ssb.no>, Jan 2005
@@ -201,6 +201,6 @@ namespace Latino.TextMining
                 "verte",          // become *
                 "vort",           // become *
                 "varte",          // became *
-                "vart"}));        // became *    
+                "vart"});         // became *    
     }
 }

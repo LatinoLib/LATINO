@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://members.unine.ch/jacques.savoy/clef/czechST.txt
-        public static Set<string>.ReadOnly CzechStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords CzechStopWords
+            = new StopWords(new string[] {
                 "ačkoli",
                 "ahoj",
                 "ale",
@@ -278,6 +278,6 @@ namespace Latino.TextMining
                 "zač",
                 "zatímco",
                 "ze",
-                "že"}));
+                "že"});
     }
 }

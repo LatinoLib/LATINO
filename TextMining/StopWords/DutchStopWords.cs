@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/dutch/stop.txt
-        public static Set<string>.ReadOnly DutchStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords DutchStopWords
+            = new StopWords(new string[] {
                 // A Dutch stop word list. 
                 // This is a ranked list (commonest to rarest) of stopwords derived from
                 // a large sample of Dutch text.
@@ -128,6 +128,6 @@ namespace Latino.TextMining
                 "uw",             //  your
                 "iemand",         //  somebody
                 "geweest",        //  been; past participle of 'be'
-                "andere"}));      //  other    
+                "andere"});       //  other    
     }
 }

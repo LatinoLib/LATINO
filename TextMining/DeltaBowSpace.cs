@@ -23,7 +23,7 @@ namespace Latino.TextMining
             return Initialize(labeledDataset, false);
         }
 
-        public override ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale)
+        public override ArrayList<SparseVector<double>> Initialize(IEnumerable<string> documents, bool largeScale, bool vocabularyOnly)
         {
             throw new NotSupportedException("call of invalid method for this class");
         }

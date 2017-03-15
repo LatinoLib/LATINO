@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://snowball.tartarus.org/algorithms/spanish/stop.txt
-        public static Set<string>.ReadOnly SpanishStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords SpanishStopWords
+            = new StopWords(new string[] {
                 // A Spanish stop word list.
                 // The following is a ranked list (commonest to rarest) of stopwords
                 // deriving from a large sample of text.
@@ -357,6 +357,6 @@ namespace Latino.TextMining
                 "tenida",
                 "tenidos",
                 "tenidas",
-                "tened"}));
+                "tened"});
     }
 }

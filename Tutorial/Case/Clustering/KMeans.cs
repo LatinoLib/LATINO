@@ -25,7 +25,7 @@ namespace Tutorial.Case.Clustering
             // Get the stop words and stemmer for English.
 
             IStemmer stemmer;
-            Set<string>.ReadOnly stopWords;
+            IStopWords stopWords;
             TextMiningUtils.GetLanguageTools(Language.English,
                 out stopWords, out stemmer);
 

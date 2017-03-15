@@ -18,11 +18,11 @@ namespace Latino.TextMining
        |
        '-----------------------------------------------------------------------
     */
-    public static partial class StopWords
+    public partial class StopWords
     {
         // this list is taken from http://members.unine.ch/jacques.savoy/clef/russianST.txt
-        public static Set<string>.ReadOnly RussianStopWords
-            = new Set<string>.ReadOnly(new Set<string>(new string[] {
+        public static StopWords RussianStopWords
+            = new StopWords(new string[] {
                 "а",
                 "е",
                 "и",
@@ -443,6 +443,6 @@ namespace Latino.TextMining
                 "эту",
                 "суть",
                 "чуть",
-                "тысяч"}));
+                "тысяч"});
     }
 }

@@ -10,6 +10,7 @@
  *
  ***************************************************************************/
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -56,26 +57,26 @@ namespace Latino.TextMining
     */
     public class TokenizerEnumerable : ITokenizerEnumerable
     {
-        private ITokenizerEnumerator mEnumerator;
+        private Func<ITokenizerEnumerator> mEnumConstructor;
 
-        public TokenizerEnumerable(ITokenizerEnumerator enumerator)
+        public TokenizerEnumerable(Func<ITokenizerEnumerator> enumConstructor)
         {
-            mEnumerator = enumerator;
+            mEnumConstructor = enumConstructor;
         }
 
         public ITokenizerEnumerator GetEnumerator()
         {
-            return mEnumerator;
+            return mEnumConstructor();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return mEnumerator;
+            return GetEnumerator();
         }
 
         IEnumerator<string> IEnumerable<string>.GetEnumerator()
         {
-            return mEnumerator;
+            return GetEnumerator();
         }
     }
 }
