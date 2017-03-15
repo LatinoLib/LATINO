@@ -60,7 +60,10 @@ namespace Latino.TextMining
                         break;
 
                     case TextFeatureOperation.Custom:
-                        text = feature.PerformCustomOperation(text, namedValues);
+                        string[] appends, distinctAppends;
+                        text = feature.PerformCustomOperation(text, namedValues, out  appends, out distinctAppends);
+                        if (appends != null) { mAppends.AddRange(appends); }
+                        if (distinctAppends != null) { mDistinctAppends.AddRange(distinctAppends); }
                         break;
 
                     case TextFeatureOperation.Append:
@@ -188,6 +191,12 @@ namespace Latino.TextMining
         protected virtual string GetPattern(ref RegexOptions options)
         {
             throw new NotImplementedException();
+        }
+
+        protected internal virtual string PerformCustomOperation(string input, Dictionary<string, object> namedValues, out string[] appends, out string[] distinctAppends)
+        {
+            appends = distinctAppends = null;
+            return PerformCustomOperation(input, namedValues);
         }
 
         protected internal virtual string PerformCustomOperation(string input, Dictionary<string, object> namedValues)

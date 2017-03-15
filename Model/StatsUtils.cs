@@ -12,7 +12,7 @@ namespace Latino.Model.Eval
 
     public enum AgreementKind
     {
-        Inter, Self, InterIncludingUnits, InterExcludingUnits, InterExcludingObserver
+        Inter, Self, InterIncludingUnits, InterExcludingUnits, InterExcludingLabels
     }
 
     public static class StatsUtils
@@ -36,25 +36,11 @@ namespace Latino.Model.Eval
             return result;
         }
 
-        public static bool IsMatrixSymetrical<LblT>(PerfMatrix<LblT> mtx, IEnumerable<LblT> excludeValues = null)
+        public static PerfMatrix<LblT> GetCoincidenceMatrix<LblT>(PerfMatrix<LblT> mtx, IEnumerable<LblT> excludeLabels = null)
         {
             Preconditions.CheckNotNull(mtx);
-            LblT[] values = Enum.GetValues(typeof(LblT)).Cast<LblT>().Where(v => excludeValues == null || !excludeValues.Contains(v)).ToArray();
-            foreach (LblT first in values)
-            {
-                foreach (LblT second in values)
-                {
-                    if (EqualityComparer<LblT>.Default.Equals(first, second)) { continue; }
-                    if (mtx.Get(first, second) != mtx.Get(second, first)) { return false; }
-                }
-            }
-            return true;
-        }
-
-        public static PerfMatrix<LblT> GetCoincidenceMatrix<LblT>(PerfMatrix<LblT> mtx, IEnumerable<LblT> excludeValues = null)
-        {
-            Preconditions.CheckNotNull(mtx);
-            LblT[] values = Enum.GetValues(typeof(LblT)).Cast<LblT>().Where(v => excludeValues == null || !excludeValues.Contains(v)).ToArray();
+            LblT[] values = Enum.GetValues(typeof(LblT)).Cast<LblT>()
+                .Where(v => excludeLabels == null || !excludeLabels.Contains(v)).ToArray();
             var result = new PerfMatrix<LblT>();
             foreach (LblT first in values)
             {
@@ -67,31 +53,119 @@ namespace Latino.Model.Eval
         }
 
         public static PerfMatrix<LblT> GetCoincidenceMatrix<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            AgreementKind kind = AgreementKind.Inter, U observerId = default(U), bool resolveMultiplePerObserver = false)
+            AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
         {
             int count;
-            return GetCoincidenceMatrix(new PerfMatrix<LblT>(), examples, out count, kind, observerId, resolveMultiplePerObserver);
+            return GetCoincidenceMatrix(new PerfMatrix<LblT>(), examples, out count, kind, observerId);
         }
 
         public static PerfMatrix<LblT> GetCoincidenceMatrix<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U), bool resolveMultiplePerObserver = false)
+            out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
         {
-            return GetCoincidenceMatrix(new PerfMatrix<LblT>(), examples, out unitCount, kind, observerId, resolveMultiplePerObserver);
+            return GetCoincidenceMatrix(new PerfMatrix<LblT>(), examples, out unitCount, kind, observerId);
         }
 
         public static PerfMatrix<LblT> GetCoincidenceMatrix<LblT, T, U>(PerfMatrix<LblT> mtx, IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            AgreementKind kind = AgreementKind.Inter, U observerId = default(U), bool resolveMultiplePerObserver = false)
+            AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
         {
             int count;
-            return GetCoincidenceMatrix(mtx, examples, out count, kind, observerId, resolveMultiplePerObserver);
+            return GetCoincidenceMatrix(mtx, examples, out count, kind, observerId);
         }
 
         public static PerfMatrix<LblT> GetCoincidenceMatrix<LblT, T, U>(PerfMatrix<LblT> mtx, IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U), bool resolveMultiplePerObserver = false)
+            out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
         {
             Preconditions.CheckNotNull(mtx);
+            ILabeledExample<LblT, IAgreementExample<T, U>>[][] unitGroups = GroupForAgreementKind(examples, kind, observerId);
+            unitCount = 0;
+            foreach (ILabeledExample<LblT, IAgreementExample<T, U>>[] ug in unitGroups)
+            {
+                List<LblT> pairLab1 = new List<LblT>(), pairLab2 = new List<LblT>();
+                for (int i = 0; i < ug.Length; i++)
+                {
+                    for (int j = i + 1; j < ug.Length; j++)
+                    {
+                        bool equalObserver = EqualityComparer<U>.Default.Equals(ug[i].Example.ObserverId(), ug[j].Example.ObserverId());
+                        if (kind == AgreementKind.Self && equalObserver || kind != AgreementKind.Self && !equalObserver)
+                        {
+                            pairLab1.Add(ug[i].Label); 
+                            pairLab2.Add(ug[j].Label);
+                        }
+                    }
+                }
+                if (pairLab1.Any())
+                {
+                    double w = kind == AgreementKind.Self ? ug.Length : ug.GroupBy(u => u.Example.ObserverId()).Count();
+                    double inc = w / pairLab1.Count / 2;
+                    for (int i = 0; i < pairLab1.Count; i++)
+                    {
+                        mtx.AddCount(pairLab1[i], pairLab2[i], inc);
+                        mtx.AddCount(pairLab2[i], pairLab1[i], inc);
+                    }
+                    unitCount++;
+                }
+            }
+            return mtx;
+        }
 
-            ILabeledExample<LblT, IAgreementExample<T, U>>[][] units = Preconditions.CheckNotNull(examples)
+        public static PerfMatrix<LblT> GetConfusionMatrix<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
+            AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
+        {
+            int count;
+            return GetConfusionMatrix(new PerfMatrix<LblT>(), examples, out count, kind, observerId);
+        }
+
+        public static PerfMatrix<LblT> GetConfusionMatrix<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
+            out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
+        {
+            return GetConfusionMatrix(new PerfMatrix<LblT>(), examples, out unitCount, kind, observerId);
+        }
+
+        public static PerfMatrix<LblT> GetConfusionMatrix<LblT, T, U>(PerfMatrix<LblT> mtx, IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
+            AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
+        {
+            int count;
+            return GetConfusionMatrix(mtx, examples, out count, kind, observerId);
+        }
+
+        public static PerfMatrix<LblT> GetConfusionMatrix<LblT, T, U>(PerfMatrix<LblT> mtx, IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
+            out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
+        {
+            Preconditions.CheckNotNull(mtx);
+            ILabeledExample<LblT, IAgreementExample<T, U>>[][] unitGroups = GroupForAgreementKind(examples, kind, observerId);
+            unitCount = 0;
+            foreach (ILabeledExample<LblT, IAgreementExample<T, U>>[] ug in unitGroups)
+            {
+                List<LblT> pairLab1 = new List<LblT>(), pairLab2 = new List<LblT>();
+                for (int i = 0; i < ug.Length; i++)
+                {
+                    for (int j = i + 1; j < ug.Length; j++)
+                    {
+                        bool equalObserver = EqualityComparer<U>.Default.Equals(ug[i].Example.ObserverId(), ug[j].Example.ObserverId());
+                        if (kind == AgreementKind.Self && equalObserver || kind != AgreementKind.Self && !equalObserver)
+                        {
+                            pairLab1.Add(ug[i].Label); 
+                            pairLab2.Add(ug[j].Label);
+                        }
+                    }
+                }
+                if (pairLab1.Any())
+                {
+                    for (int i = 0; i < pairLab1.Count; i++)
+                    {
+                        mtx.AddCount(pairLab1[i], pairLab2[i]);
+                        mtx.AddCount(pairLab2[i], pairLab1[i]);
+                    }
+                    unitCount++;
+                }
+            }
+            return mtx;
+        }
+
+        private static ILabeledExample<LblT, IAgreementExample<T, U>>[][] GroupForAgreementKind<LblT, T, U>(
+            IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples, AgreementKind kind, U observerId)
+        {
+            ILabeledExample<LblT, IAgreementExample<T, U>>[][] unitGroups = Preconditions.CheckNotNull(examples)
                 .GroupBy(e => e.Example.UnitId())
                 .Where(g => g.Count() > 1 && !EqualityComparer<T>.Default.Equals(g.Key, default(T))) // skip nulls or zeros
                 .Select(g => g.ToArray()).ToArray();
@@ -99,17 +173,56 @@ namespace Latino.Model.Eval
             switch (kind)
             {
                 case AgreementKind.Self:
-                    units = EqualityComparer<U>.Default.Equals(observerId, default(U))
-                        ? units // observer not specified 
+                    unitGroups = EqualityComparer<U>.Default.Equals(observerId, default(U))
+                        ? unitGroups // observer not specified 
                             .Select(u => u.GroupBy(e => e.Example.ObserverId())
                                 .Where(g => g.Count() > 1 && !EqualityComparer<U>.Default.Equals(g.Key, default(U)))
                                 .SelectMany(g => g).ToArray())
                             .Where(u => u.Count() > 1).ToArray()
-                        : units
+                        : unitGroups
                             .Select(u => u.Where(e => EqualityComparer<U>.Default.Equals(e.Example.ObserverId(), observerId)).ToArray())
                             .Where(u => u.Count() > 1).ToArray();
                     break;
-                case AgreementKind.InterExcludingObserver:
+                case AgreementKind.InterExcludingLabels:
+                    unitGroups = unitGroups
+                        .Select(u => u.Where(e => !EqualityComparer<U>.Default.Equals(e.Example.ObserverId(), observerId)).ToArray())
+                        .Where(u => u.Count() > 1).ToArray();
+                    break;
+                case AgreementKind.InterIncludingUnits:
+                    unitGroups = unitGroups
+                        .Where(u => u.Any(e => EqualityComparer<U>.Default.Equals(e.Example.ObserverId(), observerId)))
+                        .ToArray();
+                    break;
+                case AgreementKind.InterExcludingUnits:
+                    unitGroups = unitGroups
+                        .Where(u => u.All(e => !EqualityComparer<U>.Default.Equals(e.Example.ObserverId(), observerId)))
+                        .ToArray();
+                    break;
+            }
+            return unitGroups;
+        }
+
+        public static double GetKrippendorffAlphaMod<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
+            Dictionary<LblT, Dictionary<LblT, double>> weights = null, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
+        {
+            int count;
+            return GetKrippendorffAlphaMod(examples, out count, weights, kind, observerId);
+        }
+
+        public static double GetKrippendorffAlphaMod<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
+            out int unitCount, Dictionary<LblT, Dictionary<LblT, double>> weights = null, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
+        {
+            Preconditions.CheckArgument(kind != AgreementKind.Self);
+
+            IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples_ = examples as ILabeledExample<LblT, IAgreementExample<T, U>>[] ?? examples.ToArray();
+            ILabeledExample<LblT, IAgreementExample<T, U>>[][] units = Preconditions.CheckNotNull(examples_)
+                .GroupBy(e => e.Example.UnitId())
+                .Where(g => g.Count() > 1 && !EqualityComparer<T>.Default.Equals(g.Key, default(T))) // skip nulls or zeros
+                .Select(g => g.ToArray()).ToArray();
+
+            switch (kind)
+            {
+                case AgreementKind.InterExcludingLabels:
                     units = units
                         .Select(u => u.Where(e => !EqualityComparer<U>.Default.Equals(e.Example.ObserverId(), observerId)).ToArray())
                         .Where(u => u.Count() > 1).ToArray();
@@ -125,32 +238,77 @@ namespace Latino.Model.Eval
             }
 
             unitCount = 0;
-            foreach (ILabeledExample<LblT, IAgreementExample<T, U>>[] unit_ in units)
+            var observerPairs = new Dictionary<U, List<Tuple<LblT, LblT>>>();
+            foreach (ILabeledExample<LblT, IAgreementExample<T, U>>[] unit in units)
             {
-                ILabeledExample<LblT, IAgreementExample<T, U>>[] unit = unit_;
-
-                // resolve multiple labels by the same user
-                if (resolveMultiplePerObserver && kind != AgreementKind.Self)
-                {
-                    unit = unit.GroupBy(e => e.Example.ObserverId())
-                        .Select(ug => ug.GroupBy(ue => ue.Label)
-                            .OrderByDescending(ulg => ulg.Count())
-                            .First().First()).ToArray();
-                    if (unit.Length <= 1) { continue; }
-                }
-
                 for (int i = 0; i < unit.Length; i++)
                 {
                     for (int j = i + 1; j < unit.Length; j++)
                     {
-                        mtx.AddCount(unit[i].Label, unit[j].Label, 1.0 / (unit.Length - 1));
-                        mtx.AddCount(unit[j].Label, unit[i].Label, 1.0 / (unit.Length - 1));
+                        if (!EqualityComparer<U>.Default.Equals(unit[i].Example.ObserverId(), unit[j].Example.ObserverId()))
+                        {
+                            List<Tuple<LblT, LblT>> pairs;
+                            // observer i
+                            if (!observerPairs.TryGetValue(unit[i].Example.ObserverId(), out pairs))
+                            {
+                                observerPairs.Add(unit[i].Example.ObserverId(), pairs = new List<Tuple<LblT, LblT>>());
+                            }
+                            pairs.Add(new Tuple<LblT, LblT>(unit[i].Label, unit[j].Label));
+                            // observer j
+                            if (!observerPairs.TryGetValue(unit[j].Example.ObserverId(), out pairs))
+                            {
+                                observerPairs.Add(unit[j].Example.ObserverId(), pairs = new List<Tuple<LblT, LblT>>());
+                            }
+                            pairs.Add(new Tuple<LblT, LblT>(unit[j].Label, unit[i].Label));
+                        }
                     }
                 }
                 unitCount++;
             }
 
-            return mtx;
+            if (observerPairs.Any())
+            {
+                Func<LblT, LblT, double> weightF = (l1, l2) => weights == null ? 1 : weights[l1][l2];
+                double allPairs = observerPairs.Sum(kv => kv.Value.Count);
+                double observed = 0, expected = 0;
+                var s = new double[3];
+                foreach (KeyValuePair<U, List<Tuple<LblT, LblT>>> observerKv in observerPairs)
+                {
+
+                    Console.WriteLine(observerKv.Key);
+                    var r = new double[3];
+                    int i = 0;
+                    foreach (IGrouping<double, Tuple<LblT, LblT>> g in observerKv.Value.GroupBy(t => weightF(t.Item1, t.Item2)).OrderBy(g => g.Key))
+                    {
+                        Console.WriteLine(g.Key + "  " + g.Count());
+                        s[i] += g.Count();
+                        r[i++] = g.Count();
+                    }
+                    Console.WriteLine(r[0] / (r[1] + r[0]));
+
+                    observed += observerKv.Value
+                        .Where(t => !EqualityComparer<LblT>.Default.Equals(t.Item1, t.Item2))
+                        .Sum(t => weightF(t.Item1, t.Item2)) 
+                        / (observerPairs.Count - 1) / observerKv.Value.Count; 
+
+                    expected += observerKv.Value.GroupBy(t => t.Item1)
+                        .Sum(g =>
+                        {
+                            double thisObsThisLab = g.Count();
+                            double otherObsOtherLabs = observerPairs.Except(new[] { observerKv })
+                                .Sum(kv => kv.Value.Where(t => !EqualityComparer<LblT>.Default.Equals(g.Key, t.Item1)).Sum(t => weightF(g.Key, t.Item1)));
+                            return thisObsThisLab * otherObsOtherLabs / observerKv.Value.Count / (allPairs - observerKv.Value.Count);
+                        }) / observerPairs.Count;
+                }
+                Console.WriteLine(s[0]);
+                Console.WriteLine(s[1]);
+                Console.WriteLine(s[2]);
+                Console.WriteLine(s[0] / (s[1] + s[0]));
+
+                return 1 - observed / expected;
+            }
+
+            return double.NaN;
         }
 
         public static double GetZProb(double zScore)

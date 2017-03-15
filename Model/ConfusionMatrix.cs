@@ -852,10 +852,10 @@ namespace Latino.Model.Eval
                 str.Append("|".PadLeft(4));
                 foreach (LblT predicted in labels)
                 {
-                    str.Append(Get(actual, predicted).ToString(CultureInfo.InvariantCulture).PadLeft(len));
+                    str.Append(Get(actual, predicted).ToString("0.000", CultureInfo.InvariantCulture).PadLeft(len));
                 }
                 str.Append("|".PadLeft(4));
-                str.Append(SumRow(actual).ToString(CultureInfo.InvariantCulture).PadLeft(len));
+                str.Append(SumRow(actual).ToString("0.000", CultureInfo.InvariantCulture).PadLeft(len));
                 str.Append(((float) SumRow(actual)/all).ToString("P1").PadLeft(len));
                 str.AppendLine();
             }
@@ -865,7 +865,7 @@ namespace Latino.Model.Eval
             str.Append("|".PadLeft(4));
             foreach (LblT predicted in labels)
             {
-                str.Append(SumCol(predicted).ToString(CultureInfo.InvariantCulture).PadLeft(len));
+                str.Append(SumCol(predicted).ToString("0.000", CultureInfo.InvariantCulture).PadLeft(len));
             }
             str.Append("|".PadLeft(4));
             str.AppendLine(all.ToString(CultureInfo.InvariantCulture).PadLeft(len));
@@ -1043,7 +1043,7 @@ namespace Latino.Model.Eval
             LblT[] labels = orderedLabels as LblT[] ?? Preconditions.CheckNotNull(orderedLabels).ToArray();
             Preconditions.CheckArgument(!mLabels.Except(labels).Any());
             Preconditions.CheckArgument(!labels.Except(mLabels).Any());
-            Preconditions.CheckArgument(StatsUtils.IsMatrixSymetrical(this));
+            Preconditions.CheckArgument(IsSymetrical());
 
             double denom = 0, numer = 0;
             for (int i = 0; i < labels.Length; i++)
@@ -1164,6 +1164,20 @@ namespace Latino.Model.Eval
                 }
             }
             return weights;
+        }
+
+        public bool IsSymetrical(IEnumerable<LblT> labels = null)
+        {
+            LblT[] values = labels == null ? Enum.GetValues(typeof(LblT)).Cast<LblT>().ToArray() : labels.ToArray();
+            foreach (LblT first in values)
+            {
+                foreach (LblT second in values)
+                {
+                    if (EqualityComparer<LblT>.Default.Equals(first, second)) { continue; }
+                    if (Get(first, second) != Get(second, first)) { return false; }
+                }
+            }
+            return true;
         }
     }
 }

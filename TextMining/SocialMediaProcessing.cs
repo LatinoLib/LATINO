@@ -497,7 +497,8 @@ namespace Latino.TextMining
 
             protected override string GetPattern(ref RegexOptions options)
             {
-                return @"^(RT )";
+                options |= RegexOptions.IgnoreCase;
+                return @"^(RT\s+)";
             }
         }
 
@@ -686,6 +687,40 @@ namespace Latino.TextMining
             protected override string GetPattern(ref RegexOptions options)
             {
                 return @"\b[A-Z]{4,}\b";
+            }
+        }
+
+        public class TextBeginFeature : TextFeature
+        {
+            public TextBeginFeature(string markToken = "__TEXT_BEGIN__ ") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+            }
+
+            public TextBeginFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"^";
+            }
+        }
+
+        public class TextEndFeature : TextFeature
+        {
+            public TextEndFeature(string markToken = " __TEXT_END__") : base(markToken)
+            {
+                Operation = TextFeatureOperation.Replace;
+            }
+
+            public TextEndFeature(BinarySerializer reader) : base(reader)
+            {
+            }
+
+            protected override string GetPattern(ref RegexOptions options)
+            {
+                return @"$";
             }
         }
 
@@ -946,8 +981,10 @@ namespace Latino.TextMining
                 writer.WriteInt(mMaxLength);
             }
 
-            protected internal override string PerformCustomOperation(string input, Dictionary<string, object> namedValues)
+            protected internal override string PerformCustomOperation(string input, 
+                Dictionary<string, object> namedValues, out string[] append, out string[] distinctAppend)
             {
+                append = null;
                 int strLen = input.Length;
                 var tokens = new List<string>();
                 for (int len = 2; len < mMaxLength; len *= 2)
@@ -969,7 +1006,8 @@ namespace Latino.TextMining
                     }
                     tokens.Add(token);
                 }
-                return input + " " + string.Join(" ", tokens);
+                distinctAppend = tokens.ToArray();
+                return input;
             }
         }
 

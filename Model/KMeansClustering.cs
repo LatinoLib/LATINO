@@ -166,6 +166,7 @@ namespace Latino.Model
                     for (int i = 0; i < dataset.Count; i++)
                     {
                         SparseVector<double> example = dataset[i];
+                        if (example.Count == 0) { continue; }
                         double maxSim = double.MinValue;
                         ArrayList<int> candidates = new ArrayList<int>();
                         for (int j = 0; j < mK; j++)
