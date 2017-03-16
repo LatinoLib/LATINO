@@ -34,63 +34,54 @@ namespace Latino.Model
      *   http://www.arbylon.net/publications/text-est.pdf
      */
 
-    // map of words/terms [string => int]
-//    typedef map<string, int> mapword2id;
-    // map of words/terms [int => string]
-//    typedef map<int, string> mapid2word;
-
-    public class document
+    public class Document
     {
-        public int[] words;
-        public string rawstr;
-        public int length;
+        public int Length { get; private set; }
+        public string Rawstr { get; private set; }
+        public int[] Words { get; private set; }
 
-        public document()
+        public Document()
         {
-            words = null;
-            rawstr = "";
-            length = 0;
+            Words = null;
+            Rawstr = "";
+            Length = 0;
         }
 
-        public document(int length)
+        public Document(int length)
         {
-            this.length = length;
-            rawstr = "";
-            words = new int[length];
+            this.Length = length;
+            Rawstr = "";
+            Words = new int[length];
         }
 
-        public document(int length, int[] words)
+        public Document(int length, int[] words)
         {
-            this.length = length;
-            rawstr = "";
-            this.words = new int[length];
-            for (int i = 0; i < length; i++)
-            {
-                this.words[i] = words[i];
-            }
+            this.Length = length;
+            Rawstr = "";
+            this.Words = new int[length];
+            for (var i = 0; i < length; i++)
+                this.Words[i] = words[i];
         }
 
-        public document(int length, int[] words, string rawstr)
+        public Document(int length, int[] words, string rawstr)
         {
-            this.length = length;
-            this.rawstr = rawstr;
-            this.words = new int[length];
-            for (int i = 0; i < length; i++)
-            {
-                this.words[i] = words[i];
-            }
+            this.Length = length;
+            this.Rawstr = rawstr;
+            this.Words = new int[length];
+            for (var i = 0; i < length; i++)
+                this.Words[i] = words[i];
         }
-    };
+    }
 
-    public class dataset
+    public class Dataset
     {
-        public document[] docs;
-        public document[] _docs; // used only for inference
+        public Document[] _docs; // used only for inference
         public Dictionary<int, int> _id2id; // also used only for inference
+        public Document[] docs;
         public int M; // number of documents
         public int V; // number of words
 
-        public dataset()
+        public Dataset()
         {
             docs = null;
             _docs = null;
@@ -98,28 +89,24 @@ namespace Latino.Model
             V = 0;
         }
 
-        public dataset(int M)
+        public Dataset(int M)
         {
             this.M = M;
-            this.V = 0;
-            docs = new document[M];
+            V = 0;
+            docs = new Document[M];
             _docs = null;
         }
 
-        public void add_doc(document doc, int idx)
+        public void add_doc(Document doc, int idx)
         {
             if (0 <= idx && idx < M)
-            {
                 docs[idx] = doc;
-            }
         }
 
-        public void _add_doc(document doc, int idx)
+        public void _add_doc(Document doc, int idx)
         {
             if (0 <= idx && idx < M)
-            {
                 _docs[idx] = doc;
-            }
         }
 
         public static int write_wordmap(string wordmapfile, Dictionary<string, int> pword2id)
@@ -156,75 +143,79 @@ namespace Latino.Model
 
     public class model
     {
-        const int MODEL_STATUS_UNKNOWN = 0;
-        const int MODEL_STATUS_EST = 1;
-        const int MODEL_STATUS_ESTC = 2;
-        const int MODEL_STATUS_INF = 3;
+        private const int MODEL_STATUS_UNKNOWN = 0;
+        private const int MODEL_STATUS_EST = 1;
+        private const int MODEL_STATUS_ESTC = 2;
+        private const int MODEL_STATUS_INF = 3;
 
-        // fixed options
-        string wordmapfile;     // file that contains word map [string . integer id]
-        string trainlogfile;    // training log file
-        string tassign_suffix;  // suffix for topic assignment file
-        string theta_suffix;    // suffix for theta file
-        string phi_suffix;      // suffix for phi file
-        string others_suffix;   // suffix for file containing other parameters
-        string twords_suffix;   // suffix for file containing words-per-topics
 
-        string dir;         // model directory
-        string dfile;       // data file    
-        string model_name;      // model name
-        int model_status;       // model status:
-                                // MODEL_STATUS_UNKNOWN: unknown status
-                                // MODEL_STATUS_EST: estimating from scratch
-                                // MODEL_STATUS_ESTC: continue to estimate the model from a previous one
-                                // MODEL_STATUS_INF: do inference
+        private double alpha, beta; // LDA hyperparameters 
+        private string dfile; // data file    
 
-        dataset ptrndata;  // pointer to training dataset object
-        dataset pnewdata; // pointer to new dataset object
+        private string dir; // model directory
 
-        Dictionary<int, string> id2word; // word map [int => string]
-
-        // --- model parameters and variables ---    
-        int M; // dataset size (i.e., number of docs)
-        int V; // vocabulary size
-        int K; // number of topics
-        double alpha, beta; // LDA hyperparameters 
-        int niters; // number of Gibbs sampling iterations
-        int liter; // the iteration at which the model was saved
-        int savestep; // saving period
-        int twords; // print out top words per each topic
-        bool withrawstrs;
-
-        double[] p; // temp variable for sampling
-        int[][] z; // topic assignments for words, size M x doc.size()
-        int[][] nw; // cwt[i][j]: number of instances of word/term i assigned to topic j, size V x K
-        int[][] nd; // na[i][j]: number of words in document i assigned to topic j, size M x K
-        int[] nwsum; // nwsum[j]: total number of words assigned to topic j, size K
-        int[] ndsum; // nasum[i]: total number of words in document i, size M
-        double[][] theta; // theta: document-topic distributions, size M x K
-        double[][] phi; // phi: topic-word distributions, size K x V
+        private Dictionary<int, string> id2word; // word map [int => string]
 
         // for inference only
-        int inf_liter;
-        int newM;
-        int newV;
-        int[][] newz;
-        int[][] newnw;
-        int[][] newnd;
-        int[] newnwsum;
-        int[] newndsum;
-        double[][] newtheta;
-        double[][] newphi;
+        private int inf_liter;
+        private int K; // number of topics
+        private int liter; // the iteration at which the model was saved
+
+        // --- model parameters and variables ---    
+        private int M; // dataset size (i.e., number of docs)
+        private string model_name; // model name
+        private int model_status; // model status:
+        private int[][] nd; // na[i][j]: number of words in document i assigned to topic j, size M x K
+        private int[] ndsum; // nasum[i]: total number of words in document i, size M
+        private int newM;
+        private int[][] newnd;
+        private int[] newndsum;
+        private int[][] newnw;
+        private int[] newnwsum;
+        private double[][] newphi;
+        private double[][] newtheta;
+        private int newV;
+        private int[][] newz;
+        private int niters; // number of Gibbs sampling iterations
+        private int[][] nw; // cwt[i][j]: number of instances of word/term i assigned to topic j, size V x K
+        private int[] nwsum; // nwsum[j]: total number of words assigned to topic j, size K
+        private string others_suffix; // suffix for file containing other parameters
+
+        private double[] p; // temp variable for sampling
+        public double[][] phi; // phi: topic-word distributions, size K x V
+        private string phi_suffix; // suffix for phi file
+        private Dataset newdata; // pointer to new dataset object
+        // MODEL_STATUS_UNKNOWN: unknown status
+        // MODEL_STATUS_EST: estimating from scratch
+        // MODEL_STATUS_ESTC: continue to estimate the model from a previous one
+        // MODEL_STATUS_INF: do inference
+
+        public Dataset ndata; // pointer to training dataset object
+        private int savestep; // saving period
+        private string tassign_suffix; // suffix for topic assignment file
+        public double[][] theta; // theta: document-topic distributions, size M x K
+        private string theta_suffix; // suffix for theta file
+        private string trainlogfile; // training log file
+        private int twords; // print out top words per each topic
+        private string twords_suffix; // suffix for file containing words-per-topics
+        private int V; // vocabulary size
+        private bool withrawstrs;
+
+        private Random mRandom;
+
+        // fixed options
+        private string wordmapfile; // file that contains word map [string . integer id]
+        private int[][] z; // topic assignments for words, size M x doc.size()
         // --------------------------------------
 
-        model()
+        public model()
         {
             set_default_values();
         }
-        
+
 
         // set default values for variables
-        void set_default_values()
+        private void set_default_values()
         {
             wordmapfile = "wordmap.txt";
             trainlogfile = "trainlog.txt";
@@ -239,71 +230,61 @@ namespace Latino.Model
             model_name = "model-final";
             model_status = MODEL_STATUS_UNKNOWN;
 
-            ptrndata = null;
-            pnewdata = null;
+            ndata = null;
+            newdata = null;
 
             M = 0;
             V = 0;
             K = 100;
             alpha = 50.0 / K;
             beta = 0.1;
-            niters = 2000;
+            niters = 20;
             liter = 0;
             savestep = 200;
             twords = 0;
             withrawstrs = false;
 
-            p = null;
-            z = null;
-            nw = null;
-            nd = null;
-            nwsum = null;
-            ndsum = null;
-//            theta = null;
-//            phi = null;
+//            p = null;
+//            z = null;
+//            nw = null;
+//            nd = null;
+//            nwsum = null;
+//            ndsum = null;
+            //            theta = null;
+            //            phi = null;
 
-            newM = 0;
-            newV = 0;
-//            newz = null;
-//            newnw = null;
-//            newnd = null;
-//            newnwsum = null;
-//            newndsum = null;
-//            newtheta = null;
-//            newphi = null;
+//            newM = 0;
+//            newV = 0;
+            //            newz = null;
+            //            newnw = null;
+            //            newnd = null;
+            //            newnwsum = null;
+            //            newndsum = null;
+            //            newtheta = null;
+            //            newphi = null;
         }
 
 
-
         // initialize the model
-        bool init(int argc, char argv)
+        private bool init(int argc, char argv)
         {
-
             if (model_status == MODEL_STATUS_EST)
             {
                 // estimating the model from scratch
                 if (init_est())
-                {
                     return false;
-                }
-
             }
             else if (model_status == MODEL_STATUS_ESTC)
             {
                 // estimating the model from a previously estimated one
                 if (init_estc())
-                {
                     return false;
-                }
-
             }
             else if (model_status == MODEL_STATUS_INF)
             {
                 // do inference
                 if (init_inf())
-                {
                     return false;
-                }
             }
 
             return true;
@@ -311,23 +292,23 @@ namespace Latino.Model
 
 
         // init for estimation
-        bool init_est()
+        public bool init_est()
         {
             int m, n, w, k;
 
             p = new double[K];
 
             // + read training data
-            ptrndata = new dataset();
-//            if (ptrndata.read_trndata(dir + dfile, dir + wordmapfile))
-//            {
-//                printf("Fail to read training data!\n");
-//                return 1;
-//            }
+//            ndata = new Dataset();
+            //            if (ptrndata.read_trndata(dir + dfile, dir + wordmapfile))
+            //            {
+            //                printf("Fail to read training data!\n");
+            //                return 1;
+            //            }
 
             // + allocate memory and assign values for variables
-            M = ptrndata.M;
-            V = ptrndata.V;
+            M = ndata.M;
+            V = ndata.V;
             // K: from command line or default value
             // alpha, beta: from command line or default values
             // niters, savestep: from command line or default values
@@ -337,9 +318,7 @@ namespace Latino.Model
             {
                 nw[w] = new int[K];
                 for (k = 0; k < K; k++)
-                {
                     nw[w][k] = 0;
-                }
             }
 
             nd = new int[M][];
@@ -347,40 +326,34 @@ namespace Latino.Model
             {
                 nd[m] = new int[K];
                 for (k = 0; k < K; k++)
-                {
                     nd[m][k] = 0;
-                }
             }
 
             nwsum = new int[K];
             for (k = 0; k < K; k++)
-            {
                 nwsum[k] = 0;
-            }
 
             ndsum = new int[M];
             for (m = 0; m < M; m++)
-            {
                 ndsum[m] = 0;
-            }
 
-            var random = new Random();
-//            srandom(time(0)); // initialize for random number generation
+            mRandom = new Random(); // todo random 
+            //            srandom(time(0)); // initialize for random number generation
             z = new int[M][];
-            for (m = 0; m < ptrndata.M; m++)
+            for (m = 0; m < ndata.M; m++)
             {
-                int N = ptrndata.docs[m].length;
+                int N = ndata.docs[m].Length;
                 z[m] = new int[N];
 
                 // initialize for z
                 for (n = 0; n < N; n++)
                 {
-                    int topic = random.Next(K);
-//                    int topic = (int)(((double)random() / RAND_MAX) * K);
+                    int topic = mRandom.Next(K);
+                    //                    int topic = (int)(((double)random() / RAND_MAX) * K);
                     z[m][n] = topic;
 
                     // number of instances of word i assigned to topic j
-                    nw[ptrndata.docs[m].words[n]][topic] += 1;
+                    nw[ndata.docs[m].Words[n]][topic] += 1;
                     // number of words in document i assigned to topic j
                     nd[m][topic] += 1;
                     // total number of words assigned to topic j
@@ -392,224 +365,16 @@ namespace Latino.Model
 
             theta = new double[M][];
             for (m = 0; m < M; m++)
-            {
                 theta[m] = new double[K];
-            }
 
             phi = new double[K][];
             for (k = 0; k < K; k++)
-            {
                 phi[k] = new double[V];
-            }
-
-            return true;
-
-        }
-
-        bool init_estc()
-        {
-            // estimating the model from a previously estimated one
-            int m, n, w, k;
-
-            p = new double[K];
-
-            // load moel, i.e., read z and ptrndata
-//            if (load_model(model_name))
-//            {
-//                printf("Fail to load word-topic assignmetn file of the model!\n");
-//                return 1;
-//            }
-
-            nw = new int[V][];
-            for (w = 0; w < V; w++)
-            {
-                nw[w] = new int[K];
-                for (k = 0; k < K; k++)
-                {
-                    nw[w][k] = 0;
-                }
-            }
-
-            nd = new int[M][];
-            for (m = 0; m < M; m++)
-            {
-                nd[m] = new int[K];
-                for (k = 0; k < K; k++)
-                {
-                    nd[m][k] = 0;
-                }
-            }
-
-            nwsum = new int[K];
-            for (k = 0; k < K; k++)
-            {
-                nwsum[k] = 0;
-            }
-
-            ndsum = new int[M];
-            for (m = 0; m < M; m++)
-            {
-                ndsum[m] = 0;
-            }
-
-            for (m = 0; m < ptrndata.M; m++)
-            {
-                int N = ptrndata.docs[m].length;
-
-                // assign values for nw, nd, nwsum, and ndsum	
-                for (n = 0; n < N; n++)
-                {
-                    int ww = ptrndata.docs[m].words[n];
-                    int topic = z[m][n];
-
-                    // number of instances of word i assigned to topic j
-                    nw[ww][topic] += 1;
-                    // number of words in document i assigned to topic j
-                    nd[m][topic] += 1;
-                    // total number of words assigned to topic j
-                    nwsum[topic] += 1;
-                }
-                // total number of words in document i
-                ndsum[m] = N;
-            }
-
-            theta = new double[M][];
-            for (m = 0; m < M; m++)
-            {
-                theta[m] = new double[K];
-            }
-
-            phi = new double[K][];
-            for (k = 0; k < K; k++)
-            {
-                phi[k] = new double[V];
-            }
 
             return true;
         }
 
-
-        // estimate LDA model using Gibbs sampling
-        void estimate()
-        {
-            if (twords > 0)
-            {
-                // print out top words per topic
-                dataset.read_wordmap(dir + wordmapfile, id2word);
-            }
-
-//            printf("Sampling %d iterations!\n", niters);
-
-            int last_iter = liter;
-            for (liter = last_iter + 1; liter <= niters + last_iter; liter++)
-            {
-//                printf("Iteration %d ...\n", liter);
-
-                // for all z_i
-                for (int m = 0; m < M; m++)
-                {
-                    for (int n = 0; n < ptrndata.docs[m].length; n++)
-                    {
-                        // (z_i = z[m][n])
-                        // sample from p(z_i|z_-i, w)
-                        int topic = sampling(m, n);
-                        z[m][n] = topic;
-                    }
-                }
-
-                if (savestep > 0)
-                {
-                    if (liter % savestep == 0)
-                    {
-                        // saving the model
-//                        printf("Saving the model at iteration %d ...\n", liter);
-                        compute_theta();
-                        compute_phi();
-//                        save_model(utils.generate_model_name(liter));
-                    }
-                }
-            }
-
-//            printf("Gibbs sampling completed!\n");
-//            printf("Saving the final model!\n");
-            compute_theta();
-            compute_phi();
-            liter--;
-//            save_model(utils.generate_model_name(-1));
-        }
-
-        int sampling(int m, int n)
-        {
-            // remove z_i from the count variables
-            int topic = z[m][n];
-            int w = ptrndata.docs[m].words[n];
-            nw[w][topic] -= 1;
-            nd[m][topic] -= 1;
-            nwsum[topic] -= 1;
-            ndsum[m] -= 1;
-
-            double Vbeta = V * beta;
-            double Kalpha = K * alpha;
-            // do multinomial sampling via cumulative method
-            for (int k = 0; k < K; k++)
-            {
-                p[k] = (nw[w][k] + beta) / (nwsum[k] + Vbeta) *
-                        (nd[m][k] + alpha) / (ndsum[m] + Kalpha);
-            }
-            // cumulate multinomial parameters
-            for (int k = 1; k < K; k++)
-            {
-                p[k] += p[k - 1];
-            }
-
-            var random = new Random(); // todo make it field
-
-            // scaled sample because of unnormalized p[]
-            double u = random.NextDouble() * p[K - 1];
-            //            double u = ((double)random() / RAND_MAX) * p[K - 1];
-
-            for (topic = 0; topic < K; topic++)
-            {
-                if (p[topic] > u)
-                {
-                    break;
-                }
-            }
-
-            // add newly estimated z_i to count variables
-            nw[w][topic] += 1;
-            nd[m][topic] += 1;
-            nwsum[topic] += 1;
-            ndsum[m] += 1;
-
-            return topic;
-        }
-
-        void compute_theta()
-        {
-            for (int m = 0; m < M; m++)
-            {
-                for (int k = 0; k < K; k++)
-                {
-                    theta[m][k] = (nd[m][k] + alpha) / (ndsum[m] + K * alpha);
-                }
-            }
-        }
-
-        void compute_phi()
-        {
-            for (int k = 0; k < K; k++)
-            {
-                for (int w = 0; w < V; w++)
-                {
-                    phi[k][w] = (nw[w][k] + beta) / (nwsum[k] + V * beta);
-                }
-            }
-        }
-
-
-        // init for inference
-        bool init_inf()
+        public bool init_estc()
         {
             // estimating the model from a previously estimated one
             int m, n, w, k;
@@ -628,9 +393,7 @@ namespace Latino.Model
             {
                 nw[w] = new int[K];
                 for (k = 0; k < K; k++)
-                {
                     nw[w][k] = 0;
-                }
             }
 
             nd = new int[M][];
@@ -638,31 +401,191 @@ namespace Latino.Model
             {
                 nd[m] = new int[K];
                 for (k = 0; k < K; k++)
-                {
                     nd[m][k] = 0;
-                }
             }
 
             nwsum = new int[K];
             for (k = 0; k < K; k++)
-            {
                 nwsum[k] = 0;
-            }
 
             ndsum = new int[M];
             for (m = 0; m < M; m++)
-            {
                 ndsum[m] = 0;
-            }
 
-            for (m = 0; m < ptrndata.M; m++)
+            for (m = 0; m < ndata.M; m++)
             {
-                int N = ptrndata.docs[m].length;
+                int N = ndata.docs[m].Length;
 
                 // assign values for nw, nd, nwsum, and ndsum	
                 for (n = 0; n < N; n++)
                 {
-                    int ww = ptrndata.docs[m].words[n];
+                    int ww = ndata.docs[m].Words[n];
+                    int topic = z[m][n];
+
+                    // number of instances of word i assigned to topic j
+                    nw[ww][topic] += 1;
+                    // number of words in document i assigned to topic j
+                    nd[m][topic] += 1;
+                    // total number of words assigned to topic j
+                    nwsum[topic] += 1;
+                }
+                // total number of words in document i
+                ndsum[m] = N;
+            }
+
+            theta = new double[M][];
+            for (m = 0; m < M; m++)
+                theta[m] = new double[K];
+
+            phi = new double[K][];
+            for (k = 0; k < K; k++)
+                phi[k] = new double[V];
+
+            return true;
+        }
+
+
+        // estimate LDA model using Gibbs sampling
+        public void estimate()
+        {
+            if (twords > 0)
+                Dataset.read_wordmap(dir + wordmapfile, id2word);
+
+            //            printf("Sampling %d iterations!\n", niters);
+
+            int last_iter = liter;
+            for (liter = last_iter + 1; liter <= niters + last_iter; liter++)
+            {
+                //                printf("Iteration %d ...\n", liter);
+
+                // for all z_i
+                for (var m = 0; m < M; m++)
+                for (var n = 0; n < ndata.docs[m].Length; n++)
+                {
+                    // (z_i = z[m][n])
+                    // sample from p(z_i|z_-i, w)
+                    int topic = sampling(m, n);
+                    z[m][n] = topic;
+                }
+
+                if (savestep > 0)
+                    if (liter % savestep == 0)
+                    {
+                        // saving the model
+                        //                        printf("Saving the model at iteration %d ...\n", liter);
+                        compute_theta();
+                        compute_phi();
+                        //                        save_model(utils.generate_model_name(liter));
+                    }
+            }
+
+            //            printf("Gibbs sampling completed!\n");
+            //            printf("Saving the final model!\n");
+            compute_theta();
+            compute_phi();
+            liter--;
+            //            save_model(utils.generate_model_name(-1));
+        }
+
+        private int sampling(int m, int n)
+        {
+            // remove z_i from the count variables
+            int topic = z[m][n];
+            int w = ndata.docs[m].Words[n];
+            nw[w][topic] -= 1;
+            nd[m][topic] -= 1;
+            nwsum[topic] -= 1;
+            ndsum[m] -= 1;
+
+            double Vbeta = V * beta;
+            double Kalpha = K * alpha;
+            // do multinomial sampling via cumulative method
+            for (var k = 0; k < K; k++)
+                p[k] = (nw[w][k] + beta) / (nwsum[k] + Vbeta) *
+                       (nd[m][k] + alpha) / (ndsum[m] + Kalpha);
+            // cumulate multinomial parameters
+            for (var k = 1; k < K; k++)
+                p[k] += p[k - 1];
+
+            // scaled sample because of unnormalized p[]
+            double u = mRandom.NextDouble() * p[K - 1];
+            //            double u = ((double)random() / RAND_MAX) * p[K - 1];
+
+            for (topic = 0; topic < K; topic++)
+                if (p[topic] > u)
+                    break;
+
+            // add newly estimated z_i to count variables
+            nw[w][topic] += 1;
+            nd[m][topic] += 1;
+            nwsum[topic] += 1;
+            ndsum[m] += 1;
+
+            return topic;
+        }
+
+        private void compute_theta()
+        {
+            for (var m = 0; m < M; m++)
+            for (var k = 0; k < K; k++)
+                theta[m][k] = (nd[m][k] + alpha) / (ndsum[m] + K * alpha);
+        }
+
+        private void compute_phi()
+        {
+            for (var k = 0; k < K; k++)
+            for (var w = 0; w < V; w++)
+                phi[k][w] = (nw[w][k] + beta) / (nwsum[k] + V * beta);
+        }
+
+
+        // init for inference
+        public bool init_inf()
+        {
+            // estimating the model from a previously estimated one
+            int m, n, w, k;
+
+            p = new double[K];
+
+            // load moel, i.e., read z and ptrndata
+            //            if (load_model(model_name))
+            //            {
+            //                printf("Fail to load word-topic assignmetn file of the model!\n");
+            //                return 1;
+            //            }
+
+            nw = new int[V][];
+            for (w = 0; w < V; w++)
+            {
+                nw[w] = new int[K];
+                for (k = 0; k < K; k++)
+                    nw[w][k] = 0;
+            }
+
+            nd = new int[M][];
+            for (m = 0; m < M; m++)
+            {
+                nd[m] = new int[K];
+                for (k = 0; k < K; k++)
+                    nd[m][k] = 0;
+            }
+
+            nwsum = new int[K];
+            for (k = 0; k < K; k++)
+                nwsum[k] = 0;
+
+            ndsum = new int[M];
+            for (m = 0; m < M; m++)
+                ndsum[m] = 0;
+
+            for (m = 0; m < ndata.M; m++)
+            {
+                int N = ndata.docs[m].Length;
+
+                // assign values for nw, nd, nwsum, and ndsum	
+                for (n = 0; n < N; n++)
+                {
+                    int ww = ndata.docs[m].Words[n];
                     int topic = z[m][n];
 
                     // number of instances of word i assigned to topic j
@@ -677,35 +600,27 @@ namespace Latino.Model
             }
 
             // read new data for inference
-            pnewdata = new dataset();
-            if (withrawstrs)
-            {
-                if (pnewdata.read_newdata_withrawstrs(dir + dfile, dir + wordmapfile))
-                {
-                    //                    printf("Fail to read new data!\n");
-                    return false;
-                }
-            }
-            else
-            {
-                if (pnewdata.read_newdata(dir + dfile, dir + wordmapfile))
-                {
-                    //                    printf("Fail to read new data!\n");
-                    return false;
-                }
-            }
+//            newdata = new Dataset();
+//            if (withrawstrs)
+//            {
+//                if (newdata.read_newdata_withrawstrs(dir + dfile, dir + wordmapfile))
+//                    return false;
+//            }
+//            else
+//            {
+//                if (newdata.read_newdata(dir + dfile, dir + wordmapfile))
+//                    return false;
+//            }
 
-            newM = pnewdata.M;
-            newV = pnewdata.V;
+            newM = newdata.M;
+            newV = newdata.V;
 
             newnw = new int[newV][];
             for (w = 0; w < newV; w++)
             {
                 newnw[w] = new int[K];
                 for (k = 0; k < K; k++)
-                {
                     newnw[w][k] = 0;
-                }
             }
 
             newnd = new int[newM][];
@@ -730,20 +645,20 @@ namespace Latino.Model
                 newndsum[m] = 0;
             }
 
-            var random = new Random();
+            mRandom = new Random();
             //            srandom(time(0)); // initialize for random number generation
             newz = new int[newM][];
-            for (m = 0; m < pnewdata.M; m++)
+            for (m = 0; m < newdata.M; m++)
             {
-                int N = pnewdata.docs[m].length;
+                int N = newdata.docs[m].Length;
                 newz[m] = new int[N];
 
                 // assign values for nw, nd, nwsum, and ndsum	
                 for (n = 0; n < N; n++)
                 {
-                    int w = pnewdata.docs[m].words[n];
-                    int _w = pnewdata._docs[m].words[n];
-                    int topic = random.Next(K);
+                    int ww = newdata.docs[m].Words[n];
+                    int _w = newdata._docs[m].Words[n];
+                    int topic = mRandom.Next(K);
                     //                    int topic = (int)(((double)random() / RAND_MAX) * K);
                     newz[m][n] = topic;
 
@@ -760,61 +675,47 @@ namespace Latino.Model
 
             newtheta = new double[newM][];
             for (m = 0; m < newM; m++)
-            {
                 newtheta[m] = new double[K];
-            }
 
             newphi = new double[K][];
             for (k = 0; k < K; k++)
-            {
                 newphi[k] = new double[newV];
-            }
 
             return true;
         }
 
         // inference for new (unseen) data based on the estimated LDA model
-        void inference()
+        private void inference()
         {
             if (twords > 0)
-            {
-                // print out top words per topic
-                dataset.read_wordmap(dir + wordmapfile, id2word);
-            }
+                Dataset.read_wordmap(dir + wordmapfile, id2word);
 
-//            printf("Sampling %d iterations for inference!\n", niters);
+            //            printf("Sampling %d iterations for inference!\n", niters);
 
             for (inf_liter = 1; inf_liter <= niters; inf_liter++)
+            for (var m = 0; m < newM; m++)
+            for (var n = 0; n < newdata.docs[m].Length; n++)
             {
-//                printf("Iteration %d ...\n", inf_liter);
-
-                // for all newz_i
-                for (int m = 0; m < newM; m++)
-                {
-                    for (int n = 0; n < pnewdata.docs[m].length; n++)
-                    {
-                        // (newz_i = newz[m][n])
-                        // sample from p(z_i|z_-i, w)
-                        int topic = inf_sampling(m, n);
-                        newz[m][n] = topic;
-                    }
-                }
+                // (newz_i = newz[m][n])
+                // sample from p(z_i|z_-i, w)
+                int topic = inf_sampling(m, n);
+                newz[m][n] = topic;
             }
 
-//            printf("Gibbs sampling for inference completed!\n");
-//            printf("Saving the inference outputs!\n");
+            //            printf("Gibbs sampling for inference completed!\n");
+            //            printf("Saving the inference outputs!\n");
             compute_newtheta();
             compute_newphi();
             inf_liter--;
-//            save_inf_model(dfile);
+            //            save_inf_model(dfile);
         }
 
-        int inf_sampling(int m, int n)
+        private int inf_sampling(int m, int n)
         {
             // remove z_i from the count variables
             int topic = newz[m][n];
-            int w = pnewdata.docs[m].words[n];
-            int _w = pnewdata._docs[m].words[n];
+            int w = newdata.docs[m].Words[n];
+            int _w = newdata._docs[m].Words[n];
             newnw[_w][topic] -= 1;
             newnd[m][topic] -= 1;
             newnwsum[topic] -= 1;
@@ -823,27 +724,19 @@ namespace Latino.Model
             double Vbeta = V * beta;
             double Kalpha = K * alpha;
             // do multinomial sampling via cumulative method
-            for (int k = 0; k < K; k++)
-            {
+            for (var k = 0; k < K; k++)
                 p[k] = (nw[w][k] + newnw[_w][k] + beta) / (nwsum[k] + newnwsum[k] + Vbeta) *
-                        (newnd[m][k] + alpha) / (newndsum[m] + Kalpha);
-            }
+                       (newnd[m][k] + alpha) / (newndsum[m] + Kalpha);
             // cumulate multinomial parameters
-            for (int k = 1; k < K; k++)
-            {
+            for (var k = 1; k < K; k++)
                 p[k] += p[k - 1];
-            }
             // scaled sample because of unnormalized p[]
-            double u = new Random().NextDouble() * p[K - 1]; // todo random
-                                                             //            double u = ((double)random() / RAND_MAX) * p[K - 1];
+            double u = mRandom.NextDouble() * p[K - 1]; // todo random
+            //            double u = ((double)random() / RAND_MAX) * p[K - 1];
 
             for (topic = 0; topic < K; topic++)
-            {
                 if (p[topic] > u)
-                {
                     break;
-                }
-            }
 
             // add newly estimated z_i to count variables
             newnw[_w][topic] += 1;
@@ -854,39 +747,27 @@ namespace Latino.Model
             return topic;
         }
 
-        void compute_newtheta()
+        private void compute_newtheta()
         {
-            for (int m = 0; m < newM; m++)
-            {
-                for (int k = 0; k < K; k++)
-                {
-                    newtheta[m][k] = (newnd[m][k] + alpha) / (newndsum[m] + K * alpha);
-                }
-            }
+            for (var m = 0; m < newM; m++)
+            for (var k = 0; k < K; k++)
+                newtheta[m][k] = (newnd[m][k] + alpha) / (newndsum[m] + K * alpha);
         }
 
-        void compute_newphi()
+        private void compute_newphi()
         {
-            Dictionary<int, int> it;
-            for (int k = 0; k < K; k++)
+            for (var k = 0; k < K; k++)
+            for (var w = 0; w < newV; w++)
             {
-                for (int w = 0; w < newV; w++)
-                {
-                    int ww;
-                    if (pnewdata._id2id.TryGetValue(w, out ww))
-                    {
-                        newphi[k][w] = (nw[ww][k] + newnw[w][k] + beta) / (nwsum[k] + newnwsum[k] + V * beta);
-                    }
-//                    it = pnewdata->_id2id.find(w);
-//                    if (it != pnewdata->_id2id.end())
-//                    {
-//                        newphi[k][w] = (nw[it->second][k] + newnw[w][k] + beta) / (nwsum[k] + newnwsum[k] + V * beta);
-//                    }
-                }
+                int ww;
+                if (newdata._id2id.TryGetValue(w, out ww))
+                    newphi[k][w] = (nw[ww][k] + newnw[w][k] + beta) / (nwsum[k] + newnwsum[k] + V * beta);
+                //                    it = pnewdata->_id2id.find(w);
+                //                    if (it != pnewdata->_id2id.end())
+                //                    {
+                //                        newphi[k][w] = (nw[it->second][k] + newnw[w][k] + beta) / (nwsum[k] + newnwsum[k] + V * beta);
+                //                    }
             }
         }
-
-    };
-
-
+    }
 }
