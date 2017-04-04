@@ -1055,7 +1055,7 @@ namespace Latino.Model.Eval
                 }
             }
 
-            return 1 - (GetSumAll() - 1) * numer / denom;
+            return 1 - (GetSumAll() - 1) * numer / (denom + double.Epsilon);
         }
 
         public double GetF1AvgExtremeClasses(IEnumerable<LblT> orderedLabels) 

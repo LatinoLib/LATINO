@@ -76,6 +76,7 @@ namespace Latino.Model.Eval
             out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
         {
             Preconditions.CheckNotNull(mtx);
+            mtx.AddLabels(Enum.GetValues(typeof(LblT)).Cast<LblT>());
             ILabeledExample<LblT, IAgreementExample<T, U>>[][] unitGroups = GroupForAgreementKind(examples, kind, observerId);
             unitCount = 0;
             foreach (ILabeledExample<LblT, IAgreementExample<T, U>>[] ug in unitGroups)
@@ -200,115 +201,6 @@ namespace Latino.Model.Eval
                     break;
             }
             return unitGroups;
-        }
-
-        public static double GetKrippendorffAlphaMod<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            Dictionary<LblT, Dictionary<LblT, double>> weights = null, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
-        {
-            int count;
-            return GetKrippendorffAlphaMod(examples, out count, weights, kind, observerId);
-        }
-
-        public static double GetKrippendorffAlphaMod<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            out int unitCount, Dictionary<LblT, Dictionary<LblT, double>> weights = null, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
-        {
-            Preconditions.CheckArgument(kind != AgreementKind.Self);
-
-            IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples_ = examples as ILabeledExample<LblT, IAgreementExample<T, U>>[] ?? examples.ToArray();
-            ILabeledExample<LblT, IAgreementExample<T, U>>[][] units = Preconditions.CheckNotNull(examples_)
-                .GroupBy(e => e.Example.UnitId())
-                .Where(g => g.Count() > 1 && !EqualityComparer<T>.Default.Equals(g.Key, default(T))) // skip nulls or zeros
-                .Select(g => g.ToArray()).ToArray();
-
-            switch (kind)
-            {
-                case AgreementKind.InterExcludingLabels:
-                    units = units
-                        .Select(u => u.Where(e => !EqualityComparer<U>.Default.Equals(e.Example.ObserverId(), observerId)).ToArray())
-                        .Where(u => u.Count() > 1).ToArray();
-                    break;
-                case AgreementKind.InterIncludingUnits:
-                    units = units
-                        .Where(u => u.Any(e => EqualityComparer<U>.Default.Equals(e.Example.ObserverId(), observerId))).ToArray();
-                    break;
-                case AgreementKind.InterExcludingUnits:
-                    units = units
-                        .Where(u => u.All(e => !EqualityComparer<U>.Default.Equals(e.Example.ObserverId(), observerId))).ToArray();
-                    break;
-            }
-
-            unitCount = 0;
-            var observerPairs = new Dictionary<U, List<Tuple<LblT, LblT>>>();
-            foreach (ILabeledExample<LblT, IAgreementExample<T, U>>[] unit in units)
-            {
-                for (int i = 0; i < unit.Length; i++)
-                {
-                    for (int j = i + 1; j < unit.Length; j++)
-                    {
-                        if (!EqualityComparer<U>.Default.Equals(unit[i].Example.ObserverId(), unit[j].Example.ObserverId()))
-                        {
-                            List<Tuple<LblT, LblT>> pairs;
-                            // observer i
-                            if (!observerPairs.TryGetValue(unit[i].Example.ObserverId(), out pairs))
-                            {
-                                observerPairs.Add(unit[i].Example.ObserverId(), pairs = new List<Tuple<LblT, LblT>>());
-                            }
-                            pairs.Add(new Tuple<LblT, LblT>(unit[i].Label, unit[j].Label));
-                            // observer j
-                            if (!observerPairs.TryGetValue(unit[j].Example.ObserverId(), out pairs))
-                            {
-                                observerPairs.Add(unit[j].Example.ObserverId(), pairs = new List<Tuple<LblT, LblT>>());
-                            }
-                            pairs.Add(new Tuple<LblT, LblT>(unit[j].Label, unit[i].Label));
-                        }
-                    }
-                }
-                unitCount++;
-            }
-
-            if (observerPairs.Any())
-            {
-                Func<LblT, LblT, double> weightF = (l1, l2) => weights == null ? 1 : weights[l1][l2];
-                double allPairs = observerPairs.Sum(kv => kv.Value.Count);
-                double observed = 0, expected = 0;
-                var s = new double[3];
-                foreach (KeyValuePair<U, List<Tuple<LblT, LblT>>> observerKv in observerPairs)
-                {
-
-                    Console.WriteLine(observerKv.Key);
-                    var r = new double[3];
-                    int i = 0;
-                    foreach (IGrouping<double, Tuple<LblT, LblT>> g in observerKv.Value.GroupBy(t => weightF(t.Item1, t.Item2)).OrderBy(g => g.Key))
-                    {
-                        Console.WriteLine(g.Key + "  " + g.Count());
-                        s[i] += g.Count();
-                        r[i++] = g.Count();
-                    }
-                    Console.WriteLine(r[0] / (r[1] + r[0]));
-
-                    observed += observerKv.Value
-                        .Where(t => !EqualityComparer<LblT>.Default.Equals(t.Item1, t.Item2))
-                        .Sum(t => weightF(t.Item1, t.Item2)) 
-                        / (observerPairs.Count - 1) / observerKv.Value.Count; 
-
-                    expected += observerKv.Value.GroupBy(t => t.Item1)
-                        .Sum(g =>
-                        {
-                            double thisObsThisLab = g.Count();
-                            double otherObsOtherLabs = observerPairs.Except(new[] { observerKv })
-                                .Sum(kv => kv.Value.Where(t => !EqualityComparer<LblT>.Default.Equals(g.Key, t.Item1)).Sum(t => weightF(g.Key, t.Item1)));
-                            return thisObsThisLab * otherObsOtherLabs / observerKv.Value.Count / (allPairs - observerKv.Value.Count);
-                        }) / observerPairs.Count;
-                }
-                Console.WriteLine(s[0]);
-                Console.WriteLine(s[1]);
-                Console.WriteLine(s[2]);
-                Console.WriteLine(s[0] / (s[1] + s[0]));
-
-                return 1 - observed / expected;
-            }
-
-            return double.NaN;
         }
 
         public static double GetZProb(double zScore)
