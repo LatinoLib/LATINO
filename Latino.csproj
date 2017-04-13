@@ -88,6 +88,7 @@
     <Compile Include="Model\CentroidData.cs" />
     <Compile Include="Model\ConfusionMatrix.cs" />
     <Compile Include="Model\CrossValidator.cs" />
+    <Compile Include="Model\FastLdaGibbsClustering.cs" />
     <Compile Include="Model\LdaGibbsClustering.cs" />
     <Compile Include="Model\HierarchicalBisectingClusteringFast.cs" />
     <Compile Include="Model\NearestCentroidClassifier.cs" />
