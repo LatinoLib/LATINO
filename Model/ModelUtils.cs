@@ -17,6 +17,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Linq;
+using Latino.TextMining;
 
 namespace Latino.Model
 {
@@ -76,7 +78,7 @@ namespace Latino.Model
             {
                 tmp = ((SparseVector<double>.ReadOnly)inVec).GetWritableCopy();
             }
-            else if (inVec.GetType() == typeof(BinaryVector)) 
+            else if (inVec.GetType() == typeof(BinaryVector))
             {
                 tmp = new SparseVector<double>(((BinaryVector)inVec).Count);
                 foreach (int item in (BinaryVector)inVec)
@@ -93,7 +95,7 @@ namespace Latino.Model
                     tmp.InnerIdx.Add(item);
                     tmp.InnerDat.Add(1);
                 }
-            }       
+            }
             else
             {
                 throw new ArgumentTypeException("inVec");
@@ -154,13 +156,13 @@ namespace Latino.Model
                 {
                     if (method == GroupClassifyMethod.Vote)
                     {
-                        if (!tmp.ContainsKey(lblInfo.Dat)) 
-                        { 
-                            tmp.Add(lblInfo.Dat, 1); 
-                        } 
-                        else 
-                        { 
-                            tmp[lblInfo.Dat]++; 
+                        if (!tmp.ContainsKey(lblInfo.Dat))
+                        {
+                            tmp.Add(lblInfo.Dat, 1);
+                        }
+                        else
+                        {
+                            tmp[lblInfo.Dat]++;
                         }
                         break;
                     }
@@ -228,9 +230,9 @@ namespace Latino.Model
                     {
                         centroid.InnerIdx.Add(item.Key);
                         centroid.InnerDat.Add(item.Value);
-                    }                    
+                    }
                     break;
-                case CentroidType.Avg:                    
+                case CentroidType.Avg:
                     foreach (KeyValuePair<int, double> item in tmp)
                     {
                         centroid.InnerIdx.Add(item.Key);
@@ -347,7 +349,7 @@ namespace Latino.Model
                     {
                         tmp.Add(item.Idx, wgtVec.First * item.Dat);
                     }
-                }                
+                }
                 wgtSum += wgtVec.First;
             }
             if (wgtSum == 0) { return new SparseVector<double>(); }
@@ -571,7 +573,7 @@ namespace Latino.Model
         }
 
         public static double[] GetDotProductSimilarity(SparseMatrix<double>.ReadOnly trMtx, int datasetCount, SparseVector<double>.ReadOnly vec)
-        {            
+        {
             Utils.ThrowException(trMtx == null ? new ArgumentNullException("trMtx") : null);
             Utils.ThrowException(vec == null ? new ArgumentNullException("vec") : null);
             Utils.ThrowException(datasetCount < 0 ? new ArgumentOutOfRangeException("datasetCount") : null);
@@ -622,7 +624,7 @@ namespace Latino.Model
             return sparseVec;
         }
 
-        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset, double thresh, bool fullMatrix) 
+        public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset, double thresh, bool fullMatrix)
         {
             Utils.ThrowException(dataset == null ? new ArgumentNullException("dataset") : null);
             Utils.ThrowException(thresh < 0 ? new ArgumentOutOfRangeException("thresh") : null);
@@ -663,6 +665,73 @@ namespace Latino.Model
         public static SparseMatrix<double> GetDotProductSimilarity(IUnlabeledExampleCollection<SparseVector<double>> dataset)
         {
             return GetDotProductSimilarity(dataset, /*thresh=*/0, /*fullMatrix=*/false); // throws ArgumentNullException
+        }
+
+        public static double ComputeSilhouette(ClusteringResult clusters, IEnumerable<SparseVector<double>> bows,
+            int parallelism = 1, IDistance<SparseVector<double>> distance = null, IEnumerable<SparseVector<double>> centroids = null)
+        {
+            double[] clusterSilhs;
+            return ComputeSilhouette(clusters, bows, out clusterSilhs, parallelism, distance, centroids);
+        }
+
+        public static double ComputeSilhouette(ClusteringResult clusters, IEnumerable<SparseVector<double>> bows, out double[] clusterSilhs,
+            int parallelism = 1, IDistance<SparseVector<double>> distance = null, IEnumerable<SparseVector<double>> centroids = null)
+        {
+            Preconditions.CheckArgumentRange(parallelism >= 1);
+
+            SparseVector<double>[] bowVecs = bows as SparseVector<double>[] ?? Preconditions.CheckNotNull(bows).ToArray();
+            SparseVector<double>[] centroidVecs = centroids == null ? null : centroids as SparseVector<double>[] ?? centroids.ToArray();
+            int[][] clusterItems = clusters.Roots.Select(c => c.Items.ToArray()).ToArray();
+            if (distance == null) { distance = EuclideanDistance.Instance; }
+            Preconditions.CheckArgument(centroidVecs == null || centroidVecs.Length == clusterItems.Length);
+
+            clusterSilhs = clusterItems
+                .Select((c, i) => new { Cluster = c, Index = i })
+                .AsParallel().WithDegreeOfParallelism(parallelism)
+                .Select(ci =>
+                {
+                    //* silhouette based on distances from the centroids 
+                    if (centroidVecs != null) // faster version using cluster centroids
+                    {
+                        // intra-cluster similarity
+                        double ai = ci.Cluster.Any() ? ci.Cluster.Average(v => distance.GetDistance(centroidVecs[ci.Index], bowVecs[v])) : 0;
+
+                        // inter-cluster similarity
+                        double[] bi = clusterItems.Select((c, i) => new { c, i }).Where(cii => cii.i != ci.Index).Select(cii =>
+                            ci.Cluster.Any() ? ci.Cluster.Average(v => distance.GetDistance(centroidVecs[cii.i], bowVecs[v])) : 0).ToArray();
+
+                        double silhouette = (bi.Min() - ai) / Math.Max(ai, bi.Min());
+                        return silhouette;
+                    }
+
+                    //* original silhouette
+                    double sum = 0;
+                    for (int j = 0; j < ci.Cluster.Length; j++)
+                    {
+                        SparseVector<double> bow = bowVecs[ci.Cluster[j]];
+                        if (!bow.Any() || ci.Cluster.Length <= 1) { continue; }
+
+                        // average intra-cluster similarity
+                        int j_ = j;
+                        double ai = ci.Cluster.Where((v, i) => i != j_).Average(v => distance.GetDistance(bow, bowVecs[v]));
+
+                        // min out of all average inter-cluster similarities
+                        double bi = clusterItems.Where((c, i) => i != ci.Index)
+                            .Select(c => c.Any() ? c.Average(cv => distance.GetDistance(bow, bowVecs[cv])) : 0).Min();
+
+                        double silhouette = (bi - ai) / Math.Max(ai, bi);
+                        sum += silhouette;
+                    }
+                    return sum;
+                }).ToArray();
+
+            double result = centroidVecs == null
+                ? clusterSilhs.Sum() / clusterItems.Sum(c => c.Length)
+                : clusterSilhs.Sum() / clusterItems.Length;
+
+            if (centroidVecs == null) { clusterSilhs = clusterSilhs.Select((s, i) => s / clusterItems[i].Length).ToArray(); }
+
+            return result;
         }
     }
 }

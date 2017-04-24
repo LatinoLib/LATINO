@@ -15,6 +15,8 @@ namespace Latino.Model.Eval
         Inter, Self, InterIncludingUnits, InterExcludingUnits, InterExcludingLabels
     }
 
+
+
     public static class StatsUtils
     {
         public static ExT[][] GetMcBootstrapSamples<ExT>(IEnumerable<ExT> examples, int numOfSamples, int seed = -1)
@@ -36,6 +38,9 @@ namespace Latino.Model.Eval
             return result;
         }
 
+
+        /* Used for calculating Krripendorff alpha
+         */
         public static PerfMatrix<LblT> GetCoincidenceMatrix<LblT>(PerfMatrix<LblT> mtx, IEnumerable<LblT> excludeLabels = null)
         {
             Preconditions.CheckNotNull(mtx);
@@ -102,60 +107,6 @@ namespace Latino.Model.Eval
                     {
                         mtx.AddCount(pairLab1[i], pairLab2[i], inc);
                         mtx.AddCount(pairLab2[i], pairLab1[i], inc);
-                    }
-                    unitCount++;
-                }
-            }
-            return mtx;
-        }
-
-        public static PerfMatrix<LblT> GetConfusionMatrix<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
-        {
-            int count;
-            return GetConfusionMatrix(new PerfMatrix<LblT>(), examples, out count, kind, observerId);
-        }
-
-        public static PerfMatrix<LblT> GetConfusionMatrix<LblT, T, U>(IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
-        {
-            return GetConfusionMatrix(new PerfMatrix<LblT>(), examples, out unitCount, kind, observerId);
-        }
-
-        public static PerfMatrix<LblT> GetConfusionMatrix<LblT, T, U>(PerfMatrix<LblT> mtx, IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
-        {
-            int count;
-            return GetConfusionMatrix(mtx, examples, out count, kind, observerId);
-        }
-
-        public static PerfMatrix<LblT> GetConfusionMatrix<LblT, T, U>(PerfMatrix<LblT> mtx, IEnumerable<ILabeledExample<LblT, IAgreementExample<T, U>>> examples,
-            out int unitCount, AgreementKind kind = AgreementKind.Inter, U observerId = default(U))
-        {
-            Preconditions.CheckNotNull(mtx);
-            ILabeledExample<LblT, IAgreementExample<T, U>>[][] unitGroups = GroupForAgreementKind(examples, kind, observerId);
-            unitCount = 0;
-            foreach (ILabeledExample<LblT, IAgreementExample<T, U>>[] ug in unitGroups)
-            {
-                List<LblT> pairLab1 = new List<LblT>(), pairLab2 = new List<LblT>();
-                for (int i = 0; i < ug.Length; i++)
-                {
-                    for (int j = i + 1; j < ug.Length; j++)
-                    {
-                        bool equalObserver = EqualityComparer<U>.Default.Equals(ug[i].Example.ObserverId(), ug[j].Example.ObserverId());
-                        if (kind == AgreementKind.Self && equalObserver || kind != AgreementKind.Self && !equalObserver)
-                        {
-                            pairLab1.Add(ug[i].Label); 
-                            pairLab2.Add(ug[j].Label);
-                        }
-                    }
-                }
-                if (pairLab1.Any())
-                {
-                    for (int i = 0; i < pairLab1.Count; i++)
-                    {
-                        mtx.AddCount(pairLab1[i], pairLab2[i]);
-                        mtx.AddCount(pairLab2[i], pairLab1[i]);
                     }
                     unitCount++;
                 }
