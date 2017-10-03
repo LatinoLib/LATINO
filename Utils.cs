@@ -578,7 +578,6 @@ namespace Latino
                 }
                 catch (SqlException e)
                 {
-                    Console.Write("X");
                     if (!e.Message.Contains("deadlock") || (i == numRetries && i != 0)) { throw e; }                    
                     if (logger != null) { logger.Warn("RetryOnDeadlock", e); }
                 }
