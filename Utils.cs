@@ -27,6 +27,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Data;
 using System.Data.SqlClient;
+using System.Data.Common;
 using System.Threading;
 
 namespace Latino
@@ -290,7 +291,6 @@ namespace Latino
             str = str.Replace("\r", "").Replace('\n', ' ').Trim();
             if (compact)
             {
-                //str = Regex.Replace(str, @"\s\s+", " ");
                 str = Regex.Replace(str, @"\s+", " ");
             }
             return str;
@@ -576,7 +576,7 @@ namespace Latino
                 {
                     return action();
                 }
-                catch (SqlException e)
+                catch (DbException e)
                 {
                     if (!e.Message.Contains("deadlock") || (i == numRetries && i != 0)) { throw e; }                    
                     if (logger != null) { logger.Warn("RetryOnDeadlock", e); }
@@ -596,36 +596,36 @@ namespace Latino
             return RetryOnDeadlock(action, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException
         }
 
-        public static int ExecuteNonQueryRetryOnDeadlock(this SqlCommand sqlCmd, int numRetries, int sleep, Logger logger)
+        public static int ExecuteNonQueryRetryOnDeadlock(this DbCommand sqlCmd, int numRetries, int sleep, Logger logger)
         { 
             Utils.ThrowException(sqlCmd == null ? new ArgumentNullException("sqlCmd") : null);
-            return (int)RetryOnDeadlock(delegate() { return sqlCmd.ExecuteNonQuery(); }, numRetries, sleep, logger); // throws ArgumentOutOfRangeException, SqlException
+            return (int)RetryOnDeadlock(delegate() { return sqlCmd.ExecuteNonQuery(); }, numRetries, sleep, logger); // throws ArgumentOutOfRangeException, DbException
         }
 
-        public static int ExecuteNonQueryRetryOnDeadlock(this SqlCommand sqlCmd, Logger logger)
+        public static int ExecuteNonQueryRetryOnDeadlock(this DbCommand sqlCmd, Logger logger)
         {
-            return ExecuteNonQueryRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, logger); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+            return ExecuteNonQueryRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, logger); // throws ArgumentNullException, ArgumentOutOfRangeException, DbException
         }
 
-        public static int ExecuteNonQueryRetryOnDeadlock(this SqlCommand sqlCmd)
+        public static int ExecuteNonQueryRetryOnDeadlock(this DbCommand sqlCmd)
         {
-            return ExecuteNonQueryRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+            return ExecuteNonQueryRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException, DbException
         }
 
-        public static object ExecuteScalarRetryOnDeadlock(this SqlCommand sqlCmd, int numRetries, int sleep, Logger logger)
+        public static object ExecuteScalarRetryOnDeadlock(this DbCommand sqlCmd, int numRetries, int sleep, Logger logger)
         {
             Utils.ThrowException(sqlCmd == null ? new ArgumentNullException("sqlCmd") : null);
-            return RetryOnDeadlock(delegate() { return sqlCmd.ExecuteScalar(); }, numRetries, sleep, logger); // throws ArgumentOutOfRangeException, SqlException
+            return RetryOnDeadlock(delegate() { return sqlCmd.ExecuteScalar(); }, numRetries, sleep, logger); // throws ArgumentOutOfRangeException, DbException
         }
 
-        public static object ExecuteScalarRetryOnDeadlock(this SqlCommand sqlCmd, Logger logger)
+        public static object ExecuteScalarRetryOnDeadlock(this DbCommand sqlCmd, Logger logger)
         {
-            return ExecuteScalarRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, logger); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+            return ExecuteScalarRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, logger); // throws ArgumentNullException, ArgumentOutOfRangeException, DbException
         }
 
-        public static object ExecuteScalarRetryOnDeadlock(this SqlCommand sqlCmd)
+        public static object ExecuteScalarRetryOnDeadlock(this DbCommand sqlCmd)
         {
-            return ExecuteScalarRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
+            return ExecuteScalarRetryOnDeadlock(sqlCmd, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException, DbException
         }
 
         public static void WriteToServerRetryOnDeadlock(this SqlBulkCopy bulkCopy, DataTable table, int numRetries, int sleep, Logger logger)
@@ -645,7 +645,7 @@ namespace Latino
             WriteToServerRetryOnDeadlock(bulkCopy, table, /*numRetries=*/0, /*sleep=*/0, /*logger=*/null); // throws ArgumentNullException, ArgumentOutOfRangeException, SqlException
         }
 
-        public static T GetValue<T>(this SqlDataReader reader, string colName)
+        public static T GetValue<T>(this DbDataReader reader, string colName)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             object obj = reader.GetValue(reader.GetOrdinal(colName)); // throws IndexOutOfRangeException
@@ -653,7 +653,7 @@ namespace Latino
             return (T)obj; // throws InvalidCastException
         }
 
-        public static bool HasValue(this SqlDataReader reader, string colName)
+        public static bool HasValue(this DbDataReader reader, string colName)
         {
             Utils.ThrowException(reader == null ? new ArgumentNullException("reader") : null);
             object obj = reader.GetValue(reader.GetOrdinal(colName)); // throws IndexOutOfRangeException
