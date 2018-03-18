@@ -8,6 +8,10 @@
     <DefineConstants>TRACE;DEBUG;NETCOREAPP2_0;LATINO</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>TRACE;RELEASE;NETCOREAPP2_0;LATINO</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="LatinoTest\**" />
     <Compile Remove="Tutorial\**" />
