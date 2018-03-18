@@ -38,7 +38,7 @@ namespace Tutorial.Case.Model
             UnicodeTokenizer tokenizer = new UnicodeTokenizer();
             tokenizer.MinTokenLen = 2; // Each token must be at least 2 
             // characters long.
-            tokenizer.Filter = TokenizerFilter.AlphaStrict; // Tokens
+            tokenizer.TokenFilter = TokenFilter.AlphaStrict; // Tokens
             // can consist of alphabetic characters only.
 
             // Test the tokenizer.

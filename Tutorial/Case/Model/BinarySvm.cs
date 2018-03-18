@@ -34,7 +34,7 @@ namespace Tutorial.Case.Model
             var tokenizer = new UnicodeTokenizer
                 {
                     MinTokenLen = 2,                        // Each token must be at least 2 characters long.
-                    Filter = TokenizerFilter.AlphaStrict    // Tokens can consist of alphabetic characters only.
+                    TokenFilter = TokenFilter.AlphaStrict   // Tokens can consist of alphabetic characters only.
                 };
 
             // take data for two classes from cvs file
