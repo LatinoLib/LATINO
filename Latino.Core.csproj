@@ -17,4 +17,12 @@
     <None Remove="Tutorial\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
+  </ItemGroup>
+
 </Project>
