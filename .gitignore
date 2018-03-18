@@ -5,6 +5,7 @@
 */obj/*
 bin/*
 obj/*
+obj_core/*
 */cmn/*
 TestResults/
 .vs/

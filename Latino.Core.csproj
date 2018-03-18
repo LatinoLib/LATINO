@@ -13,16 +13,30 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Bin32\**" />
+    <Compile Remove="Bin64\**" />
     <Compile Remove="LatinoTest\**" />
+    <Compile Remove="obj\**" />
     <Compile Remove="Tutorial\**" />
+    <EmbeddedResource Remove="Bin32\**" />
+    <EmbeddedResource Remove="Bin64\**" />
     <EmbeddedResource Remove="LatinoTest\**" />
+    <EmbeddedResource Remove="obj\**" />
     <EmbeddedResource Remove="Tutorial\**" />
+    <None Remove="Bin32\**" />
+    <None Remove="Bin64\**" />
     <None Remove="LatinoTest\**" />
+    <None Remove="obj\**" />
     <None Remove="Tutorial\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".gitignore" />
+    <None Remove="Directory.Build.props" />
   </ItemGroup>
 
   <ItemGroup>
