@@ -16,9 +16,10 @@ using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.RegularExpressions;
 using System.Text;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Latino
 {
@@ -224,7 +225,24 @@ namespace Latino
         {
             string typeName = ReadString8(); // throws exceptions (see ReadString8())
             Utils.ThrowException(typeName == null ? new InvalidDataException() : null);
-            return Type.GetType(GetFullTypeName(typeName)); // throws TargetInvocationException, ArgumentException, TypeLoadException, FileNotFoundException, FileLoadException, BadImageFormatException
+            string fullTypeName = GetFullTypeName(typeName);
+            Type type = Type.GetType(fullTypeName); // throws TargetInvocationException, ArgumentException, TypeLoadException, FileNotFoundException, FileLoadException, BadImageFormatException
+#if NETCOREAPP2_0
+            if (type == null) // referencing a non-Core assembly?
+            {
+                Match match = Regex.Match(fullTypeName, @"^(.*?),(.*?),(.*$)");
+                if (match.Success)
+                {
+                    string assemblyName = match.Groups[2].Value.Trim();
+                    if (!assemblyName.EndsWith(".Core"))
+                    {
+                        fullTypeName = match.Groups[1].Value + ", " + assemblyName + ".Core," + match.Groups[3].Value;
+                        type = Type.GetType(fullTypeName);
+                    }
+                }
+            }
+#endif
+            return type;
         }
 
         public ValueType ReadValue(Type type)
