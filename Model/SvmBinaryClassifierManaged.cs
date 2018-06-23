@@ -2,8 +2,8 @@
  *
  *  This file is part of LATINO. See http://www.latinolib.org
  *
- *  File:    SvmBinaryManagedClassifier.cs
- *  Desc:    Fully-native code for executing SvmLight models
+ *  File:    SvmBinaryClassifierManaged.cs
+ *  Desc:    Fully-managed code for executing SvmLight models
  *  Created: Jun-2018
  *
  *  Author:  Miha Grcar
@@ -12,17 +12,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Latino.Model
 {
     /* .-----------------------------------------------------------------------
        |
-       |  Class SvmBinaryManagedClassifier<LblT>
+       |  Class SvmBinaryClassifierManaged<LblT>
        |
        '-----------------------------------------------------------------------
     */
-    public class SvmBinaryManagedClassifier<LblT> : IModel<LblT, SparseVector<double>>
+    public class SvmBinaryClassifierManaged<LblT> : IModel<LblT, SparseVector<double>>
     {
         private ArrayList<LblT> mIdxToLbl 
             = new ArrayList<LblT>();
@@ -46,7 +45,7 @@ namespace Latino.Model
         private double mBias;
         private double[] mLinearWeights;
 
-        public SvmBinaryManagedClassifier(BinarySerializer reader)
+        public SvmBinaryClassifierManaged(BinarySerializer reader)
         {
             Load(reader); // throws ArgumentNullException, serialization-related exceptions
         }
@@ -111,12 +110,6 @@ namespace Latino.Model
             get { return mBias; }
         }
 
-        //public double GetHyperplaneBias()
-        //{
-        //    Utils.ThrowException(mModelId == -1 ? new InvalidOperationException() : null);
-        //    return SvmLightLib.GetHyperplaneBias(mModelId);
-        //}
-
         public int GetInternalClassLabel(LblT label)
         {
             Utils.ThrowException(label == null ? new ArgumentNullException("label") : null);
@@ -152,27 +145,19 @@ namespace Latino.Model
 
         public Prediction<LblT> Predict(SparseVector<double> example)
         {
-            // TODO: native code
-            //Utils.ThrowException(mModelId == -1 ? new InvalidOperationException() : null);
-            //Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
-            //Prediction<LblT> result = new Prediction<LblT>();
-            //int[] idx = new int[example.Count];
-            //float[] val = new float[example.Count];
-            //for (int i = 0; i < example.Count; i++)
-            //{
-            //    idx[i] = example.InnerIdx[i] + 1; 
-            //    val[i] = (float)example.InnerDat[i]; // *** cast to float
-            //}
-            //int vecId = SvmLightLib.NewFeatureVector(idx.Length, idx, val, 0);
-            //SvmLightLib.Classify(mModelId, 1, new int[] { vecId });
-            //double score = SvmLightLib.GetFeatureVectorClassifScore(vecId, 0);
-            //LblT lbl = mIdxToLbl[score > 0 ? 0 : 1];
-            //LblT otherLbl = mIdxToLbl[score > 0 ? 1 : 0];
-            //result.Inner.Add(new KeyDat<double, LblT>(Math.Abs(score), lbl));
-            //result.Inner.Add(new KeyDat<double, LblT>(-Math.Abs(score), otherLbl));
-            //SvmLightLib.DeleteFeatureVector(vecId); // delete feature vector
-            //return result;
-            return null;
+            Utils.ThrowException(example == null ? new ArgumentNullException("example") : null);
+            double score = 0;
+            for (int i = 0; i < example.Count; i++)
+            {
+                score += mLinearWeights[example.InnerIdx[i]] * example.InnerDat[i];
+            }
+            score -= mBias;
+            LblT lbl = mIdxToLbl[score > 0 ? 0 : 1];
+            LblT otherLbl = mIdxToLbl[score > 0 ? 1 : 0];
+            Prediction<LblT> result = new Prediction<LblT>();
+            result.Inner.Add(new KeyDat<double, LblT>(Math.Abs(score), lbl));
+            result.Inner.Add(new KeyDat<double, LblT>(-Math.Abs(score), otherLbl));
+            return result;
         }
 
         Prediction<LblT> IModel<LblT>.Predict(object example)
@@ -216,7 +201,7 @@ namespace Latino.Model
             // load SvmLight model
             int verLen = reader.ReadInt(); // int: version specifier length
             reader.ReadBytes(verLen); // byte[]: version specifier
-            reader.ReadInt(); // long: kernel type
+            reader.ReadInt(); // long: kernel type (C long is C# int)
             reader.ReadInt(); // long: poly degree
             reader.ReadDouble(); // double: RBF gamma
             reader.ReadDouble(); // double: "coef lin"
@@ -240,42 +225,6 @@ namespace Latino.Model
                 int commentLen = reader.ReadInt(); // int: comment len       
                 reader.ReadBytes(commentLen); // byte[]: comment
             }
-
-            using (StreamWriter w = new StreamWriter(@"C:\Work\ViewGenerator\ViewGenerator\svmtest\ntive.txt"))
-            {
-                w.WriteLine(mBias);
-                foreach (double val in mLinearWeights)
-                {
-                    w.WriteLine(val);
-                }
-            }
-
         }
     }
 }
-//void add_weight_vector_to_linear_model(MODEL* model)
-///* compute weight vector in linear case and add to model */
-//{
-//    long i;
-//    SVECTOR* f;
-
-//    model->lin_weights = create_nvector(model->totwords);
-//    clear_nvector(model->lin_weights, model->totwords);
-//    for (i = 1; i < model->sv_num; i++)
-//    {
-//        for (f = (model->supvec[i])->fvec; f; f = f->next)
-//            add_vector_ns(model->lin_weights, f, f->factor * model->alpha[i]);        // f->factor = 1.0
-//    }
-//}
-//void add_vector_ns(double* vec_n, SVECTOR* vec_s, double faktor)
-//{
-//    /* Note: SVECTOR lists are not followed, but only the first
-//             SVECTOR is used */
-//    register WORD *ai;
-//    ai = vec_s->words;
-//    while (ai->wnum)
-//    {
-//        vec_n[ai->wnum] += (faktor * (double)ai->weight);
-//        ai++;
-//    }
-//}
