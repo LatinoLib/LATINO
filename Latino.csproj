@@ -99,6 +99,7 @@
     <Compile Include="Model\MaximumEntropyClassifierFast.cs" />
     <Compile Include="Model\KnnClassifierFast.cs" />
     <Compile Include="Model\NaiveBayesClassifier.cs" />
+    <Compile Include="Model\SvmBinaryClassifierManaged.cs" />
     <Compile Include="Model\SvmLightLib.cs" />
     <Compile Include="Model\SvmMulticlassClassifier.cs" />
     <Compile Include="MultiSet.cs" />
