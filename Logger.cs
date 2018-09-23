@@ -358,13 +358,12 @@ namespace Latino
             if (funcName == null) { funcName = "(null)"; }
             if (message == null)
             {
-                if (e != null && e.Message != null) { message = e.Message; }
+                if (e != null) { message = e.ToString(); }
                 else { message = "(null)"; }
             }
             writer.WriteLine("{0:yyyy-MM-dd HH:mm:ss} {1} {2}", DateTime.Now, mName == null ? "(root)" : mName, funcName);
             if (args != null && args.Length > 0) { writer.WriteLine("{0}: {1}", levelStr, string.Format(message, args)); }
             else { writer.WriteLine("{0}: {1}", levelStr, message); }
-            if (e != null && e.StackTrace != null) { writer.WriteLine(e.StackTrace); }
             writer.Flush();
         }
 
